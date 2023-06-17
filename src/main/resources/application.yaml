@@ -12,6 +12,13 @@ spring:
     hibernate:
       ddl-auto: none
 
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: ${JWT_SECRET}
+  expiration: 3600
+
 ---
 spring:
   config:
