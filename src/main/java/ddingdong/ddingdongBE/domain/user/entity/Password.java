@@ -2,13 +2,11 @@ package ddingdong.ddingdongBE.domain.user.entity;
 
 import java.util.Objects;
 import javax.persistence.Column;
-import javax.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Embeddable
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Password {
 

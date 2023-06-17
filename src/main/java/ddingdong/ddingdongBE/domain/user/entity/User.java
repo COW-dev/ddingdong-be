@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.user.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -26,8 +25,7 @@ public class User extends BaseEntity {
 
     private String userId;
 
-    @Embedded
-    private Password password;
+    private String password;
 
     private String name;
 
@@ -35,7 +33,7 @@ public class User extends BaseEntity {
     private Role role;
 
     @Builder
-    public User(String userId, Password password, String name, Role role) {
+    public User(String userId, String password, String name, Role role) {
         this.userId = userId;
         this.password = password;
         this.name = name;
