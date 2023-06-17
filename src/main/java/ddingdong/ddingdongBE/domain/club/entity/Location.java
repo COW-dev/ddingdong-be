@@ -13,11 +13,11 @@ public class Location {
 
     private static final String LOCATION_REGEX = "^S[0-9]{4,5}";
 
-    private String location;
+    private String value;
 
-    private Location(String location) {
-        validateLocation(location);
-        this.location = location;
+    private Location(String value) {
+        validateLocation(value);
+        this.value = value;
     }
 
     @Override
@@ -28,22 +28,22 @@ public class Location {
         if (o == null || getClass() != o.getClass()) {
             return false;
         }
-        Location location1 = (Location) o;
-        return Objects.equals(getLocation(), location1.getLocation());
+        Location location = (Location) o;
+        return Objects.equals(getValue(), location.getValue());
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getLocation());
+        return Objects.hash(getValue());
     }
 
-    public static Location of(String location) {
+    public static Location of(String value) {
 
-        return new Location(location);
+        return new Location(value);
     }
 
-    private void validateLocation(String location) {
-        if (!location.matches(LOCATION_REGEX)) {
+    private void validateLocation(String value) {
+        if (!value.matches(LOCATION_REGEX)) {
             throw new IllegalArgumentException("올바르지 않은 동아리방 위치 양식입니다.");
         }
     }
