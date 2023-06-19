@@ -73,4 +73,8 @@ public class Club extends BaseEntity {
         this.score = score;
     }
 
+    public void editScore(int score) {
+        this.score = Score.of(score);
+    }
+
 }

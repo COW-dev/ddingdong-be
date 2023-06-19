@@ -20,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClubService {
 
+    private static final String NO_SUCH_ELEMENT_EXCEPTION = "해당 동아리가 존재하지 않습니다.";
+
     private final ClubRepository clubRepository;
 
     private final AuthService authService;
@@ -50,7 +52,7 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException("해당 동아리가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
 
         return DetailClubResponse.from(club);
     }
@@ -58,16 +60,23 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
         Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException("해당 동아리가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
 
         return DetailClubResponse.from(club);
     }
 
     public void delete(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException("해당 동아리가 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
 
         clubRepository.delete(club);
+    }
+
+    public void editClubScore(Long clubId, int score) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
+
+        club.editScore(score);
     }
 
 }
