@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
+import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.DetailNoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
@@ -10,7 +11,6 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.aspectj.weaver.ast.Not;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -42,6 +42,13 @@ public class NoticeService {
                 .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
 
         return DetailNoticeResponse.from(notice);
+    }
+
+    public void update(Long noticeId, UpdateNoticeRequest request) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
+
+        notice.update(request);
     }
 
 }
