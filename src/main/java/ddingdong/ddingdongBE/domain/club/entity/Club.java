@@ -11,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -59,5 +60,17 @@ public class Club extends BaseEntity {
 
     @Embedded
     private Score score;
+
+    @Builder
+    public Club(User user, String name, String category, String tag, String leader, Location location,
+                Score score) {
+        this.user = user;
+        this.name = name;
+        this.category = category;
+        this.tag = tag;
+        this.leader = leader;
+        this.location = location;
+        this.score = score;
+    }
 
 }
