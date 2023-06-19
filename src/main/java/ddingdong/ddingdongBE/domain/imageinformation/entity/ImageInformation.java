@@ -31,8 +31,7 @@ public class ImageInformation extends BaseEntity {
     private String findParam;
 
     @Builder
-    public ImageInformation(String uploadName, String storedName,
-                            ImageCategory imageCategory, String findParam) {
+    public ImageInformation(String uploadName, String storedName, ImageCategory imageCategory, String findParam) {
         this.uploadName = uploadName;
         this.storedName = storedName;
         this.imageCategory = imageCategory;
