@@ -14,14 +14,15 @@ public class DetailNoticeResponse {
 
     private List<String> imageUrls;
 
-    private DetailNoticeResponse(String title, String content, LocalDateTime createdAt) {
+    private DetailNoticeResponse(String title, String content, LocalDateTime createdAt, List<String> imageUrls) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
+        this.imageUrls = imageUrls;
     }
 
-    public static DetailNoticeResponse from(Notice notice) {
-        return new DetailNoticeResponse(notice.getTitle(), notice.getContent(), notice.getCreatedAt());
+    public static DetailNoticeResponse of(Notice notice, List<String> imageUrls) {
+        return new DetailNoticeResponse(notice.getTitle(), notice.getContent(), notice.getCreatedAt(), imageUrls);
     }
 
 }

@@ -1,5 +1,8 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
+import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.NOTICE;
+
+import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.DetailNoticeResponse;
@@ -20,6 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
+    private final ImageInformationService imageInformationService;
 
     public Long register(User user, RegisterNoticeRequest request) {
         Notice notice = request.toEntity(user);
@@ -41,7 +45,9 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
 
-        return DetailNoticeResponse.from(notice);
+        List<String> imageUrls = imageInformationService.getImageUrls(NOTICE.getFilePath() + noticeId);
+
+        return DetailNoticeResponse.of(notice, imageUrls);
     }
 
     public void update(Long noticeId, UpdateNoticeRequest request) {
