@@ -2,9 +2,12 @@ package ddingdong.ddingdongBE.domain.club.service;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.util.List;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,6 +28,13 @@ public class ClubService {
         Club savedClub = clubRepository.save(club);
 
         return savedClub.getId();
+    }
+
+    @Transactional(readOnly = true)
+    public List<ClubResponse> getAllClubs() {
+        return clubRepository.findAll().stream()
+                .map(ClubResponse::from)
+                .collect(Collectors.toList());
     }
 
 }
