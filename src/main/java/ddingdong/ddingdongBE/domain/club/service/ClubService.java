@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.club.service;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -38,6 +39,14 @@ public class ClubService {
                 .map(ClubResponse::from)
                 .collect(Collectors.toList());
     }
+
+    @Transactional(readOnly = true)
+    public List<AdminClubResponse> getAllForAdmin() {
+        return clubRepository.findAll().stream()
+                .map(AdminClubResponse::from)
+                .collect(Collectors.toList());
+    }
+
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
         Club club = clubRepository.findById(clubId)
