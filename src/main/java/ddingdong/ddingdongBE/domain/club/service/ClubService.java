@@ -1,5 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
+
+import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.CLUB;
+
 import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
@@ -8,6 +11,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -24,8 +28,8 @@ public class ClubService {
     private static final String NO_SUCH_CLUB_EXCEPTION = "해당 동아리가 존재하지 않습니다.";
 
     private final ClubRepository clubRepository;
-
     private final AuthService authService;
+    private final ImageInformationService imageInformationService;
 
     public Long register(RegisterClubRequest request) {
         User clubUser = authService.registerClubUser(request.getUserId(), request.getPassword(), request.getClubName());
@@ -55,7 +59,9 @@ public class ClubService {
         Club club = clubRepository.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
-        return DetailClubResponse.from(club);
+        List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + clubId);
+
+        return DetailClubResponse.of(club, imageUrls);
     }
 
     @Transactional(readOnly = true)
@@ -63,7 +69,9 @@ public class ClubService {
         Club club = clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
-        return DetailClubResponse.from(club);
+        List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + club.getId());
+
+        return DetailClubResponse.of(club, imageUrls);
     }
 
     public void delete(Long clubId) {
@@ -80,11 +88,12 @@ public class ClubService {
         club.editScore(score);
     }
 
-    public void update(Long clubId, UpdateClubRequest request) {
-        Club club = clubRepository.findById(clubId)
+    public Long update(Long userId, UpdateClubRequest request) {
+        Club club = clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         club.updateClubInfo(request);
+        return club.getId();
     }
 
 }

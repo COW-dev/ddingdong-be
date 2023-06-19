@@ -12,12 +12,24 @@ spring:
     hibernate:
       ddl-auto: none
 
+  s3:
+    bucket: ${BUCKET_NAME}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+
 jwt:
   header: "Authorization"
   prefix: "Bearer"
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 3600
+
+cloud:
+  aws:
+    region:
+      static: ${AWS_DEFAULT_REGION}
+    stack:
+      auto: false
 
 ---
 spring:
