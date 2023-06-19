@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory;
 import ddingdong.ddingdongBE.domain.imageinformation.entity.ImageInformation;
 import ddingdong.ddingdongBE.domain.imageinformation.repository.ImageInformationRepository;
 import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,15 @@ public class ImageInformationService {
                 .findParam(imageCategory.getFilePath() + parentId).build();
 
         imageInformationRepository.save(clubImageInformation);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ImageInformation> getImageInformation(String findParam) {
+        return imageInformationRepository.findByFindParam(findParam);
+    }
+
+    public void delete(ImageInformation clubImageInformation) {
+        imageInformationRepository.delete(clubImageInformation);
     }
 
 }

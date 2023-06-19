@@ -80,11 +80,12 @@ public class ClubService {
         club.editScore(score);
     }
 
-    public void update(Long clubId, UpdateClubRequest request) {
-        Club club = clubRepository.findById(clubId)
+    public Long update(Long userId, UpdateClubRequest request) {
+        Club club = clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         club.updateClubInfo(request);
+        return club.getId();
     }
 
 }
