@@ -5,8 +5,10 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubRespon
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +28,11 @@ public class AdminClubApiController {
     @GetMapping
     public List<AdminClubResponse> getClubs() {
         return clubService.getAllForAdmin();
+    }
+
+    @DeleteMapping("/{clubId}")
+    public void deleteClub(@PathVariable Long clubId) {
+        clubService.delete(clubId);
     }
 
 }

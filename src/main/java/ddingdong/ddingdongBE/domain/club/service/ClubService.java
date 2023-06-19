@@ -63,4 +63,11 @@ public class ClubService {
         return DetailClubResponse.from(club);
     }
 
+    public void delete(Long clubId) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException("해당 동아리가 존재하지 않습니다."));
+
+        clubRepository.delete(club);
+    }
+
 }
