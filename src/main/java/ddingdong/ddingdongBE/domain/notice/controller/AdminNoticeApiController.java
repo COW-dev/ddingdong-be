@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +34,11 @@ public class AdminNoticeApiController {
     public void updateNotice(@PathVariable Long noticeId,
                              @ModelAttribute UpdateNoticeRequest request) {
         noticeService.update(noticeId, request);
+    }
+
+    @DeleteMapping("/{noticeId}")
+    public void deleteNotice(@PathVariable Long noticeId) {
+        noticeService.delete(noticeId);
     }
 
 }

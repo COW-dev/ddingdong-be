@@ -51,4 +51,11 @@ public class NoticeService {
         notice.update(request);
     }
 
+    public void delete(Long noticeId) {
+        Notice notice = noticeRepository.findById(noticeId)
+                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
+
+        noticeRepository.delete(notice);
+    }
+
 }
