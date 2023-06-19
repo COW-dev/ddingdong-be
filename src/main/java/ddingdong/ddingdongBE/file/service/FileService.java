@@ -27,7 +27,7 @@ public class FileService {
         }
     }
 
-    public void deleteClubImage(Long parentId, ImageCategory imageCategory) {
+    public void deleteImageFile(Long parentId, ImageCategory imageCategory) {
         List<ImageInformation> imageInformationList = imageInformationService.getImageInformation(
                 imageCategory.getFilePath() + parentId);
 

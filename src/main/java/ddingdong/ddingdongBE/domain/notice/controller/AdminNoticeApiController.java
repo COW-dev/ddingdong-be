@@ -40,8 +40,11 @@ public class AdminNoticeApiController {
 
     @PatchMapping("/{noticeId}")
     public void updateNotice(@PathVariable Long noticeId,
-                             @ModelAttribute UpdateNoticeRequest request) {
+                             @ModelAttribute UpdateNoticeRequest request,
+                             @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images) {
         noticeService.update(noticeId, request);
+        fileService.deleteImageFile(noticeId, NOTICE);
+        fileService.uploadImageFile(noticeId, images, NOTICE);
     }
 
     @DeleteMapping("/{noticeId}")
