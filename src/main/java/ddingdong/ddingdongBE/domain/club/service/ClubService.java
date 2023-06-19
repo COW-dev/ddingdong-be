@@ -55,4 +55,12 @@ public class ClubService {
         return DetailClubResponse.from(club);
     }
 
+    @Transactional(readOnly = true)
+    public DetailClubResponse getMyClub(Long userId) {
+        Club club = clubRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException("해당 동아리가 존재하지 않습니다."));
+
+        return DetailClubResponse.from(club);
+    }
+
 }
