@@ -25,6 +25,9 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests()
+                .antMatchers(API_PREFIX + "/auth/**")
+                .permitAll()
+                .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .anyRequest()
                 .authenticated()
                 .and()

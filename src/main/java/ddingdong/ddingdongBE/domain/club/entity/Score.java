@@ -37,7 +37,14 @@ public class Score {
     }
 
     public static Score of(int value) {
+        validateScore(value);
         return new Score(value);
+    }
+
+    private static void validateScore(int value) {
+        if (value < 0 || value > 1000) {
+            throw new IllegalArgumentException("동아리 점수는 0 ~ 999점 입니다.");
+        }
     }
 
 }
