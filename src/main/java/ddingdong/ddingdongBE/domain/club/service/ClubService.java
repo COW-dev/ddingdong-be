@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.club.service;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class ClubService {
 
-    private static final String NO_SUCH_ELEMENT_EXCEPTION = "해당 동아리가 존재하지 않습니다.";
+    private static final String NO_SUCH_CLUB_EXCEPTION = "해당 동아리가 존재하지 않습니다.";
 
     private final ClubRepository clubRepository;
 
@@ -52,7 +53,7 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         return DetailClubResponse.from(club);
     }
@@ -60,23 +61,30 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
         Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         return DetailClubResponse.from(club);
     }
 
     public void delete(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         clubRepository.delete(club);
     }
 
     public void editClubScore(Long clubId, int score) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_ELEMENT_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
 
         club.editScore(score);
+    }
+
+    public void update(Long clubId, UpdateClubRequest request) {
+        Club club = clubRepository.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+
+        club.updateClubInfo(request);
     }
 
 }
