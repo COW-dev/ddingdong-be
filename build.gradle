@@ -28,6 +28,8 @@ dependencies {
 
 	implementation 'com.auth0:java-jwt:4.2.1'
 
+	implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
