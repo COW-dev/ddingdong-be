@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.user.entity;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import java.util.Objects;
 import javax.persistence.Column;
 import lombok.AccessLevel;
@@ -44,7 +46,7 @@ public class Password {
 
     private static void validatePassword(String value) {
         if (!value.matches(PASSWORD_REGEX)) {
-            throw new IllegalArgumentException("올바른 비밀번호 양식이 아닙니다.");
+            throw new IllegalArgumentException(ILLEGAL_PASSWORD_PATTERN.getText());
         }
     }
 }

@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -43,7 +45,7 @@ public class Score {
 
     private static void validateScore(int value) {
         if (value < 0 || value > 1000) {
-            throw new IllegalArgumentException("동아리 점수는 0 ~ 999점 입니다.");
+            throw new IllegalArgumentException(INVALID_CLUB_SCORE_VALUE.getText());
         }
     }
 

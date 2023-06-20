@@ -12,4 +12,4 @@ public enum ImageCategory {
 
     private final String filePath;
 
-    }
+}

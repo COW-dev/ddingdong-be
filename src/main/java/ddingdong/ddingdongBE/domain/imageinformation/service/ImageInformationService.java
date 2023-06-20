@@ -29,6 +29,7 @@ public class ImageInformationService {
         imageInformationRepository.save(clubImageInformation);
     }
 
+    @Transactional(readOnly = true)
     public List<String> getImageUrls(String findParam) {
         return imageInformationRepository.findByFindParam(findParam).stream()
                 .map(imageInformation ->  fileStore.getImageUrlPrefix() +  imageInformation.getImageCategory()

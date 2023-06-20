@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import java.util.Objects;
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -48,7 +50,7 @@ public class PhoneNumber {
 
     private void validate(String number) {
         if (!number.matches(PHONE_NUMBER_REGEX)) {
-            throw new IllegalArgumentException("올바르지 않은 전화번호 양식입니다.");
+            throw new IllegalArgumentException(ILLEGAL_CLUB_PHONE_NUMBER_PATTERN.getText());
         }
     }
 }
