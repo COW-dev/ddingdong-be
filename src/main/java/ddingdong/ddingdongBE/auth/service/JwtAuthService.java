@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.auth.service;
 
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
@@ -47,10 +49,10 @@ public class JwtAuthService implements AuthService{
     @Override
     public String signIn(SignInRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("등록되지 않은 사용자입니다."));
+                .orElseThrow(() -> new IllegalArgumentException(UNREGISTER_USER.getText()));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException("비밀번호가 일치하지 않습니다.");
+            throw new IllegalArgumentException(AUTHENTICATION_FAILURE.getText());
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 
@@ -111,7 +113,7 @@ public class JwtAuthService implements AuthService{
 
     private void checkExistUserId(String userId) {
         if (userRepository.existsByUserId(userId)) {
-            throw new IllegalArgumentException("이미 존재하는 회원 아이디입니다.");
+            throw new IllegalArgumentException(ALREADY_EXIST_CLUB_ID.getText());
         }
     }
 }

@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.NOTICE;
 
 import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
@@ -43,7 +44,7 @@ public class NoticeService {
     @Transactional(readOnly = true)
     public DetailNoticeResponse getNotice(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         List<String> imageUrls = imageInformationService.getImageUrls(NOTICE.getFilePath() + noticeId);
 
@@ -52,14 +53,14 @@ public class NoticeService {
 
     public void update(Long noticeId, UpdateNoticeRequest request) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         notice.update(request);
     }
 
     public void delete(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException("해당 공지사항이 존재하지 않습니다."));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         noticeRepository.delete(notice);
     }

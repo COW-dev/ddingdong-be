@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import java.util.Objects;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
@@ -44,7 +46,7 @@ public class Location {
 
     private void validateLocation(String value) {
         if (!value.matches(LOCATION_REGEX)) {
-            throw new IllegalArgumentException("올바르지 않은 동아리방 위치 양식입니다.");
+            throw new IllegalArgumentException(ILLEGAL_CLUB_LOCATION_PATTERN.getText());
         }
     }
 }

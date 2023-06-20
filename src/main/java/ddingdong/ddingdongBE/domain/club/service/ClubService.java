@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.CLUB;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
@@ -24,8 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @Transactional
 public class ClubService {
-
-    private static final String NO_SUCH_CLUB_EXCEPTION = "해당 동아리가 존재하지 않습니다.";
 
     private final ClubRepository clubRepository;
     private final AuthService authService;
@@ -57,7 +56,7 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 
         List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + clubId);
 
@@ -67,7 +66,7 @@ public class ClubService {
     @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
         Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 
         List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + club.getId());
 
@@ -76,21 +75,21 @@ public class ClubService {
 
     public void delete(Long clubId) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 
         clubRepository.delete(club);
     }
 
     public void editClubScore(Long clubId, int score) {
         Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 
         club.editScore(score);
     }
 
     public Long update(Long userId, UpdateClubRequest request) {
         Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB_EXCEPTION));
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 
         club.updateClubInfo(request);
         return club.getId();

@@ -4,6 +4,8 @@ import static org.springframework.http.HttpMethod.*;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
+import ddingdong.ddingdongBE.common.handler.CustomAccessDeniedHandler;
+import ddingdong.ddingdongBE.common.handler.RestAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -65,7 +67,13 @@ public class SecurityConfig {
                 /*
                 Jwt 필터
                  */
-                .addFilterBefore(authenticationFilter(authService, config), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(authenticationFilter(authService, config), UsernamePasswordAuthenticationFilter.class)
+                /*
+                exceptionHandling
+                 */
+                .exceptionHandling()
+                .authenticationEntryPoint(restAuthenticationEntryPoint())
+                .accessDeniedHandler(accessDeniedHandler());
 
         return http.build();
     }
@@ -92,6 +100,16 @@ public class SecurityConfig {
     @Bean
     public JwtAuthenticationFilter authenticationFilter(JwtAuthService authService, JwtConfig config) {
         return new JwtAuthenticationFilter(authService, config);
+    }
+
+    @Bean
+    public RestAuthenticationEntryPoint restAuthenticationEntryPoint() {
+        return new RestAuthenticationEntryPoint();
+    }
+
+    @Bean
+    public CustomAccessDeniedHandler accessDeniedHandler() {
+        return new CustomAccessDeniedHandler();
     }
 
 }
