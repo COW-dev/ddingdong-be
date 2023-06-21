@@ -17,7 +17,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Set up JDK 17
-        uses: actions/setup-java@v1 # 최신 버전을 쓰고 싶었으나 이슈가 생겨서 기존에 CI에서 쓰던 버전 사용
+        uses: actions/setup-java@v1
         with:
           java-version: 17
 
@@ -33,18 +33,18 @@ jobs:
         uses: 1466587594/get-current-time@v2
         id: current-time
         with:
-          format: YYYY-MM-DDTHH-mm-ss # 다른 포맷으로 변경 가능(MomentJS format syntax)
+          format: YYYY-MM-DDTHH-mm-ss 
           utcOffset: "+09:00" # 한국 시간에 맞추기 위함
 
         # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
       - name: Generate deployment package 
         run: |
           mkdir -p deploy
-          cp build/libs/*.jar deploy/application.jar # 빌드 완료 시 jar 파일명을 application.jar로 변경
+          cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
-          cd deploy && zip -r deploy.zip . # Procfile, .ebextensions, .platform 포함하여 zip 생성
+          cd deploy && zip -r deploy.zip .
 
         # Beanstalk Deploy 플러그인 사용
       - name: Beanstalk Deploy
