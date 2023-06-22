@@ -30,7 +30,7 @@ class PasswordTest {
         //when //then
         assertThatThrownBy(() -> Password.of(givenPassword))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("올바른 비밀번호 양식이 아닙니다.");
+                .hasMessage("올바르지 않은 비밀번호 양식입니다.");
     }
 
 }
