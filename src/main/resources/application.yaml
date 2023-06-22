@@ -60,6 +60,12 @@ spring:
     activate:
       on-profile: test
 
+  datasource:
+    url: jdbc:h2:tcp://localhost/~/projects/ddingdong/ddingdong
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
   jpa:
     hibernate:
       ddl-auto: create
@@ -67,6 +73,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
+        auto_quote_keyword: true
 
   sql:
     init:
