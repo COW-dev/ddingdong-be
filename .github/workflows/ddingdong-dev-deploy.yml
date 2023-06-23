@@ -4,9 +4,6 @@ on:
   push:
     branches: 
       - develop  # develop에 push될 때 실행
-      
-env:
-  RESOURCE_PATH: ./src/main/resources/application.yml
 
 jobs:
   build:
@@ -24,7 +21,7 @@ jobs:
       - name: Set yaml file
         uses: microsoft/variable-substitution@v1
         with:
-          files: ${{ env.RESOURCE_PATH }}
+          files: ./src/main/resources/application.yml
         env:
           spring.datasource.url: ${{secrets.DB_URL}}
           spring.datasource.username: ${{secrets.DB_USERNAME}}
