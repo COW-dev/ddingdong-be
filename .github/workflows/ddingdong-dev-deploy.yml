@@ -6,7 +6,7 @@ on:
       - develop  # develop에 push될 때 실행
       
 env:
-  RESOURCE_PATH: ./src/main/resources/application.yaml
+  RESOURCE_PATH: ./src/main/resources/application.yml
 
 jobs:
   build:
