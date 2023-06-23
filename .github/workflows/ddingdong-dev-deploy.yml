@@ -48,7 +48,7 @@ jobs:
 
         # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
       - name: Generate deployment package 
-        run: |
+        run:
           mkdir -p deploy
           cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
