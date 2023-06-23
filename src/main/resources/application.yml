@@ -1,0 +1,32 @@
+spring:
+  profiles:
+    default: dev
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  s3:
+    bucket: ${BUCKET_NAME}
+    access-key: ${AWS_ACCESS_KEY_ID}
+    secret-key: ${AWS_SECRET_ACCESS_KEY}
+
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: ${JWT_SECRET}
+  expiration: 3600
+
+cloud:
+  aws:
+    region:
+      static: ${AWS_DEFAULT_REGION}
+    stack:
+      auto: false
