@@ -54,7 +54,7 @@ jobs:
           cp Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
-          cd deploy && zip -r deploy.zip .
+          cd deploy && zip -r deploy-dev.zip .
 
         # Beanstalk Deploy 플러그인 사용
       - name: Beanstalk Deploy
@@ -66,5 +66,5 @@ jobs:
           environment_name: Ddingdong-dev-env # EB environment 이름
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
-          deployment_package: deploy/deploy.zip
+          deployment_package: deploy/deploy-dev.zip
           wait_for_environment_recovery: 180
