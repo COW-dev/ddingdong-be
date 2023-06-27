@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.club.entity;
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 
 import java.util.Objects;
+import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -15,6 +16,7 @@ public class Location {
 
     private static final String LOCATION_REGEX = "^S[0-9]{4,5}";
 
+    @Column(name = "location")
     private String value;
 
     private Location(String value) {

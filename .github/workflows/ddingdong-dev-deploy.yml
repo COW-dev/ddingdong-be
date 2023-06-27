@@ -2,11 +2,8 @@ name: ddingdong-dev-depoly
 
 on:
   push:
-    branches: 
+    branches:
       - develop  # develop에 push될 때 실행
-      
-env:
-  RESOURCE_PATH: ./src/main/resources/application.yaml
 
 jobs:
   build:
@@ -21,6 +18,19 @@ jobs:
         with:
           java-version: 17
 
+      - name: Set yaml file
+        uses: microsoft/variable-substitution@v1
+        with:
+          files: ./src/main/resources/application.yml
+        env:
+          spring.datasource.url: ${{secrets.DB_URL}}
+          spring.datasource.username: ${{secrets.DB_USERNAME}}
+          spring.datasource.password: ${{secrets.DB_PASSWORD}}
+          spring.s3.bucket: ${{secrets.BUCKET_NAME}}
+          sprig.s3.access-key: ${{secrets.AWS_ACCESS_KEY_ID}}
+          sprig.s3.secret-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
+          cloud.aws.region.static: ${{secrets.AWS_DEFAULT_REGION}}
+
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
         shell: bash
@@ -33,11 +43,11 @@ jobs:
         uses: 1466587594/get-current-time@v2
         id: current-time
         with:
-          format: YYYY-MM-DDTHH-mm-ss 
+          format: YYYY-MM-DDTHH-mm-ss
           utcOffset: "+09:00" # 한국 시간에 맞추기 위함
 
         # grandle build를 통해 만들어진 jar를 beanstalk에 배포하기 위한 zip 파일로 만드는 것
-      - name: Generate deployment package 
+      - name: Generate deployment package
         run: |
           mkdir -p deploy
           cp build/libs/*.jar deploy/application.jar
@@ -52,9 +62,9 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }} # github secrets로 등록한 값 사용
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }} # github secrets로 등록한 값 사용
-          application-name: ddingdong-be-dev # EB application 이름
-          environment_name: Ddingdong-be-dev-env # EB environment 이름
+          application_name: ddingdong # EB application 이름
+          environment_name: Ddingdong-env # EB environment 이름
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
-          wait_for_environment_recovery: 180 # default wait time은 30초이며, 필자의 EB가 느려서 18
+          wait_for_environment_recovery: 180
