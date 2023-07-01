@@ -3,11 +3,9 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
-@AllArgsConstructor
 public class RegisterClubRequest {
 
     private String clubName;
