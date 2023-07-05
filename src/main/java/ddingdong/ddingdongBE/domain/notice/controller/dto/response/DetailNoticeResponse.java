@@ -3,7 +3,12 @@ package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class DetailNoticeResponse {
 
     private String title;
