@@ -30,6 +30,7 @@ jobs:
           sprig.s3.access-key: ${{secrets.AWS_ACCESS_KEY_ID}}
           sprig.s3.secret-key: ${{secrets.AWS_SECRET_ACCESS_KEY}}
           cloud.aws.region.static: ${{secrets.AWS_DEFAULT_REGION}}
+          jwt.secret: ${{secrets.JWT_SECRET}}
 
       - name: Grant execute permission for gradlew
         run: chmod +x ./gradlew
