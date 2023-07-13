@@ -35,6 +35,8 @@ public class SecurityConfig {
                 .permitAll()
                 .antMatchers(GET, API_PREFIX + "/notices/**")
                 .permitAll()
+                .antMatchers(API_PREFIX + "/health/**")
+                .permitAll()
                 .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
                 .anyRequest()
