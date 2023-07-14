@@ -29,13 +29,13 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests()
+                .antMatchers("/")
+                .permitAll()
                 .antMatchers(API_PREFIX + "/auth/**")
                 .permitAll()
                 .antMatchers(GET, API_PREFIX + "/clubs/**")
                 .permitAll()
                 .antMatchers(GET, API_PREFIX + "/notices/**")
-                .permitAll()
-                .antMatchers(API_PREFIX + "/health/**")
                 .permitAll()
                 .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
