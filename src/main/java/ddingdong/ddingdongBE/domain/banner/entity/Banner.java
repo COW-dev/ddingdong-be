@@ -4,8 +4,6 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -32,14 +30,13 @@ public class Banner extends BaseEntity {
 
     private String subTitle;
 
-    @Enumerated(EnumType.STRING)
-    private Color color;
+    private String colorCode;
 
     @Builder
-    public Banner(User user, String title, String subTitle, Color color) {
+    public Banner(User user, String title, String subTitle, String colorCode) {
         this.user = user;
         this.title = title;
         this.subTitle = subTitle;
-        this.color = color;
+        this.colorCode = colorCode;
     }
 }
