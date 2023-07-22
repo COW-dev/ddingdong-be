@@ -1,6 +1,9 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
+import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.response.BannerResponse;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
@@ -39,4 +42,12 @@ public class BannerService {
         }
         return bannerResponses;
     }
+
+    public void updateBanner(Long bannerId, UpdateBannerRequest request) {
+        Banner banner = bannerRepository.findById(bannerId)
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_BANNER.getText()));
+
+        banner.update(request);
+    }
+
 }
