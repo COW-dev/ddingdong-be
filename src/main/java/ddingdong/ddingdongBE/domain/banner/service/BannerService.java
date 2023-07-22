@@ -50,4 +50,11 @@ public class BannerService {
         banner.update(request);
     }
 
+    public void deleteBanner(Long bannerId) {
+        Banner banner = bannerRepository.findById(bannerId)
+                .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_BANNER.getText()));
+
+        bannerRepository.delete(banner);
+    }
+
 }
