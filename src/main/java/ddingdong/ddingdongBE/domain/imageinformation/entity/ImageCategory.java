@@ -8,7 +8,8 @@ import lombok.RequiredArgsConstructor;
 public enum ImageCategory {
 
     CLUB("club-image/"),
-    NOTICE("notice-image/");
+    NOTICE("notice-image/"),
+    BANNER("banner-image/");
 
     private final String filePath;
 
