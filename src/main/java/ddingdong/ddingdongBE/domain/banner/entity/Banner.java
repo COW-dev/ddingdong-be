@@ -11,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -34,4 +35,11 @@ public class Banner extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Color color;
 
+    @Builder
+    public Banner(User user, String title, String subTitle, Color color) {
+        this.user = user;
+        this.title = title;
+        this.subTitle = subTitle;
+        this.color = color;
+    }
 }
