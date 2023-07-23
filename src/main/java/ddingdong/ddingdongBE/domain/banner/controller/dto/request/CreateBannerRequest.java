@@ -2,9 +2,11 @@ package ddingdong.ddingdongBE.domain.banner.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CreateBannerRequest {
 
     private String title;
