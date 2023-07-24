@@ -35,7 +35,7 @@ public class CentralClubApiController {
 
     @PatchMapping()
     public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                           @RequestBody UpdateClubRequest param,
+                           @RequestPart UpdateClubRequest param,
                            @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images) {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);
