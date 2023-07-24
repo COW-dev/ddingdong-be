@@ -73,9 +73,6 @@ public class ActivityReportService {
                 .collect(Collectors.toList());
     }
 
-
-
-
     @Transactional
     public Long register(final User user, final RegisterActivityReportRequest registerActivityReportRequest) {
 

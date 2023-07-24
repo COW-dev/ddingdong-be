@@ -90,7 +90,7 @@ public class ClubService {
         return club.getId();
     }
 
-    public Club findClubByClubId(final Long clubId) {
+    private Club findClubByClubId(final Long clubId) {
         return clubRepository.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
     }
