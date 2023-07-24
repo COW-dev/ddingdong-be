@@ -5,14 +5,13 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
-import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.service.BannerService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -48,5 +47,12 @@ public class AdminBannerController {
         bannerService.updateBanner(bannerId, request);
         fileService.deleteImageFile(bannerId, BANNER);
         fileService.uploadImageFile(bannerId, bannerImages, BANNER);
+    }
+
+    @DeleteMapping("/{bannerId}")
+    public void deleteBanner(@PathVariable Long bannerId) {
+        bannerService.deleteBanner(bannerId);
+
+        fileService.deleteImageFile(bannerId, BANNER);
     }
 }
