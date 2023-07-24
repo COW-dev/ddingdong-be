@@ -40,7 +40,6 @@ public class NoticeService {
                 .collect(Collectors.toList());
     }
 
-
     @Transactional(readOnly = true)
     public DetailNoticeResponse getNotice(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)

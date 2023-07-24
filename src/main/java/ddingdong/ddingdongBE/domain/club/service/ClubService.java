@@ -55,8 +55,7 @@ public class ClubService {
 
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+        Club club = findClubByClubId(clubId);
 
         List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + clubId);
 
@@ -65,8 +64,7 @@ public class ClubService {
 
     @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
-        Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+        Club club = findClubByUserId(userId);
 
         List<String> imageUrls = imageInformationService.getImageUrls(CLUB.getFilePath() + club.getId());
 
@@ -74,25 +72,31 @@ public class ClubService {
     }
 
     public void delete(Long clubId) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+        Club club = findClubByClubId(clubId);
 
         clubRepository.delete(club);
     }
 
     public void editClubScore(Long clubId, int score) {
-        Club club = clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+        Club club = findClubByClubId(clubId);
 
         club.editScore(score);
     }
 
     public Long update(Long userId, UpdateClubRequest request) {
-        Club club = clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+        Club club = findClubByUserId(userId);
 
         club.updateClubInfo(request);
         return club.getId();
     }
 
+    private Club findClubByClubId(final Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+    }
+
+    public Club findClubByUserId(final Long userId) {
+        return clubRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+    }
 }
