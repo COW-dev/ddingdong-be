@@ -31,9 +31,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests()
                 .antMatchers(API_PREFIX + "/auth/**")
                 .permitAll()
-                .antMatchers(GET, API_PREFIX + "/clubs/**")
-                .permitAll()
-                .antMatchers(GET, API_PREFIX + "/notices/**")
+                .antMatchers(GET,
+                        API_PREFIX + "/clubs/**",
+                        API_PREFIX + "/notices/**",
+                        API_PREFIX + "/banners/**")
                 .permitAll()
                 .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
