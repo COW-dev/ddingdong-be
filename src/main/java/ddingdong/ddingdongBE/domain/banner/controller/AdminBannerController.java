@@ -4,13 +4,18 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
+import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
+import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.service.BannerService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -35,4 +40,13 @@ public class AdminBannerController {
         fileService.uploadImageFile(createdBannerId, bannerImages, BANNER);
     }
 
+    @PatchMapping("/{bannerId}")
+    public void updateBanner(@PathVariable Long bannerId,
+                             @ModelAttribute UpdateBannerRequest request,
+                             @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
+
+        bannerService.updateBanner(bannerId, request);
+        fileService.deleteImageFile(bannerId, BANNER);
+        fileService.uploadImageFile(bannerId, bannerImages, BANNER);
+    }
 }
