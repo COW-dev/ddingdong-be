@@ -12,7 +12,6 @@ import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationSer
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
