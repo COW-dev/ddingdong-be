@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationSer
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,9 +37,12 @@ public class BannerService {
 
         List<Banner> banners = bannerRepository.findAll();
         for (Banner banner : banners) {
-            String bannerImageUrl = imageInformationService.getImageUrls(
-                            ImageCategory.BANNER.getFilePath() + banner.getId()).get(0);
-            bannerResponses.add(BannerResponse.of(banner, bannerImageUrl));
+            String bannerImgUrl = imageInformationService.getImageUrls(
+                            ImageCategory.BANNER.getFilePath() + banner.getId())
+                    .stream()
+                    .findFirst()
+                    .orElse("");
+            bannerResponses.add(BannerResponse.of(banner, bannerImgUrl));
         }
         return bannerResponses;
     }
