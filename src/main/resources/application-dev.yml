@@ -18,3 +18,10 @@ spring:
   sql:
     init:
       mode: never
+
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: ${JWT_SECRET}
+  expiration: 36000
