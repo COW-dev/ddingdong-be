@@ -2,9 +2,11 @@ package ddingdong.ddingdongBE.domain.notice.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class RegisterNoticeRequest {
 
     private String title;
