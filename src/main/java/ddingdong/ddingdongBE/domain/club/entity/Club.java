@@ -66,7 +66,7 @@ public class Club extends BaseEntity {
 
     @Builder
     public Club(User user, String name, String category, String tag, String leader, Location location,
-                Score score) {
+                PhoneNumber phoneNumber, Score score) {
         this.user = user;
         this.name = name;
         this.category = category;
@@ -74,6 +74,7 @@ public class Club extends BaseEntity {
         this.leader = leader;
         this.location = location;
         this.score = score;
+        this.phoneNumber = phoneNumber;
     }
 
     public void updateClubInfo(UpdateClubRequest request) {
