@@ -35,6 +35,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("api/club")
 public class ClubActivityReportApiController {
 
+    private static final int IMAGE_COUNT = 2;
+
     private final ActivityReportService activityReportService;
     private final FileService fileService;
 
@@ -65,6 +67,10 @@ public class ClubActivityReportApiController {
             @RequestPart("reportData") List<RegisterActivityReportRequest> requests,
             @RequestPart("uploadFiles") List<MultipartFile> images
     ) {
+        if (!validateImages(images)) {
+            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
+        }
+
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
@@ -103,5 +109,9 @@ public class ClubActivityReportApiController {
     ) {
         User user = principalDetails.getUser();
         activityReportService.delete(user, term);
+    }
+
+    private boolean validateImages(List<MultipartFile> images) {
+        return images.size() == IMAGE_COUNT;
     }
 }
