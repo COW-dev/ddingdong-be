@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -36,7 +37,7 @@ public class CentralClubApiController {
 
     @PatchMapping()
     public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                           @RequestPart UpdateClubRequest param,
+                           @ModelAttribute UpdateClubRequest param,
                            @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images) {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);

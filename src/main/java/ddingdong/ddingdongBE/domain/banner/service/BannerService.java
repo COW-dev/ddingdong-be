@@ -36,9 +36,12 @@ public class BannerService {
 
         List<Banner> banners = bannerRepository.findAll();
         for (Banner banner : banners) {
-            String bannerImageUrl = imageInformationService.getImageUrls(
-                            ImageCategory.BANNER.getFilePath() + banner.getId()).get(0);
-            bannerResponses.add(BannerResponse.of(banner, bannerImageUrl));
+            String bannerImgUrl = imageInformationService.getImageUrls(
+                            ImageCategory.BANNER.getFilePath() + banner.getId())
+                    .stream()
+                    .findFirst()
+                    .orElse("");
+            bannerResponses.add(BannerResponse.of(banner, bannerImgUrl));
         }
         return bannerResponses;
     }
