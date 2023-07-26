@@ -9,6 +9,7 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.common.config.JwtConfig;
+import ddingdong.ddingdongBE.common.exception.AuthenticationException;
 import ddingdong.ddingdongBE.domain.user.entity.Password;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -49,10 +50,10 @@ public class JwtAuthService implements AuthService{
     @Override
     public String signIn(SignInRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException(UNREGISTER_USER.getText()));
+                .orElseThrow(() -> new AuthenticationException(UNREGISTER_USER));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new IllegalArgumentException(AUTHENTICATION_FAILURE.getText());
+            throw new AuthenticationException(AUTHENTICATION_FAILURE);
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 
