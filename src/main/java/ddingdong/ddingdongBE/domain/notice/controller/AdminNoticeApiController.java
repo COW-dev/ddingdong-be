@@ -10,6 +10,7 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.aspectj.weaver.ast.Not;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -50,6 +51,7 @@ public class AdminNoticeApiController {
     @DeleteMapping("/{noticeId}")
     public void deleteNotice(@PathVariable Long noticeId) {
         noticeService.delete(noticeId);
+        fileService.deleteImageFile(noticeId, NOTICE);
     }
 
 }
