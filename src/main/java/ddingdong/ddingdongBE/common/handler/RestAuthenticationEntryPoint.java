@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.common.handler;
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ddingdong.ddingdongBE.common.exception.ErrorMessage;
 import ddingdong.ddingdongBE.common.exception.ExceptionResponse;
 import java.io.IOException;
 import javax.servlet.http.HttpServletRequest;
@@ -18,9 +19,21 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        ExceptionResponse exceptionResponse = ExceptionResponse.of(HttpStatus.FORBIDDEN, ACCESS_DENIED.getText());
+        ErrorMessage errorMessage = valueOf(request.getAttribute("exception").toString());
+
+        if (errorMessage.equals(NON_VALIDATED_TOKEN)) {
+            responseAuthenticationException(response, errorMessage);
+            return;
+        }
+        responseAuthenticationException(response, AUTHENTICATION_FAILURE);
+    }
+
+    private void responseAuthenticationException(HttpServletResponse response, ErrorMessage errorMessage)
+            throws IOException {
+        ExceptionResponse exceptionResponse = ExceptionResponse.of(HttpStatus.UNAUTHORIZED,
+                errorMessage.getText());
         response.setContentType("application/json;charset=UTF-8");
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(new ObjectMapper().writeValueAsString(exceptionResponse));
     }
 }

@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,7 +28,7 @@ public class Club extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name = "user_id")
     private User user;
 
@@ -66,7 +67,7 @@ public class Club extends BaseEntity {
 
     @Builder
     public Club(User user, String name, String category, String tag, String leader, Location location,
-                Score score) {
+                PhoneNumber phoneNumber, Score score) {
         this.user = user;
         this.name = name;
         this.category = category;
@@ -74,6 +75,7 @@ public class Club extends BaseEntity {
         this.leader = leader;
         this.location = location;
         this.score = score;
+        this.phoneNumber = phoneNumber;
     }
 
     public void updateClubInfo(UpdateClubRequest request) {

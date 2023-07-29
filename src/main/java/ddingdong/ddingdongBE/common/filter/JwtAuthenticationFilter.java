@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.common.filter;
 
-import com.auth0.jwt.exceptions.JWTDecodeException;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.config.JwtConfig;
@@ -27,7 +29,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             verifyJwt(request);
-        } catch (JWTDecodeException ignored) {
+        } catch (JWTVerificationException e) {
+            request.setAttribute("exception", NON_VALIDATED_TOKEN);
         }
         filterChain.doFilter(request, response);
     }

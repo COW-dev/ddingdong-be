@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class UpdateClubRequest {
 
     private String name;
