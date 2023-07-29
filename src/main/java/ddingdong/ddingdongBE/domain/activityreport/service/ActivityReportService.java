@@ -105,10 +105,9 @@ public class ActivityReportService {
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
 
-        activityReports.forEach(activityReport -> {
-            activityReport.getParticipants().clear();
-            activityReportRepository.delete(activityReport);
-        });
+        return activityReports.stream()
+                .peek(activityReport -> activityReport.getParticipants().clear())
+                .peek(activityReportRepository::delete).map(ActivityReportDto::from).collect(Collectors.toList());
     }
 
     public CurrentTermResponse getCurrentTerm() {

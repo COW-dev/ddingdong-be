@@ -107,7 +107,12 @@ public class ClubActivityReportApiController {
         @RequestParam("term") String term
     ) {
         User user = principalDetails.getUser();
-        activityReportService.delete(user, term);
+        List<ActivityReportDto> deleteActivityReportDtos = activityReportService.delete(user, term);
+
+        deleteActivityReportDtos
+                .forEach(
+                        activityReportDto -> fileService.deleteImageFile(activityReportDto.getId(), ACTIVITY_REPORT)
+                );
     }
 
     private void validateImages(List<MultipartFile> images) {
