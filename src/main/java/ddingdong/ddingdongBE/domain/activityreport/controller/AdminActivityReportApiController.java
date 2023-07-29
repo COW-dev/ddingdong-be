@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller;
 
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class AdminActivityReportApiController {
     private final ActivityReportService activityReportService;
 
     @GetMapping
-    public List<ActivityReportResponse> getActivityReports() {
+    public List<AllActivityReportResponse> getActivityReports() {
         return activityReportService.getAll();
     }
 }

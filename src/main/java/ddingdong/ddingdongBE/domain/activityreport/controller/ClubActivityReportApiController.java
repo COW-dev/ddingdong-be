@@ -5,7 +5,8 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
@@ -39,7 +40,7 @@ public class ClubActivityReportApiController {
     private final ActivityReportService activityReportService;
     private final FileService fileService;
 
-    @GetMapping("/current-term")
+    @GetMapping("activity-reports/current-term")
     public CurrentTermResponse getCurrentTerm() {
         return activityReportService.getCurrentTerm();
     }

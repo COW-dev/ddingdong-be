@@ -46,14 +46,14 @@ public class ActivityReportService {
     private final ActivityReportRepository activityReportRepository;
 
     @Transactional(readOnly = true)
-    public List<ActivityReportResponse> getAll() {
+    public List<AllActivityReportResponse> getAll() {
         List<ActivityReport> activityReports = activityReportRepository.findAll();
 
         return parseToActivityReportResponse(activityReports);
     }
 
     @Transactional(readOnly = true)
-    public List<ActivityReportResponse> getMyActivityReports(final User user) {
+    public List<AllActivityReportResponse> getMyActivityReports(final User user) {
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubName(club.getName());
@@ -67,12 +67,11 @@ public class ActivityReportService {
 
         List<String> imageUrls = new ArrayList<>();
 
-        return activityReports.stream()
-                .map(activityReport -> {
-                    imageUrls.addAll(imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
-                    return DetailActivityReportResponse.from(activityReport, imageUrls);
-                })
-                .collect(Collectors.toList());
+        return activityReports.stream().map(activityReport -> {
+            imageUrls.addAll(
+                    imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
+            return DetailActivityReportResponse.from(activityReport, imageUrls);
+        }).collect(Collectors.toList());
     }
 
     public Long register(final User user, final RegisterActivityReportRequest registerActivityReportRequest) {
@@ -134,28 +133,23 @@ public class ActivityReportService {
         return String.valueOf(result);
     }
 
-    private List<ActivityReportResponse> parseToActivityReportResponse(final List<ActivityReport> activityReports) {
-
-        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream()
-                .collect(Collectors.groupingBy(
-                        activityReport -> activityReport.getClub().getName(),
+    private List<AllActivityReportResponse> parseToActivityReportResponse(final List<ActivityReport> activityReports) {
+        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
+                Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
                         Collectors.groupingBy(ActivityReport::getTerm,
-                                Collectors.mapping(ActivityReport::getId, Collectors.toList())
-                        )
-                ));
+                                Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
 
-        return groupedData.entrySet().stream()
-                .flatMap(entry -> {
-                    String clubName = entry.getKey();
-                    Map<String, List<Long>> termMap = entry.getValue();
+        return groupedData.entrySet().stream().flatMap(entry -> {
+            String clubName = entry.getKey();
+            Map<String, List<Long>> termMap = entry.getValue();
 
-                    return termMap.entrySet().stream()
-                            .map(termEntry -> new ActivityReportResponse(
-                                    clubName,
-                                    termEntry.getKey(),
-                                    termEntry.getValue()
-                            ));
-                })
-                .collect(Collectors.toList());
+            return termMap.entrySet().stream().map(termEntry -> {
+                String term = termEntry.getKey();
+                List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream().map(ActivityReportDto::new)
+                        .collect(Collectors.toList());
+                return AllActivityReportResponse.of(clubName, term, activityReportDtos);
+            });
+
+        }).collect(Collectors.toList());
     }
 }
