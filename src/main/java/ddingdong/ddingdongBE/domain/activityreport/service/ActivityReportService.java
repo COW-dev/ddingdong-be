@@ -4,10 +4,10 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.UpdateActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 
@@ -31,10 +31,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ActivityReportService {
 
     private static final String START_DATE = "2023-09-04";
+    private static final int DEFAULT_TERM = 1;
     private static final int CORRECTION_VALUE = 1;
     private static final int TERM_LENGTH_OF_DAYS = 14;
 
@@ -125,6 +127,10 @@ public class ActivityReportService {
 
     private String calculateCurrentTerm(final int days) {
         int result = CORRECTION_VALUE + (days / TERM_LENGTH_OF_DAYS);
+
+        if (result <= 0) {
+            result = DEFAULT_TERM;
+        }
 
         return String.valueOf(result);
     }
