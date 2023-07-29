@@ -84,23 +84,20 @@ public class ActivityReportService {
         return savedActivityReport.getId();
     }
 
-    @Transactional
-    public List<UpdateActivityReportResponse> update(final User user, final String term, final List<UpdateActivityReportRequest> requests) {
+    public List<ActivityReportDto> update(final User user, final String term,
+                                          final List<UpdateActivityReportRequest> requests) {
 
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
 
-        return IntStream.range(0, requests.size())
-                .mapToObj(index -> {
-                    activityReports.get(index).update(requests.get(index));
-                    return UpdateActivityReportResponse.from(activityReports.get(index));
-                })
-                .collect(Collectors.toList());
+        return IntStream.range(0, activityReports.size()).mapToObj(index -> {
+            activityReports.get(index).update(requests.get(index));
+            return ActivityReportDto.from(activityReports.get(index));
+        }).collect(Collectors.toList());
     }
 
-    @Transactional
-    public void delete(final User user, final String term) {
+    public List<ActivityReportDto> delete(final User user, final String term) {
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);

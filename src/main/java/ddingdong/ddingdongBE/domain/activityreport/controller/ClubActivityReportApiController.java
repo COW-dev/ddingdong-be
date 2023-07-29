@@ -46,7 +46,7 @@ public class ClubActivityReportApiController {
     }
 
     @GetMapping("/my/activity-reports")
-    public List<ActivityReportResponse> getMyActivityReports(
+    public List<AllActivityReportResponse> getMyActivityReports(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
@@ -83,7 +83,7 @@ public class ClubActivityReportApiController {
     }
 
     @PatchMapping("my/activity-reports")
-    public void updateReport (
+    public void updateReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam("term") String term,
             @RequestPart("reportData") List<UpdateActivityReportRequest> requests,
@@ -91,20 +91,21 @@ public class ClubActivityReportApiController {
     ) {
         User user = principalDetails.getUser();
 
-        List<UpdateActivityReportResponse> responses = activityReportService.update(user, term, requests);
+        List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
 
-        IntStream.range(0, responses.size())
-            .forEach(index -> {
-                    fileService.deleteImageFile(responses.get(index).getId(), ACTIVITY_REPORT);
-                    fileService.uploadImageFile(responses.get(index).getId(), Collections.singletonList(images.get(index)), ACTIVITY_REPORT);
-                }
-            );
+        IntStream.range(0, updateActivityReportDtos.size())
+                .forEach(index -> {
+                            fileService.deleteImageFile(updateActivityReportDtos.get(index).getId(), ACTIVITY_REPORT);
+                            fileService.uploadImageFile(updateActivityReportDtos.get(index).getId(),
+                                    Collections.singletonList(images.get(index)), ACTIVITY_REPORT);
+                        }
+                );
     }
 
     @DeleteMapping("my/activity-reports")
-    public void deleteReport (
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam("term") String term
+    public void deleteReport(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam("term") String term
     ) {
         User user = principalDetails.getUser();
         List<ActivityReportDto> deleteActivityReportDtos = activityReportService.delete(user, term);
