@@ -75,7 +75,6 @@ public class ActivityReportService {
                 .collect(Collectors.toList());
     }
 
-    @Transactional
     public Long register(final User user, final RegisterActivityReportRequest registerActivityReportRequest) {
 
         Club club = clubService.findClubByUserId(user.getId());

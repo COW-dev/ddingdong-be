@@ -8,7 +8,6 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.Update
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.UpdateActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
@@ -67,20 +66,19 @@ public class ClubActivityReportApiController {
             @RequestPart("reportData") List<RegisterActivityReportRequest> requests,
             @RequestPart("uploadFiles") List<MultipartFile> images
     ) {
-        if (!validateImages(images)) {
-            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
-        }
+        validateImages(images);
 
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
-            .forEach(index -> {
-                RegisterActivityReportRequest request = requests.get(index);
-                MultipartFile image = images.get(index);
+                .forEach(index -> {
+                    RegisterActivityReportRequest request = requests.get(index);
+                    MultipartFile image = images.get(index);
 
-                Long registeredActivityReportId = activityReportService.register(user, request);
-                fileService.uploadImageFile(registeredActivityReportId, Collections.singletonList(image), ACTIVITY_REPORT);
-            });
+                    Long registeredActivityReportId = activityReportService.register(user, request);
+                    fileService.uploadImageFile(registeredActivityReportId, Collections.singletonList(image),
+                            ACTIVITY_REPORT);
+                });
     }
 
     @PatchMapping("my/activity-reports")
@@ -111,7 +109,9 @@ public class ClubActivityReportApiController {
         activityReportService.delete(user, term);
     }
 
-    private boolean validateImages(List<MultipartFile> images) {
-        return images.size() == IMAGE_COUNT;
+    private void validateImages(List<MultipartFile> images) {
+        if (images.size() != IMAGE_COUNT) {
+            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
+        }
     }
 }
