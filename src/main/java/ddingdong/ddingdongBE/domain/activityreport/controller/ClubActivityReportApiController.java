@@ -5,10 +5,10 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.UpdateActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
@@ -40,13 +40,13 @@ public class ClubActivityReportApiController {
     private final ActivityReportService activityReportService;
     private final FileService fileService;
 
-    @GetMapping("/current-term")
+    @GetMapping("activity-reports/current-term")
     public CurrentTermResponse getCurrentTerm() {
         return activityReportService.getCurrentTerm();
     }
 
     @GetMapping("/my/activity-reports")
-    public List<ActivityReportResponse> getMyActivityReports(
+    public List<AllActivityReportResponse> getMyActivityReports(
             @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
@@ -67,24 +67,23 @@ public class ClubActivityReportApiController {
             @RequestPart("reportData") List<RegisterActivityReportRequest> requests,
             @RequestPart("uploadFiles") List<MultipartFile> images
     ) {
-        if (!validateImages(images)) {
-            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
-        }
+        validateImages(images);
 
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
-            .forEach(index -> {
-                RegisterActivityReportRequest request = requests.get(index);
-                MultipartFile image = images.get(index);
+                .forEach(index -> {
+                    RegisterActivityReportRequest request = requests.get(index);
+                    MultipartFile image = images.get(index);
 
-                Long registeredActivityReportId = activityReportService.register(user, request);
-                fileService.uploadImageFile(registeredActivityReportId, Collections.singletonList(image), ACTIVITY_REPORT);
-            });
+                    Long registeredActivityReportId = activityReportService.register(user, request);
+                    fileService.uploadImageFile(registeredActivityReportId, Collections.singletonList(image),
+                            ACTIVITY_REPORT);
+                });
     }
 
     @PatchMapping("my/activity-reports")
-    public void updateReport (
+    public void updateReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam("term") String term,
             @RequestPart("reportData") List<UpdateActivityReportRequest> requests,
@@ -92,26 +91,34 @@ public class ClubActivityReportApiController {
     ) {
         User user = principalDetails.getUser();
 
-        List<UpdateActivityReportResponse> responses = activityReportService.update(user, term, requests);
+        List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
 
-        IntStream.range(0, responses.size())
-            .forEach(index -> {
-                    fileService.deleteImageFile(responses.get(index).getId(), ACTIVITY_REPORT);
-                    fileService.uploadImageFile(responses.get(index).getId(), Collections.singletonList(images.get(index)), ACTIVITY_REPORT);
-                }
-            );
+        IntStream.range(0, updateActivityReportDtos.size())
+                .forEach(index -> {
+                            fileService.deleteImageFile(updateActivityReportDtos.get(index).getId(), ACTIVITY_REPORT);
+                            fileService.uploadImageFile(updateActivityReportDtos.get(index).getId(),
+                                    Collections.singletonList(images.get(index)), ACTIVITY_REPORT);
+                        }
+                );
     }
 
     @DeleteMapping("my/activity-reports")
-    public void deleteReport (
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam("term") String term
+    public void deleteReport(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam("term") String term
     ) {
         User user = principalDetails.getUser();
-        activityReportService.delete(user, term);
+        List<ActivityReportDto> deleteActivityReportDtos = activityReportService.delete(user, term);
+
+        deleteActivityReportDtos
+                .forEach(
+                        activityReportDto -> fileService.deleteImageFile(activityReportDto.getId(), ACTIVITY_REPORT)
+                );
     }
 
-    private boolean validateImages(List<MultipartFile> images) {
-        return images.size() == IMAGE_COUNT;
+    private void validateImages(List<MultipartFile> images) {
+        if (images.size() != IMAGE_COUNT) {
+            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
+        }
     }
 }

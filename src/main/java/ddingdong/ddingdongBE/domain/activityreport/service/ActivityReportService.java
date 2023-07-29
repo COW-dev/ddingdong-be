@@ -4,10 +4,10 @@ import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.UpdateActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 
@@ -31,10 +31,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ActivityReportService {
 
     private static final String START_DATE = "2023-09-04";
+    private static final int DEFAULT_TERM = 1;
     private static final int CORRECTION_VALUE = 1;
     private static final int TERM_LENGTH_OF_DAYS = 14;
 
@@ -44,14 +46,14 @@ public class ActivityReportService {
     private final ActivityReportRepository activityReportRepository;
 
     @Transactional(readOnly = true)
-    public List<ActivityReportResponse> getAll() {
+    public List<AllActivityReportResponse> getAll() {
         List<ActivityReport> activityReports = activityReportRepository.findAll();
 
         return parseToActivityReportResponse(activityReports);
     }
 
     @Transactional(readOnly = true)
-    public List<ActivityReportResponse> getMyActivityReports(final User user) {
+    public List<AllActivityReportResponse> getMyActivityReports(final User user) {
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubName(club.getName());
@@ -65,15 +67,13 @@ public class ActivityReportService {
 
         List<String> imageUrls = new ArrayList<>();
 
-        return activityReports.stream()
-                .map(activityReport -> {
-                    imageUrls.addAll(imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
-                    return DetailActivityReportResponse.from(activityReport, imageUrls);
-                })
-                .collect(Collectors.toList());
+        return activityReports.stream().map(activityReport -> {
+            imageUrls.addAll(
+                    imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
+            return DetailActivityReportResponse.from(activityReport, imageUrls);
+        }).collect(Collectors.toList());
     }
 
-    @Transactional
     public Long register(final User user, final RegisterActivityReportRequest registerActivityReportRequest) {
 
         Club club = clubService.findClubByUserId(user.getId());
@@ -84,31 +84,27 @@ public class ActivityReportService {
         return savedActivityReport.getId();
     }
 
-    @Transactional
-    public List<UpdateActivityReportResponse> update(final User user, final String term, final List<UpdateActivityReportRequest> requests) {
+    public List<ActivityReportDto> update(final User user, final String term,
+                                          final List<UpdateActivityReportRequest> requests) {
 
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
 
-        return IntStream.range(0, requests.size())
-                .mapToObj(index -> {
-                    activityReports.get(index).update(requests.get(index));
-                    return UpdateActivityReportResponse.from(activityReports.get(index));
-                })
-                .collect(Collectors.toList());
+        return IntStream.range(0, activityReports.size()).mapToObj(index -> {
+            activityReports.get(index).update(requests.get(index));
+            return ActivityReportDto.from(activityReports.get(index));
+        }).collect(Collectors.toList());
     }
 
-    @Transactional
-    public void delete(final User user, final String term) {
+    public List<ActivityReportDto> delete(final User user, final String term) {
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
 
-        activityReports.forEach(activityReport -> {
-            activityReport.getParticipants().clear();
-            activityReportRepository.delete(activityReport);
-        });
+        return activityReports.stream()
+                .peek(activityReport -> activityReport.getParticipants().clear())
+                .peek(activityReportRepository::delete).map(ActivityReportDto::from).collect(Collectors.toList());
     }
 
     public CurrentTermResponse getCurrentTerm() {
@@ -126,31 +122,30 @@ public class ActivityReportService {
     private String calculateCurrentTerm(final int days) {
         int result = CORRECTION_VALUE + (days / TERM_LENGTH_OF_DAYS);
 
+        if (result <= 0) {
+            result = DEFAULT_TERM;
+        }
+
         return String.valueOf(result);
     }
 
-    private List<ActivityReportResponse> parseToActivityReportResponse(final List<ActivityReport> activityReports) {
-
-        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream()
-                .collect(Collectors.groupingBy(
-                        activityReport -> activityReport.getClub().getName(),
+    private List<AllActivityReportResponse> parseToActivityReportResponse(final List<ActivityReport> activityReports) {
+        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
+                Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
                         Collectors.groupingBy(ActivityReport::getTerm,
-                                Collectors.mapping(ActivityReport::getId, Collectors.toList())
-                        )
-                ));
+                                Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
 
-        return groupedData.entrySet().stream()
-                .flatMap(entry -> {
-                    String clubName = entry.getKey();
-                    Map<String, List<Long>> termMap = entry.getValue();
+        return groupedData.entrySet().stream().flatMap(entry -> {
+            String clubName = entry.getKey();
+            Map<String, List<Long>> termMap = entry.getValue();
 
-                    return termMap.entrySet().stream()
-                            .map(termEntry -> new ActivityReportResponse(
-                                    clubName,
-                                    termEntry.getKey(),
-                                    termEntry.getValue()
-                            ));
-                })
-                .collect(Collectors.toList());
+            return termMap.entrySet().stream().map(termEntry -> {
+                String term = termEntry.getKey();
+                List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream().map(ActivityReportDto::new)
+                        .collect(Collectors.toList());
+                return AllActivityReportResponse.of(clubName, term, activityReportDtos);
+            });
+
+        }).collect(Collectors.toList());
     }
 }
