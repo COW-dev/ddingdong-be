@@ -19,15 +19,19 @@ public class DetailNoticeResponse {
 
     private List<String> imageUrls;
 
-    private DetailNoticeResponse(String title, String content, LocalDateTime createdAt, List<String> imageUrls) {
+    private List<String> fileUrls;
+
+    public DetailNoticeResponse(String title, String content, LocalDateTime createdAt, List<String> imageUrls,
+                                List<String> fileUrls) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
         this.imageUrls = imageUrls;
+        this.fileUrls = fileUrls;
     }
 
-    public static DetailNoticeResponse of(Notice notice, List<String> imageUrls) {
-        return new DetailNoticeResponse(notice.getTitle(), notice.getContent(), notice.getCreatedAt(), imageUrls);
+    public static DetailNoticeResponse of(Notice notice, List<String> imageUrls, List<String> fileUrls) {
+        return new DetailNoticeResponse(notice.getTitle(), notice.getContent(), notice.getCreatedAt(), imageUrls, fileUrls);
     }
 
 }
