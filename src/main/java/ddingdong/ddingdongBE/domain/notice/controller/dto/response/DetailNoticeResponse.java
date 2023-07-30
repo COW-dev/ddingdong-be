@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
@@ -19,10 +20,10 @@ public class DetailNoticeResponse {
 
     private List<String> imageUrls;
 
-    private List<String> fileUrls;
+    private List<FileResponse> fileUrls;
 
     public DetailNoticeResponse(String title, String content, LocalDateTime createdAt, List<String> imageUrls,
-                                List<String> fileUrls) {
+                                List<FileResponse> fileUrls) {
         this.title = title;
         this.content = content;
         this.createdAt = createdAt;
@@ -30,7 +31,7 @@ public class DetailNoticeResponse {
         this.fileUrls = fileUrls;
     }
 
-    public static DetailNoticeResponse of(Notice notice, List<String> imageUrls, List<String> fileUrls) {
+    public static DetailNoticeResponse of(Notice notice, List<String> imageUrls, List<FileResponse> fileUrls) {
         return new DetailNoticeResponse(notice.getTitle(), notice.getContent(), notice.getCreatedAt(), imageUrls, fileUrls);
     }
 

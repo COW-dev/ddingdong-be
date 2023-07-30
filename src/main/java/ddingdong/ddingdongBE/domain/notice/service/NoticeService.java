@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeRespons
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -50,7 +51,7 @@ public class NoticeService {
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + NOTICE.getFileDomain() + noticeId);
-        List<String> fileUrls = fileInformationService.getImageUrls(FILE.getFileType() + NOTICE.getFileDomain() + noticeId);
+        List<FileResponse> fileUrls = fileInformationService.getFileUrls(FILE.getFileType() + NOTICE.getFileDomain() + noticeId);
 
         return DetailNoticeResponse.of(notice, imageUrls, fileUrls);
     }

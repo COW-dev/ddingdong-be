@@ -29,7 +29,7 @@ public class FileService {
     }
 
     public void deleteFile(Long parentId, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
-        List<FileInformation> fileInformations = fileInformationService.getImageInformation(
+        List<FileInformation> fileInformations = fileInformationService.getFileInformation(
                 fileTypeCategory.getFileType() + fileDomainCategory.getFileDomain() + parentId);
 
         for (FileInformation fileInformation : fileInformations) {
