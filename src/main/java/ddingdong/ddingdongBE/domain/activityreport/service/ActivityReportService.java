@@ -61,15 +61,25 @@ public class ActivityReportService {
         return parseToActivityReportResponse(activityReports);
     }
 
+//    @Transactional(readOnly = true)
+//    public List<DetailActivityReportResponse> getActivityReport(final String term, final String clubName) {
+//        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
+//
+//        List<String> imageUrls = new ArrayList<>();
+//
+//        return activityReports.stream().map(activityReport -> {
+//            imageUrls.addAll(
+//                    imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
+//            return DetailActivityReportResponse.from(activityReport, imageUrls);
+//        }).collect(Collectors.toList());
+//    }
+
     @Transactional(readOnly = true)
     public List<DetailActivityReportResponse> getActivityReport(final String term, final String clubName) {
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
 
-        List<String> imageUrls = new ArrayList<>();
-
         return activityReports.stream().map(activityReport -> {
-            imageUrls.addAll(
-                    imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
+            List<String> imageUrls = imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId());
             return DetailActivityReportResponse.from(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }
