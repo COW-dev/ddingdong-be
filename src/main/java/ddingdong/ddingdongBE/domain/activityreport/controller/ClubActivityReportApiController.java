@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller;
 
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
@@ -77,8 +78,8 @@ public class ClubActivityReportApiController {
                     MultipartFile image = images.get(index);
 
                     Long registeredActivityReportId = activityReportService.register(user, request);
-                    fileService.uploadImageFile(registeredActivityReportId, Collections.singletonList(image),
-                            ACTIVITY_REPORT);
+                    fileService.uploadFile(registeredActivityReportId, Collections.singletonList(image),
+                            IMAGE, ACTIVITY_REPORT);
                 });
     }
 
@@ -95,9 +96,9 @@ public class ClubActivityReportApiController {
 
         IntStream.range(0, updateActivityReportDtos.size())
                 .forEach(index -> {
-                            fileService.deleteImageFile(updateActivityReportDtos.get(index).getId(), ACTIVITY_REPORT);
-                            fileService.uploadImageFile(updateActivityReportDtos.get(index).getId(),
-                                    Collections.singletonList(images.get(index)), ACTIVITY_REPORT);
+                            fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
+                            fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
+                                    Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
                         }
                 );
     }
@@ -112,7 +113,7 @@ public class ClubActivityReportApiController {
 
         deleteActivityReportDtos
                 .forEach(
-                        activityReportDto -> fileService.deleteImageFile(activityReportDto.getId(), ACTIVITY_REPORT)
+                        activityReportDto -> fileService.deleteFile(activityReportDto.getId(), IMAGE, ACTIVITY_REPORT)
                 );
     }
 

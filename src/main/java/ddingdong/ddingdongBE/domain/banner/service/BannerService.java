@@ -7,8 +7,9 @@ import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRe
 import ddingdong.ddingdongBE.domain.banner.controller.dto.response.BannerResponse;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
-import ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory;
-import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BannerService {
 
     private final BannerRepository bannerRepository;
-    private final ImageInformationService imageInformationService;
+    private final FileInformationService fileInformationService;
 
     public Long createBanner(User user, CreateBannerRequest request) {
         Banner banner = request.toEntity(user);
@@ -36,8 +37,8 @@ public class BannerService {
 
         List<Banner> banners = bannerRepository.findAll();
         for (Banner banner : banners) {
-            String bannerImgUrl = imageInformationService.getImageUrls(
-                            ImageCategory.BANNER.getFilePath() + banner.getId())
+            String bannerImgUrl = fileInformationService.getImageUrls(
+                            FileTypeCategory.IMAGE.getFileType() + FileDomainCategory.BANNER.getFileDomain() + banner.getId())
                     .stream()
                     .findFirst()
                     .orElse("");

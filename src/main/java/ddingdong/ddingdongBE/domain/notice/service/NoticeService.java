@@ -1,9 +1,10 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.NOTICE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
 
-import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.DetailNoticeResponse;
@@ -11,10 +12,13 @@ import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeRespons
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
-    private final ImageInformationService imageInformationService;
+    private final FileInformationService fileInformationService;
 
     public Long register(User user, RegisterNoticeRequest request) {
         Notice notice = request.toEntity(user);
@@ -45,9 +49,10 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
-        List<String> imageUrls = imageInformationService.getImageUrls(NOTICE.getFilePath() + noticeId);
+        List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + NOTICE.getFileDomain() + noticeId);
+        List<String> fileUrls = fileInformationService.getImageUrls(FILE.getFileType() + NOTICE.getFileDomain() + noticeId);
 
-        return DetailNoticeResponse.of(notice, imageUrls);
+        return DetailNoticeResponse.of(notice, imageUrls, fileUrls);
     }
 
     public void update(Long noticeId, UpdateNoticeRequest request) {

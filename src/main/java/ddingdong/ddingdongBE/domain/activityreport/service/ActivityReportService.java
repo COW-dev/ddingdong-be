@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
@@ -13,13 +14,12 @@ import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepo
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.time.Duration;
 import java.time.LocalDate;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -42,7 +42,7 @@ public class ActivityReportService {
 
 
     private final ClubService clubService;
-    private final ImageInformationService imageInformationService;
+    private final FileInformationService fileInformationService;
     private final ActivityReportRepository activityReportRepository;
 
     @Transactional(readOnly = true)
@@ -65,11 +65,8 @@ public class ActivityReportService {
     public List<DetailActivityReportResponse> getActivityReport(final String term, final String clubName) {
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
 
-        List<String> imageUrls = new ArrayList<>();
-
         return activityReports.stream().map(activityReport -> {
-            imageUrls.addAll(
-                    imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId()));
+            List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
             return DetailActivityReportResponse.from(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }

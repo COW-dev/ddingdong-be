@@ -27,12 +27,12 @@ public class AwsS3FileStore implements FileStore{
 
 
     @Override
-    public List<UploadFileDto> storeFile(List<MultipartFile> multipartFile, String filePath) {
+    public List<UploadFileDto> storeFile(List<MultipartFile> files, String fileType, String filePath) {
         List<UploadFileDto> storedFiles = new ArrayList<>();
-        for (MultipartFile file : multipartFile) {
+        for (MultipartFile file : files) {
             String uploadFileName = file.getOriginalFilename();
             String storeFileName = createStoreFileName(uploadFileName);
-            String keyName = filePath + storeFileName;
+            String keyName = fileType + filePath + storeFileName;
 
             ObjectMetadata objectMetadata = new ObjectMetadata();
             objectMetadata.setContentLength(file.getSize());
@@ -53,8 +53,8 @@ public class AwsS3FileStore implements FileStore{
     }
 
     @Override
-    public void deleteFile(String filePath, String uploadFileName) {
-        String keyName = filePath + uploadFileName;
+    public void deleteFile(String fileType, String filePath, String uploadFileName) {
+        String keyName = fileType + filePath + uploadFileName;
         amazonS3Client.deleteObject(bucketName, keyName);
     }
 

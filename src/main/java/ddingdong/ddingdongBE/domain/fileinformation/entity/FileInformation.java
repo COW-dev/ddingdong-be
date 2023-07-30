@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.imageinformation.entity;
+package ddingdong.ddingdongBE.domain.fileinformation.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import javax.persistence.Entity;
@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class ImageInformation extends BaseEntity {
+public class FileInformation extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,15 +26,20 @@ public class ImageInformation extends BaseEntity {
     private String storedName;
 
     @Enumerated(EnumType.STRING)
-    private ImageCategory imageCategory;
+    private FileTypeCategory fileTypeCategory;
+
+    @Enumerated(EnumType.STRING)
+    private FileDomainCategory fileDomainCategory;
 
     private String findParam;
 
     @Builder
-    public ImageInformation(String uploadName, String storedName, ImageCategory imageCategory, String findParam) {
+    public FileInformation(String uploadName, String storedName, FileTypeCategory fileTypeCategory,
+                           FileDomainCategory fileDomainCategory, String findParam) {
         this.uploadName = uploadName;
         this.storedName = storedName;
-        this.imageCategory = imageCategory;
+        this.fileTypeCategory = fileTypeCategory;
+        this.fileDomainCategory = fileDomainCategory;
         this.findParam = findParam;
     }
 }

@@ -3,8 +3,10 @@ package ddingdong.ddingdongBE.domain.notice.controller;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.DetailNoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
+
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;

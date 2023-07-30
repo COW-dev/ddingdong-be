@@ -6,9 +6,9 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface FileStore {
 
-    List<UploadFileDto> storeFile(List<MultipartFile> multipartFile, String filePath);
+    List<UploadFileDto> storeFile(List<MultipartFile> multipartFile, String fileType, String filePath);
 
-    void deleteFile(String filePath, String uploadFileName);
+    void deleteFile(String fileType, String filePath, String uploadFileName);
 
     String getImageUrlPrefix();
 

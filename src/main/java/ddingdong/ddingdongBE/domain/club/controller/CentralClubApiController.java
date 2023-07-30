@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller;
 
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
@@ -42,8 +43,8 @@ public class CentralClubApiController {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);
 
-        fileService.deleteImageFile(updatedClubId, CLUB);
-        fileService.uploadImageFile(updatedClubId, images, CLUB);
+        fileService.deleteFile(updatedClubId, IMAGE, CLUB);
+        fileService.uploadFile(updatedClubId, images, IMAGE, CLUB);
     }
 
 }
