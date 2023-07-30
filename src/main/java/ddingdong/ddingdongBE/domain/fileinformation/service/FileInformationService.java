@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.file.FileStore;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.file.dto.UploadFileDto;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +43,20 @@ public class FileInformationService {
     }
 
     @Transactional(readOnly = true)
-    public List<FileInformation> getImageInformation(String findParam) {
+    public List<FileResponse> getFileUrls(String findParam) {
+        return fileInformationRepository.findByFindParam(findParam).stream()
+                .map(fileInformation -> {
+                    String fileUrl = fileStore.getImageUrlPrefix()
+                            + fileInformation.getFileTypeCategory().getFileType()
+                            + fileInformation.getFileDomainCategory().getFileDomain()
+                            + fileInformation.getStoredName();
+                    return new FileResponse(fileInformation.getUploadName(), fileUrl);
+                })
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<FileInformation> getFileInformation(String findParam) {
         return fileInformationRepository.findByFindParam(findParam);
     }
 
