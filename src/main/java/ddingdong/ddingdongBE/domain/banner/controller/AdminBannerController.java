@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.banner.controller;
 
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.BANNER;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
@@ -36,7 +37,7 @@ public class AdminBannerController {
         User adminUser = principalDetails.getUser();
         Long createdBannerId = bannerService.createBanner(adminUser, request);
 
-        fileService.uploadImageFile(createdBannerId, bannerImages, BANNER);
+        fileService.uploadFile(createdBannerId, bannerImages, IMAGE, BANNER);
     }
 
     @PatchMapping("/{bannerId}")
@@ -45,14 +46,14 @@ public class AdminBannerController {
                              @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
 
         bannerService.updateBanner(bannerId, request);
-        fileService.deleteImageFile(bannerId, BANNER);
-        fileService.uploadImageFile(bannerId, bannerImages, BANNER);
+        fileService.deleteFile(bannerId, IMAGE, BANNER);
+        fileService.uploadFile(bannerId, bannerImages, IMAGE, BANNER);
     }
 
     @DeleteMapping("/{bannerId}")
     public void deleteBanner(@PathVariable Long bannerId) {
         bannerService.deleteBanner(bannerId);
 
-        fileService.deleteImageFile(bannerId, BANNER);
+        fileService.deleteFile(bannerId, IMAGE, BANNER);
     }
 }

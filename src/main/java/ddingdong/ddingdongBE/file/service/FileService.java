@@ -1,13 +1,15 @@
 package ddingdong.ddingdongBE.file.service;
 
-
-import ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory;
-import ddingdong.ddingdongBE.domain.imageinformation.entity.ImageInformation;
-import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.file.FileStore;
 import ddingdong.ddingdongBE.file.dto.UploadFileDto;
 import java.util.List;
+
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -15,26 +17,24 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class FileService {
 
-    private final ImageInformationService imageInformationService;
+    private final FileInformationService fileInformationService;
     private final FileStore fileStore;
-
-    public void uploadImageFile(Long parentId, List<MultipartFile> images, ImageCategory imageCategory) {
-        if (images != null && !images.isEmpty()) {
-            List<UploadFileDto> uploadFileDtos = fileStore.storeFile(images, imageCategory.getFilePath());
+    public void uploadFile(Long parentId, List<MultipartFile> files, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
+        if (files != null && !files.isEmpty()) {
+            List<UploadFileDto> uploadFileDtos = fileStore.storeFile(files, fileTypeCategory.getFileType(), fileDomainCategory.getFileDomain());
             for (UploadFileDto uploadFileDto : uploadFileDtos) {
-                imageInformationService.create(parentId, uploadFileDto, imageCategory);
+                fileInformationService.create(parentId, uploadFileDto, fileTypeCategory, fileDomainCategory);
             }
         }
     }
 
-    public void deleteImageFile(Long parentId, ImageCategory imageCategory) {
-        List<ImageInformation> imageInformationList = imageInformationService.getImageInformation(
-                imageCategory.getFilePath() + parentId);
+    public void deleteFile(Long parentId, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
+        List<FileInformation> fileInformations = fileInformationService.getImageInformation(
+                fileTypeCategory.getFileType() + fileDomainCategory.getFileDomain() + parentId);
 
-        for (ImageInformation imageInformation : imageInformationList) {
-            fileStore.deleteFile(imageCategory.getFilePath(), imageInformation.getStoredName());
-            imageInformationService.delete(imageInformation);
+        for (FileInformation fileInformation : fileInformations) {
+            fileStore.deleteFile(fileTypeCategory.getFileType(), fileDomainCategory.getFileDomain(), fileInformation.getStoredName());
+            fileInformationService.delete(fileInformation);
         }
     }
-
 }

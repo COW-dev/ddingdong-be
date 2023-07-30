@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import static ddingdong.ddingdongBE.domain.imageinformation.entity.ImageCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
@@ -13,7 +14,7 @@ import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepo
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.imageinformation.service.ImageInformationService;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.time.Duration;
@@ -41,7 +42,7 @@ public class ActivityReportService {
 
 
     private final ClubService clubService;
-    private final ImageInformationService imageInformationService;
+    private final FileInformationService fileInformationService;
     private final ActivityReportRepository activityReportRepository;
 
     @Transactional(readOnly = true)
@@ -65,7 +66,7 @@ public class ActivityReportService {
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
 
         return activityReports.stream().map(activityReport -> {
-            List<String> imageUrls = imageInformationService.getImageUrls(ACTIVITY_REPORT.getFilePath() + activityReport.getId());
+            List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
             return DetailActivityReportResponse.from(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }
