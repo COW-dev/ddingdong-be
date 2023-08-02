@@ -1,14 +1,20 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 import lombok.Getter;
 
 @Getter
 public class ActivityReportDateRequest {
 
-    private LocalDate startDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime startDate;
 
-    private LocalDate endDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime endDate;
 
 
 }
