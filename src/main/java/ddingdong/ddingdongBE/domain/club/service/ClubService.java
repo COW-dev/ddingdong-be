@@ -95,18 +95,19 @@ public class ClubService {
 
 	public Long update(Long userId, UpdateClubRequest request) {
 		Club club = findClubByUserId(userId);
-
+		List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+			IMAGE.getFileType() + CLUB.getFileDomain() + club.getId());
 		if (!request.getImgUrls().isEmpty()) {
-			List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-				IMAGE.getFileType() + CLUB.getFileDomain() + club.getId());
-
 			List<FileInformation> deleteInformation = fileInformation.stream()
 				.filter(information -> !request.getImgUrls()
 					.contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-						.getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
+						.getFileType() + information.getFileDomainCategory().getFileDomain()
+						+ information.getStoredName()))
 				.toList();
 
 			fileInformationRepository.deleteAll(deleteInformation);
+		} else {
+			fileInformationRepository.deleteAll(fileInformation);
 		}
 
 		club.updateClubInfo(request);

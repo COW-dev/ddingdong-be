@@ -66,23 +66,23 @@ public class NoticeService {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
+        List<FileInformation> imageInformation = fileInformationService.getFileInformation(
+            IMAGE.getFileType() + NOTICE.getFileDomain() + notice.getId());
         if (!request.getImgUrls().isEmpty()) {
-            List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                IMAGE.getFileType() + NOTICE.getFileDomain() + notice.getId());
-
-            List<FileInformation> deleteInformation = fileInformation.stream()
+            List<FileInformation> deleteInformation = imageInformation.stream()
                 .filter(information -> !request.getImgUrls()
                     .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
                         .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
                 .toList();
 
             fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(imageInformation);
         }
 
+        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+            FILE.getFileType() + NOTICE.getFileDomain() + notice.getId());
         if (!request.getFileUrls().isEmpty()) {
-            List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                FILE.getFileType() + NOTICE.getFileDomain() + notice.getId());
-
             List<FileInformation> deleteInformation = fileInformation.stream()
                 .filter(information -> !request.getImgUrls()
                     .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
@@ -90,6 +90,8 @@ public class NoticeService {
                 .toList();
 
             fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(fileInformation);
         }
 
         notice.update(request);
