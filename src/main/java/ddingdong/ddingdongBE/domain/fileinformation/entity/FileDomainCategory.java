@@ -10,7 +10,8 @@ public enum FileDomainCategory {
     CLUB("club/"),
     NOTICE("notice/"),
     BANNER("banner/"),
-    ACTIVITY_REPORT("activity-report/");
+    ACTIVITY_REPORT("activity-report/"),
+    FIX_ZONE("fix/");
 
     private final String fileDomain;
 }
