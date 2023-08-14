@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import lombok.Getter;
@@ -13,14 +14,16 @@ import lombok.Getter;
 @Getter
 public class RegisterActivityReportRequest {
 
+    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+
     private String term;
     private String content;
     private String place;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
     private LocalDateTime startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
     private LocalDateTime endDate;
 
     private List<Participant> participants;
@@ -30,10 +33,15 @@ public class RegisterActivityReportRequest {
                 .term(this.term)
                 .content(this.content)
                 .place(this.place)
-                .startDate(this.getStartDate())
-                .endDate(this.getEndDate())
+                .startDate(parseToDate(this.getStartDate()))
+                .endDate(parseToDate(this.getEndDate()))
                 .participants(this.participants)
                 .club(club)
                 .build();
+    }
+
+    private LocalDateTime parseToDate(final LocalDateTime date) {
+        String dateString = date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 }
