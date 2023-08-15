@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -18,6 +20,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -40,5 +43,14 @@ public class ClubFixZoneController {
 		Long createdFixId = fixZoneService.create(club, request);
 
 		fileService.uploadFile(createdFixId, images, IMAGE, FIX_ZONE);
+	}
+
+	@PatchMapping("/{fixId}")
+	public void updateFix(@PathVariable Long fixId, @ModelAttribute UpdateFixRequest request,
+		@RequestPart(name = "images") List<MultipartFile> images) {
+		fixZoneService.update(fixId, request);
+
+		fileService.deleteFile(fixId, IMAGE, FIX_ZONE);
+		fileService.uploadFile(fixId, images, IMAGE, FIX_ZONE);
 	}
 }

@@ -18,7 +18,8 @@ public enum ErrorMessage {
     ACCESS_DENIED("접근권한이 없습니다."),
     UNREGISTER_USER("등록되지 않은 유저입니다."),
     NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
-    NON_VALIDATED_TOKEN("유효하지 않은 토큰입니다.");
+    NON_VALIDATED_TOKEN("유효하지 않은 토큰입니다."),
+    NO_SUCH_FIX("해당 수리 신청서가 존재하지 않습니다.");
 
     private final String text;
 }
