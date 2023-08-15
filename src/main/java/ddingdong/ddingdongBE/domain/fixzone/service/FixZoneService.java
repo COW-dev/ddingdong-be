@@ -33,6 +33,11 @@ public class FixZoneService {
 			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
 
 		fix.update(request);
+	}
 
+	public void delete(Long fixId) {
+		Fix fix = fixRepository.findById(fixId)
+			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+		fixRepository.delete(fix);
 	}
 }
