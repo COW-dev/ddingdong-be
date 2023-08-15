@@ -14,6 +14,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.entitiy.Fix;
@@ -35,9 +36,9 @@ public class FixZoneService {
 	}
 
 	public List<ClubFixResponse> getAllForClub() {
-		return fixRepository.findAll().stream()
-			.map(ClubFixResponse::from)
-			.toList();
+			return fixRepository.findAll().stream()
+				.map(ClubFixResponse::from)
+				.toList();
 	}
 
 	public ClubDetailFixResponse getForClub(Long fixId) {
@@ -53,6 +54,12 @@ public class FixZoneService {
 			.createdAt(fix.getCreatedAt())
 			.content(fix.getContent())
 			.imageUrls(imageUrls).build();
+	}
+
+	public List<AdminFixResponse> getAllForAdmin() {
+		return fixRepository.findAll().stream()
+			.map(AdminFixResponse::from)
+			.toList();
 	}
 
 	public void update(Long fixId, UpdateFixRequest request) {
