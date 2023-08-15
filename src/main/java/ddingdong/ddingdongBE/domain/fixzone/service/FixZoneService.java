@@ -14,6 +14,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminDetailFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
@@ -60,6 +61,24 @@ public class FixZoneService {
 		return fixRepository.findAll().stream()
 			.map(AdminFixResponse::from)
 			.toList();
+	}
+
+	public AdminDetailFixResponse getForAdmin(Long fixId) {
+		Fix fix = fixRepository.findById(fixId)
+			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+
+		List<String> imageUrls = fileInformationService.getImageUrls(
+			IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fix.getId());
+
+		return AdminDetailFixResponse.builder()
+			.id(fix.getId())
+			.title(fix.getTitle())
+			.createdAt(fix.getCreatedAt())
+			.club(fix.getClub().getName())
+			.location(fix.getClub().getLocation().getValue())
+			.content(fix.getContent())
+			.isCompleted(fix.isCompleted())
+			.imageUrls(imageUrls).build();
 	}
 
 	public void update(Long fixId, UpdateFixRequest request) {
