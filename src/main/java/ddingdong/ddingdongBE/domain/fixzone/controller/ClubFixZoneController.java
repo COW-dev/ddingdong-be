@@ -54,6 +54,11 @@ public class ClubFixZoneController {
 		return fixZoneService.getAllForClub();
 	}
 
+	@GetMapping("{fixId}")
+	public ClubDetailFixResponse findFixForClub(@PathVariable Long fixId) {
+		return fixZoneService.getForClub(fixId);
+	}
+
 	@PatchMapping("/{fixId}")
 	public void updateFix(@PathVariable Long fixId, @ModelAttribute UpdateFixRequest request,
 		@RequestPart(name = "images") List<MultipartFile> images) {

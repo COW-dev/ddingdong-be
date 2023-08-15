@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.FIX_ZONE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import java.util.List;
 
@@ -8,10 +10,11 @@ import javax.transaction.Transactional;
 
 import org.springframework.stereotype.Service;
 
-import ddingdong.ddingdongBE.common.exception.ErrorMessage;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.entitiy.Fix;
 import ddingdong.ddingdongBE.domain.fixzone.repository.FixRepository;
@@ -23,7 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class FixZoneService {
 
 	private final FixRepository fixRepository;
-
+	private final FileInformationService fileInformationService;
 
 	public Long create(Club club, CreateFixRequest request) {
 		Fix createdFix = request.toEntity(club);
@@ -35,6 +38,21 @@ public class FixZoneService {
 		return fixRepository.findAll().stream()
 			.map(ClubFixResponse::from)
 			.toList();
+	}
+
+	public ClubDetailFixResponse getForClub(Long fixId) {
+		Fix fix = fixRepository.findById(fixId)
+			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+
+		List<String> imageUrls = fileInformationService.getImageUrls(
+			IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fix.getId());
+
+		return ClubDetailFixResponse.builder()
+			.id(fix.getId())
+			.title(fix.getTitle())
+			.createdAt(fix.getCreatedAt())
+			.content(fix.getContent())
+			.imageUrls(imageUrls).build();
 	}
 
 	public void update(Long fixId, UpdateFixRequest request) {
