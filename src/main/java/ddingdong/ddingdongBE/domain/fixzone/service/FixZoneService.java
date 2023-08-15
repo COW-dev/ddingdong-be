@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFiXCompletionRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminDetailFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixResponse;
@@ -86,6 +87,13 @@ public class FixZoneService {
 			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
 
 		fix.update(request);
+	}
+
+	public void updateIsCompleted(Long fixId, UpdateFiXCompletionRequest request) {
+		Fix fix = fixRepository.findById(fixId)
+			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+
+		fix.updateIsCompleted(request.isCompleted());
 	}
 
 	public void delete(Long fixId) {

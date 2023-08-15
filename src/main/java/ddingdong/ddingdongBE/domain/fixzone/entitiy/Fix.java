@@ -49,4 +49,8 @@ public class Fix extends BaseEntity {
 		this.title = request.getTitle() != null ? request.getTitle() : this.title;
 		this.content = request.getContent() != null ? request.getContent() : this.content;
 	}
+
+	public void updateIsCompleted(boolean isCompleted) {
+		this.isCompleted = isCompleted;
+	}
 }
