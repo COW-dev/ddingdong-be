@@ -1,9 +1,12 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
 
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
+import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
@@ -12,6 +15,7 @@ import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeRespons
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.file.FileStore;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 
 import java.util.List;
@@ -30,6 +34,8 @@ public class NoticeService {
 
     private final NoticeRepository noticeRepository;
     private final FileInformationService fileInformationService;
+    private final FileInformationRepository fileInformationRepository;
+    private final FileStore fileStore;
 
     public Long register(User user, RegisterNoticeRequest request) {
         Notice notice = request.toEntity(user);
@@ -59,6 +65,34 @@ public class NoticeService {
     public void update(Long noticeId, UpdateNoticeRequest request) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
+
+        List<FileInformation> imageInformation = fileInformationService.getFileInformation(
+            IMAGE.getFileType() + NOTICE.getFileDomain() + notice.getId());
+        if (!request.getImgUrls().isEmpty()) {
+            List<FileInformation> deleteInformation = imageInformation.stream()
+                .filter(information -> !request.getImgUrls()
+                    .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
+                        .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
+                .toList();
+
+            fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(imageInformation);
+        }
+
+        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+            FILE.getFileType() + NOTICE.getFileDomain() + notice.getId());
+        if (!request.getFileUrls().isEmpty()) {
+            List<FileInformation> deleteInformation = fileInformation.stream()
+                .filter(information -> !request.getImgUrls()
+                    .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
+                        .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
+                .toList();
+
+            fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(fileInformation);
+        }
 
         notice.update(request);
     }

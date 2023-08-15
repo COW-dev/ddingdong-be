@@ -43,8 +43,10 @@ public class CentralClubApiController {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);
 
-        fileService.deleteFile(updatedClubId, IMAGE, CLUB);
-        fileService.uploadFile(updatedClubId, images, IMAGE, CLUB);
+        if (images != null) {
+            fileService.deleteFile(updatedClubId, IMAGE, CLUB);
+            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB);
+        }
     }
 
 }

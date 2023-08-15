@@ -52,11 +52,15 @@ public class AdminNoticeApiController {
     ) {
         noticeService.update(noticeId, request);
 
-        fileService.deleteFile(noticeId, IMAGE, NOTICE);
-        fileService.uploadFile(noticeId, images, IMAGE, NOTICE);
+        if (images != null) {
+            fileService.deleteFile(noticeId, IMAGE, NOTICE);
+            fileService.uploadFile(noticeId, images, IMAGE, NOTICE);
+        }
 
-        fileService.deleteFile(noticeId, FILE, NOTICE);
-        fileService.uploadFile(noticeId, files, FILE, NOTICE);
+        if (files != null) {
+            fileService.deleteFile(noticeId, FILE, NOTICE);
+            fileService.uploadFile(noticeId, files, FILE, NOTICE);
+        }
     }
 
     @DeleteMapping("/{noticeId}")

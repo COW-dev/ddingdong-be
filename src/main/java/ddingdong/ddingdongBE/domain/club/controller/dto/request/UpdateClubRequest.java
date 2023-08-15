@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -34,5 +36,7 @@ public class UpdateClubRequest {
     private String ideal;
 
     private String formUrl;
+
+    private List<String> imgUrls;
 
 }

@@ -12,12 +12,15 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
+import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.util.List;
 import java.util.NoSuchElementException;
 
+import ddingdong.ddingdongBE.file.FileStore;
 import lombok.RequiredArgsConstructor;
 
 import org.springframework.stereotype.Service;
@@ -31,6 +34,8 @@ public class ClubService {
 	private final ClubRepository clubRepository;
 	private final AuthService authService;
 	private final FileInformationService fileInformationService;
+	private final FileStore fileStore;
+	private final FileInformationRepository fileInformationRepository;
 
 	public Long register(RegisterClubRequest request) {
 		User clubUser = authService.registerClubUser(request.getUserId(), request.getPassword(), request.getClubName());
@@ -90,6 +95,20 @@ public class ClubService {
 
 	public Long update(Long userId, UpdateClubRequest request) {
 		Club club = findClubByUserId(userId);
+		List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+			IMAGE.getFileType() + CLUB.getFileDomain() + club.getId());
+		if (!request.getImgUrls().isEmpty()) {
+			List<FileInformation> deleteInformation = fileInformation.stream()
+				.filter(information -> !request.getImgUrls()
+					.contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
+						.getFileType() + information.getFileDomainCategory().getFileDomain()
+						+ information.getStoredName()))
+				.toList();
+
+			fileInformationRepository.deleteAll(deleteInformation);
+		} else {
+			fileInformationRepository.deleteAll(fileInformation);
+		}
 
 		club.updateClubInfo(request);
 		return club.getId();

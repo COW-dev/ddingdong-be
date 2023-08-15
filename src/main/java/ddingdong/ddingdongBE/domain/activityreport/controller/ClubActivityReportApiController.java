@@ -88,19 +88,20 @@ public class ClubActivityReportApiController {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam("term") String term,
             @RequestPart("reportData") List<UpdateActivityReportRequest> requests,
-            @RequestPart(name = "uploadFiles") List<MultipartFile> images
+            @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images
     ) {
         User user = principalDetails.getUser();
 
         List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
-
-        IntStream.range(0, updateActivityReportDtos.size())
-                .forEach(index -> {
-                            fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
-                            fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
-                                    Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
-                        }
-                );
+		if (images != null) {
+			IntStream.range(0, updateActivityReportDtos.size())
+				.forEach(index -> {
+						fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
+						fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
+							Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
+					}
+				);
+		}
     }
 
     @DeleteMapping("my/activity-reports")

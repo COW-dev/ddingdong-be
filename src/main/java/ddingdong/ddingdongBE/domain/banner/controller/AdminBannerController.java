@@ -46,8 +46,11 @@ public class AdminBannerController {
                              @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
 
         bannerService.updateBanner(bannerId, request);
-        fileService.deleteFile(bannerId, IMAGE, BANNER);
-        fileService.uploadFile(bannerId, bannerImages, IMAGE, BANNER);
+
+        if (bannerImages != null) {
+            fileService.deleteFile(bannerId, IMAGE, BANNER);
+            fileService.uploadFile(bannerId, bannerImages, IMAGE, BANNER);
+        }
     }
 
     @DeleteMapping("/{bannerId}")
