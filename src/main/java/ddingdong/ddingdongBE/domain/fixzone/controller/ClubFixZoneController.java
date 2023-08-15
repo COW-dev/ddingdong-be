@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -22,6 +23,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
 import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +47,11 @@ public class ClubFixZoneController {
 		Long createdFixId = fixZoneService.create(club, request);
 
 		fileService.uploadFile(createdFixId, images, IMAGE, FIX_ZONE);
+	}
+
+	@GetMapping
+	public List<ClubFixResponse> findAllFixForClub() {
+		return fixZoneService.getAllForClub();
 	}
 
 	@PatchMapping("/{fixId}")
