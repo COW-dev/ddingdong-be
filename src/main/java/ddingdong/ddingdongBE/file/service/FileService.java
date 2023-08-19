@@ -28,6 +28,15 @@ public class FileService {
         }
     }
 
+    public void uploadDownloadableFile(Long parentId, List<MultipartFile> files, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
+        if (files != null && !files.isEmpty()) {
+            List<UploadFileDto> uploadFileDtos = fileStore.storeDownloadableFile(files, fileTypeCategory.getFileType(), fileDomainCategory.getFileDomain());
+            for (UploadFileDto uploadFileDto : uploadFileDtos) {
+                fileInformationService.create(parentId, uploadFileDto, fileTypeCategory, fileDomainCategory);
+            }
+        }
+    }
+
     public void deleteFile(Long parentId, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
         List<FileInformation> fileInformations = fileInformationService.getFileInformation(
                 fileTypeCategory.getFileType() + fileDomainCategory.getFileDomain() + parentId);

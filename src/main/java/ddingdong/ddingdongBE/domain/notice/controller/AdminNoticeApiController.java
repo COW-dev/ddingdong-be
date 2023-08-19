@@ -41,7 +41,7 @@ public class AdminNoticeApiController {
         Long registeredNoticeId = noticeService.register(adminUser, request);
 
         fileService.uploadFile(registeredNoticeId, images, IMAGE, NOTICE);
-        fileService.uploadFile(registeredNoticeId, files, FILE, NOTICE);
+        fileService.uploadDownloadableFile(registeredNoticeId, files, FILE, NOTICE);
     }
 
     @PatchMapping("/{noticeId}")
@@ -59,7 +59,7 @@ public class AdminNoticeApiController {
 
         if (files != null) {
             fileService.deleteFile(noticeId, FILE, NOTICE);
-            fileService.uploadFile(noticeId, files, FILE, NOTICE);
+            fileService.uploadDownloadableFile(noticeId, files, FILE, NOTICE);
         }
     }
 
