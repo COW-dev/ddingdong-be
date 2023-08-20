@@ -37,6 +37,8 @@ public class UpdateClubRequest {
 
     private String formUrl;
 
-    private List<String> imgUrls;
+    private List<String> profileImageUrls;
+
+    private List<String> introduceImageUrls;
 
 }

@@ -38,14 +38,16 @@ public class DetailClubResponse {
 
     private String formUrl;
 
-    private List<String> imageUrls;
+    private List<String> profileImageUrls;
+
+    private List<String> introduceImageUrls;
 
 
     @Builder
     public DetailClubResponse(String name, String category, String tag, String content, String leader, String isRecruit,
                               PhoneNumber phoneNumber, Location location, String recruitPeriod, String regularMeeting,
                               String introduction, String activity, String ideal, String formUrl,
-                              List<String> imageUrls) {
+                              List<String> profileImageUrls, List<String> introduceImageUrls) {
         this.name = name;
         this.category = category;
         this.tag = tag;
@@ -60,10 +62,11 @@ public class DetailClubResponse {
         this.ideal = ideal;
         this.formUrl = formUrl;
         this.isRecruit = isRecruit;
-        this.imageUrls = imageUrls;
+        this.profileImageUrls = profileImageUrls;
+        this.introduceImageUrls = introduceImageUrls;
     }
 
-    public static DetailClubResponse of(Club club, List<String> imageUrls) {
+    public static DetailClubResponse of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls) {
         return DetailClubResponse.builder()
                 .name(club.getName())
                 .category(club.getCategory())
@@ -79,7 +82,8 @@ public class DetailClubResponse {
                 .ideal(club.getIdeal())
                 .formUrl(club.getFormUrl())
                 .isRecruit(club.getIsRecruit())
-                .imageUrls(imageUrls).build();
+                .profileImageUrls(profileImageUrls)
+                .introduceImageUrls(introduceImageUrls).build();
     }
 
 }

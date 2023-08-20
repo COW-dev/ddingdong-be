@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
 

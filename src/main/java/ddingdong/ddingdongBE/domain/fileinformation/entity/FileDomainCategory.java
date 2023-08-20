@@ -7,7 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum FileDomainCategory {
 
-    CLUB("club/"),
+    CLUB_PROFILE("club/profile/"),
+    CLUB_INTRODUCE("club/introduce/"),
     NOTICE("notice/"),
     BANNER("banner/"),
     ACTIVITY_REPORT("activity-report/"),
