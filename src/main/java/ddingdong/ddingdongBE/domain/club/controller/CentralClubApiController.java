@@ -9,6 +9,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubRespo
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
+
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
@@ -39,13 +40,19 @@ public class CentralClubApiController {
     @PatchMapping()
     public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            @ModelAttribute UpdateClubRequest param,
-                           @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images) {
+                           @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
+                           @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images) {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);
 
+        if (profileImage != null) {
+            fileService.deleteFile(updatedClubId, IMAGE, CLUB_PROFILE);
+            fileService.uploadFile(updatedClubId, profileImage, IMAGE, CLUB_PROFILE);
+        }
+
         if (images != null) {
-            fileService.deleteFile(updatedClubId, IMAGE, CLUB);
-            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB);
+            fileService.deleteFile(updatedClubId, IMAGE, CLUB_INTRODUCE);
+            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB_INTRODUCE);
         }
     }
 
