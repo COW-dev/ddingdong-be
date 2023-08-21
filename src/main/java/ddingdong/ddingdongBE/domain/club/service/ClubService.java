@@ -87,10 +87,12 @@ public class ClubService {
 		clubRepository.delete(club);
 	}
 
-	public void editClubScore(Long clubId, int score) {
+	public int editClubScore(Long clubId, int score) {
 		Club club = findClubByClubId(clubId);
 
-		club.editScore(score);
+		int newScore = calculateScore(club.getScore().getValue(), score);
+
+		return club.editScore(newScore);
 	}
 
 	public Long update(Long userId, UpdateClubRequest request) {
@@ -119,8 +121,12 @@ public class ClubService {
 			.orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
 	}
 
-	private Club findClubByClubId(final Long clubId) {
+	public Club findClubByClubId(final Long clubId) {
 		return clubRepository.findById(clubId)
 			.orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+	}
+
+	private int calculateScore(final int originalScore, final int value) {
+		return originalScore + value;
 	}
 }
