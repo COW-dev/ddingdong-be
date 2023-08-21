@@ -40,14 +40,14 @@ public class CentralClubApiController {
     @PatchMapping()
     public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            @ModelAttribute UpdateClubRequest param,
-                           @RequestPart(name = "profileImage", required = false) MultipartFile profileImage,
+                           @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
                            @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images) {
         User user = principalDetails.getUser();
         Long updatedClubId = clubService.update(user.getId(), param);
 
         if (profileImage != null) {
             fileService.deleteFile(updatedClubId, IMAGE, CLUB_PROFILE);
-            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB_PROFILE);
+            fileService.uploadFile(updatedClubId, profileImage, IMAGE, CLUB_PROFILE);
         }
 
         if (images != null) {
