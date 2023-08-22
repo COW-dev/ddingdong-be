@@ -4,8 +4,10 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
+import ddingdong.ddingdongBE.domain.club.service.ClubMemberService;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
@@ -18,6 +20,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CentralClubApiController {
 
     private final ClubService clubService;
+    private final ClubMemberService clubMemberService;
     private final FileService fileService;
 
     @GetMapping
@@ -54,6 +59,13 @@ public class CentralClubApiController {
             fileService.deleteFile(updatedClubId, IMAGE, CLUB_INTRODUCE);
             fileService.uploadFile(updatedClubId, images, IMAGE, CLUB_INTRODUCE);
         }
+    }
+
+    @PutMapping("/club-members")
+    public void updateClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                  @RequestBody UpdateClubMemberRequest request) {
+        User user = principalDetails.getUser();
+        clubMemberService.updateClubMembers(user.getId(), request);
     }
 
 }
