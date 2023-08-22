@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import ddingdong.ddingdongBE.file.FileStore;
@@ -45,9 +46,10 @@ public class ClubService {
 	}
 
 	@Transactional(readOnly = true)
-	public List<ClubResponse> getAllClubs() {
+	public List<ClubResponse> getAllClubs(LocalDateTime now) {
 		return clubRepository.findAll().stream()
-				.map(ClubResponse::from)
+				.map(club -> ClubResponse.of(club,
+						checkRecruit(now, club)))
 				.toList();
 	}
 
@@ -152,5 +154,13 @@ public class ClubService {
 
 	private Score generateNewScore(Score beforeUpdateScore, int value) {
 		return Score.of(beforeUpdateScore.getValue() + value);
+	}
+
+	private boolean checkRecruit(LocalDateTime now, Club club) {
+		boolean isRecruit = false;
+		if (club.getStartRecruitPeriod() != null && club.getEndRecruitPeriod() != null) {
+			isRecruit = club.getStartRecruitPeriod().isBefore(now) && club.getEndRecruitPeriod().isAfter(now);
+		}
+		return isRecruit;
 	}
 }
