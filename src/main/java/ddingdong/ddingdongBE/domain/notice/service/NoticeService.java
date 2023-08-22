@@ -83,7 +83,7 @@ public class NoticeService {
             FILE.getFileType() + NOTICE.getFileDomain() + notice.getId());
         if (!request.getFileUrls().isEmpty()) {
             List<FileInformation> deleteInformation = fileInformation.stream()
-                .filter(information -> !request.getImgUrls()
+                .filter(information -> !request.getFileUrls()
                     .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
                         .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
                 .toList();
