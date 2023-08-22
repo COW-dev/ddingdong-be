@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -95,8 +94,8 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    public void editScore(int score) {
+    public int editScore(int score) {
         this.score = Score.of(score);
+        return this.score.getValue();
     }
-
 }
