@@ -15,10 +15,10 @@ public class ClubResponse {
 
     private String tag;
 
-    private String isRecruit;
+    private boolean isRecruit;
 
     @Builder
-    public ClubResponse(Long id, String name, String category, String tag, String isRecruit) {
+    public ClubResponse(Long id, String name, String category, String tag, boolean isRecruit) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -26,13 +26,13 @@ public class ClubResponse {
         this.isRecruit = isRecruit;
     }
 
-    public static ClubResponse from(Club club) {
+    public static ClubResponse of(Club club, boolean isRecruit) {
         return ClubResponse.builder()
                 .id(club.getId())
                 .name(club.getName())
                 .category(club.getCategory())
                 .tag(club.getTag())
-                .isRecruit(club.getIsRecruit()).build();
+                .isRecruit(isRecruit).build();
     }
 
 }

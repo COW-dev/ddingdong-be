@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
+import java.time.LocalDateTime;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -47,11 +48,11 @@ public class Club extends BaseEntity {
     @Embedded
     private Location location;
 
-    private String recruitPeriod;
+    private LocalDateTime startRecruitPeriod;
+
+    private LocalDateTime endRecruitPeriod;
 
     private String regularMeeting;
-
-    private String isRecruit;
 
     private String introduction;
 
@@ -83,11 +84,14 @@ public class Club extends BaseEntity {
         this.tag = request.getTag() != null ? request.getTag() : this.tag;
         this.content = request.getContent() != null ? request.getContent() : this.content;
         this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
-        this.phoneNumber = request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
+        this.phoneNumber =
+                request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
         this.location = request.getLocation() != null ? Location.of(request.getLocation()) : this.location;
-        this.recruitPeriod = request.getRecruitPeriod() != null ? request.getRecruitPeriod() : this.recruitPeriod;
+        this.startRecruitPeriod =
+                request.getStartRecruitPeriod() != null ? request.getStartRecruitPeriod() : this.startRecruitPeriod;
+        this.endRecruitPeriod =
+                request.getEndRecruitPeriod() != null ? request.getEndRecruitPeriod() : this.endRecruitPeriod;
         this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
-        this.isRecruit = request.getIsRecruit() != null ? request.getIsRecruit() : this.isRecruit;
         this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
         this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
         this.ideal = request.getIdeal() != null ? request.getIdeal() : this.ideal;
