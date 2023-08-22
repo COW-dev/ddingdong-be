@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubReques
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -31,6 +33,9 @@ public class Club extends BaseEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "club")
+    private List<ClubMember> clubMembers;
 
     private String name;
 
