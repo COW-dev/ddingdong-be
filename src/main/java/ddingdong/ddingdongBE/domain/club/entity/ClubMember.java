@@ -32,7 +32,7 @@ public class ClubMember extends BaseEntity {
 
     private String studentNumber;
 
-    private String phoneNUmber;
+    private String phoneNumber;
 
     @Enumerated(value = EnumType.STRING)
     private Position position;
@@ -41,13 +41,13 @@ public class ClubMember extends BaseEntity {
 
     @Builder
     public ClubMember(Long id, Club club,
-                      String name, String studentNumber, String phoneNUmber, Position position,
+                      String name, String studentNumber, String phoneNumber, Position position,
                       String department) {
         this.id = id;
         this.club = club;
         this.name = name;
         this.studentNumber = studentNumber;
-        this.phoneNUmber = phoneNUmber;
+        this.phoneNumber = phoneNumber;
         this.position = position;
         this.department = department;
     }
