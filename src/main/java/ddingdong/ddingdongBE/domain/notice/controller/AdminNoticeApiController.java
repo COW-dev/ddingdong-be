@@ -58,7 +58,6 @@ public class AdminNoticeApiController {
         }
 
         if (files != null) {
-            fileService.deleteFile(noticeId, FILE, NOTICE);
             fileService.uploadDownloadableFile(noticeId, files, FILE, NOTICE);
         }
     }
