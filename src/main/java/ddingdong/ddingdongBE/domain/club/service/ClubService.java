@@ -17,135 +17,146 @@ import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 import ddingdong.ddingdongBE.file.FileStore;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class ClubService {
 
-	private final ClubRepository clubRepository;
-	private final AuthService authService;
-	private final FileInformationService fileInformationService;
-	private final FileStore fileStore;
-	private final FileInformationRepository fileInformationRepository;
+    private final ClubRepository clubRepository;
+    private final AuthService authService;
+    private final FileInformationService fileInformationService;
+    private final FileStore fileStore;
+    private final FileInformationRepository fileInformationRepository;
 
-	public Long register(RegisterClubRequest request) {
-		User clubUser = authService.registerClubUser(request.getUserId(), request.getPassword(), request.getClubName());
+    public Long register(RegisterClubRequest request) {
+        User clubUser = authService.registerClubUser(request.getUserId(), request.getPassword(), request.getClubName());
 
-		Club club = request.toEntity(clubUser);
-		Club savedClub = clubRepository.save(club);
+        Club club = request.toEntity(clubUser);
+        Club savedClub = clubRepository.save(club);
 
-		return savedClub.getId();
-	}
+        return savedClub.getId();
+    }
 
-	@Transactional(readOnly = true)
-	public List<ClubResponse> getAllClubs() {
-		return clubRepository.findAll().stream()
-				.map(ClubResponse::from)
-				.toList();
-	}
+    @Transactional(readOnly = true)
+    public List<ClubResponse> getAllClubs(LocalDateTime now) {
+        return clubRepository.findAll().stream()
+                .map(club -> ClubResponse.of(club,
+                        checkRecruit(now, club)))
+                .toList();
+    }
 
-	@Transactional(readOnly = true)
-	public List<AdminClubResponse> getAllForAdmin() {
-		return clubRepository.findAll().stream()
-				.map(club -> AdminClubResponse.of(club, fileInformationService.getImageUrls(
-						IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId())))
-				.toList();
-	}
+    private boolean checkRecruit(LocalDateTime now, Club club) {
+        boolean isRecruit = false;
+        if (club.getStartRecruitPeriod() != null && club.getEndRecruitPeriod() != null) {
+            isRecruit = club.getStartRecruitPeriod().isBefore(now) && club.getEndRecruitPeriod().isAfter(now);
+        }
+        return isRecruit;
+    }
 
-	@Transactional(readOnly = true)
-	public DetailClubResponse getClub(Long clubId) {
-		Club club = findClubByClubId(clubId);
+    @Transactional(readOnly = true)
+    public List<AdminClubResponse> getAllForAdmin() {
+        return clubRepository.findAll().stream()
+                .map(club -> AdminClubResponse.of(club, fileInformationService.getImageUrls(
+                        IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId())))
+                .toList();
+    }
 
-		List<String> profileImageUrl = fileInformationService.getImageUrls(
-				IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + clubId);
+    @Transactional(readOnly = true)
+    public DetailClubResponse getClub(Long clubId) {
+        Club club = findClubByClubId(clubId);
 
-		List<String> introduceImageUrls = fileInformationService.getImageUrls(
-				IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + clubId);
+        List<String> profileImageUrl = fileInformationService.getImageUrls(
+                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + clubId);
 
-		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
-	}
+        List<String> introduceImageUrls = fileInformationService.getImageUrls(
+                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + clubId);
 
-	@Transactional(readOnly = true)
-	public DetailClubResponse getMyClub(Long userId) {
-		Club club = findClubByUserId(userId);
+        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
+    }
 
-		List<String> profileImageUrl = fileInformationService.getImageUrls(
-				IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
+    @Transactional(readOnly = true)
+    public DetailClubResponse getMyClub(Long userId) {
+        Club club = findClubByUserId(userId);
 
-		List<String> introduceImageUrls = fileInformationService.getImageUrls(
-				IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
+        List<String> profileImageUrl = fileInformationService.getImageUrls(
+                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
 
-		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
-	}
+        List<String> introduceImageUrls = fileInformationService.getImageUrls(
+                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
 
-	public void delete(Long clubId) {
-		Club club = findClubByClubId(clubId);
+        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
+    }
 
-		clubRepository.delete(club);
-	}
+    public void delete(Long clubId) {
+        Club club = findClubByClubId(clubId);
 
-	public int editClubScore(Long clubId, int score) {
-		Club club = findClubByClubId(clubId);
+        clubRepository.delete(club);
+    }
 
-		return club.editScore(score);
-	}
+    public int editClubScore(Long clubId, int score) {
+        Club club = findClubByClubId(clubId);
 
-	public Long update(Long userId, UpdateClubRequest request) {
-		Club club = findClubByUserId(userId);
-		updateIntroduceImageInformation(request, club);
-		updateProfileImageInformation(request, club);
+        return club.editScore(score);
+    }
 
-		club.updateClubInfo(request);
-		return club.getId();
-	}
+    public Long update(Long userId, UpdateClubRequest request) {
+        Club club = findClubByUserId(userId);
+        updateIntroduceImageInformation(request, club);
+        updateProfileImageInformation(request, club);
 
-	public Club findClubByUserId(final Long userId) {
-		return clubRepository.findByUserId(userId)
-				.orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
-	}
+        club.updateClubInfo(request);
+        return club.getId();
+    }
 
-	public Club findClubByClubId(final Long clubId) {
-		return clubRepository.findById(clubId)
-				.orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
-	}
+    public Club findClubByUserId(final Long userId) {
+        return clubRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+    }
 
-	private void updateIntroduceImageInformation(UpdateClubRequest request, Club club) {
-		List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-				IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
-		if (!request.getIntroduceImageUrls().isEmpty()) {
-			List<FileInformation> deleteInformation = fileInformation.stream()
-					.filter(information -> !request.getIntroduceImageUrls()
-							.contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-									.getFileType() + information.getFileDomainCategory().getFileDomain()
-									+ information.getStoredName()))
-					.toList();
+    public Club findClubByClubId(final Long clubId) {
+        return clubRepository.findById(clubId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+    }
 
-			fileInformationRepository.deleteAll(deleteInformation);
-		} else {
-			fileInformationRepository.deleteAll(fileInformation);
-		}
-	}
+    private void updateIntroduceImageInformation(UpdateClubRequest request, Club club) {
+        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
+        if (!request.getIntroduceImageUrls().isEmpty()) {
+            List<FileInformation> deleteInformation = fileInformation.stream()
+                    .filter(information -> !request.getIntroduceImageUrls()
+                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
+                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
+                                    + information.getStoredName()))
+                    .toList();
 
-	private void updateProfileImageInformation(UpdateClubRequest request, Club club) {
-		List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-				IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
-		if (!request.getProfileImageUrls().isEmpty()) {
-			List<FileInformation> deleteInformation = fileInformation.stream()
-					.filter(information -> !request.getProfileImageUrls()
-							.contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-									.getFileType() + information.getFileDomainCategory().getFileDomain()
-									+ information.getStoredName()))
-					.toList();
+            fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(fileInformation);
+        }
+    }
 
-			fileInformationRepository.deleteAll(deleteInformation);
-		} else {
-			fileInformationRepository.deleteAll(fileInformation);
-		}
-	}
+    private void updateProfileImageInformation(UpdateClubRequest request, Club club) {
+        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
+                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
+        if (!request.getProfileImageUrls().isEmpty()) {
+            List<FileInformation> deleteInformation = fileInformation.stream()
+                    .filter(information -> !request.getProfileImageUrls()
+                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
+                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
+                                    + information.getStoredName()))
+                    .toList();
+
+            fileInformationRepository.deleteAll(deleteInformation);
+        } else {
+            fileInformationRepository.deleteAll(fileInformation);
+        }
+    }
 }
