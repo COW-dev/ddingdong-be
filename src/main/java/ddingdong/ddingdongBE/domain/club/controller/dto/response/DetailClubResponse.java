@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
@@ -46,12 +47,14 @@ public class DetailClubResponse {
 
     private List<String> introduceImageUrls;
 
+    private List<ClubMemberDto> clubMembers;
+
 
     @Builder
     public DetailClubResponse(String name, String category, String tag, String content, String leader,
                               PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
                               LocalDateTime endRecruitPeriod, String regularMeeting, String introduction,
-                              String activity, String ideal, String formUrl,
+                              String activity, String ideal, String formUrl, List<ClubMemberDto> clubMembers,
                               List<String> profileImageUrls, List<String> introduceImageUrls) {
         this.name = name;
         this.category = category;
@@ -69,9 +72,11 @@ public class DetailClubResponse {
         this.formUrl = formUrl;
         this.profileImageUrls = profileImageUrls;
         this.introduceImageUrls = introduceImageUrls;
+        this.clubMembers = clubMembers;
     }
 
-    public static DetailClubResponse of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls) {
+    public static DetailClubResponse of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls,
+                                        List<ClubMemberDto> clubMembers) {
         return DetailClubResponse.builder()
                 .name(club.getName())
                 .category(club.getCategory())
@@ -88,7 +93,8 @@ public class DetailClubResponse {
                 .ideal(club.getIdeal())
                 .formUrl(club.getFormUrl())
                 .profileImageUrls(profileImageUrls)
-                .introduceImageUrls(introduceImageUrls).build();
+                .introduceImageUrls(introduceImageUrls)
+                .clubMembers(clubMembers).build();
     }
 
 }

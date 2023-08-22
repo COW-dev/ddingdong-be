@@ -6,6 +6,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubResponse;
@@ -71,7 +72,11 @@ public class ClubService {
 		List<String> introduceImageUrls = fileInformationService.getImageUrls(
 				IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + clubId);
 
-		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
+		List<ClubMemberDto> clubMemberDtos = club.getClubMembers().stream()
+				.map(ClubMemberDto::from)
+				.toList();
+
+		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
 	}
 
 	@Transactional(readOnly = true)
@@ -84,7 +89,11 @@ public class ClubService {
 		List<String> introduceImageUrls = fileInformationService.getImageUrls(
 				IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
 
-		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls);
+		List<ClubMemberDto> clubMemberDtos = club.getClubMembers().stream()
+				.map(ClubMemberDto::from)
+				.toList();
+
+		return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
 	}
 
 	public void delete(Long clubId) {
