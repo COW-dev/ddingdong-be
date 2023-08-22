@@ -4,7 +4,8 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
-import javax.persistence.CascadeType;
+import java.time.LocalDateTime;
+import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -28,9 +30,12 @@ public class Club extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+
+    @OneToMany(mappedBy = "club")
+    private List<ClubMember> clubMembers;
 
     private String name;
 
@@ -48,11 +53,11 @@ public class Club extends BaseEntity {
     @Embedded
     private Location location;
 
-    private String recruitPeriod;
+    private LocalDateTime startRecruitPeriod;
+
+    private LocalDateTime endRecruitPeriod;
 
     private String regularMeeting;
-
-    private String isRecruit;
 
     private String introduction;
 
@@ -84,19 +89,23 @@ public class Club extends BaseEntity {
         this.tag = request.getTag() != null ? request.getTag() : this.tag;
         this.content = request.getContent() != null ? request.getContent() : this.content;
         this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
-        this.phoneNumber = request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
+        this.phoneNumber =
+                request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
         this.location = request.getLocation() != null ? Location.of(request.getLocation()) : this.location;
-        this.recruitPeriod = request.getRecruitPeriod() != null ? request.getRecruitPeriod() : this.recruitPeriod;
+        this.startRecruitPeriod =
+                request.getStartRecruitPeriod() != null ? request.getStartRecruitPeriod() : this.startRecruitPeriod;
+        this.endRecruitPeriod =
+                request.getEndRecruitPeriod() != null ? request.getEndRecruitPeriod() : this.endRecruitPeriod;
         this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
-        this.isRecruit = request.getIsRecruit() != null ? request.getIsRecruit() : this.isRecruit;
         this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
         this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
         this.ideal = request.getIdeal() != null ? request.getIdeal() : this.ideal;
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    public void editScore(int score) {
-        this.score = Score.of(score);
-    }
+    public int editScore(Score score) {
+        this.score = score;
 
+        return this.score.getValue();
+    }
 }

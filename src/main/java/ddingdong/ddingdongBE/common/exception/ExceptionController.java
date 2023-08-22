@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
 @RestControllerAdvice
 public class ExceptionController {
@@ -47,6 +48,12 @@ public class ExceptionController {
             default -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()));
         };
+    }
+
+    @ExceptionHandler(MissingServletRequestPartException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ExceptionResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
+        return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
 }

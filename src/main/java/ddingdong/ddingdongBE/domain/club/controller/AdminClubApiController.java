@@ -7,7 +7,6 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -35,10 +34,4 @@ public class AdminClubApiController {
     public void deleteClub(@PathVariable Long clubId) {
         clubService.delete(clubId);
     }
-
-    @PatchMapping("{clubId}/score")
-    public void editScore(@PathVariable Long clubId, int score) {
-        clubService.editClubScore(clubId, score);
-    }
-
 }

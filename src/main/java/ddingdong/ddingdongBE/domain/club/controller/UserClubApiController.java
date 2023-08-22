@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.club.controller;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,7 @@ public class UserClubApiController {
 
     @GetMapping
     public List<ClubResponse> getClubs() {
-        return clubService.getAllClubs();
+        return clubService.getAllClubs(LocalDateTime.now());
     }
 
     @GetMapping("/{clubId}")

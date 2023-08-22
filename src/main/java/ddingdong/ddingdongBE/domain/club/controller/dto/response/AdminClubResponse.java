@@ -17,25 +17,25 @@ public class AdminClubResponse {
 
     private int score;
 
-    private List<String> imageUrls;
+    private List<String> profileImageUrls;
 
     @Builder
-    private AdminClubResponse(Long id, String name, String category, int score, List<String> imageUrls) {
+    private AdminClubResponse(Long id, String name, String category, int score, List<String> profileImageUrls) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.score = score;
-        this.imageUrls = imageUrls;
+        this.profileImageUrls = profileImageUrls;
     }
 
     @Builder
-    public static AdminClubResponse of(Club club, List<String> imageUrls) {
+    public static AdminClubResponse of(Club club, List<String> profileImageUrls) {
         return AdminClubResponse.builder()
             .id(club.getId())
             .name(club.getName())
             .category(club.getCategory())
             .score(club.getScore().getValue())
-            .imageUrls(imageUrls).build();
+            .profileImageUrls(profileImageUrls).build();
     }
 
 }

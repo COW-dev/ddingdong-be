@@ -65,11 +65,9 @@ public class ClubActivityReportApiController {
     @PostMapping("/my/activity-reports")
     public void registerReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestPart("reportData") List<RegisterActivityReportRequest> requests,
-            @RequestPart("uploadFiles") List<MultipartFile> images
+            @RequestPart(value = "reportData", required = false) List<RegisterActivityReportRequest> requests,
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
     ) {
-        validateImages(images);
-
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
@@ -87,21 +85,20 @@ public class ClubActivityReportApiController {
     public void updateReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam("term") String term,
-            @RequestPart("reportData") List<UpdateActivityReportRequest> requests,
-            @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> images
+            @RequestPart(value = "reportData", required = false) List<UpdateActivityReportRequest> requests,
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
     ) {
         User user = principalDetails.getUser();
 
         List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
-		if (images != null) {
-			IntStream.range(0, updateActivityReportDtos.size())
-				.forEach(index -> {
-						fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
-						fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
-							Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
-					}
-				);
-		}
+
+        IntStream.range(0, updateActivityReportDtos.size())
+            .forEach(index -> {
+                    fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
+                    fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
+                        Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
+                }
+            );
     }
 
     @DeleteMapping("my/activity-reports")
@@ -116,11 +113,5 @@ public class ClubActivityReportApiController {
                 .forEach(
                         activityReportDto -> fileService.deleteFile(activityReportDto.getId(), IMAGE, ACTIVITY_REPORT)
                 );
-    }
-
-    private void validateImages(List<MultipartFile> images) {
-        if (images.size() != IMAGE_COUNT) {
-            throw new IllegalArgumentException("업로드한 보고서 수와 이미지 수가 일치하지 않습니다.");
-        }
     }
 }

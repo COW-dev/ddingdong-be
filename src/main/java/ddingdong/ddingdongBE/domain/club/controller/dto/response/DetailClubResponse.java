@@ -1,8 +1,11 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,11 +27,13 @@ public class DetailClubResponse {
 
     private String location;
 
-    private String recruitPeriod;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime startRecruitPeriod;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+    private LocalDateTime endRecruitPeriod;
 
     private String regularMeeting;
-
-    private String isRecruit;
 
     private String introduction;
 
@@ -38,14 +43,19 @@ public class DetailClubResponse {
 
     private String formUrl;
 
-    private List<String> imageUrls;
+    private List<String> profileImageUrls;
+
+    private List<String> introduceImageUrls;
+
+    private List<ClubMemberDto> clubMembers;
 
 
     @Builder
-    public DetailClubResponse(String name, String category, String tag, String content, String leader, String isRecruit,
-                              PhoneNumber phoneNumber, Location location, String recruitPeriod, String regularMeeting,
-                              String introduction, String activity, String ideal, String formUrl,
-                              List<String> imageUrls) {
+    public DetailClubResponse(String name, String category, String tag, String content, String leader,
+                              PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
+                              LocalDateTime endRecruitPeriod, String regularMeeting, String introduction,
+                              String activity, String ideal, String formUrl, List<ClubMemberDto> clubMembers,
+                              List<String> profileImageUrls, List<String> introduceImageUrls) {
         this.name = name;
         this.category = category;
         this.tag = tag;
@@ -53,17 +63,20 @@ public class DetailClubResponse {
         this.leader = leader;
         this.phoneNumber = phoneNumber.getNumber();
         this.location = location.getValue();
-        this.recruitPeriod = recruitPeriod;
+        this.startRecruitPeriod = startRecruitPeriod;
+        this.endRecruitPeriod = endRecruitPeriod;
         this.regularMeeting = regularMeeting;
         this.introduction = introduction;
         this.activity = activity;
         this.ideal = ideal;
         this.formUrl = formUrl;
-        this.isRecruit = isRecruit;
-        this.imageUrls = imageUrls;
+        this.profileImageUrls = profileImageUrls;
+        this.introduceImageUrls = introduceImageUrls;
+        this.clubMembers = clubMembers;
     }
 
-    public static DetailClubResponse of(Club club, List<String> imageUrls) {
+    public static DetailClubResponse of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls,
+                                        List<ClubMemberDto> clubMembers) {
         return DetailClubResponse.builder()
                 .name(club.getName())
                 .category(club.getCategory())
@@ -72,14 +85,16 @@ public class DetailClubResponse {
                 .leader(club.getLeader())
                 .phoneNumber(club.getPhoneNumber())
                 .location(club.getLocation())
-                .recruitPeriod(club.getRecruitPeriod())
+                .startRecruitPeriod(club.getStartRecruitPeriod())
+                .endRecruitPeriod(club.getEndRecruitPeriod())
                 .regularMeeting(club.getRegularMeeting())
                 .introduction(club.getIntroduction())
                 .activity(club.getActivity())
                 .ideal(club.getIdeal())
                 .formUrl(club.getFormUrl())
-                .isRecruit(club.getIsRecruit())
-                .imageUrls(imageUrls).build();
+                .profileImageUrls(profileImageUrls)
+                .introduceImageUrls(introduceImageUrls)
+                .clubMembers(clubMembers).build();
     }
 
 }

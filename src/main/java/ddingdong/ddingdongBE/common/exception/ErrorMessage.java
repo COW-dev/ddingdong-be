@@ -10,6 +10,7 @@ public enum ErrorMessage {
     ILLEGAL_CLUB_LOCATION_PATTERN("올바르지 않은 동아리 위치 양식입니다."),
     ILLEGAL_CLUB_PHONE_NUMBER_PATTERN("올바르지 않은 동아리 전화번호 양식입니다."),
     ILLEGAL_PASSWORD_PATTERN("올바르지 않은 비밀번호 양식입니다."),
+    ILLEGAL_SCORE_CATEGORY("올바르지 않은 카테고리 양식입니다."),
     ALREADY_EXIST_CLUB_ID("이미 존재하는 동아리 계정입니다."),
     NO_SUCH_CLUB("해당 동아리가 존재하지 않습니다."),
     NO_SUCH_NOTICE("해당 공지사항이 존재하지 않습니다."),
