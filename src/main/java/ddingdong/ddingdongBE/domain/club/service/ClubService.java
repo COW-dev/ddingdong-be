@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubRespon
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.entity.Score;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
@@ -93,7 +94,7 @@ public class ClubService {
 	public int editClubScore(Long clubId, int score) {
 		Club club = findClubByClubId(clubId);
 
-		return club.editScore(score);
+		return club.editScore(generateNewScore(club.getScore(), score));
 	}
 
 	public Long update(Long userId, UpdateClubRequest request) {
@@ -147,5 +148,9 @@ public class ClubService {
 		} else {
 			fileInformationRepository.deleteAll(fileInformation);
 		}
+	}
+
+	private Score generateNewScore(Score beforeUpdateScore, int value) {
+		return Score.of(beforeUpdateScore.getValue() + value);
 	}
 }

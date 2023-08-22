@@ -94,8 +94,9 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    public int editScore(int score) {
-        this.score = Score.of(score);
+    public int editScore(Score score) {
+        this.score = score;
+
         return this.score.getValue();
     }
 }
