@@ -1,5 +1,8 @@
 # 명지대학교 동아리 관리 시스템 - ddingdong
 
+### URL
+https://mju-ddingdong.com/
+
 ### 기술 스택 
 
 <p>
