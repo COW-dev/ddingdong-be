@@ -53,6 +53,4 @@ public class ClubMemberDto {
                 .position(Position.valueOf(position))
                 .department(department).build();
     }
-
-
 }

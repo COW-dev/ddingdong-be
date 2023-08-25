@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubReques
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
@@ -35,7 +36,7 @@ public class Club extends BaseEntity {
     private User user;
 
     @OneToMany(mappedBy = "club")
-    private List<ClubMember> clubMembers;
+    private List<ClubMember> clubMembers = new ArrayList<>();
 
     private String name;
 
