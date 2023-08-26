@@ -22,8 +22,8 @@ import java.time.LocalDate;
 
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import lombok.RequiredArgsConstructor;
 
@@ -81,27 +81,18 @@ public class ActivityReportService {
         return savedActivityReport.getId();
     }
 
-    public List<ActivityReportDto> update(final User user, final String term,
-                                          final List<UpdateActivityReportRequest> requests) {
+    public void update(final Long activityReportId, final UpdateActivityReportRequest updateActivityReportRequest) {
+        ActivityReport activityReport = findById(activityReportId);
 
-        Club club = clubService.findClubByUserId(user.getId());
-
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
-
-        return IntStream.range(0, activityReports.size()).mapToObj(index -> {
-            activityReports.get(index).update(requests.get(index));
-            return ActivityReportDto.from(activityReports.get(index));
-        }).collect(Collectors.toList());
+        activityReport.update(updateActivityReportRequest);
     }
 
-    public List<ActivityReportDto> delete(final User user, final String term) {
-        Club club = clubService.findClubByUserId(user.getId());
+    public void delete(final Long activityReportId) {
 
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
+        ActivityReport activityReport = findById(activityReportId);
 
-        return activityReports.stream()
-                .peek(activityReport -> activityReport.getParticipants().clear())
-                .peek(activityReportRepository::delete).map(ActivityReportDto::from).collect(Collectors.toList());
+        activityReport.getParticipants().clear();
+        activityReportRepository.delete(activityReport);
     }
 
     public CurrentTermResponse getCurrentTerm() {
@@ -144,5 +135,10 @@ public class ActivityReportService {
             });
 
         }).collect(Collectors.toList());
+    }
+
+    private ActivityReport findById(final Long activityReportId) {
+        return activityReportRepository.findById(activityReportId)
+                .orElseThrow(() -> new NoSuchElementException("NO_SUCH_ACTIVITY_REPORT"));
     }
 }

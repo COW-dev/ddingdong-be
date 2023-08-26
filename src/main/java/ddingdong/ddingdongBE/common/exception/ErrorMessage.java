@@ -14,6 +14,7 @@ public enum ErrorMessage {
     ALREADY_EXIST_CLUB_ID("이미 존재하는 동아리 계정입니다."),
     NO_SUCH_CLUB("해당 동아리가 존재하지 않습니다."),
     NO_SUCH_NOTICE("해당 공지사항이 존재하지 않습니다."),
+    NO_SUCH_ACTIVITY_REPORT("해당 활동보고서가 존재하지 않습니다."),
     INVALID_CLUB_SCORE_VALUE("동아리 점수는 0 ~ 999점 입니다."),
     AUTHENTICATION_FAILURE("인증에 실패했습니다."),
     ACCESS_DENIED("접근권한이 없습니다."),

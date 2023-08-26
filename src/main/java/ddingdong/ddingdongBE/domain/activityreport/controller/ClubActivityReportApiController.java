@@ -6,7 +6,6 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
@@ -14,9 +13,7 @@ import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,6 +21,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -65,53 +63,36 @@ public class ClubActivityReportApiController {
     @PostMapping("/my/activity-reports")
     public void registerReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestPart(value = "reportData", required = false) List<RegisterActivityReportRequest> requests,
-            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
+            @RequestPart(value = "reportData") RegisterActivityReportRequest registerActivityReportRequest,
+            @RequestPart(value = "uploadFiles") List<MultipartFile> images
     ) {
         User user = principalDetails.getUser();
 
-        IntStream.range(0, requests.size())
-                .forEach(index -> {
-                    RegisterActivityReportRequest request = requests.get(index);
-                    MultipartFile image = images.get(index);
+        System.out.println(registerActivityReportRequest.getStartDate());
 
-                    Long registeredActivityReportId = activityReportService.register(user, request);
-                    fileService.uploadFile(registeredActivityReportId, Collections.singletonList(image),
-                            IMAGE, ACTIVITY_REPORT);
-                });
+        Long registeredActivityReportId = activityReportService.register(user, registerActivityReportRequest);
+
+        fileService.uploadFile(registeredActivityReportId, images, IMAGE, ACTIVITY_REPORT);
     }
 
-    @PatchMapping("my/activity-reports")
+    @PatchMapping("my/activity-reports/{activityReportId}")
     public void updateReport(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam("term") String term,
-            @RequestPart(value = "reportData", required = false) List<UpdateActivityReportRequest> requests,
-            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
+            @RequestPart(value = "reportData") UpdateActivityReportRequest updateActivityReportRequest,
+            @PathVariable Long activityReportId,
+            @RequestPart(value = "uploadFiles") List<MultipartFile> images
     ) {
-        User user = principalDetails.getUser();
+        activityReportService.update(activityReportId, updateActivityReportRequest);
 
-        List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
-
-        IntStream.range(0, updateActivityReportDtos.size())
-            .forEach(index -> {
-                    fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
-                    fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
-                        Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
-                }
-            );
+        fileService.deleteFile(activityReportId, IMAGE, ACTIVITY_REPORT);
+        fileService.uploadFile(activityReportId, images, IMAGE, ACTIVITY_REPORT);
     }
 
-    @DeleteMapping("my/activity-reports")
+    @DeleteMapping("my/activity-reports/{activityReportId}")
     public void deleteReport(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam("term") String term
+            @PathVariable Long activityReportId
     ) {
-        User user = principalDetails.getUser();
-        List<ActivityReportDto> deleteActivityReportDtos = activityReportService.delete(user, term);
+        activityReportService.delete(activityReportId);
 
-        deleteActivityReportDtos
-                .forEach(
-                        activityReportDto -> fileService.deleteFile(activityReportDto.getId(), IMAGE, ACTIVITY_REPORT)
-                );
+        fileService.deleteFile(activityReportId, IMAGE, ACTIVITY_REPORT);
     }
 }
