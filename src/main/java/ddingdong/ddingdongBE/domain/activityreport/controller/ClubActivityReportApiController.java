@@ -64,7 +64,7 @@ public class ClubActivityReportApiController {
     public void registerReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestPart(value = "reportData") RegisterActivityReportRequest registerActivityReportRequest,
-            @RequestPart(value = "uploadFiles") List<MultipartFile> images
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
     ) {
         User user = principalDetails.getUser();
 
