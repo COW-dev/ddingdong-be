@@ -28,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/club/my")
+@RequestMapping("/serverr/club/my")
 @RequiredArgsConstructor
 public class CentralClubApiController {
 

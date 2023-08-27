@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/admin/activity-reports")
+@RequestMapping("/server/admin/activity-reports")
 public class AdminActivityReportApiController {
 
     private final ActivityReportService activityReportService;

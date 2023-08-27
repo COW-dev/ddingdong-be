@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/club/my/score")
+@RequestMapping("/server/club/my/score")
 public class ClubScoreHistoryController {
 
     private final ScoreHistoryService scoreHistoryService;

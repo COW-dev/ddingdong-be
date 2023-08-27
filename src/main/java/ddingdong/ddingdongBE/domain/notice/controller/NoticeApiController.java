@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/notices")
+@RequestMapping("/server/notices")
 @RequiredArgsConstructor
 public class NoticeApiController {
 
