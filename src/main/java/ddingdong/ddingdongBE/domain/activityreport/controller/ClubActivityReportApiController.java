@@ -79,7 +79,7 @@ public class ClubActivityReportApiController {
     public void updateReport(
             @RequestPart(value = "reportData") UpdateActivityReportRequest updateActivityReportRequest,
             @PathVariable Long activityReportId,
-            @RequestPart(value = "uploadFiles") List<MultipartFile> images
+            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
     ) {
         activityReportService.update(activityReportId, updateActivityReportRequest);
 
