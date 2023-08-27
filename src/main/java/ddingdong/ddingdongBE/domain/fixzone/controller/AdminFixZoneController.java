@@ -18,7 +18,7 @@ import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/fix")
+@RequestMapping("/server/admin/fix")
 @RequiredArgsConstructor
 public class AdminFixZoneController {
 

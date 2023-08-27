@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/club")
+@RequestMapping("/server/club")
 public class ClubActivityReportApiController {
 
     private static final int IMAGE_COUNT = 2;

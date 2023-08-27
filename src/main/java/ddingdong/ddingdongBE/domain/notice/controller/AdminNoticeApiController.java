@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/admin/notices")
+@RequestMapping("/server/admin/notices")
 @RequiredArgsConstructor
 public class AdminNoticeApiController {
 

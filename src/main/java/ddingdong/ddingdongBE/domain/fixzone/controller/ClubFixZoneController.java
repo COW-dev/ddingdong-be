@@ -30,7 +30,7 @@ import ddingdong.ddingdongBE.file.service.FileService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/club/fix")
+@RequestMapping("/server/club/fix")
 @RequiredArgsConstructor
 public class ClubFixZoneController {
 

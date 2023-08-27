@@ -22,7 +22,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private static final String API_PREFIX = "/api";
+    private static final String API_PREFIX = "/server";
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
