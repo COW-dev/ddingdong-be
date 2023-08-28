@@ -35,7 +35,7 @@ public class AdminFixZoneController {
 	}
 
 	@PatchMapping("/{fixId}")
-	public void updateFix(@PathVariable Long fixId, @ModelAttribute UpdateFiXCompletionRequest request) {
+	public void updateFix(@PathVariable Long fixId, @RequestBody UpdateFiXCompletionRequest request) {
 		fixZoneService.updateIsCompleted(fixId, request);
 	}
 }
