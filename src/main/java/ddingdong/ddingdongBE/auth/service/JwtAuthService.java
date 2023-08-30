@@ -50,10 +50,10 @@ public class JwtAuthService implements AuthService{
     @Override
     public String signIn(SignInRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(() -> new AuthenticationException(UNREGISTER_USER));
+                .orElseThrow(() -> new AuthenticationException(UNREGISTER_ID));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AuthenticationException(AUTHENTICATION_FAILURE);
+            throw new AuthenticationException(INVALID_PASSWORD);
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 

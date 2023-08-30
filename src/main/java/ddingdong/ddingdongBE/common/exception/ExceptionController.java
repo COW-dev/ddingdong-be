@@ -42,7 +42,7 @@ public class ExceptionController {
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException e) {
         return switch (e.getErrorMessage()) {
-            case AUTHENTICATION_FAILURE, UNREGISTER_USER -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+            case INVALID_PASSWORD, UNREGISTER_ID -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ExceptionResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage()));
 
             default -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
@@ -55,5 +55,4 @@ public class ExceptionController {
     public ExceptionResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
-
 }
