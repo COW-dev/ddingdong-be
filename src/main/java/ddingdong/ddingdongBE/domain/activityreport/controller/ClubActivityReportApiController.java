@@ -33,7 +33,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("api/club")
+@RequestMapping("/server/club")
 public class ClubActivityReportApiController {
 
     private static final int IMAGE_COUNT = 2;
@@ -66,18 +66,23 @@ public class ClubActivityReportApiController {
     public void registerReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestPart(value = "reportData", required = false) List<RegisterActivityReportRequest> requests,
-            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
+            @RequestPart(value = "uploadFiles1", required = false) List<MultipartFile> imageA,
+            @RequestPart(value = "uploadFiles2", required = false) List<MultipartFile> imageB
     ) {
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
                 .forEach(index -> {
                     RegisterActivityReportRequest request = requests.get(index);
-                    MultipartFile image = images.get(index);
-
                     Long registeredActivityReportId = activityReportService.register(user, request);
-                    fileService.uploadFile(registeredActivityReportId, Collections.singletonList(image),
-                            IMAGE, ACTIVITY_REPORT);
+                    if (index == 0 && imageA != null) {
+                        fileService.uploadFile(registeredActivityReportId, Collections.singletonList(imageA.get(0)),
+                                IMAGE, ACTIVITY_REPORT);
+                    }
+                    if (index == 1 && imageB != null) {
+                        fileService.uploadFile(registeredActivityReportId, Collections.singletonList(imageB.get(0)),
+                                IMAGE, ACTIVITY_REPORT);
+                    }
                 });
     }
 
@@ -86,19 +91,27 @@ public class ClubActivityReportApiController {
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @RequestParam("term") String term,
             @RequestPart(value = "reportData", required = false) List<UpdateActivityReportRequest> requests,
-            @RequestPart(value = "uploadFiles", required = false) List<MultipartFile> images
+            @RequestPart(value = "uploadFiles1", required = false) List<MultipartFile> imageA,
+            @RequestPart(value = "uploadFiles2", required = false) List<MultipartFile> imageB
     ) {
         User user = principalDetails.getUser();
 
         List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term, requests);
 
         IntStream.range(0, updateActivityReportDtos.size())
-            .forEach(index -> {
-                    fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
-                    fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
-                        Collections.singletonList(images.get(index)), IMAGE, ACTIVITY_REPORT);
-                }
-            );
+                .forEach(index -> {
+                            if (index == 0) {
+                                fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
+                                fileService.uploadFile(updateActivityReportDtos.get(index).getId(), imageA, IMAGE,
+                                        ACTIVITY_REPORT);
+                            }
+                            if (index == 1) {
+                                fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE, ACTIVITY_REPORT);
+                                fileService.uploadFile(updateActivityReportDtos.get(index).getId(), imageB, IMAGE,
+                                        ACTIVITY_REPORT);
+                            }
+                        }
+                );
     }
 
     @DeleteMapping("my/activity-reports")

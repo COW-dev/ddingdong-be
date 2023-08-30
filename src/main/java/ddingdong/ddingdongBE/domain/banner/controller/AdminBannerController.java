@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/api/admin/banners")
+@RequestMapping("/server/admin/banners")
 @RequiredArgsConstructor
 public class AdminBannerController {
 

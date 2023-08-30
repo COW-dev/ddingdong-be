@@ -18,7 +18,7 @@ import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/admin/fix")
+@RequestMapping("/server/admin/fix")
 @RequiredArgsConstructor
 public class AdminFixZoneController {
 
@@ -35,7 +35,7 @@ public class AdminFixZoneController {
 	}
 
 	@PatchMapping("/{fixId}")
-	public void updateFix(@PathVariable Long fixId, @ModelAttribute UpdateFiXCompletionRequest request) {
+	public void updateFix(@PathVariable Long fixId, @RequestBody UpdateFiXCompletionRequest request) {
 		fixZoneService.updateIsCompleted(fixId, request);
 	}
 }

@@ -14,10 +14,11 @@ public enum ErrorMessage {
     ALREADY_EXIST_CLUB_ID("이미 존재하는 동아리 계정입니다."),
     NO_SUCH_CLUB("해당 동아리가 존재하지 않습니다."),
     NO_SUCH_NOTICE("해당 공지사항이 존재하지 않습니다."),
+    NO_SUCH_ACTIVITY_REPORT("해당 활동보고서가 존재하지 않습니다."),
     INVALID_CLUB_SCORE_VALUE("동아리 점수는 0 ~ 999점 입니다."),
-    AUTHENTICATION_FAILURE("인증에 실패했습니다."),
+    INVALID_PASSWORD("잘못된 비밀번호입니다."),
     ACCESS_DENIED("접근권한이 없습니다."),
-    UNREGISTER_USER("등록되지 않은 유저입니다."),
+    UNREGISTER_ID("등록되지 않은 ID입니다."),
     NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
     NON_VALIDATED_TOKEN("유효하지 않은 토큰입니다."),
     NO_SUCH_FIX("해당 수리 신청서가 존재하지 않습니다.");

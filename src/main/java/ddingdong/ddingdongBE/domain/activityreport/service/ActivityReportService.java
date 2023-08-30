@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_INTRODUCE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
@@ -14,6 +15,7 @@ import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepo
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
@@ -83,7 +85,6 @@ public class ActivityReportService {
 
     public List<ActivityReportDto> update(final User user, final String term,
                                           final List<UpdateActivityReportRequest> requests) {
-
         Club club = clubService.findClubByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);

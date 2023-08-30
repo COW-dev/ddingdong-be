@@ -25,7 +25,7 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
             responseAuthenticationException(response, errorMessage);
             return;
         }
-        responseAuthenticationException(response, AUTHENTICATION_FAILURE);
+        responseAuthenticationException(response, INVALID_PASSWORD);
     }
 
     private void responseAuthenticationException(HttpServletResponse response, ErrorMessage errorMessage)

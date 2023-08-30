@@ -39,7 +39,7 @@ public class ClubMemberDto {
                 .id(clubMember.getId())
                 .name(clubMember.getName())
                 .studentNumber(clubMember.getStudentNumber())
-                .phoneNumber(clubMember.getPhoneNUmber())
+                .phoneNumber(clubMember.getPhoneNumber())
                 .position(clubMember.getPosition().getName())
                 .department(clubMember.getDepartment()).build();
     }
@@ -49,10 +49,8 @@ public class ClubMemberDto {
                 .club(club)
                 .name(name)
                 .studentNumber(studentNumber)
-                .phoneNUmber(phoneNumber)
+                .phoneNumber(phoneNumber)
                 .position(Position.valueOf(position))
                 .department(department).build();
     }
-
-
 }
