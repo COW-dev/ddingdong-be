@@ -1,12 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import java.time.LocalDateTime;
 import java.util.List;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
@@ -26,11 +22,9 @@ public class UpdateClubRequest {
 
     private String location;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime startRecruitPeriod;
+    private String startRecruitPeriod;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm")
-    private LocalDateTime endRecruitPeriod;
+    private String endRecruitPeriod;
 
     private String regularMeeting;
 
