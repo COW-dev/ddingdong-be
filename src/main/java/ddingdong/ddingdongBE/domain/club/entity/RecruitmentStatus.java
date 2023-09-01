@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 public enum RecruitmentStatus {
 
     BEFORE_RECRUIT("모집 예정"),
-    RECRUITING("모집중"),
+    RECRUITING("모집 중"),
     END_RECRUIT("모집 마감");
 
     private final String text;

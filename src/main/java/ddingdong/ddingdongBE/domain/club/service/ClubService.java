@@ -168,10 +168,11 @@ public class ClubService {
     }
 
     private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {
-        if (club.getStartRecruitPeriod() == null || club.getEndRecruitPeriod() == null) {
+        if (club.getStartRecruitPeriod() == null || club.getEndRecruitPeriod() == null
+                || club.getStartRecruitPeriod().isAfter(now)) {
             return BEFORE_RECRUIT;
         }
-        return club.getStartRecruitPeriod().isBefore(now)
-                && club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
+
+        return  club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
 }
