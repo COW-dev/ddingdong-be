@@ -31,17 +31,17 @@ public class ScoreHistory extends BaseEntity {
     @JoinColumn(name = "club_id")
     private Club club;
 
-    private int amount;
+    private float amount;
 
     @Enumerated(EnumType.STRING)
     private ScoreCategory scoreCategory;
 
     private String reason;
 
-    private int remainingScore;
+    private float remainingScore;
 
     @Builder
-    public ScoreHistory(Club club, int amount, ScoreCategory scoreCategory, String reason, int remainingScore) {
+    public ScoreHistory(Club club, float amount, ScoreCategory scoreCategory, String reason, float remainingScore) {
         this.club = club;
         this.amount = amount;
         this.scoreCategory = scoreCategory;

@@ -110,7 +110,7 @@ public class Club extends BaseEntity {
         return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 
-    public int editScore(Score score) {
+    public float editScore(Score score) {
         this.score = score;
 
         return this.score.getValue();

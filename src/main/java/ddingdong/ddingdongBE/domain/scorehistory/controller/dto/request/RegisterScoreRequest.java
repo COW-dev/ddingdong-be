@@ -12,9 +12,9 @@ public class RegisterScoreRequest {
 
     private String reason;
 
-    private int amount;
+    private float amount;
 
-    public ScoreHistory toEntity(Club club, int remainingScore) {
+    public ScoreHistory toEntity(Club club, float remainingScore) {
         return ScoreHistory.builder()
                 .club(club)
                 .amount(amount)

@@ -23,7 +23,7 @@ public class ScoreHistoryService {
     public void register(final Long clubId, RegisterScoreRequest registerScoreRequest) {
         Club club = clubService.findClubByClubId(clubId);
 
-        int remainingScore = clubService.editClubScore(clubId, registerScoreRequest.getAmount());
+        float remainingScore = clubService.editClubScore(clubId, registerScoreRequest.getAmount());
 
         scoreHistoryRepository.save(registerScoreRequest.toEntity(club, remainingScore));
     }

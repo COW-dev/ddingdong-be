@@ -15,9 +15,9 @@ import lombok.NoArgsConstructor;
 public class Score {
 
     @Column(name = "score")
-    private int value;
+    private float value;
 
-    private Score(int value) {
+    private Score(float value) {
         this.value = value;
     }
 
@@ -38,15 +38,13 @@ public class Score {
         return Objects.hash(getValue());
     }
 
-    public static Score of(int value) {
-        validateScore(value);
+    public static Score of(float value) {
+        value = roundToSecondPoint(value);
         return new Score(value);
     }
 
-    private static void validateScore(int value) {
-        if (value < 0 || value > 1000) {
-            throw new IllegalArgumentException(INVALID_CLUB_SCORE_VALUE.getText());
-        }
+    private static float roundToSecondPoint(float value) {
+        return Math.round(value * 100.0) / 100.0F;
     }
 
 }

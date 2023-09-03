@@ -104,7 +104,7 @@ public class ClubService {
         clubRepository.delete(club);
     }
 
-    public int editClubScore(Long clubId, int score) {
+    public float editClubScore(Long clubId, float score) {
         Club club = findClubByClubId(clubId);
 
         return club.editScore(generateNewScore(club.getScore(), score));
@@ -163,7 +163,7 @@ public class ClubService {
         }
     }
 
-    private Score generateNewScore(Score beforeUpdateScore, int value) {
+    private Score generateNewScore(Score beforeUpdateScore, float value) {
         return Score.of(beforeUpdateScore.getValue() + value);
     }
 
