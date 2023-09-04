@@ -39,12 +39,12 @@ public class Score {
     }
 
     public static Score of(float value) {
-        value = roundToSecondPoint(value);
+        value = roundToThirdPoint(value);
         return new Score(value);
     }
 
-    private static float roundToSecondPoint(float value) {
-        return Math.round(value * 100.0) / 100.0F;
+    private static float roundToThirdPoint(float value) {
+        return Math.round(value * 1000.0) / 1000.0F;
     }
 
 }
