@@ -1,6 +1,4 @@
-package ddingdong.ddingdongBE.domain.club.entity;
-
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+package ddingdong.ddingdongBE.domain.scorehistory.entity;
 
 import java.util.Objects;
 import javax.persistence.Column;
@@ -39,12 +37,8 @@ public class Score {
     }
 
     public static Score of(float value) {
-        value = roundToThirdPoint(value);
         return new Score(value);
     }
 
-    private static float roundToThirdPoint(float value) {
-        return Math.round(value * 1000.0) / 1000.0F;
-    }
 
 }
