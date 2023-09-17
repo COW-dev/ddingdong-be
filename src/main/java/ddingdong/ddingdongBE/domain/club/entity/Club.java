@@ -2,9 +2,11 @@ package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Embedded;
@@ -94,9 +96,9 @@ public class Club extends BaseEntity {
                 request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
         this.location = request.getLocation() != null ? Location.of(request.getLocation()) : this.location;
         this.startRecruitPeriod =
-                request.getStartRecruitPeriod() != null ? request.getStartRecruitPeriod() : this.startRecruitPeriod;
+                request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
         this.endRecruitPeriod =
-                request.getEndRecruitPeriod() != null ? request.getEndRecruitPeriod() : this.endRecruitPeriod;
+                request.getEndRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getEndRecruitPeriod());
         this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
         this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
         this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
@@ -104,7 +106,12 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    public int editScore(Score score) {
+    private static LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
+    }
+
+    public float editScore(Score score) {
         this.score = score;
 
         return this.score.getValue();

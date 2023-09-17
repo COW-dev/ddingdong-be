@@ -7,7 +7,9 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,11 +26,19 @@ public class ClubMemberService {
         Club club = clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_CLUB.getText()));
 
+        List<Long> memberIds = clubMemberRepository.findClubMembersByClubId(club.getId())
+                .stream()
+                .map(ClubMember::getId)
+                .toList();
+
         List<ClubMember> requestedClubMembers = request.getClubMemberList().stream()
                 .map(clubMemberDto -> clubMemberDto.toEntity(club))
                 .toList();
 
-        clubMemberRepository.deleteAll();
+        if (!memberIds.isEmpty()) {
+            clubMemberRepository.deleteAllById(memberIds);
+        }
+
         clubMemberRepository.saveAll(requestedClubMembers);
     }
 }

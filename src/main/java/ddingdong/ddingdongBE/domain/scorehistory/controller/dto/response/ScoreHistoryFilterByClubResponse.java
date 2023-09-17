@@ -12,14 +12,14 @@ public class ScoreHistoryFilterByClubResponse {
 
     private String reason;
 
-    private int amount;
+    private float amount;
 
-    private int remainingScore;
+    private float remainingScore;
 
     private LocalDateTime createdAt;
 
     @Builder
-    public ScoreHistoryFilterByClubResponse(String scoreCategory, String reason, int amount, int remainingScore, LocalDateTime createdAt) {
+    public ScoreHistoryFilterByClubResponse(String scoreCategory, String reason, float amount, float remainingScore, LocalDateTime createdAt) {
         this.scoreCategory = scoreCategory;
         this.reason = reason;
         this.amount = amount;

@@ -15,24 +15,24 @@ public class ClubResponse {
 
     private String tag;
 
-    private boolean isRecruit;
+    private String recruitStatus;
 
     @Builder
-    public ClubResponse(Long id, String name, String category, String tag, boolean isRecruit) {
+    public ClubResponse(Long id, String name, String category, String tag, String recruitStatus) {
         this.id = id;
         this.name = name;
         this.category = category;
         this.tag = tag;
-        this.isRecruit = isRecruit;
+        this.recruitStatus = recruitStatus;
     }
 
-    public static ClubResponse of(Club club, boolean isRecruit) {
+    public static ClubResponse of(Club club, String recruitStatus) {
         return ClubResponse.builder()
                 .id(club.getId())
                 .name(club.getName())
                 .category(club.getCategory())
                 .tag(club.getTag())
-                .isRecruit(isRecruit).build();
+                .recruitStatus(recruitStatus).build();
     }
 
 }

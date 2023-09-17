@@ -15,12 +15,12 @@ public class AdminClubResponse {
 
     private String category;
 
-    private int score;
+    private float score;
 
     private List<String> profileImageUrls;
 
     @Builder
-    private AdminClubResponse(Long id, String name, String category, int score, List<String> profileImageUrls) {
+    private AdminClubResponse(Long id, String name, String category, float score, List<String> profileImageUrls) {
         this.id = id;
         this.name = name;
         this.category = category;

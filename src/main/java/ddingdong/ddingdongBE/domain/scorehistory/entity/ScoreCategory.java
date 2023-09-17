@@ -12,7 +12,8 @@ public enum ScoreCategory {
     ACTIVITY_REPORT("동아리 활동 보고서"),
     LEADER_CONFERENCE("전동대회"),
     BUSINESS_PARTICIPATION("총동연 사업 참여"),
-    ADDITIONAL("가산점/감점");
+    ADDITIONAL("가산점/감점"),
+    CARRYOVER_SCORE("점수 이월");
 
     private final String category;
 

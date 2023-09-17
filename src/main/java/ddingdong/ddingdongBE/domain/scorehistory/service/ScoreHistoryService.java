@@ -23,7 +23,9 @@ public class ScoreHistoryService {
     public void register(final Long clubId, RegisterScoreRequest registerScoreRequest) {
         Club club = clubService.findClubByClubId(clubId);
 
-        int remainingScore = clubService.editClubScore(clubId, registerScoreRequest.getAmount());
+        float score = roundToThirdPoint(registerScoreRequest.getAmount());
+
+        float remainingScore = clubService.editClubScore(clubId, score);
 
         scoreHistoryRepository.save(registerScoreRequest.toEntity(club, remainingScore));
     }
@@ -43,5 +45,9 @@ public class ScoreHistoryService {
         return scoreHistoryRepository.findByClubId(club.getId()).stream()
                 .map(ScoreHistoryFilterByClubResponse::of)
                 .toList();
+    }
+
+    private static float roundToThirdPoint(float value) {
+        return Math.round(value * 1000.0) / 1000.0F;
     }
 }

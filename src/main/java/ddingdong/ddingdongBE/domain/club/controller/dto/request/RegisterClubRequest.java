@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
-import ddingdong.ddingdongBE.domain.club.entity.Score;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.Getter;
 
