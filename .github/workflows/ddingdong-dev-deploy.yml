@@ -5,6 +5,10 @@ on:
     branches:
       - develop  # develop에 push될 때 실행
 
+  pull_request:
+    branches:
+      - develop
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,3 +73,12 @@ jobs:
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
           wait_for_environment_recovery: 180
+
+      - name: Test with Gradle
+        run: ./gradlew test
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        env:
+          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
+          file: ./build/reports/jacoco/test/jacocoTestReport.xml
