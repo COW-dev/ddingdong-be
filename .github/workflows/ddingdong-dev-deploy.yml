@@ -75,7 +75,7 @@ jobs:
           wait_for_environment_recovery: 180
 
       - name: Test with Gradle
-        run: ./gradlew test
+        run: ./gradlew test --no-daemon
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
