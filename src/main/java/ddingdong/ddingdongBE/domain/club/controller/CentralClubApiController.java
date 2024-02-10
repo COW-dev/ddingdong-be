@@ -4,7 +4,6 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubMemberService;
@@ -16,6 +15,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -30,6 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/server/club/my")
 @RequiredArgsConstructor
+@Slf4j
 public class CentralClubApiController {
 
     private final ClubService clubService;
@@ -63,9 +65,9 @@ public class CentralClubApiController {
 
     @PutMapping("/club-members")
     public void updateClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @RequestBody UpdateClubMemberRequest request) {
+                                  @RequestParam MultipartFile clubMemberListFile) {
         User user = principalDetails.getUser();
-        clubMemberService.updateClubMembers(user.getId(), request);
+        clubMemberService.updateClubMembers(user.getId(), clubMemberListFile);
     }
 
 }
