@@ -58,22 +58,27 @@ public class ActivityReportService {
     public List<AllActivityReportResponse> getMyActivityReports(final User user) {
         Club club = clubService.findClubByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportRepository.findByClubName(club.getName());
+        List<ActivityReport> activityReports = activityReportRepository.findByClubName(
+            club.getName());
 
         return parseToActivityReportResponse(activityReports);
     }
 
     @Transactional(readOnly = true)
-    public List<DetailActivityReportResponse> getActivityReport(final String term, final String clubName) {
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
+    public List<DetailActivityReportResponse> getActivityReport(final String term,
+        final String clubName) {
+        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
+            clubName, term);
 
         return activityReports.stream().map(activityReport -> {
-            List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
+            List<String> imageUrls = fileInformationService.getImageUrls(
+                IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
             return DetailActivityReportResponse.from(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }
 
-    public Long register(final User user, final RegisterActivityReportRequest registerActivityReportRequest) {
+    public Long register(final User user,
+        final RegisterActivityReportRequest registerActivityReportRequest) {
 
         Club club = clubService.findClubByUserId(user.getId());
         ActivityReport activityReport = registerActivityReportRequest.toEntity(club);
@@ -84,25 +89,29 @@ public class ActivityReportService {
     }
 
     public List<ActivityReportDto> update(final User user, final String term,
-                                          final List<UpdateActivityReportRequest> requests) {
+        final List<UpdateActivityReportRequest> requests) {
         Club club = clubService.findClubByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
+        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
+            club.getName(), term);
 
-        return IntStream.range(0, activityReports.size()).mapToObj(index -> {
-            activityReports.get(index).update(requests.get(index));
-            return ActivityReportDto.from(activityReports.get(index));
-        }).collect(Collectors.toList());
+        return IntStream.range(0, activityReports.size())
+            .mapToObj(index -> {
+                activityReports.get(index).update(requests.get(index));
+                return ActivityReportDto.from(activityReports.get(index));
+            }).collect(Collectors.toList());
     }
 
     public List<ActivityReportDto> delete(final User user, final String term) {
         Club club = clubService.findClubByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(club.getName(), term);
+        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
+            club.getName(), term);
 
         return activityReports.stream()
-                .peek(activityReport -> activityReport.getParticipants().clear())
-                .peek(activityReportRepository::delete).map(ActivityReportDto::from).collect(Collectors.toList());
+            .peek(activityReport -> activityReport.getParticipants().clear())
+            .peek(activityReportRepository::delete).map(ActivityReportDto::from)
+            .collect(Collectors.toList());
     }
 
     public CurrentTermResponse getCurrentTerm() {
@@ -114,7 +123,8 @@ public class ActivityReportService {
     }
 
     private int calculateGapOfDays(final LocalDate startDate, final LocalDate currentDate) {
-        return (int) Duration.between(startDate.atStartOfDay(), currentDate.atStartOfDay()).toDays();
+        return (int) Duration.between(startDate.atStartOfDay(), currentDate.atStartOfDay())
+            .toDays();
     }
 
     private String calculateCurrentTerm(final int days) {
@@ -127,11 +137,12 @@ public class ActivityReportService {
         return String.valueOf(result);
     }
 
-    private List<AllActivityReportResponse> parseToActivityReportResponse(final List<ActivityReport> activityReports) {
+    private List<AllActivityReportResponse> parseToActivityReportResponse(
+        final List<ActivityReport> activityReports) {
         Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
-                Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
-                        Collectors.groupingBy(ActivityReport::getTerm,
-                                Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
+            Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
+                Collectors.groupingBy(ActivityReport::getTerm,
+                    Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
 
         return groupedData.entrySet().stream().flatMap(entry -> {
             String clubName = entry.getKey();
@@ -139,8 +150,9 @@ public class ActivityReportService {
 
             return termMap.entrySet().stream().map(termEntry -> {
                 String term = termEntry.getKey();
-                List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream().map(ActivityReportDto::new)
-                        .collect(Collectors.toList());
+                List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream()
+                    .map(ActivityReportDto::new)
+                    .collect(Collectors.toList());
                 return AllActivityReportResponse.of(clubName, term, activityReportDtos);
             });
 
