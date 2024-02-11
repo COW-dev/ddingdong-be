@@ -41,7 +41,7 @@ public class QrStampService {
 
         List<CollectedStampsResponse> collectedStampsResponse = stampHistory.getCollectedStamps().keySet().stream()
                 .map(stamp -> CollectedStampsResponse.of(stamp.getName(),
-                        stampHistory.getCollectedStamps().get(stamp).toString()))
+                        stampHistory.getCollectedStamps().get(stamp)))
                 .toList();
         boolean isCompleted = stampHistory.getCollectedStamps().size() == ClubStamp.values().length;
         return CollectionResultResponse.of(isCompleted, collectedStampsResponse);
