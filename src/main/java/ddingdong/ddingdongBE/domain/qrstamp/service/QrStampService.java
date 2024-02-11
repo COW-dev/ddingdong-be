@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.qrstamp.service;
 
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.request.StudentInfoParam;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectedStampsResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectionResultResponse;
@@ -10,7 +9,6 @@ import ddingdong.ddingdongBE.domain.qrstamp.entity.StampHistory;
 import ddingdong.ddingdongBE.domain.qrstamp.repository.StampHistoryRepository;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
