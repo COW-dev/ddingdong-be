@@ -29,7 +29,8 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests()
-                .antMatchers(API_PREFIX + "/auth/**")
+                .antMatchers(API_PREFIX + "/auth/**",
+                        API_PREFIX + "/qr-stamps/**")
                 .permitAll()
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
