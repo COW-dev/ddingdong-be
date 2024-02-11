@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum ClubStamp {
 
-    COW("COW"),
-    TEST("TEST");
+    COW("카우", "COW"),
+    TEST("테스트", "TEST");
 
+    private final String name;
     private final String code;
 
     public static ClubStamp getByClubCode(String code) {

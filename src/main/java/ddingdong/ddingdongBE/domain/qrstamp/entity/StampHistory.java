@@ -38,7 +38,7 @@ public class StampHistory extends BaseEntity {
 
     @Type(type = "json")
     @Column(columnDefinition = "json")
-    private final Map<ClubStamp, Boolean> collectedStamps = new HashMap<>();
+    private final Map<ClubStamp, LocalDateTime> collectedStamps = new HashMap<>();
 
     private LocalDateTime completedAt;
 
@@ -50,8 +50,8 @@ public class StampHistory extends BaseEntity {
         this.completedAt = completedAt;
     }
 
-    public void collectStamp(ClubStamp clubStamp) {
-        this.collectedStamps.put(clubStamp, true);
+    public void collectStamp(ClubStamp clubStamp, LocalDateTime collectedAt) {
+        this.collectedStamps.put(clubStamp, collectedAt);
         if (this.collectedStamps.size() == ClubStamp.values().length) {
             this.completedAt = LocalDateTime.now();
         }
