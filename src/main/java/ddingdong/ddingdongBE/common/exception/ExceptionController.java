@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.common.exception;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -16,15 +14,13 @@ public class ExceptionController {
     @ExceptionHandler(RuntimeException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionResponse handleRuntimeException(RuntimeException e) {
-        e.printStackTrace();
-        return ExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.getText());
+        return ExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ExceptionResponse handleException(Exception e) {
-        e.printStackTrace();
-        return ExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, INTERNAL_SERVER_ERROR.getText());
+        return ExceptionResponse.of(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
