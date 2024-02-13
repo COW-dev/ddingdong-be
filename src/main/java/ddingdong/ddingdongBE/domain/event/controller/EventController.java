@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/server/events")
+@RequestMapping("/server/event")
 public class EventController {
 
     private final EventQrGenerator eventQrGenerator;
