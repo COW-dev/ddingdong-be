@@ -30,11 +30,13 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests()
                 .antMatchers(API_PREFIX + "/auth/**",
-                        API_PREFIX + "/qr-stamps/**")
-                .permitAll()
+                    API_PREFIX + "/qr-stamps/**")
+
+            .permitAll()
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
                         API_PREFIX + "/notices/**",
+                        API_PREFIX + "/events/**",
                         API_PREFIX + "/banners/**")
                 .permitAll()
                 .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
