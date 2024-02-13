@@ -5,6 +5,10 @@ on:
     branches:
       - develop  # develop에 push될 때 실행
 
+  pull_request:
+    branches:
+      - develop
+
 jobs:
   build:
     runs-on: ubuntu-latest
