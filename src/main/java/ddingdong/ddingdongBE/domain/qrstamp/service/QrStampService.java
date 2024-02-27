@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.request.CollectStampR
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.AppliedUsersResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectedStampsResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectionResultResponse;
+import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.DetailAppliedUserResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.entity.ClubStamp;
 import ddingdong.ddingdongBE.domain.qrstamp.entity.StampHistory;
 import ddingdong.ddingdongBE.domain.qrstamp.repository.StampHistoryRepository;
@@ -80,6 +81,14 @@ public class QrStampService {
         return appliedStampHistories.stream()
                 .map(AppliedUsersResponse::from)
                 .collect(Collectors.toList());
+    }
+
+    public DetailAppliedUserResponse findAppliedUser(Long stampHistoryId) {
+        StampHistory stampHistory = stampHistoryRepository.findById(stampHistoryId)
+                .orElseThrow(() -> new NoSuchElementException("응모 내역이 존재하지 않습니다."));
+
+        return DetailAppliedUserResponse.from(stampHistory);
+
     }
 
     private void validateEventIsCompleted(StampHistory stampHistory) {
