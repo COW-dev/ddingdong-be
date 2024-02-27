@@ -12,6 +12,8 @@ public class CollectStampRequest {
 
     private String studentName;
 
+    private String department;
+
     @Size(min = 8, max = 8, message = "학번은 8자리입니다.")
     private String studentNumber;
 
@@ -20,6 +22,7 @@ public class CollectStampRequest {
     public StampHistory toStampHistoryEntity() {
         return StampHistory.builder()
                 .studentName(this.studentName)
+                .department(this.department)
                 .studentNumber(this.studentNumber).build();
     }
 }

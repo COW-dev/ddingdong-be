@@ -21,16 +21,19 @@ public class QrStampService {
     private final StampHistoryRepository stampHistoryRepository;
 
     @Transactional
-    public void collectStamp(CollectStampRequest request, LocalDateTime collectedAt) {
+    public String collectStamp(CollectStampRequest request, LocalDateTime collectedAt) {
         StampHistory stampHistory = stampHistoryRepository.findStampHistoryByStudentNameAndStudentNumber(
                         request.getStudentName(),
                         request.getStudentNumber())
                 .orElse(request.toStampHistoryEntity());
-
+        if (stampHistory.isCompleted()) {
+            return "10개의 벚꽃을 모두 채우셨습니다. 이벤트 응모를 완료해주세요!";
+        }
         ClubStamp clubStamp = ClubStamp.getByClubCode(request.getClubCode());
         stampHistory.collectStamp(clubStamp, collectedAt);
 
         stampHistoryRepository.save(stampHistory);
+        return "ok";
     }
 
     public CollectionResultResponse getCollectionResult(String studentNumber, String studentName) {
@@ -44,8 +47,6 @@ public class QrStampService {
                 .map(stamp -> CollectedStampsResponse.of(stamp.getName(),
                         stampHistory.getCollectedStamps().get(stamp)))
                 .toList();
-        boolean isCompleted = stampHistory.getCollectedStamps().size() == ClubStamp.values().length;
-        return CollectionResultResponse.of(isCompleted, collectedStampsResponse);
+        return CollectionResultResponse.of(stampHistory.isCompleted(), collectedStampsResponse);
     }
-
 }

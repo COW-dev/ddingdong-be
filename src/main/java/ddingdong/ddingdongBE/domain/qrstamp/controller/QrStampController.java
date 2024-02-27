@@ -13,19 +13,19 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/server/qr-stamps")
+@RequestMapping("/server/events")
 @RequiredArgsConstructor
 public class QrStampController {
 
     private final QrStampService qrStampService;
 
-    @PostMapping("/collect")
-    public void collectStamp(@RequestBody CollectStampRequest request) {
+    @PostMapping("/stamps")
+    public String collectStamp(@RequestBody CollectStampRequest request) {
         LocalDateTime collectedAt = LocalDateTime.now();
-        qrStampService.collectStamp(request, collectedAt);
+        return qrStampService.collectStamp(request, collectedAt);
     }
 
-    @GetMapping()
+    @GetMapping("/stmaps")
     public CollectionResultResponse getCollectionResult(@RequestParam String studentName, @RequestParam String studentNumber) {
         return qrStampService.getCollectionResult(studentName, studentNumber);
     }
