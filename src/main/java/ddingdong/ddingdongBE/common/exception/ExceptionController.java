@@ -36,9 +36,9 @@ public class ExceptionController {
     }
 
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleNoSuchElementException(NoSuchElementException e) {
-        return ExceptionResponse.of(HttpStatus.NOT_FOUND, e.getMessage());
+        return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
     @ExceptionHandler(AuthenticationException.class)
