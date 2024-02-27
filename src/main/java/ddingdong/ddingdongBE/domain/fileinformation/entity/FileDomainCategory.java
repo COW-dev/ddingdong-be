@@ -12,7 +12,8 @@ public enum FileDomainCategory {
     NOTICE("notice/"),
     BANNER("banner/"),
     ACTIVITY_REPORT("activity-report/"),
-    FIX_ZONE("fix/");
+    FIX_ZONE("fix/"),
+    EVENT("event/");
 
     private final String fileDomain;
 }

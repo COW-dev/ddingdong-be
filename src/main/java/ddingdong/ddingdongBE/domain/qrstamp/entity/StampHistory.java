@@ -44,16 +44,19 @@ public class StampHistory extends BaseEntity {
 
     private String department;
 
+    private String telephone;
+
     private String certificationImageUrl;
 
     @Builder
 
     private StampHistory(Long id, String studentName, String department, String studentNumber,
-                         LocalDateTime completedAt, String certificationImageUrl) {
+                         String telephone, LocalDateTime completedAt, String certificationImageUrl) {
         this.id = id;
         this.studentName = studentName;
         this.department = department;
         this.studentNumber = studentNumber;
+        this.telephone = telephone;
         this.completedAt = completedAt;
         this.certificationImageUrl = certificationImageUrl;
     }
@@ -67,6 +70,12 @@ public class StampHistory extends BaseEntity {
 
     public boolean isCompleted() {
         return this.collectedStamps.size() >= 10;
+    }
+
+
+    public void apply(String telephone, String certificationImageUrl) {
+        this.telephone = telephone;
+        this.certificationImageUrl = certificationImageUrl;
     }
 
 }

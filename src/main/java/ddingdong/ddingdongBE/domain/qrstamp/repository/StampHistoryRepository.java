@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface StampHistoryRepository extends JpaRepository<StampHistory, Long> {
 
+    Optional<StampHistory> findStampHistoryByStudentNumber(String studentNumber);
+
     Optional<StampHistory> findStampHistoryByStudentNameAndStudentNumber(String studentName, String studentNumber);
 
 }

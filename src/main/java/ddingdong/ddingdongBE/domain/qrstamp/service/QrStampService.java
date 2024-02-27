@@ -1,6 +1,9 @@
 package ddingdong.ddingdongBE.domain.qrstamp.service;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_STAMP_COUNT_FOR_APPLY;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_QR_STAMP_HISTORY;
 
+import ddingdong.ddingdongBE.domain.event.controller.dto.request.ApplyEventRequest;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.request.CollectStampRequest;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectedStampsResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectionResultResponse;
@@ -9,7 +12,9 @@ import ddingdong.ddingdongBE.domain.qrstamp.entity.StampHistory;
 import ddingdong.ddingdongBE.domain.qrstamp.repository.StampHistoryRepository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -49,4 +54,30 @@ public class QrStampService {
                 .toList();
         return CollectionResultResponse.of(stampHistory.isCompleted(), collectedStampsResponse);
     }
+
+    @Transactional
+    public void applyEvent(ApplyEventRequest request, List<String> imageUrls) {
+        StampHistory stampHistory = stampHistoryRepository.findStampHistoryByStudentNumber(
+            request.studentNumber()
+            )
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_QR_STAMP_HISTORY.getText()));
+
+        validateEventIsCompleted(stampHistory);
+
+        stampHistory.apply(request.telephone(), imageUrls.get(0));
+    }
+
+    public Long findByStudentNumber(String studentNumber) {
+        StampHistory stampHistory = stampHistoryRepository.findStampHistoryByStudentNumber(studentNumber)
+            .orElseThrow(() -> new NoSuchElementException(NO_SUCH_QR_STAMP_HISTORY.getText()));
+
+        return stampHistory.getId();
+    }
+
+    private void validateEventIsCompleted(StampHistory stampHistory) {
+        if (!stampHistory.isCompleted()) {
+            throw new IllegalArgumentException(INVALID_STAMP_COUNT_FOR_APPLY.getText());
+        }
+    }
+
 }
