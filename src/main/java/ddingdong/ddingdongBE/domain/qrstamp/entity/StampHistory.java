@@ -42,12 +42,20 @@ public class StampHistory extends BaseEntity {
 
     private LocalDateTime completedAt;
 
+    private String department;
+
+    private String certificationImageUrl;
+
     @Builder
-    private StampHistory(Long id, String studentName, String studentNumber, LocalDateTime completedAt) {
+
+    private StampHistory(Long id, String studentName, String department, String studentNumber,
+                         LocalDateTime completedAt, String certificationImageUrl) {
         this.id = id;
         this.studentName = studentName;
+        this.department = department;
         this.studentNumber = studentNumber;
         this.completedAt = completedAt;
+        this.certificationImageUrl = certificationImageUrl;
     }
 
     public void collectStamp(ClubStamp clubStamp, LocalDateTime collectedAt) {
