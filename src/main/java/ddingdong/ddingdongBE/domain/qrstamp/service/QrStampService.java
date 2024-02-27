@@ -5,6 +5,7 @@ import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_QR_STA
 
 import ddingdong.ddingdongBE.domain.event.controller.dto.request.ApplyEventRequest;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.request.CollectStampRequest;
+import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.AppliedUsersResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectedStampsResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.controller.dto.response.CollectionResultResponse;
 import ddingdong.ddingdongBE.domain.qrstamp.entity.ClubStamp;
@@ -13,8 +14,8 @@ import ddingdong.ddingdongBE.domain.qrstamp.repository.StampHistoryRepository;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -41,7 +42,7 @@ public class QrStampService {
         return "ok";
     }
 
-    public CollectionResultResponse getCollectionResult(String studentNumber, String studentName) {
+    public CollectionResultResponse getCollectionResult(String studentName, String studentNumber) {
         StampHistory stampHistory = stampHistoryRepository.findStampHistoryByStudentNameAndStudentNumber(
                         studentName, studentNumber)
                 .orElse(StampHistory.builder()
@@ -72,6 +73,13 @@ public class QrStampService {
             .orElseThrow(() -> new NoSuchElementException(NO_SUCH_QR_STAMP_HISTORY.getText()));
 
         return stampHistory.getId();
+    }
+
+    public List<AppliedUsersResponse> findAllAppliedUsers() {
+        List<StampHistory> appliedStampHistories = stampHistoryRepository.findAllByCertificationImageUrlIsNotNull();
+        return appliedStampHistories.stream()
+                .map(AppliedUsersResponse::from)
+                .collect(Collectors.toList());
     }
 
     private void validateEventIsCompleted(StampHistory stampHistory) {
