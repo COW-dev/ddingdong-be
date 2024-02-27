@@ -52,8 +52,13 @@ public class StampHistory extends BaseEntity {
 
     public void collectStamp(ClubStamp clubStamp, LocalDateTime collectedAt) {
         this.collectedStamps.put(clubStamp, collectedAt);
-        if (this.collectedStamps.size() == ClubStamp.values().length) {
+        if (this.collectedStamps.size() == 10) {
             this.completedAt = LocalDateTime.now();
         }
     }
+
+    public boolean isCompleted() {
+        return this.collectedStamps.size() >= 10;
+    }
+
 }
