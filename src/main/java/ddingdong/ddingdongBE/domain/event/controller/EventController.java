@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/server/event")
+@RequestMapping("/server/events")
 public class EventController {
 
     private final EventQrGenerator eventQrGenerator;
@@ -22,4 +22,5 @@ public class EventController {
     ) {
         return eventQrGenerator.generateQrCodeUri(studentName, studentNumber);
     }
+
 }
