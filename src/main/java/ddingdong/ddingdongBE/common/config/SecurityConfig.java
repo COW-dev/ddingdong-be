@@ -30,7 +30,7 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests()
                 .antMatchers(API_PREFIX + "/auth/**",
-                        API_PREFIX + "/event/**")
+                        API_PREFIX + "/events/**")
                 .permitAll()
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
