@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequestMapping("/server/events")
 @RequiredArgsConstructor
-public class QrStampController {
+public class UserEventController {
 
     private final QrStampService qrStampService;
     private final FileService fileService;
