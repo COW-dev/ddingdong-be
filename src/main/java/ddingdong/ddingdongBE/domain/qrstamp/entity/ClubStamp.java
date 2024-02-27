@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.qrstamp.entity;
 
-import com.amazonaws.services.kms.model.NotFoundException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -62,6 +62,6 @@ public enum ClubStamp {
         return Arrays.stream(ClubStamp.values())
                 .filter(clubStamp -> clubStamp.getCode().equals(code))
                 .findFirst()
-                .orElseThrow(() -> new NotFoundException("동아리 코드를 확인해주세요."));
+                .orElseThrow(() -> new NoSuchElementException("동아리 코드를 확인해주세요."));
     }
 }

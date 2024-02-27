@@ -25,7 +25,7 @@ public class QrStampController {
         return qrStampService.collectStamp(request, collectedAt);
     }
 
-    @GetMapping("/stmaps")
+    @GetMapping("/stamps")
     public CollectionResultResponse getCollectionResult(@RequestParam String studentName, @RequestParam String studentNumber) {
         return qrStampService.getCollectionResult(studentName, studentNumber);
     }
