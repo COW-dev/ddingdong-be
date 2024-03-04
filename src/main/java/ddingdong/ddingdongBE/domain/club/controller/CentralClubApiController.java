@@ -4,6 +4,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubMemberService;
@@ -13,6 +14,7 @@ import ddingdong.ddingdongBE.file.service.FileService;
 
 import java.util.List;
 
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
@@ -21,9 +23,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -63,11 +63,12 @@ public class CentralClubApiController {
         }
     }
 
-    @PutMapping("/club-members")
+    @PutMapping(value = "/club-members")
     public void updateClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @RequestParam MultipartFile clubMemberListFile) {
+                                  @RequestPart(value = "data", required = false) UpdateClubMemberRequest request,
+                                  @RequestPart(name = "file", required = false) Optional<MultipartFile> clubMemberListFile) {
         User user = principalDetails.getUser();
-        clubMemberService.updateClubMembers(user.getId(), clubMemberListFile);
+        clubMemberService.updateClubMembers(user.getId(), request, clubMemberListFile);
     }
 
 }
