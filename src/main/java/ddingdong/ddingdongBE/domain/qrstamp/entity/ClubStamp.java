@@ -28,7 +28,7 @@ public enum ClubStamp {
     그림패시만화("그림패시만화", "EVENTPIC"),
     포토랩("포토랩", "EVENTPHO"),
     디비전("디비전", "EVENTDIV"),
-    코아("코아", "EVENTCOA"),
+    코아("코아", "EVENTCOAD"),
     씨네메이션("씨네메이션", "EVENTCINE"),
     실로암("실로암", "EVENTSIL"),
     CCC("ccc", "EVENTCCC"),
@@ -50,7 +50,7 @@ public enum ClubStamp {
     MJTA("MJTA", "EVENTMJTA"),
     콕콕콕("콕콕콕", "EVENTCOK"),
     바다이야기("바다이야기", "EVENTSEA"),
-    파인("파인", "EVENTFINE"),
+    파인("파인", "EVENTPINE"),
     TIME("TIME", "EVENTTIME"),
     명지서법("명지서법", "EVENTWORD"),
     MIRS("MIRS", "EVENTMIRS");
