@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 
 @Getter
@@ -63,9 +64,16 @@ public class ClubMemberDto {
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
-            if (cell.getStringCellValue() != null) {
-                clubMemberDto.setValueByCell(cell.getStringCellValue(), cell.getColumnIndex());
+            if (cell.getCellType() == CellType.STRING) {
+                if (cell.getStringCellValue() != null) {
+                    clubMemberDto.setValueByCell(cell.getStringCellValue(), cell.getColumnIndex());
+                }
+            } else if (cell.getCellType() == CellType.NUMERIC) {
+                if (cell.getNumericCellValue() != 0) {
+                    clubMemberDto.setValueByCell(String.valueOf(cell.getNumericCellValue()), cell.getColumnIndex());
+                }
             }
+
         }
         return clubMemberDto;
     }
@@ -84,7 +92,7 @@ public class ClubMemberDto {
     }
 
     private void validatePositionValue(String stringCellValue) {
-        if (Arrays.stream(Position.values()).noneMatch(position -> position.getName().equals(stringCellValue))) {
+        if (Arrays.stream(Position.values()).noneMatch(position-> position.name().equals(stringCellValue))) {
             throw new IllegalArgumentException("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다. ");
         }
     }
