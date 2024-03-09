@@ -37,7 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ActivityReportService {
 
-    private static final String START_DATE = "2023-09-04";
+    private static final String START_DATE = "2024-03-04";
     private static final int DEFAULT_TERM = 1;
     private static final int CORRECTION_VALUE = 1;
     private static final int TERM_LENGTH_OF_DAYS = 14;
