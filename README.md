@@ -1,7 +1,7 @@
 # 명지대학교 동아리 관리 시스템 - ddingdong
 
 ### URL
-https://ddingdong.club/
+DEFAULT : https://ddingdong.club/
 
 ADMIN : https://admin.ddingdong.club/
 
