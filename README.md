@@ -3,6 +3,8 @@
 ### URL
 https://ddingdong.club/
 
+ADMIN : https://admin.ddingdong.club/
+
 ### 기술 스택 
 
 <p>
