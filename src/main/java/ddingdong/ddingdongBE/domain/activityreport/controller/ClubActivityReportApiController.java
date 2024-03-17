@@ -76,13 +76,13 @@ public class ClubActivityReportApiController {
                 RegisterActivityReportRequest request = requests.get(index);
                 Long registeredActivityReportId = activityReportService.register(user, request);
 
-                if (index == 0 && !firstImage.isEmpty()) {
+                if (index == 0 && firstImage != null && !firstImage.isEmpty()) {
                     fileService.uploadFile(registeredActivityReportId,
                         Collections.singletonList(firstImage),
                         IMAGE, ACTIVITY_REPORT);
                 }
 
-                if (index == 1 && !secondImage.isEmpty()) {
+                if (index == 1 && secondImage != null && !secondImage.isEmpty()) {
                     fileService.uploadFile(registeredActivityReportId,
                         Collections.singletonList(secondImage),
                         IMAGE, ACTIVITY_REPORT);
