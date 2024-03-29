@@ -43,6 +43,7 @@ dependencies {
 	implementation 'org.apache.poi:poi-ooxml:5.2.0'
 	implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
+	implementation 'io.sentry:sentry-logback:7.6.0'
 
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.h2database:h2'
