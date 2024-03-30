@@ -35,3 +35,8 @@ cloud:
       static: ${AWS_DEFAULT_REGION}
     stack:
       auto: false
+
+sentry:
+  dsn: ${SENTRY_KEY}
+  enable-tracing: true
+  environment: dev
