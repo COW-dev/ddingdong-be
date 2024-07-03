@@ -13,7 +13,9 @@ spring:
       ddl-auto: none
     properties:
       hibernate:
+        default_schema: ddingdong_staging
     defer-datasource-initialization: false
+
 
   sql:
     init:
