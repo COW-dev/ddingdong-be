@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
                 .antMatchers(GET,
+                        "/",
                         API_PREFIX + "/clubs/**",
                         API_PREFIX + "/notices/**",
                         API_PREFIX + "/banners/**")
