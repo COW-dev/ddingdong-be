@@ -40,3 +40,7 @@ sentry:
   dsn: ${SENTRY_KEY}
   enable-tracing: true
   environment: dev
+
+swagger:
+  server:
+    url: ${SERVER_URL:localhost:8080}
