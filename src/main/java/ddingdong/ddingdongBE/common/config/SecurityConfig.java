@@ -37,7 +37,8 @@ public class SecurityConfig {
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
                         API_PREFIX + "/notices/**",
-                        API_PREFIX + "/banners/**")
+                        API_PREFIX + "/banners/**",
+                        API_PREFIX + "/documents/**")
                 .permitAll()
                 .anyRequest()
                 .authenticated()

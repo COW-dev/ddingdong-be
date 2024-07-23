@@ -4,10 +4,12 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,5 +30,12 @@ public class AdminDocumentController {
                          @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
         Long createdDocumentId = documentService.create(generateDocumentRequest.toEntity());
         fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
+    }
+
+    @GetMapping
+    public List<AdminDocumentResponse> getAll() {
+        return documentService.findAll().stream()
+                .map(AdminDocumentResponse::from)
+                .toList();
     }
 }
