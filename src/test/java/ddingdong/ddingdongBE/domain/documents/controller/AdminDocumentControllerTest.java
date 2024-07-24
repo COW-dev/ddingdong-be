@@ -19,6 +19,7 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocum
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.support.WebAdaptorTestSupport;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -51,7 +52,7 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isCreated());
 
         verify(fileService).uploadDownloadableFile(anyLong(), anyList(), any(), any());
     }
@@ -61,8 +62,9 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
     @Test
     void getAll() throws Exception {
         //given
-        List<Document> foundDocuments = List.of(Document.builder().id(1L).title("A").build(),
-                Document.builder().id(2L).title("B").build());
+        List<Document> foundDocuments = List.of(
+                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
+                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
         when(documentService.findAll()).thenReturn(foundDocuments);
 
         //when //then
@@ -84,7 +86,8 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
         //given
         Document document = Document.builder()
                 .title("title")
-                .content("content").build();
+                .content("content")
+                .createdAt(LocalDateTime.now()).build();
         when(documentService.findById(1L)).thenReturn(document);
 
         List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),

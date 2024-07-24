@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -27,10 +28,11 @@ public class Document extends BaseEntity {
     private String content;
 
     @Builder
-    private Document(Long id, String title, String content) {
+    private Document(Long id, String title, String content, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.content = content;
+        super.setCreatedAt(createdAt);
     }
 
     public void updateDocument(Document updatedDocument) {
