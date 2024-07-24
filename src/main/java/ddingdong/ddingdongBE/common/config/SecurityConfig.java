@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.common.config;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
@@ -40,6 +40,7 @@ public class SecurityConfig {
                         API_PREFIX + "/banners/**",
                         API_PREFIX + "/documents/**")
                 .permitAll()
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()
