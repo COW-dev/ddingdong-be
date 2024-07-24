@@ -5,6 +5,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
+import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,6 +34,9 @@ public abstract class WebAdaptorTestSupport {
 
     @MockBean
     protected FileService fileService;
+
+    @MockBean
+    protected FileInformationService fileInformationService;
 
 
     @BeforeEach

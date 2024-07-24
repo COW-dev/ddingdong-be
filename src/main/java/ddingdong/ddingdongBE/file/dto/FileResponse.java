@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.file.dto;
 
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
@@ -8,6 +9,7 @@ public class FileResponse {
     private String name;
     private String fileUrl;
 
+    @Builder
     public FileResponse(String name, String fileUrl) {
         this.name = name;
         this.fileUrl = fileUrl;
