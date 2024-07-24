@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.common.handler;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_PASSWORD;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NON_VALIDATED_TOKEN;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.valueOf;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ddingdong.ddingdongBE.common.exception.ErrorMessage;
