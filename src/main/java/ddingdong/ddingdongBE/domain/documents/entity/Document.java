@@ -32,4 +32,9 @@ public class Document extends BaseEntity {
         this.title = title;
         this.content = content;
     }
+
+    public void updateDocument(Document updatedDocument) {
+        this.title = updatedDocument.getTitle();
+        this.content = updatedDocument.getContent();
+    }
 }

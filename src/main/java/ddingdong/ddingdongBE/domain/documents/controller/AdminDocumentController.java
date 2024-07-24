@@ -4,6 +4,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDetailDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
@@ -15,6 +16,7 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -51,5 +53,14 @@ public class AdminDocumentController {
         List<FileResponse> fileResponse = fileInformationService.getFileUrls(
                 FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
         return AdminDetailDocumentResponse.of(document, fileResponse);
+    }
+
+    @PatchMapping("/{documentId}")
+    public void modifyDocument(@PathVariable Long documentId,
+                               @ModelAttribute ModifyDocumentRequest modifyDocumentRequest,
+                               @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles) {
+        Long updateDocumentId = documentService.update(documentId, modifyDocumentRequest.toEntity());
+        fileService.deleteFile(updateDocumentId, FILE, DOCUMENT);
+        fileService.uploadDownloadableFile(updateDocumentId, uploadFiles, FILE, DOCUMENT);
     }
 }

@@ -34,4 +34,11 @@ public class DocumentService {
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
     }
 
+    public Long update(Long documentId, Document updatedDocument) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
+        document.updateDocument(updatedDocument);
+        return document.getId();
+    }
+
 }

@@ -14,6 +14,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.support.WebAdaptorTestSupport;
@@ -99,5 +100,35 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
                 .andExpect(jsonPath("$.fileUrls", hasSize(fileResponses.size())))
                 .andExpect(jsonPath("$.fileUrls[0].name").value("fileA"))
                 .andExpect(jsonPath("$.fileUrls[0].fileUrl").value("fileAUrl"));
+    }
+
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("document 자료 수정 요청을 수행한다.")
+    @Test
+    void modify() throws Exception {
+        // given
+        ModifyDocumentRequest modifyRequest = ModifyDocumentRequest.builder()
+                .title("testTitle")
+                .content("testContent").build();
+        MockMultipartFile file = new MockMultipartFile("uploadFilessymotion-prefix)", "test.txt", "text/plain",
+                "test content".getBytes());
+        when(documentService.update(1L, modifyRequest.toEntity())).thenReturn(1L);
+
+        // when // then
+        mockMvc.perform(multipart("/server/admin/documents/{documentId}", 1L)
+                        .file(file)
+                        .param("title", modifyRequest.getTitle())
+                        .param("content", modifyRequest.getContent())
+                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .with(csrf())
+                        .with(request -> {
+                            request.setMethod("PATCH");
+                            return request;
+                        }))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(fileService).deleteFile(anyLong(), any(), any());
+        verify(fileService).uploadDownloadableFile(anyLong(), any(), any(), any());
     }
 }
