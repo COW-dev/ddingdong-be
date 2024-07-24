@@ -41,4 +41,10 @@ public class DocumentService {
         return document.getId();
     }
 
+    public void delete(Long documentId) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
+        documentRepository.delete(document);
+    }
+
 }

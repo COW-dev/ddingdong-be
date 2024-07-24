@@ -7,6 +7,7 @@ import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -130,5 +131,21 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
 
         verify(fileService).deleteFile(anyLong(), any(), any());
         verify(fileService).uploadDownloadableFile(anyLong(), any(), any(), any());
+    }
+
+    @WithMockUser(roles = "ADMIN")
+    @DisplayName("documents 삭제 요청을 수행한다.")
+    @Test
+    void deleteDocument() throws Exception {
+        //given
+
+        //when //then
+        mockMvc.perform(delete("/server/admin/documents/{documentId}", 1L)
+                        .with(csrf()))
+                .andDo(print())
+                .andExpect(status().isOk());
+
+        verify(documentService).delete(1L);
+        verify(fileService).deleteFile(anyLong(), any(), any());
     }
 }

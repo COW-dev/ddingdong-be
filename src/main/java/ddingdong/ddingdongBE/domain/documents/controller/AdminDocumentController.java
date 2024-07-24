@@ -14,6 +14,7 @@ import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -62,5 +63,11 @@ public class AdminDocumentController {
         Long updateDocumentId = documentService.update(documentId, modifyDocumentRequest.toEntity());
         fileService.deleteFile(updateDocumentId, FILE, DOCUMENT);
         fileService.uploadDownloadableFile(updateDocumentId, uploadFiles, FILE, DOCUMENT);
+    }
+
+    @DeleteMapping("/{documentId}")
+    public void deleteDocument(@PathVariable Long documentId) {
+        fileService.deleteFile(documentId, FILE, DOCUMENT);
+        documentService.delete(documentId);
     }
 }
