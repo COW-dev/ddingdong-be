@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import lombok.Builder;
 import lombok.Getter;
 

@@ -1,8 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_DOCUMENT;
 
-import ddingdong.ddingdongBE.common.exception.ErrorMessage;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.repository.DocumentRepository;
 import java.util.List;
