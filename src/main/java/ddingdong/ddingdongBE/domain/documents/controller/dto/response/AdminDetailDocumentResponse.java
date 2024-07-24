@@ -3,25 +3,35 @@ package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import java.time.LocalDateTime;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 import lombok.Getter;
 
+@Schema(
+        name = "AdminDetailDocumentResponse",
+        description = "어드민 자료실 자료 상세 조회 응답"
+)
 @Getter
 public class AdminDetailDocumentResponse {
 
+    @Schema(description = "자료 제목", example = "자료 제목")
     private final String title;
 
+    @Schema(description = "자료 내용", example = "자료 내용")
     private final String content;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-    private final LocalDateTime createdAt;
+    @Schema(description = "작성일", example = "2024-01-01")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private final LocalDate createdAt;
 
+    @ArraySchema(schema = @Schema(description = "첨부파일 목록", implementation = FileResponse.class))
     private final List<FileResponse> fileUrls;
 
     @Builder
-    private AdminDetailDocumentResponse(String title, String content, LocalDateTime createdAt,
+    private AdminDetailDocumentResponse(String title, String content, LocalDate createdAt,
                                         List<FileResponse> fileUrls) {
         this.title = title;
         this.content = content;
@@ -30,11 +40,11 @@ public class AdminDetailDocumentResponse {
     }
 
     public static AdminDetailDocumentResponse of(Document document,
-                                           List<FileResponse> fileResponses) {
+                                                 List<FileResponse> fileResponses) {
         return AdminDetailDocumentResponse.builder()
                 .title(document.getTitle())
                 .content(document.getContent())
-                .createdAt(document.getCreatedAt())
+                .createdAt(document.getCreatedAt().toLocalDate())
                 .fileUrls(fileResponses)
                 .build();
     }
