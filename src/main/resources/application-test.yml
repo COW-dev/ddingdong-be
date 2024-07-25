@@ -4,7 +4,7 @@ spring:
       on-profile: test
 
   datasource:
-    url: jdbc:h2:tcp://localhost/~/projects/ddingdong/ddingdong
+    url: jdbc:h2:mem:ddingdongdb;
     driver-class-name: org.h2.Driver
     username: sa
     password:
@@ -17,6 +17,10 @@ spring:
       hibernate:
         format_sql: true
         auto_quote_keyword: true
+
+  sql:
+    init:
+      mode: never
 
   s3:
     bucket: "test"
