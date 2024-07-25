@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.auth;
 
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.ArrayList;
 import java.util.Collection;
 import lombok.Getter;
@@ -9,6 +10,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+@Hidden
 @RequiredArgsConstructor
 @Getter
 public class PrincipalDetails implements UserDetails {

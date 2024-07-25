@@ -46,6 +46,8 @@ dependencies {
     implementation 'io.sentry:sentry-logback:7.6.0'
     implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
 
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.17.0'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.h2database:h2'
     annotationProcessor 'org.projectlombok:lombok'

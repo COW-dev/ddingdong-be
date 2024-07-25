@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_INTRODUCE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
@@ -12,23 +11,17 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Curre
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
-
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-
 import java.time.Duration;
 import java.time.LocalDate;
-
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +49,7 @@ public class ActivityReportService {
 
     @Transactional(readOnly = true)
     public List<AllActivityReportResponse> getMyActivityReports(final User user) {
-        Club club = clubService.findClubByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubName(
             club.getName());
@@ -80,7 +73,7 @@ public class ActivityReportService {
     public Long register(final User user,
         final RegisterActivityReportRequest registerActivityReportRequest) {
 
-        Club club = clubService.findClubByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
         ActivityReport activityReport = registerActivityReportRequest.toEntity(club);
 
         ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
@@ -90,7 +83,7 @@ public class ActivityReportService {
 
     public List<ActivityReportDto> update(final User user, final String term,
         final List<UpdateActivityReportRequest> requests) {
-        Club club = clubService.findClubByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
             club.getName(), term);
@@ -103,7 +96,7 @@ public class ActivityReportService {
     }
 
     public List<ActivityReportDto> delete(final User user, final String term) {
-        Club club = clubService.findClubByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
             club.getName(), term);

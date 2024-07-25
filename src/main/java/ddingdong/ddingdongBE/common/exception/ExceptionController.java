@@ -1,7 +1,8 @@
 package ddingdong.ddingdongBE.common.exception;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INTERNAL_SERVER_ERROR;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.multipart.support.MissingServletRequestPartException;
 
+@Hidden
 @RestControllerAdvice
 @Slf4j
 public class ExceptionController {
