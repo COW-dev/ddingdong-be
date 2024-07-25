@@ -5,11 +5,10 @@ import lombok.Getter;
 
 @Getter
 @AllArgsConstructor
-public class UpdateFixRequest {
+public class UpdateFixZoneRequest {
 
 	private String title;
 
 	private String content;
 
-	private String imgUrls;
 }
