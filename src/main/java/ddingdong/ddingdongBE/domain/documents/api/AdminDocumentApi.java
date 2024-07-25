@@ -30,24 +30,24 @@ public interface AdminDocumentApi {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void generate(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-                  @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
+    void generateDocument(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+                          @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
 
     @Operation(summary = "어드민 자료실 목록 조회 API")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<AdminDocumentResponse> getAll();
+    List<AdminDocumentResponse> getAllDocuments();
 
     @Operation(summary = "어드민 자료실 상세 조회 API")
     @GetMapping("/{documentId}")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    AdminDetailDocumentResponse getDetail(@PathVariable Long documentId);
+    AdminDetailDocumentResponse getDetailDocument(@PathVariable Long documentId);
 
     @Operation(summary = "어드민 자료실 수정 API")
     @PatchMapping(value = "/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void modifyDocument(@PathVariable Long documentId,
                         @ModelAttribute ModifyDocumentRequest modifyDocumentRequest,
@@ -55,9 +55,7 @@ public interface AdminDocumentApi {
 
     @Operation(summary = "어드민 자료실 삭제 API")
     @DeleteMapping("/{documentId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void deleteDocument(@PathVariable Long documentId);
-
-
 }

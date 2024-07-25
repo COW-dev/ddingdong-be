@@ -21,12 +21,12 @@ public interface DocumentApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<DocumentResponse> getAll();
+    List<DocumentResponse> getAllDocuments();
 
     @Operation(summary = "자료실 상세 조회 API")
     @GetMapping("/{documentId}")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    DetailDocumentResponse getDetail(@PathVariable Long documentId);
+    DetailDocumentResponse getDetailDocument(@PathVariable Long documentId);
 
 }

@@ -29,20 +29,20 @@ public class AdminDocumentController implements AdminDocumentApi {
     private final FileService fileService;
     private final FileInformationService fileInformationService;
 
-    public void generate(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-                         @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
+    public void generateDocument(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+                                 @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
         Long createdDocumentId = documentService.create(generateDocumentRequest.toEntity());
         fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
     }
 
-    public List<AdminDocumentResponse> getAll() {
-        return documentService.findAll().stream()
+    public List<AdminDocumentResponse> getAllDocuments() {
+        return documentService.getAll().stream()
                 .map(AdminDocumentResponse::from)
                 .toList();
     }
 
-    public AdminDetailDocumentResponse getDetail(@PathVariable Long documentId) {
-        Document document = documentService.findById(documentId);
+    public AdminDetailDocumentResponse getDetailDocument(@PathVariable Long documentId) {
+        Document document = documentService.getById(documentId);
         List<FileResponse> fileResponse = fileInformationService.getFileUrls(
                 FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
         return AdminDetailDocumentResponse.of(document, fileResponse);

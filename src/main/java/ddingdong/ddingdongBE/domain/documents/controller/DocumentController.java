@@ -22,14 +22,14 @@ public class DocumentController implements DocumentApi {
     private final DocumentService documentService;
     private final FileInformationService fileInformationService;
 
-    public List<DocumentResponse> getAll() {
-        return documentService.findAll().stream()
+    public List<DocumentResponse> getAllDocuments() {
+        return documentService.getAll().stream()
                 .map(DocumentResponse::from)
                 .toList();
     }
 
-    public DetailDocumentResponse getDetail(@PathVariable Long documentId) {
-        Document document = documentService.findById(documentId);
+    public DetailDocumentResponse getDetailDocument(@PathVariable Long documentId) {
+        Document document = documentService.getById(documentId);
         List<FileResponse> fileResponse = fileInformationService.getFileUrls(
                 FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
         return DetailDocumentResponse.of(document, fileResponse);

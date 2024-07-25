@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.support.WebAdaptorTestSupport;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,11 +24,12 @@ class DocumentControllerTest extends WebAdaptorTestSupport {
     @WithMockUser()
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
-    void getAll() throws Exception {
+    void getAllDocuments() throws Exception {
         //given
-        List<Document> foundDocuments = List.of(Document.builder().id(1L).title("A").build(),
-                Document.builder().id(2L).title("B").build());
-        when(documentService.findAll()).thenReturn(foundDocuments);
+        List<Document> foundDocuments = List.of(
+                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
+                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
+        when(documentService.getAll()).thenReturn(foundDocuments);
 
         //when //then
         mockMvc.perform(get("/server/documents")
@@ -48,15 +50,16 @@ class DocumentControllerTest extends WebAdaptorTestSupport {
         //given
         Document document = Document.builder()
                 .title("title")
-                .content("content").build();
-        when(documentService.findById(1L)).thenReturn(document);
+                .content("content")
+                .createdAt(LocalDateTime.now()).build();
+        when(documentService.getById(1L)).thenReturn(document);
 
         List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
                 FileResponse.builder().name("fileB").fileUrl("fileBUrl").build());
         when(fileInformationService.getFileUrls(any())).thenReturn(fileResponses);
 
         //when //then
-        mockMvc.perform(get("/server/admin/documents/{documentId}", 1L)
+        mockMvc.perform(get("/server/documents/{documentId}", 1L)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())

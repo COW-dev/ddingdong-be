@@ -23,27 +23,29 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Document> findAll() {
+    public List<Document> getAll() {
         return documentRepository.findAll();
     }
 
     @Transactional(readOnly = true)
-    public Document findById(Long documentId) {
-        return documentRepository.findById(documentId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
+    public Document getById(Long documentId) {
+        return getDocument(documentId);
     }
 
     public Long update(Long documentId, Document updatedDocument) {
-        Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
+        Document document = getDocument(documentId);
         document.updateDocument(updatedDocument);
         return document.getId();
     }
 
     public void delete(Long documentId) {
-        Document document = documentRepository.findById(documentId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
+        Document document = getDocument(documentId);
         documentRepository.delete(document);
+    }
+
+    private Document getDocument(Long documentId) {
+        return documentRepository.findById(documentId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_DOCUMENT.getText()));
     }
 
 }

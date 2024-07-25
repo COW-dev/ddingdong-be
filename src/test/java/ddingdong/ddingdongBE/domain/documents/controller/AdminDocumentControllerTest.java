@@ -34,7 +34,7 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")
     @Test
-    void generate() throws Exception {
+    void generateDocument() throws Exception {
         // given
         GenerateDocumentRequest request = GenerateDocumentRequest.builder()
                 .title("testTitle")
@@ -47,8 +47,8 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
         // when // then
         mockMvc.perform(multipart("/server/admin/documents")
                         .file(file)
-                        .param("title", request.getTitle())
-                        .param("content", request.getContent())
+                        .param("title", request.title())
+                        .param("content", request.content())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf()))
                 .andDo(print())
@@ -60,12 +60,12 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
     @WithMockUser(roles = "ADMIN")
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
-    void getAll() throws Exception {
+    void getAllDocumentsDocuments() throws Exception {
         //given
         List<Document> foundDocuments = List.of(
                 Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
                 Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.findAll()).thenReturn(foundDocuments);
+        when(documentService.getAll()).thenReturn(foundDocuments);
 
         //when //then
         mockMvc.perform(get("/server/admin/documents")
@@ -88,7 +88,7 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
                 .title("title")
                 .content("content")
                 .createdAt(LocalDateTime.now()).build();
-        when(documentService.findById(1L)).thenReturn(document);
+        when(documentService.getById(1L)).thenReturn(document);
 
         List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
                 FileResponse.builder().name("fileB").fileUrl("fileBUrl").build());
@@ -121,8 +121,8 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
         // when // then
         mockMvc.perform(multipart("/server/admin/documents/{documentId}", 1L)
                         .file(file)
-                        .param("title", modifyRequest.getTitle())
-                        .param("content", modifyRequest.getContent())
+                        .param("title", modifyRequest.title())
+                        .param("content", modifyRequest.content())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf())
                         .with(request -> {
@@ -130,7 +130,7 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
                             return request;
                         }))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(fileService).deleteFile(anyLong(), any(), any());
         verify(fileService).uploadDownloadableFile(anyLong(), any(), any(), any());
@@ -146,7 +146,7 @@ public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
         mockMvc.perform(delete("/server/admin/documents/{documentId}", 1L)
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isOk());
+                .andExpect(status().isNoContent());
 
         verify(documentService).delete(1L);
         verify(fileService).deleteFile(anyLong(), any(), any());
