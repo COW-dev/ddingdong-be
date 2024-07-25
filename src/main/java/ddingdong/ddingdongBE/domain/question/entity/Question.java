@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.faq.entity;
+package ddingdong.ddingdongBE.domain.question.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import java.time.LocalDateTime;
@@ -33,5 +33,10 @@ public class Question extends BaseEntity {
         this.question = question;
         this.reply = reply;
         super.setCreatedAt(createdAt);
+    }
+
+    public void updateQuestion(Question updatedDocument) {
+        this.question = updatedDocument.getQuestion();
+        this.reply = updatedDocument.getReply();
     }
 }

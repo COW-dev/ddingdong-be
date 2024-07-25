@@ -18,18 +18,16 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDoc
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.support.WebAdaptorTestSupport;
+import ddingdong.ddingdongBE.support.WebApiTestSupport;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.test.context.support.WithMockUser;
 
-@WebMvcTest(AdminDocumentController.class)
-public class AdminDocumentControllerTest extends WebAdaptorTestSupport {
+public class AdminDocumentControllerTest extends WebApiTestSupport {
 
     @WithMockUser(roles = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")

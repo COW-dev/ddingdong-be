@@ -6,6 +6,9 @@ import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.question.controller.AdminQuestionController;
+import ddingdong.ddingdongBE.domain.question.controller.QuestionController;
+import ddingdong.ddingdongBE.domain.question.service.QuestionService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,8 +23,10 @@ import org.springframework.web.context.WebApplicationContext;
 @WebMvcTest(controllers = {
         AdminDocumentController.class,
         DocumentController.class,
+        AdminQuestionController.class,
+        QuestionController.class
 })
-public abstract class WebAdaptorTestSupport {
+public abstract class WebApiTestSupport {
 
     @Autowired
     private WebApplicationContext context;
@@ -38,6 +43,8 @@ public abstract class WebAdaptorTestSupport {
     @MockBean
     protected FileInformationService fileInformationService;
 
+    @MockBean
+    protected QuestionService questionService;
 
     @BeforeEach
     void setUp() {
