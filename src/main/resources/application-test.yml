@@ -18,6 +18,27 @@ spring:
         format_sql: true
         auto_quote_keyword: true
 
-  sql:
-    init:
-      mode: never
+  s3:
+    bucket: "test"
+    access-key: "test"
+    secret-key: "test"
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+cloud:
+  aws:
+    region:
+      static: "ap-northeast-2"
+    stack:
+      auto: false
+
+
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: "test"
+  expiration: 3600

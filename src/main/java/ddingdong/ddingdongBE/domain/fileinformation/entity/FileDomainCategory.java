@@ -13,7 +13,8 @@ public enum FileDomainCategory {
     BANNER("banner/"),
     ACTIVITY_REPORT("activity-report/"),
     FIX_ZONE("fix/"),
-    EVENT("event/");
+    EVENT("event/"),
+    DOCUMENT("document/");
 
     private final String fileDomain;
 }
