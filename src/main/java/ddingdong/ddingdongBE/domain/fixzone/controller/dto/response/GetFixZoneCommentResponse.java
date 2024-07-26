@@ -24,7 +24,7 @@ public record GetFixZoneCommentResponse(
     LocalDateTime createdAt
 ) {
 
-    public static GetFixZoneCommentResponse from(
+    public static GetFixZoneCommentResponse of(
         FixZoneComment comment,
         String profileImageUrl
     ) {

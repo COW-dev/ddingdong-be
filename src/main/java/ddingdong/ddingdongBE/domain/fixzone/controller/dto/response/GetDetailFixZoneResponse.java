@@ -31,7 +31,7 @@ public record GetDetailFixZoneResponse(
     List<GetFixZoneCommentResponse> comments
 ) {
 
-    public static GetDetailFixZoneResponse from(
+    public static GetDetailFixZoneResponse of(
         Long id,
         String title,
         LocalDateTime createdAt,

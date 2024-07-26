@@ -28,7 +28,7 @@ public record GetFixZoneResponse(
     LocalDateTime requestedAt
 ) {
 
-    public static GetFixZoneResponse from(FixZone fixZone) {
+    public static GetFixZoneResponse of(FixZone fixZone) {
         return new GetFixZoneResponse(
             fixZone.getId(),
             fixZone.getClub().getLocation().getValue(),

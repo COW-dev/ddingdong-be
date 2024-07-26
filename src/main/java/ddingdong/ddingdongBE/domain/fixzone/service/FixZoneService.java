@@ -43,7 +43,7 @@ public class FixZoneService {
             IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fixZone.getId()
         );
 
-        return GetDetailFixZoneResponse.from(
+        return GetDetailFixZoneResponse.of(
             fixZone.getId(),
             fixZone.getTitle(),
             fixZone.getCreatedAt(),
@@ -63,14 +63,14 @@ public class FixZoneService {
                     IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + comment.getClub().getId()
                 );
                 String profileImageUrl = profileImageUrls.isEmpty() ? null : profileImageUrls.get(0);
-                return GetFixZoneCommentResponse.from(comment, profileImageUrl);
+                return GetFixZoneCommentResponse.of(comment, profileImageUrl);
             })
             .toList();
     }
 
     public List<GetFixZoneResponse> getAll() {
         return fixZoneRepository.findAll().stream()
-            .map(GetFixZoneResponse::from)
+            .map(GetFixZoneResponse::of)
             .toList();
     }
 
@@ -100,7 +100,7 @@ public class FixZoneService {
     public List<GetFixZoneResponse> getMyFixZones(Long clubId) {
         return fixZoneRepository.findAllByClubId(clubId)
             .stream()
-            .map(GetFixZoneResponse::from)
+            .map(GetFixZoneResponse::of)
             .toList();
     }
 
