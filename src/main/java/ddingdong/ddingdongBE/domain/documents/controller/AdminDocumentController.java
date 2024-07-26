@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.documents.controller;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.DOCUMENT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.api.AdminDocumentApi;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
@@ -11,10 +12,12 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocum
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -29,9 +32,12 @@ public class AdminDocumentController implements AdminDocumentApi {
     private final FileService fileService;
     private final FileInformationService fileInformationService;
 
-    public void generateDocument(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-                                 @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
-        Long createdDocumentId = documentService.create(generateDocumentRequest.toEntity());
+    public void generateDocument(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
+        User admin = principalDetails.getUser();
+        Long createdDocumentId = documentService.create(generateDocumentRequest.toEntity(admin));
         fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
     }
 

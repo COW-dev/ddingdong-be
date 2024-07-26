@@ -1,12 +1,16 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,6 +25,10 @@ public class Document extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @Column(nullable = false)
     private String title;
 
@@ -28,8 +36,9 @@ public class Document extends BaseEntity {
     private String content;
 
     @Builder
-    private Document(Long id, String title, String content, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, String content, LocalDateTime createdAt) {
         this.id = id;
+        this.user = user;
         this.title = title;
         this.content = content;
         super.setCreatedAt(createdAt);

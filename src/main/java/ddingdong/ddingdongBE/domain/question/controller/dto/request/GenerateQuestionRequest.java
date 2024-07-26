@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.question.entity.Question;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -16,8 +17,9 @@ public record GenerateQuestionRequest(
         String reply
 ) {
 
-    public Question toEntity() {
+    public Question toEntity(User user) {
         return Question.builder()
+                .user(user)
                 .question(this.question)
                 .reply(this.reply).build();
     }

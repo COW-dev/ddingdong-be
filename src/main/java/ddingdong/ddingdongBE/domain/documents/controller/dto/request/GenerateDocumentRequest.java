@@ -1,10 +1,9 @@
 package ddingdong.ddingdongBE.domain.documents.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Getter;
 
 @Schema(
         name = "GenerateDocumentRequest",
@@ -18,8 +17,9 @@ public record GenerateDocumentRequest(
         @Schema(description = "자료 내용", example = "내용")
         String content
 ) {
-    public Document toEntity() {
+    public Document toEntity(User user) {
         return Document.builder()
+                .user(user)
                 .title(title)
                 .content(content)
                 .build();

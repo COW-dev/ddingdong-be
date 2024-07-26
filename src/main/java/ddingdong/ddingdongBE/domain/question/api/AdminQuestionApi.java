@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.api;
 
 
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionResponse;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -27,7 +29,9 @@ public interface AdminQuestionApi {
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void generateQuestion(@ModelAttribute GenerateQuestionRequest generateDocumentRequest);
+    void generateQuestion(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @ModelAttribute GenerateQuestionRequest generateDocumentRequest);
 
     @Operation(summary = "어드민 FAQ 목록 조회 API")
     @GetMapping
