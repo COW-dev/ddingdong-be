@@ -121,11 +121,6 @@ public class ClubService {
         return club.getId();
     }
 
-    public Club findByUserId(final Long userId) {
-        return clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
-    }
-
     public Club getByUserId(final Long userId) {
         return clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
@@ -180,7 +175,7 @@ public class ClubService {
             return BEFORE_RECRUIT;
         }
 
-        return  club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
+        return club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
 
 }

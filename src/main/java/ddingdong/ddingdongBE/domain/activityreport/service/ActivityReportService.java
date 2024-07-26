@@ -49,7 +49,7 @@ public class ActivityReportService {
 
     @Transactional(readOnly = true)
     public List<AllActivityReportResponse> getMyActivityReports(final User user) {
-        Club club = clubService.findByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubName(
             club.getName());
@@ -73,7 +73,7 @@ public class ActivityReportService {
     public Long register(final User user,
         final RegisterActivityReportRequest registerActivityReportRequest) {
 
-        Club club = clubService.findByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
         ActivityReport activityReport = registerActivityReportRequest.toEntity(club);
 
         ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
@@ -83,7 +83,7 @@ public class ActivityReportService {
 
     public List<ActivityReportDto> update(final User user, final String term,
         final List<UpdateActivityReportRequest> requests) {
-        Club club = clubService.findByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
             club.getName(), term);
@@ -96,7 +96,7 @@ public class ActivityReportService {
     }
 
     public List<ActivityReportDto> delete(final User user, final String term) {
-        Club club = clubService.findByUserId(user.getId());
+        Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
             club.getName(), term);

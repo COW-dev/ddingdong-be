@@ -34,8 +34,7 @@ public class ScoreHistoryService {
 
     @Transactional(readOnly = true)
     public List<ScoreHistory> getMyScoreHistories(final Long userId) {
-        Club club = clubService.findByUserId(userId);
-
+        Club club = clubService.getByUserId(userId);
         return scoreHistoryRepository.findByClubId(club.getId());
     }
 
