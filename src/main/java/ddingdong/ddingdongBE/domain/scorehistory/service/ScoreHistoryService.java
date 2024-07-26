@@ -22,7 +22,7 @@ public class ScoreHistoryService {
     private final ClubService clubService;
 
     public void register(final Long clubId, RegisterScoreRequest registerScoreRequest) {
-        Club club = clubService.findClubByClubId(clubId);
+        Club club = clubService.getByClubId(clubId);
 
         float score = roundToThirdPoint(registerScoreRequest.getAmount());
         clubService.editClubScore(clubId, score);
@@ -37,7 +37,7 @@ public class ScoreHistoryService {
 
     @Transactional(readOnly = true)
     public List<ScoreHistory> getMyScoreHistories(final Long userId) {
-        Club club = clubService.findClubByUserId(userId);
+        Club club = clubService.findByUserId(userId);
 
         return scoreHistoryRepository.findByClubId(club.getId());
     }

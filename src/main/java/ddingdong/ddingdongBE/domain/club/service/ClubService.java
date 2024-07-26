@@ -122,8 +122,9 @@ public class ClubService {
         return club.getId();
     }
 
-    public Optional<Club> findByUserId(final Long userId) {
-        return clubRepository.findByUserId(userId);
+    public Club findByUserId(final Long userId) {
+        return clubRepository.findByUserId(userId)
+                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
     }
 
     public Club getByUserId(final Long userId) {

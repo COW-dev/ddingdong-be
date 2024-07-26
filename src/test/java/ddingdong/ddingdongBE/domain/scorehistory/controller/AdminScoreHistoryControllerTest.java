@@ -40,7 +40,7 @@ class AdminScoreHistoryControllerTest extends WebApiTestSupport {
                         .scoreCategory(ACTIVITY_REPORT)
                         .amount(5)
                         .reason("reasonB").build());
-        when(clubService.findClubByClubId(anyLong())).thenReturn(club);
+        when(clubService.getByClubId(anyLong())).thenReturn(club);
         when(scoreHistoryService.getScoreHistories(club.getId())).thenReturn(scoreHistories);
 
         //when //then
