@@ -1,12 +1,10 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
-import java.time.LocalDateTime;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
-
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Getter;
 
 @Getter
@@ -38,7 +36,7 @@ public class DetailActivityReportResponse {
 		this.createdAt = createdAt;
 	}
 
-	public static DetailActivityReportResponse from(ActivityReport activityReport, List<String> imageUrls) {
+	public static DetailActivityReportResponse of(ActivityReport activityReport, List<String> imageUrls) {
 		return new DetailActivityReportResponse(
 			activityReport.getId(),
 			activityReport.getClub().getName(),

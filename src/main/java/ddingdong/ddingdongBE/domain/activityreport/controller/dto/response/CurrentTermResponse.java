@@ -11,7 +11,7 @@ public class CurrentTermResponse {
         this.term = term;
     }
 
-    public static CurrentTermResponse of(String term) {
+    public static CurrentTermResponse from(String term) {
         return new CurrentTermResponse(term);
     }
 }

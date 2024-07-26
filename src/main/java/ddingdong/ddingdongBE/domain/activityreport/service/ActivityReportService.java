@@ -66,7 +66,7 @@ public class ActivityReportService {
         return activityReports.stream().map(activityReport -> {
             List<String> imageUrls = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
-            return DetailActivityReportResponse.from(activityReport, imageUrls);
+            return DetailActivityReportResponse.of(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }
 
@@ -112,7 +112,7 @@ public class ActivityReportService {
         LocalDate currentDate = LocalDate.now();
 
         int gapOfDays = calculateGapOfDays(startDate, currentDate);
-        return CurrentTermResponse.of(calculateCurrentTerm(gapOfDays));
+        return CurrentTermResponse.from(calculateCurrentTerm(gapOfDays));
     }
 
     private int calculateGapOfDays(final LocalDate startDate, final LocalDate currentDate) {

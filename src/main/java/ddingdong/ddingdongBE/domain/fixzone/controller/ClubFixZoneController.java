@@ -1,77 +1,79 @@
 package ddingdong.ddingdongBE.domain.fixzone.controller;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.*;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
-
-import java.util.List;
-
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.FIX_ZONE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.fixzone.controller.api.ClubFixZoneApi;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetDetailFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
 import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import ddingdong.ddingdongBE.file.service.FileService;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/server/club/fix")
 @RequiredArgsConstructor
-public class ClubFixZoneController {
+public class ClubFixZoneController implements ClubFixZoneApi {
+    private final ClubService clubService;
+    private final FixZoneService fixZoneService;
+    private final FileService fileService;
 
-	private final ClubRepository clubRepository;
-	private final FixZoneService fixZoneService;
-	private final FileService fileService;
+    @Override
+    public List<GetFixZoneResponse> getMyFixZones(PrincipalDetails principalDetails) {
+        Club club = clubService.getByUserId(principalDetails.getUser().getId());
 
-	@PostMapping
-	public void createFix(@AuthenticationPrincipal PrincipalDetails principalDetails,
-		@ModelAttribute CreateFixRequest request,
-		@RequestPart(name = "images") List<MultipartFile> images) {
-		Club club = clubRepository.findByUserId(principalDetails.getUser().getId())
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_CLUB.getText()));
-		Long createdFixId = fixZoneService.create(club, request);
+        return fixZoneService.getMyFixZones(club.getId());
+    }
 
-		fileService.uploadFile(createdFixId, images, IMAGE, FIX_ZONE);
-	}
+    @Override
+    public GetDetailFixZoneResponse getFixZoneDetail(Long fixZoneId) {
+        return fixZoneService.getFixZoneDetail(fixZoneId);
+    }
 
-	@GetMapping
-	public List<ClubFixResponse> findAllFixForClub() {
-		return fixZoneService.getAllForClub();
-	}
+    @Override
+    public void createFixZone(
+        PrincipalDetails principalDetails,
+        CreateFixZoneRequest request,
+        List<MultipartFile> images
+    ) {
+        Club club = clubService.getByUserId(principalDetails.getUser().getId());
+        Long createdFixZoneId = fixZoneService.create(club, request);
 
-	@GetMapping("{fixId}")
-	public ClubDetailFixResponse findFixForClub(@PathVariable Long fixId) {
-		return fixZoneService.getForClub(fixId);
-	}
+        fileService.uploadFile(createdFixZoneId, images, IMAGE, FIX_ZONE);
+    }
 
-	@PatchMapping("/{fixId}")
-	public void updateFix(@PathVariable Long fixId, @ModelAttribute UpdateFixRequest request,
-		@RequestPart(name = "images") List<MultipartFile> images) {
-		fixZoneService.update(fixId, request);
+    @Override
+    public void updateFixZone(
+        PrincipalDetails principalDetails,
+        Long fixZoneId,
+        UpdateFixZoneRequest request,
+        List<MultipartFile> images
+    ) {
+        clubService.getByUserId(principalDetails.getUser().getId());
 
-		fileService.deleteFile(fixId, IMAGE, FIX_ZONE);
-		fileService.uploadFile(fixId, images, IMAGE, FIX_ZONE);
-	}
+        fixZoneService.update(fixZoneId, request);
 
-	@DeleteMapping("{fixId}")
-	public void deleteFix(@PathVariable Long fixId) {
-		fixZoneService.delete(fixId);
+        fileService.deleteFile(fixZoneId, IMAGE, FIX_ZONE);
+        fileService.uploadFile(fixZoneId, images, IMAGE, FIX_ZONE);
+    }
 
-		fileService.deleteFile(fixId, IMAGE, FIX_ZONE);
-	}
+    @Override
+    public void deleteFixZone(
+        PrincipalDetails principalDetails,
+        Long fixZoneId
+    ) {
+        clubService.getByUserId(principalDetails.getUser().getId());
+
+        fixZoneService.delete(fixZoneId);
+
+        fileService.deleteFile(fixZoneId, IMAGE, FIX_ZONE);
+    }
+
 }
