@@ -74,8 +74,9 @@ public class Club extends BaseEntity {
     private Score score;
 
     @Builder
-    public Club(User user, String name, String category, String tag, String leader, Location location,
+    public Club(Long id, User user, String name, String category, String tag, String leader, Location location,
                 PhoneNumber phoneNumber, Score score) {
+        this.id = id;
         this.user = user;
         this.name = name;
         this.category = category;
