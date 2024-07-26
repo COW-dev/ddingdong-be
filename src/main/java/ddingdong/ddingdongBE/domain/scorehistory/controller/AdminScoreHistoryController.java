@@ -9,8 +9,6 @@ import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHi
 import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

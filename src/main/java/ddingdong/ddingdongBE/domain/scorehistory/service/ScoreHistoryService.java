@@ -3,13 +3,10 @@ package ddingdong.ddingdongBE.domain.scorehistory.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.RegisterScoreRequest;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import ddingdong.ddingdongBE.domain.scorehistory.repository.ScoreHistoryRepository;
-
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
