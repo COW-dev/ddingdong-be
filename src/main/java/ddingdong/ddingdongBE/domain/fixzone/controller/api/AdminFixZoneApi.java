@@ -31,40 +31,40 @@ public interface AdminFixZoneApi {
     List<GetFixZoneResponse> getFixZones();
 
     @Operation(summary = "Fix Zone 요청 처리 완료 API")
-    @PatchMapping("/{fix-zone-id}")
+    @PatchMapping("/{fixZoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    void updateFixZoneToComplete(@PathVariable("fix-zone-id") Long fixZoneId);
+    void updateFixZoneToComplete(@PathVariable("fixZoneId") Long fixZoneId);
 
     @Operation(summary = "Fix Zone 댓글 등록 API")
-    @PostMapping("/{fix-zone-id}/comments")
+    @PostMapping("/{fixZoneId}/comments")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     void createFixZoneComment(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestBody CreateFixZoneCommentRequest request,
-        @PathVariable("fix-zone-id") Long fixZoneId
+        @PathVariable("fixZoneId") Long fixZoneId
     );
 
     @Operation(summary = "Fix Zone 댓글 수정 API")
-    @PatchMapping("/{fix-zone-id}/comments/{comment-id}")
+    @PatchMapping("/{fixZoneId}/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void updateFixZoneComment(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestBody CreateFixZoneCommentRequest request,
-        @PathVariable("fix-zone-id") Long fixZoneId,
-        @PathVariable("comment-id") Long commentId
+        @PathVariable("fixZoneId") Long fixZoneId,
+        @PathVariable("commentId") Long commentId
     );
 
     @Operation(summary = "Fix Zone 댓글 삭제 API")
-    @DeleteMapping("/{fix-zone-id}/comments/{comment-id}")
+    @DeleteMapping("/{fixZoneId}/comments/{commentId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void deleteFixZoneComment(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @PathVariable("fix-zone-id") Long fixZoneId,
-        @PathVariable("comment-id") Long commentId
+        @PathVariable("fixZoneId") Long fixZoneId,
+        @PathVariable("commentId") Long commentId
     );
 
 }

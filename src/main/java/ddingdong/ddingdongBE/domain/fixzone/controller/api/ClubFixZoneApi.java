@@ -35,10 +35,10 @@ public interface ClubFixZoneApi {
     List<GetFixZoneResponse> getMyFixZones(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "Fix Zone 상세 조회")
-    @GetMapping("/{fix-zone-id}")
+    @GetMapping("/{fixZoneId}")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    GetDetailFixZoneResponse getFixZoneDetail(@PathVariable("fix-zone-id") Long fixZoneId);
+    GetDetailFixZoneResponse getFixZoneDetail(@PathVariable("fixZoneId") Long fixZoneId);
 
     @Operation(summary = "Fix Zone 등록 API")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
@@ -51,23 +51,23 @@ public interface ClubFixZoneApi {
     );
 
     @Operation(summary = "Fix Zone 수정 API")
-    @PatchMapping(value = "/{fix-zone-id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
+    @PatchMapping(value = "/{fixZoneId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void updateFixZone(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @PathVariable("fix-zone-id") Long fixZoneId,
+        @PathVariable("fixZoneId") Long fixZoneId,
         @RequestPart UpdateFixZoneRequest request,
         @RequestPart(name = "images", required = false) List<MultipartFile> images
     );
 
     @Operation(summary = "Fix Zone 삭제 API")
-    @DeleteMapping("/{fix-zone-id}")
+    @DeleteMapping("/{fixZoneId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void deleteFixZone(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @PathVariable("fix-zone-id") Long fixZoneId
+        @PathVariable("fixZoneId") Long fixZoneId
     );
 
 }
