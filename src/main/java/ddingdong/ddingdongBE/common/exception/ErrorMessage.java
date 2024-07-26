@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorMessage {
+    AUTHENTICATION_ERROR("알 수 없는 인증 관련 오류가 발생하였습니다."),
     INTERNAL_SERVER_ERROR("서버에 문제가 발생했습니다."),
     ILLEGAL_CLUB_LOCATION_PATTERN("올바르지 않은 동아리 위치 양식입니다."),
     ILLEGAL_CLUB_PHONE_NUMBER_PATTERN("올바르지 않은 동아리 전화번호 양식입니다."),
@@ -21,9 +22,10 @@ public enum ErrorMessage {
     INVALID_STAMP_COUNT_FOR_APPLY("스탬프를 모두 모아야 이벤트에 참여할 수 있어요!"),
     ACCESS_DENIED("접근권한이 없습니다."),
     UNREGISTER_ID("등록되지 않은 ID입니다."),
-    NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
     NON_VALIDATED_TOKEN("유효하지 않은 토큰입니다."),
+    NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
     NO_SUCH_FIX("해당 수리 신청서가 존재하지 않습니다."),
+    NO_SUCH_FIX_ZONE_COMMENT("존재하지 않는 픽스존 댓글입니다."),
     NO_SUCH_DOCUMENT("해당 자료가 존재하지 않습니다.");
 
     private final String text;

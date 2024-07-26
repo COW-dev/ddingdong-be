@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller;
 
-import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.api.AdminActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityTermInfoRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
@@ -9,7 +8,6 @@ import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportTermInfoService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,16 +24,12 @@ public class AdminActivityReportApiController implements AdminActivityReportApi 
     }
 
     @Override
-    public List<ActivityReportTermInfoResponse> getActivityTermInfos(
-            @AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
         return activityReportTermInfoService.getAll();
     }
 
     @Override
-    public void createActivityTermInfo(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            CreateActivityTermInfoRequest request
-    ) {
+    public void createActivityTermInfo(CreateActivityTermInfoRequest request) {
         activityReportTermInfoService.create(request.startDate(), request.totalTermCount());
     }
 

@@ -1,7 +1,9 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_CLUB;
+import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.BEFORE_RECRUIT;
+import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.END_RECRUIT;
+import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.RECRUITING;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_INTRODUCE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
@@ -15,16 +17,17 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.file.FileStore;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import ddingdong.ddingdongBE.file.FileStore;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -66,7 +69,7 @@ public class ClubService {
 
     @Transactional(readOnly = true)
     public DetailClubResponse getClub(Long clubId) {
-        Club club = findClubByClubId(clubId);
+        Club club = getByClubId(clubId);
 
         List<String> profileImageUrl = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + clubId);
@@ -83,7 +86,7 @@ public class ClubService {
 
     @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
-        Club club = findClubByUserId(userId);
+        Club club = getByUserId(userId);
 
         List<String> profileImageUrl = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
@@ -99,19 +102,19 @@ public class ClubService {
     }
 
     public void delete(Long clubId) {
-        Club club = findClubByClubId(clubId);
+        Club club = getByClubId(clubId);
 
         clubRepository.delete(club);
     }
 
     public float editClubScore(Long clubId, float score) {
-        Club club = findClubByClubId(clubId);
+        Club club = getByClubId(clubId);
 
         return club.editScore(generateNewScore(club.getScore(), score));
     }
 
     public Long update(Long userId, UpdateClubRequest request) {
-        Club club = findClubByUserId(userId);
+        Club club = getByUserId(userId);
         updateIntroduceImageInformation(request, club);
         updateProfileImageInformation(request, club);
 
@@ -119,12 +122,16 @@ public class ClubService {
         return club.getId();
     }
 
-    public Club findClubByUserId(final Long userId) {
+    public Optional<Club> findByUserId(final Long userId) {
+        return clubRepository.findByUserId(userId);
+    }
+
+    public Club getByUserId(final Long userId) {
         return clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
     }
 
-    public Club findClubByClubId(final Long clubId) {
+    public Club getByClubId(final Long clubId) {
         return clubRepository.findById(clubId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
     }
@@ -175,4 +182,5 @@ public class ClubService {
 
         return  club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
+
 }
