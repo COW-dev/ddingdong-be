@@ -18,16 +18,16 @@ import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQues
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.support.WebApiTestSupport;
+import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class AdminQuestionControllerTest extends WebApiTestSupport {
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("question 생성 요청을 수행한다.")
     @Test
     void generateQuestion() throws Exception {
@@ -40,7 +40,7 @@ class AdminQuestionControllerTest extends WebApiTestSupport {
         mockMvc.perform(post("/server/admin/questions")
                         .param("title", request.question())
                         .param("content", request.reply())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -48,7 +48,7 @@ class AdminQuestionControllerTest extends WebApiTestSupport {
         verify(questionService).create(any());
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("questions 조회 요청을 수행한다.")
     @Test
     void getAllDocumentsDocuments() throws Exception {
@@ -76,7 +76,7 @@ class AdminQuestionControllerTest extends WebApiTestSupport {
                 .andExpect(jsonPath("$[1].createdAt").value(questionBCreatedAt.toString().split("T")[0]));
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("question 자료 수정 요청을 수행한다.")
     @Test
     void modifyQuestion() throws Exception {
@@ -89,7 +89,7 @@ class AdminQuestionControllerTest extends WebApiTestSupport {
         mockMvc.perform(patch("/server/admin/questions/{questionId}", 1L)
                         .param("question", modifyRequest.question())
                         .param("reply", modifyRequest.reply())
-                        .contentType(MediaType.MULTIPART_FORM_DATA)
+                        .contentType(MediaType.APPLICATION_FORM_URLENCODED_VALUE)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isNoContent());
@@ -97,7 +97,7 @@ class AdminQuestionControllerTest extends WebApiTestSupport {
         verify(questionService).update(anyLong(), any());
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("question 삭제 요청을 수행한다.")
     @Test
     void deleteQuestion() throws Exception {

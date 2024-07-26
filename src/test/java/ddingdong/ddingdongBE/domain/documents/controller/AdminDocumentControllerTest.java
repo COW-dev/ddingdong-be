@@ -19,17 +19,17 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocum
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.support.WebApiTestSupport;
+import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.security.test.context.support.WithMockUser;
 
 public class AdminDocumentControllerTest extends WebApiTestSupport {
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")
     @Test
     void generateDocument() throws Exception {
@@ -55,7 +55,7 @@ public class AdminDocumentControllerTest extends WebApiTestSupport {
         verify(fileService).uploadDownloadableFile(anyLong(), anyList(), any(), any());
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
     void getAllDocumentsDocuments() throws Exception {
@@ -77,7 +77,7 @@ public class AdminDocumentControllerTest extends WebApiTestSupport {
                 .andExpect(jsonPath("$[1].title").value("B"));
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 상세조회 요청을 수행한다.")
     @Test
     void getDocument() throws Exception {
@@ -104,7 +104,7 @@ public class AdminDocumentControllerTest extends WebApiTestSupport {
                 .andExpect(jsonPath("$.fileUrls[0].fileUrl").value("fileAUrl"));
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 수정 요청을 수행한다.")
     @Test
     void modify() throws Exception {
@@ -134,7 +134,7 @@ public class AdminDocumentControllerTest extends WebApiTestSupport {
         verify(fileService).uploadDownloadableFile(anyLong(), any(), any(), any());
     }
 
-    @WithMockUser(roles = "ADMIN")
+    @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 삭제 요청을 수행한다.")
     @Test
     void deleteDocument() throws Exception {

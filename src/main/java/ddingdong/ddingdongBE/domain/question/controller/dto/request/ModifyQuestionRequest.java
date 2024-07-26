@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -10,15 +10,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.support.WebApiTestSupport;
+import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 
 class QuestionControllerTest extends WebApiTestSupport {
 
-    @WithMockUser()
+    @WithMockAuthenticatedUser
     @DisplayName("questions 조회 요청을 수행한다.")
     @Test
     void getAllDocumentsDocuments() throws Exception {
