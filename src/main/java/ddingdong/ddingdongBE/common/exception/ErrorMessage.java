@@ -21,9 +21,10 @@ public enum ErrorMessage {
     INVALID_STAMP_COUNT_FOR_APPLY("스탬프를 모두 모아야 이벤트에 참여할 수 있어요!"),
     ACCESS_DENIED("접근권한이 없습니다."),
     UNREGISTER_ID("등록되지 않은 ID입니다."),
-    NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
     NON_VALIDATED_TOKEN("유효하지 않은 토큰입니다."),
+    NO_SUCH_BANNER("해당 배너가 존재하지 않습니다."),
     NO_SUCH_FIX("해당 수리 신청서가 존재하지 않습니다."),
+    NO_SUCH_FIX_ZONE_COMMENT("존재하지 않는 픽스존 댓글입니다."),
     NO_SUCH_DOCUMENT("해당 자료가 존재하지 않습니다."),
     NO_SUCH_QUESTION("해당 질문이 존재하지 않습니다.");
 

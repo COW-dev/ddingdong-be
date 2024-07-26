@@ -13,7 +13,6 @@ public class QuestionController implements QuestionApi {
 
     private final QuestionService questionService;
 
-
     @Override
     public List<QuestionResponse> getAllQuestions() {
         return questionService.getAll().stream()
