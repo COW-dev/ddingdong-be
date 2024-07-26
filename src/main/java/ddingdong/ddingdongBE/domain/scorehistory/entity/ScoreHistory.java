@@ -38,14 +38,11 @@ public class ScoreHistory extends BaseEntity {
 
     private String reason;
 
-    private float remainingScore;
-
     @Builder
-    public ScoreHistory(Club club, float amount, ScoreCategory scoreCategory, String reason, float remainingScore) {
+    public ScoreHistory(Club club, float amount, ScoreCategory scoreCategory, String reason) {
         this.club = club;
         this.amount = amount;
         this.scoreCategory = scoreCategory;
         this.reason = reason;
-        this.remainingScore = remainingScore;
     }
 }
