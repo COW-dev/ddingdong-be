@@ -36,7 +36,8 @@ public class User extends BaseEntity {
     private Role role;
 
     @Builder
-    public User(String userId, String password, String name, Role role) {
+    public User(Long id, String userId, String password, String name, Role role) {
+        this.id = id;
         this.userId = userId;
         this.password = password;
         this.name = name;
