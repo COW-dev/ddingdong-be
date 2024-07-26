@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
 
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDetailDocumentResponse;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -30,8 +32,10 @@ public interface AdminDocumentApi {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void generateDocument(@ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-                          @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
+    void generateDocument(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
 
     @Operation(summary = "어드민 자료실 목록 조회 API")
     @GetMapping

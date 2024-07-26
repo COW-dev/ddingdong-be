@@ -11,17 +11,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.support.WebAdaptorTestSupport;
+import ddingdong.ddingdongBE.support.WebApiTestSupport;
+import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.security.test.context.support.WithMockUser;
 
-class DocumentControllerTest extends WebAdaptorTestSupport {
+class DocumentControllerTest extends WebApiTestSupport {
 
 
-    @WithMockUser()
+    @WithMockAuthenticatedUser
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
     void getAllDocuments() throws Exception {
@@ -43,7 +43,7 @@ class DocumentControllerTest extends WebAdaptorTestSupport {
                 .andExpect(jsonPath("$[1].title").value("B"));
     }
 
-    @WithMockUser()
+    @WithMockAuthenticatedUser
     @DisplayName("documents 상세조회 요청을 수행한다.")
     @Test
     void getDocument() throws Exception {

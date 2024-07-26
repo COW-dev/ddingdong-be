@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.documents.entity;
+package ddingdong.ddingdongBE.domain.question.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -14,12 +14,12 @@ import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Document extends BaseEntity {
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public class Question extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -30,22 +30,22 @@ public class Document extends BaseEntity {
     private User user;
 
     @Column(nullable = false)
-    private String title;
+    private String question;
 
-    @Column(nullable = false, length = 1024)
-    private String content;
+    @Column(nullable = false)
+    private String reply;
 
     @Builder
-    private Document(Long id, User user, String title, String content, LocalDateTime createdAt) {
+    private Question(Long id, User user, String question, String reply, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
-        this.title = title;
-        this.content = content;
+        this.question = question;
+        this.reply = reply;
         super.setCreatedAt(createdAt);
     }
 
-    public void updateDocument(Document updatedDocument) {
-        this.title = updatedDocument.getTitle();
-        this.content = updatedDocument.getContent();
+    public void updateQuestion(Question updatedDocument) {
+        this.question = updatedDocument.getQuestion();
+        this.reply = updatedDocument.getReply();
     }
 }

@@ -20,13 +20,11 @@ public interface DocumentApi {
     @Operation(summary = "자료실 목록 조회 API")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
     List<DocumentResponse> getAllDocuments();
 
     @Operation(summary = "자료실 상세 조회 API")
     @GetMapping("/{documentId}")
     @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
     DetailDocumentResponse getDetailDocument(@PathVariable Long documentId);
 
 }
