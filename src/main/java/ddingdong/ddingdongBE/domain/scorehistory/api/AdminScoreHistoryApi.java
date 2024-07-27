@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "ScroeHistory - Admin", description = "ScoreHistory Admin API")
+@Tag(name = "ScoreHistory - Admin", description = "ScoreHistory Admin API")
 @RequestMapping("/server/admin/{clubId}/score")
 public interface AdminScoreHistoryApi {
 
