@@ -27,7 +27,6 @@ import ddingdong.ddingdongBE.file.FileStore;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -122,10 +121,6 @@ public class ClubService {
         return club.getId();
     }
 
-    public Optional<Club> findByUserId(final Long userId) {
-        return clubRepository.findByUserId(userId);
-    }
-
     public Club getByUserId(final Long userId) {
         return clubRepository.findByUserId(userId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
@@ -180,7 +175,7 @@ public class ClubService {
             return BEFORE_RECRUIT;
         }
 
-        return  club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
+        return club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
 
 }

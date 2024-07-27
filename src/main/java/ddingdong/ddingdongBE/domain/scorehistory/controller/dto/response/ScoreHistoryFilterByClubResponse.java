@@ -1,39 +1,60 @@
 package ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
-
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.Builder;
-import lombok.Getter;
 
-@Getter
-public class ScoreHistoryFilterByClubResponse {
-    private String scoreCategory;
+@Schema(
+        name = "ScoreHistoryFilterByClubResponse",
+        description = "어드민 - 동아리 점수 변동 내역 목록 응답"
+)
+@Builder
+public record ScoreHistoryFilterByClubResponse(
 
-    private String reason;
+        @Schema(description = "동아리 총 점수", example = "50")
+        float totalScore,
+        @ArraySchema(schema = @Schema(description = "점수내역 목록", implementation = ScoreHistoryResponse.class))
+        List<ScoreHistoryResponse> scoreHistories
+) {
 
-    private float amount;
-
-    private float remainingScore;
-
-    private LocalDateTime createdAt;
-
-    @Builder
-    public ScoreHistoryFilterByClubResponse(String scoreCategory, String reason, float amount, float remainingScore, LocalDateTime createdAt) {
-        this.scoreCategory = scoreCategory;
-        this.reason = reason;
-        this.amount = amount;
-        this.remainingScore = remainingScore;
-        this.createdAt = createdAt;
+    public static ScoreHistoryFilterByClubResponse of(Club club, List<ScoreHistoryResponse> scoreHistories) {
+        return ScoreHistoryFilterByClubResponse.builder()
+                .totalScore(club.getScore().getValue())
+                .scoreHistories(scoreHistories)
+                .build();
     }
 
-    public static ScoreHistoryFilterByClubResponse of(final ScoreHistory scoreHistory) {
-        return ScoreHistoryFilterByClubResponse.builder()
-                .scoreCategory(scoreHistory.getScoreCategory().getCategory())
-                .reason(scoreHistory.getReason())
-                .amount(scoreHistory.getAmount())
-                .remainingScore(scoreHistory.getRemainingScore())
-                .createdAt(scoreHistory.getCreatedAt())
-                .build();
+    @Schema(
+            name = "ScoreHistoryResponse",
+            description = "점수 변동 내역 응답"
+    )
+    @Builder
+    public record ScoreHistoryResponse(
+
+            @Schema(description = "점수 내역 카테고리", example = "활동보고서")
+            String scoreCategory,
+            @Schema(description = "점수 내역 이유", example = "활동보고서 작성")
+            String reason,
+            @Schema(description = "변동 점수", example = "10")
+            float amount,
+            @Schema(description = "작성일", example = "2024-01-01")
+            @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+            LocalDateTime createdAt
+    ) {
+
+        public static ScoreHistoryResponse from(ScoreHistory scoreHistory) {
+            return ScoreHistoryResponse.builder()
+                    .scoreCategory(scoreHistory.getScoreCategory().getCategory())
+                    .reason(scoreHistory.getReason())
+                    .amount(scoreHistory.getAmount())
+                    .createdAt(scoreHistory.getCreatedAt())
+                    .build();
+        }
+
     }
 }

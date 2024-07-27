@@ -14,13 +14,12 @@ public class RegisterScoreRequest {
 
     private float amount;
 
-    public ScoreHistory toEntity(Club club, float remainingScore) {
+    public ScoreHistory toEntity(Club club) {
         return ScoreHistory.builder()
                 .club(club)
                 .amount(amount)
                 .scoreCategory(ScoreCategory.of(scoreCategory))
                 .reason(reason)
-                .remainingScore(remainingScore)
                 .build();
     }
 }
