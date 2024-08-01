@@ -1,0 +1,83 @@
+name: Develop Server Deployer (CD)
+
+on: workflow_dispatch
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Get Github Actions IP Addresses
+        id: publicip
+        run: |
+          response=$(curl -s canhazip.com)
+          echo "ip=$response" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.DEV_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.DEV_AWS_SECRET_ACCESS_KEY }}
+          aws-region: 'ap-northeast-2'
+
+      - name: Add GitHub Actions IP
+        run: |
+          aws ec2 authorize-security-group-ingress \
+              --group-id ${{ secrets.DEV_EC2_SECURITY_GROUP_ID }} \
+              --protocol tcp \
+              --port 22 \
+              --cidr ${{ steps.publicip.outputs.ip }}/32
+
+      - name: Copy Docker Compose file to server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.DEV_INSTANCE_HOST }}
+          username: ${{ secrets.DEV_INSTANCE_USERNAME }}
+          key: ${{ secrets.DEV_INSTANCE_KEY }}
+          source: "./compose-dev.yaml"
+          target: "~/app/docker"
+          timeout: 120s
+          overwrite: true
+
+      - name: Install Docker if not present
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_INSTANCE_HOST }}
+          username: ${{ secrets.DEV_INSTANCE_USERNAME }}
+          key: ${{ secrets.DEV_INSTANCE_KEY }}
+          script: |
+            if ! command -v docker >/dev/null 2>&1; then
+              echo "Installing Docker..."
+              sudo apt-get update
+              sudo apt-get install -y docker.io
+            else
+              echo "Docker already installed."
+            fi
+            if ! command -v docker-compose >/dev/null 2>&1; then
+              echo "Installing Docker Compose..."
+              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+              sudo chmod +x /usr/local/bin/docker-compose
+            else
+              echo "Docker Compose already installed."
+            fi
+
+      - name: Run Docker Compose up
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.DEV_INSTANCE_HOST }}
+          username: ${{ secrets.DEV_INSTANCE_USERNAME }}
+          key: ${{ secrets.DEV_INSTANCE_KEY }}
+          script: |
+            echo "${{ secrets.DOCKER_PASSWORD }}" | sudo docker login -u ${{ secrets.DOCKER_USERNAME }} --password-stdin
+            sudo docker-compose -f ~/app/docker/compose-dev.yaml down --rmi all
+            sudo docker-compose -f ~/app/docker/compose-dev.yaml pull
+            sudo docker-compose -f ~/app/docker/compose-dev.yaml up -d --force-recreate
+
+      - name: Remove GitHub Actions IP
+        run: |
+          aws ec2 revoke-security-group-ingress \
+              --group-id ${{ secrets.DEV_EC2_SECURITY_GROUP_ID }} \
+              --protocol tcp \
+              --port 22 \
+              --cidr ${{ steps.publicip.outputs.ip }}/32
