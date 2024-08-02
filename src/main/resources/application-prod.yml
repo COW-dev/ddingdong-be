@@ -1,17 +1,17 @@
 spring:
   config:
     activate:
-      on-profile: dev
+      on-profile: prod
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DEV_DB_URL}
-    username: ${DEV_DB_USERNAME}
-    password: ${DEV_DB_PASSWORD}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: none
     properties:
