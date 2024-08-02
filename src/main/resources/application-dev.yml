@@ -11,11 +11,11 @@ spring:
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
     hibernate:
-      ddl-auto: none
+      ddl-auto: create
     properties:
-      hibernate:
+      hibernate.format_sql: true
+      dialect: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: false
 
   sql:
