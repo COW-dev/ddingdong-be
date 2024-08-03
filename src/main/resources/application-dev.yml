@@ -15,7 +15,7 @@ spring:
       ddl-auto: create
     properties:
       hibernate.format_sql: true
-      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
+      dialect: org.hibernate.dialect.MySQLDialect
     defer-datasource-initialization: false
 
   sql:
