@@ -30,7 +30,7 @@ jobs:
               --cidr ${{ steps.publicip.outputs.ip }}/32
 
       - name: Copy Docker Compose file to server
-        uses: appleboy/scp-action@v0.1.4
+        uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_INSTANCE_HOST }}
           username: ${{ secrets.DEV_INSTANCE_USERNAME }}
