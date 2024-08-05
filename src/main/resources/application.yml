@@ -19,8 +19,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: 10MB
-      max-request-size: 10MB
+      max-file-size: 20MB
+      max-request-size: 20MB
 
 jwt:
   header: "Authorization"
@@ -35,3 +35,12 @@ cloud:
       static: ${AWS_DEFAULT_REGION}
     stack:
       auto: false
+
+sentry:
+  dsn: ${SENTRY_KEY}
+  enable-tracing: true
+  environment: dev
+
+swagger:
+  server:
+    url: ${SERVER_URL:http://localhost:8080}

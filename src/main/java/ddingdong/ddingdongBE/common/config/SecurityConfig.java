@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.common.config;
 
-import static org.springframework.http.HttpMethod.*;
+import static org.springframework.http.HttpMethod.GET;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
@@ -29,15 +29,17 @@ public class SecurityConfig {
             throws Exception {
         http
                 .authorizeHttpRequests()
-                .antMatchers(API_PREFIX + "/auth/**")
+                .antMatchers(API_PREFIX + "/auth/**",
+                        API_PREFIX + "/events/**")
                 .permitAll()
+                .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
+                .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
                         API_PREFIX + "/notices/**",
                         API_PREFIX + "/banners/**")
                 .permitAll()
-                .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
-                .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
+                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                 .anyRequest()
                 .authenticated()
                 .and()

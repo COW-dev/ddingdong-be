@@ -10,6 +10,7 @@ import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,6 +20,7 @@ public class FileService {
 
     private final FileInformationService fileInformationService;
     private final FileStore fileStore;
+
     public void uploadFile(Long parentId, List<MultipartFile> files, FileTypeCategory fileTypeCategory, FileDomainCategory fileDomainCategory) {
         if (files != null && !files.isEmpty()) {
             List<UploadFileDto> uploadFileDtos = fileStore.storeFile(files, fileTypeCategory.getFileType(), fileDomainCategory.getFileDomain());

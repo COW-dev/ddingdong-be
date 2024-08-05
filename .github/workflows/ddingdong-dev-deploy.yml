@@ -3,11 +3,7 @@ name: ddingdong-dev-depoly
 on:
   push:
     branches:
-      - develop  # develop에 push될 때 실행
-
-  pull_request:
-    branches:
-      - develop
+      - main
 
 jobs:
   build:
@@ -75,7 +71,8 @@ jobs:
           wait_for_environment_recovery: 180
 
       - name: Test with Gradle
-        run: ./gradlew test
+        run: ./gradlew test --no-daemon
+
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3

@@ -7,12 +7,12 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: none
-    show-sql: true
     properties:
       hibernate:
-        format_sql: true
     defer-datasource-initialization: false
 
   sql:
@@ -25,3 +25,8 @@ jwt:
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 36000
+
+sentry:
+  dsn: ${SENTRY_DSN_KEY}
+  enable-tracing: true
+  environment: dev
