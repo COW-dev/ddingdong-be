@@ -3,7 +3,7 @@ name: ddingdong-dev-depoly
 on:
   push:
     branches:
-      - develop  # develop에 push될 때 실행
+      - main
 jobs:
   build:
     runs-on: ubuntu-latest
