@@ -73,8 +73,8 @@ jobs:
             #                    sudo docker-compose -f ~/app/docker/compose-dev.yaml down --rmi all
             #                    sudo docker-compose -f ~/app/docker/compose-dev.yaml pull
             #                    sudo docker-compose -f ~/app/docker/compose-dev.yaml up -d --force-recreate
-                    sudo docker-compose -f ~/app/bootstrap/http/compose-dev.yaml pull
-                    sudo VERSION=${{ github.event.inputs.version }} docker-compose -f ~/app/bootstrap/http/compose-dev.yaml up -d --force-recreate
+                    sudo docker-compose -f ~/app/docker/compose-dev.yaml pull
+                    sudo docker-compose -f ~/app/docker/compose-dev.yaml up -d --force-recreate
 
       - name: Remove GitHub Actions IP
         run: |
