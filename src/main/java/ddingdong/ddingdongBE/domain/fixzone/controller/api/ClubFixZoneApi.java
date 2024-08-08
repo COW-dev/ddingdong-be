@@ -16,6 +16,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +47,7 @@ public interface ClubFixZoneApi {
     @SecurityRequirement(name = "AccessToken")
     void createFixZone(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestPart CreateFixZoneRequest request,
+        @ModelAttribute CreateFixZoneRequest request,
         @RequestPart(name = "images", required = false) List<MultipartFile> images
     );
 
@@ -57,7 +58,7 @@ public interface ClubFixZoneApi {
     void updateFixZone(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @PathVariable("fixZoneId") Long fixZoneId,
-        @RequestPart UpdateFixZoneRequest request,
+        @ModelAttribute UpdateFixZoneRequest request,
         @RequestPart(name = "images", required = false) List<MultipartFile> images
     );
 
