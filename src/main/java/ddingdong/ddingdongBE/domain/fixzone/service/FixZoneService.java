@@ -45,6 +45,8 @@ public class FixZoneService {
 
         return GetDetailFixZoneResponse.of(
             fixZone.getId(),
+            fixZone.getClub().getLocation().getValue(),
+            fixZone.getClub().getName(),
             fixZone.getTitle(),
             fixZone.getCreatedAt(),
             fixZone.getContent(),

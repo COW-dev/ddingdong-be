@@ -11,6 +11,12 @@ public record GetDetailFixZoneResponse(
     @Schema(description = "픽스존 id")
     Long id,
 
+    @Schema(description = "동아리 위치")
+    String clubLocation,
+
+    @Schema(description = "동아리명")
+    String clubName,
+
     @Schema(description = "제목")
     String title,
 
@@ -33,6 +39,8 @@ public record GetDetailFixZoneResponse(
 
     public static GetDetailFixZoneResponse of(
         Long id,
+        String clubLocation,
+        String clubName,
         String title,
         LocalDateTime createdAt,
         String content,
@@ -42,6 +50,8 @@ public record GetDetailFixZoneResponse(
     ) {
         return new GetDetailFixZoneResponse(
             id,
+            clubLocation,
+            clubName,
             title,
             content,
             isCompleted,
