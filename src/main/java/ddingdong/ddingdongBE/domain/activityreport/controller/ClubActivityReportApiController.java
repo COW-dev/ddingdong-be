@@ -46,7 +46,7 @@ public class ClubActivityReportApiController {
 
     @GetMapping("/my/activity-reports")
     public List<AllActivityReportResponse> getMyActivityReports(
-        @AuthenticationPrincipal PrincipalDetails principalDetails
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     ) {
         User user = principalDetails.getUser();
         return activityReportService.getMyActivityReports(user);
@@ -54,92 +54,94 @@ public class ClubActivityReportApiController {
 
     @GetMapping("/activity-reports")
     public List<DetailActivityReportResponse> getActivityReport(
-        @RequestParam("term") String term,
-        @RequestParam("club_name") String clubName
+            @RequestParam("term") String term,
+            @RequestParam("club_name") String clubName
     ) {
         return activityReportService.getActivityReport(term, clubName);
     }
 
     @PostMapping("/my/activity-reports")
     public void registerReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestPart(value = "reportData", required = false) List<RegisterActivityReportRequest> requests,
-        @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
-        @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestPart(value = "reportData", required = false) List<RegisterActivityReportRequest> requests,
+            @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
+            @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
     ) {
         User user = principalDetails.getUser();
 
         IntStream.range(0, requests.size())
-            .forEach(index -> {
+                .forEach(index -> {
 
-                RegisterActivityReportRequest request = requests.get(index);
-                Long registeredActivityReportId = activityReportService.register(user, request);
+                    RegisterActivityReportRequest request = requests.get(index);
+                    Long registeredActivityReportId = activityReportService.register(user, request);
 
-                if (index == 0 && firstImage != null && !firstImage.isEmpty()) {
-                    fileService.uploadFile(registeredActivityReportId,
-                        Collections.singletonList(firstImage),
-                        IMAGE, ACTIVITY_REPORT);
-                }
+                    if (index == 0 && firstImage != null && !firstImage.isEmpty()) {
+                        fileService.uploadFile(registeredActivityReportId,
+                                Collections.singletonList(firstImage),
+                                IMAGE, ACTIVITY_REPORT);
+                    }
 
-                if (index == 1 && secondImage != null && !secondImage.isEmpty()) {
-                    fileService.uploadFile(registeredActivityReportId,
-                        Collections.singletonList(secondImage),
-                        IMAGE, ACTIVITY_REPORT);
-                }
-            });
+                    if (index == 1 && secondImage != null && !secondImage.isEmpty()) {
+                        fileService.uploadFile(registeredActivityReportId,
+                                Collections.singletonList(secondImage),
+                                IMAGE, ACTIVITY_REPORT);
+                    }
+                });
     }
 
     @PatchMapping("my/activity-reports")
     public void updateReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam("term") String term,
-        @RequestPart(value = "reportData", required = false) List<UpdateActivityReportRequest> requests,
-        @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
-        @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam("term") String term,
+            @RequestPart(value = "reportData", required = false) List<UpdateActivityReportRequest> requests,
+            @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
+            @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
     ) {
         User user = principalDetails.getUser();
 
         List<ActivityReportDto> updateActivityReportDtos = activityReportService.update(user, term,
-            requests);
+                requests);
 
         IntStream.range(0, updateActivityReportDtos.size())
-            .forEach(index -> {
-                    if (index == 0) {
-                        fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE,
-                            ACTIVITY_REPORT);
+                .forEach(index -> {
+                            if (index == 0) {
 
-                        if (!firstImage.isEmpty()) {
-                            fileService.uploadFile(updateActivityReportDtos.get(index).getId(), Collections.singletonList(firstImage),
-                                IMAGE,
-                                ACTIVITY_REPORT);
-                        }
-                    }
-                    if (index == 1) {
-                        fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE,
-                            ACTIVITY_REPORT);
+                                if (firstImage != null && !firstImage.isEmpty()) {
+                                    fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE,
+                                            ACTIVITY_REPORT);
+                                    fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
+                                            Collections.singletonList(firstImage),
+                                            IMAGE,
+                                            ACTIVITY_REPORT);
+                                }
+                            }
+                            if (index == 1) {
 
-                        if (!secondImage.isEmpty()) {
-                            fileService.uploadFile(updateActivityReportDtos.get(index).getId(), Collections.singletonList(secondImage),
-                                IMAGE,
-                                ACTIVITY_REPORT);
+                                if (secondImage != null && !secondImage.isEmpty()) {
+                                    fileService.deleteFile(updateActivityReportDtos.get(index).getId(), IMAGE,
+                                            ACTIVITY_REPORT);
+                                    fileService.uploadFile(updateActivityReportDtos.get(index).getId(),
+                                            Collections.singletonList(secondImage),
+                                            IMAGE,
+                                            ACTIVITY_REPORT);
+                                }
+                            }
                         }
-                    }
-                }
-            );
+                );
     }
 
     @DeleteMapping("my/activity-reports")
     public void deleteReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam("term") String term
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam("term") String term
     ) {
         User user = principalDetails.getUser();
         List<ActivityReportDto> deleteActivityReportDtos = activityReportService.delete(user, term);
 
         deleteActivityReportDtos
-            .forEach(
-                activityReportDto -> fileService.deleteFile(activityReportDto.getId(), IMAGE,
-                    ACTIVITY_REPORT)
-            );
+                .forEach(
+                        activityReportDto -> fileService.deleteFile(activityReportDto.getId(), IMAGE,
+                                ACTIVITY_REPORT)
+                );
     }
 }
