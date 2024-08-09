@@ -21,13 +21,23 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
 
-        ErrorMessage errorMessage = valueOf(request.getAttribute("exception").toString());
+        Object exceptionAttribute = request.getAttribute("exception");
 
-        if (errorMessage.equals(NON_VALIDATED_TOKEN)) {
-            responseAuthenticationException(response, errorMessage);
+        if (exceptionAttribute == null) {
+            responseAuthenticationException(response, INVALID_PASSWORD);
             return;
         }
-        responseAuthenticationException(response, INVALID_PASSWORD);
+
+        try {
+            ErrorMessage errorMessage = valueOf(exceptionAttribute.toString());
+            if (errorMessage.equals(NON_VALIDATED_TOKEN)) {
+                responseAuthenticationException(response, errorMessage);
+                return;
+            }
+            responseAuthenticationException(response, INVALID_PASSWORD);
+        } catch (IllegalArgumentException e) {
+            responseAuthenticationException(response, INVALID_PASSWORD);
+        }
     }
 
     private void responseAuthenticationException(HttpServletResponse response, ErrorMessage errorMessage)
