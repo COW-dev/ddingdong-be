@@ -1,9 +1,5 @@
 package ddingdong.ddingdongBE.common.handler;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_PASSWORD;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NON_VALIDATED_TOKEN;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.valueOf;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ddingdong.ddingdongBE.common.exception.ErrorMessage;
 import ddingdong.ddingdongBE.common.exception.ExceptionResponse;
@@ -20,30 +16,8 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-
-        Object exceptionAttribute = request.getAttribute("exception");
-
-        if (exceptionAttribute == null) {
-            responseAuthenticationException(response, INVALID_PASSWORD);
-            return;
-        }
-
-        try {
-            ErrorMessage errorMessage = valueOf(exceptionAttribute.toString());
-            if (errorMessage.equals(NON_VALIDATED_TOKEN)) {
-                responseAuthenticationException(response, errorMessage);
-                return;
-            }
-            responseAuthenticationException(response, INVALID_PASSWORD);
-        } catch (IllegalArgumentException e) {
-            responseAuthenticationException(response, INVALID_PASSWORD);
-        }
-    }
-
-    private void responseAuthenticationException(HttpServletResponse response, ErrorMessage errorMessage)
-            throws IOException {
         ExceptionResponse exceptionResponse = ExceptionResponse.of(HttpStatus.UNAUTHORIZED,
-                errorMessage.getText());
+                ErrorMessage.NON_VALIDATED_TOKEN.getText());
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.getWriter().write(new ObjectMapper().writeValueAsString(exceptionResponse));
