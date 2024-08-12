@@ -166,7 +166,7 @@ public class ClubService {
     }
 
     private Score generateNewScore(Score beforeUpdateScore, float value) {
-        return Score.of(beforeUpdateScore.getValue() + value);
+        return Score.from(beforeUpdateScore.getValue() + value);
     }
 
     private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {

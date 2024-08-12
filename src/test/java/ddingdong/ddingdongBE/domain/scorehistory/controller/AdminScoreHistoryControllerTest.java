@@ -29,7 +29,7 @@ class AdminScoreHistoryControllerTest extends WebApiTestSupport {
         //given
         Club club = Club.builder()
                 .id(1L)
-                .score(Score.of(55)).build();
+                .score(Score.from(55)).build();
         List<ScoreHistory> scoreHistories = List.of(ScoreHistory.builder()
                         .club(club)
                         .scoreCategory(CARRYOVER_SCORE)
