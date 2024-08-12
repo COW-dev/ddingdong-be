@@ -21,7 +21,7 @@ public class ScoreHistoryService {
     public void register(final Long clubId, RegisterScoreRequest registerScoreRequest) {
         Club club = clubService.getByClubId(clubId);
 
-        float score = roundToThirdPoint(registerScoreRequest.getAmount());
+        float score = roundToThirdPoint(registerScoreRequest.amount());
         clubService.editClubScore(clubId, score);
         scoreHistoryRepository.save(registerScoreRequest.toEntity(club));
     }
