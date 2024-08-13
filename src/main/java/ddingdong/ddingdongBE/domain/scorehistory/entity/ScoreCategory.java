@@ -18,11 +18,10 @@ public enum ScoreCategory {
     private final String category;
 
     public static ScoreCategory from(String category) {
-        for (ScoreCategory scoreCategory : ScoreCategory.values()) {
-            if (scoreCategory.category.equalsIgnoreCase(category)) {
-                return scoreCategory;
-            }
+        try {
+            return ScoreCategory.valueOf(category);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException(ILLEGAL_SCORE_CATEGORY.getText());
         }
-        throw new IllegalArgumentException(ILLEGAL_SCORE_CATEGORY.getText());
     }
 }
