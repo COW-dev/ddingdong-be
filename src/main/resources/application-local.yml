@@ -4,10 +4,10 @@ spring:
       on-profile: local
 
   datasource:
-    url: jdbc:h2:tcp://localhost/~/projects/ddingdong/ddingdong
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
+    url: jdbc:mysql://localhost:3307/ddingdong_local_db
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: 1234
 
   jpa:
     hibernate:
