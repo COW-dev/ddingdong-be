@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.RegisterScoreRequest;
+import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.CreateScoreHistoryRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import ddingdong.ddingdongBE.domain.scorehistory.repository.ScoreHistoryRepository;
 import java.util.List;
@@ -18,12 +18,12 @@ public class ScoreHistoryService {
     private final ScoreHistoryRepository scoreHistoryRepository;
     private final ClubService clubService;
 
-    public void register(final Long clubId, RegisterScoreRequest registerScoreRequest) {
+    public void register(final Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
         Club club = clubService.getByClubId(clubId);
 
-        float score = roundToThirdPoint(registerScoreRequest.amount());
+        float score = roundToThirdPoint(createScoreHistoryRequest.amount());
         clubService.editClubScore(clubId, score);
-        scoreHistoryRepository.save(registerScoreRequest.toEntity(club));
+        scoreHistoryRepository.save(createScoreHistoryRequest.toEntity(club));
     }
 
     @Transactional(readOnly = true)
