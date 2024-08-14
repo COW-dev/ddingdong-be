@@ -24,7 +24,7 @@ jobs:
             });
 
             // Define the Discord webhook URL
-            const webhookUrl = 'https://discord.com/api/webhooks/1198592354127458326/mighz1RApMReApkYxMy0mJHI97du_nWnBRymuRLldMqgvRDNCme2RIW0fDtS3nEZAKip';
+            const webhookUrl = 'https://discord.com/api/webhooks/1273159249672802304/vU5b6gC9bAHzyLXzWRzV7YqjIVCtO5_gLJ1URonjnbqn45Xa5kixYT1vMWxwLXqFi2y3';
 
             for (const pr of prs.data) {
               const prNumber = pr.number;
@@ -68,18 +68,12 @@ jobs:
                       avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
                       embeds: [
                         {
-                          title: `PR #${prNumber} - ${pr.title}`,
-                          description: `PR ${pr.title}에 리뷰를 작성해주세요! 리뷰 작성 기간이 ${day - 1}일 남았습니다.`,
+                          title: `U+1F4E2PR #${prNumber} - ${pr.title} Review ${day - 1}U+1F4E2`,
+                          description: `리뷰를 작성해주세요! 리뷰 작성 기간이 ${day - 1}일 남았습니다.`,
                           url: pr.html_url,
-                          color: 16711680,
-                          fields: [
-                            {
-                              name: "PR 링크",
-                              value: `[여기를 클릭하세요](${pr.html_url})`
-                            }
-                          ],
+                          color: 4620980,
                           footer: {
-                            text: `라벨이 업데이트되었습니다: ${dLabel} → ${newDayLabel}`
+                            text: `D-day가 업데이트 되었습니다. ${dLabel} → ${newDayLabel}`
                           }
                         }
                       ]
@@ -96,18 +90,12 @@ jobs:
                       avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
                       embeds: [
                         {
-                          title: `PR #${prNumber} - ${pr.title}`,
-                          description: `PR ${pr.title}의 리뷰 마감일입니다! 리뷰를 작성해주세요.`,
+                          title: `U+2757PR #${prNumber} - ${pr.title} Review D-0U+2757`,
+                          description: `리뷰 마감일입니다! 리뷰를 작성해주세요.`,
                           url: pr.html_url,
-                          color: 16711680,
-                          fields: [
-                            {
-                              name: "PR 링크",
-                              value: `[여기를 클릭하세요](${pr.html_url})`
-                            }
-                          ],
+                          color: 4620980,
                           footer: {
-                            text: `라벨 상태: D-0`
+                            text: `D-day 상태: D-0`
                           }
                         }
                       ]
