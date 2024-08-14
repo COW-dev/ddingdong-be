@@ -1,10 +1,7 @@
 name: PR Label Automation
 on:
-  push:
-    branches:
-      - chore/DEV-35
-#  schedule:
-#    - cron: '0 10 * * *'
+  schedule:
+    - cron: '0 10 * * *'
 
 jobs:
   update-labels:
