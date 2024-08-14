@@ -91,7 +91,7 @@ jobs:
                       embeds: [
                         {
                           title: `❗ PR #${prNumber} - ${pr.title} Review D-0 ❗`,
-                          description: `리뷰 마감일입니다! 리뷰를 작성해주세요.`,
+                          description: `리뷰 마감일이 지났습니다! 리뷰를 작성해주세요.`,
                           url: pr.html_url,
                           color: 4620980,
                           footer: {
