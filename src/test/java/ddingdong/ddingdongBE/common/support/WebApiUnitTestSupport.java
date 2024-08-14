@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.support;
+package ddingdong.ddingdongBE.common.support;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
