@@ -11,14 +11,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.support.WebApiTestSupport;
-import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class DocumentControllerTest extends WebApiTestSupport {
+class DocumentControllerUnitTest extends WebApiUnitTestSupport {
 
 
     @WithMockAuthenticatedUser

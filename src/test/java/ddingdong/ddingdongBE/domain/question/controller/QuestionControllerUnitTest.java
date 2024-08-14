@@ -9,14 +9,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import ddingdong.ddingdongBE.domain.question.entity.Question;
-import ddingdong.ddingdongBE.support.WebApiTestSupport;
-import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class QuestionControllerTest extends WebApiTestSupport {
+class QuestionControllerUnitTest extends WebApiUnitTestSupport {
 
     @WithMockAuthenticatedUser
     @DisplayName("questions 조회 요청을 수행한다.")

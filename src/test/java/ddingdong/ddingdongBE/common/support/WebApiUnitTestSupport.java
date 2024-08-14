@@ -34,7 +34,7 @@ import org.springframework.web.context.WebApplicationContext;
     AdminScoreHistoryController.class,
     ClubScoreHistoryController.class
 })
-public abstract class WebApiTestSupport extends TestContainerSupport {
+public abstract class WebApiUnitTestSupport {
 
   @Autowired
   private WebApplicationContext context;
