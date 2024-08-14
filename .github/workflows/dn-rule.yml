@@ -1,0 +1,120 @@
+name: PR Label Automation
+on:
+  push:
+    branches:
+      - chore/DEV-35
+#  schedule:
+#    - cron: '0 10 * * *'
+
+jobs:
+  update-labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check and Update PR Labels
+        uses: actions/github-script@v5
+        with:
+          script: |
+            const repo = context.repo;
+
+            // Fetch all open PRs
+            const prs = await github.rest.pulls.list({
+              owner: repo.owner,
+              repo: repo.repo,
+              state: 'open',
+            });
+
+            // Define the Discord webhook URL
+            const webhookUrl = 'https://discord.com/api/webhooks/1198592354127458326/mighz1RApMReApkYxMy0mJHI97du_nWnBRymuRLldMqgvRDNCme2RIW0fDtS3nEZAKip';
+
+            for (const pr of prs.data) {
+              const prNumber = pr.number;
+              let labels = pr.labels.map(label => label.name);
+
+              // Function to update label
+              async function updateLabel(oldLabel, newLabel) {
+                if (oldLabel) {
+                  await github.rest.issues.removeLabel({
+                    owner: repo.owner,
+                    repo: repo.repo,
+                    issue_number: prNumber,
+                    name: oldLabel,
+                  });
+                }
+                await github.rest.issues.addLabels({
+                  owner: repo.owner,
+                  repo: repo.repo,
+                  issue_number: prNumber,
+                  labels: [newLabel],
+                });
+              }
+
+              // Check and update 'D-x' labels
+              let dLabel = labels.find(label => label.startsWith("D-"));
+              if (dLabel) {
+                let day = parseInt(dLabel.split("-")[1]);
+                if (day > 0) {
+                  const newDayLabel = `D-${day - 1}`;
+                  await updateLabel(dLabel, newDayLabel);
+                  console.log(`Updated label from ${dLabel} to ${newDayLabel} on PR #${prNumber}`);
+
+                  // Send a notification to Discord
+                  await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      username: 'PR Bot',
+                      avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
+                      embeds: [
+                        {
+                          title: `PR #${prNumber} - ${pr.title}`,
+                          description: `PR ${pr.title}에 리뷰를 작성해주세요! 리뷰 작성 기간이 ${day - 1}일 남았습니다.`,
+                          url: pr.html_url,
+                          color: 16711680,
+                          fields: [
+                            {
+                              name: "PR 링크",
+                              value: `[여기를 클릭하세요](${pr.html_url})`
+                            }
+                          ],
+                          footer: {
+                            text: `라벨이 업데이트되었습니다: ${dLabel} → ${newDayLabel}`
+                          }
+                        }
+                      ]
+                    })
+                  });
+                } else if (day === 0) {
+                  await fetch(webhookUrl, {
+                    method: 'POST',
+                    headers: {
+                      'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      username: 'PR Bot',
+                      avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
+                      embeds: [
+                        {
+                          title: `PR #${prNumber} - ${pr.title}`,
+                          description: `PR ${pr.title}의 리뷰 마감일입니다! 리뷰를 작성해주세요.`,
+                          url: pr.html_url,
+                          color: 16711680,
+                          fields: [
+                            {
+                              name: "PR 링크",
+                              value: `[여기를 클릭하세요](${pr.html_url})`
+                            }
+                          ],
+                          footer: {
+                            text: `라벨 상태: D-0`
+                          }
+                        }
+                      ]
+                    })
+                  });
+                }
+              } else {
+                await updateLabel(null, 'D-3');
+              }
+            }
