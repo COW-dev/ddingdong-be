@@ -30,13 +30,12 @@ public interface AdminScoreHistoryApi {
             @ApiResponse(responseCode = "400",
                     description = "잘못된 요청, 올바르지 않은 점수변동내역 카테고리",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            //TODO: Exception 핸들링 작업 완료 시 명세 수정
+                            //TODO: Exception 핸들링 작업 완료 시 명세 확인
                             schema = @Schema(implementation = ExceptionResponse.class))
             ),
             @ApiResponse(responseCode = "400",
                     description = "잘못된 요청, 존재하지 않는 동아리",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            //TODO: Exception 핸들링 작업 완료 시 명세 수정
                             schema = @Schema(implementation = ExceptionResponse.class))
             ),
     })
@@ -54,13 +53,12 @@ public interface AdminScoreHistoryApi {
             @ApiResponse(responseCode = "400",
                     description = "잘못된 요청, 존재하지 않는 동아리",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            //TODO: Exception 핸들링 작업 완료 시 명세 수정
                             schema = @Schema(implementation = ExceptionResponse.class))
             ),
     })
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    ScoreHistoryFilterByClubResponse getScoreHistories(@PathVariable Long clubId);
+    ScoreHistoryFilterByClubResponse findAllScoreHistories(@PathVariable Long clubId);
 
 }

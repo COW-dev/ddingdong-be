@@ -41,7 +41,7 @@ class ClubScoreHistoryControllerTest extends WebApiTestSupport {
                         .amount(5)
                         .reason("reasonB").build());
         when(clubService.getByUserId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.getMyScoreHistories(club.getId())).thenReturn(scoreHistories);
+        when(scoreHistoryService.findAllByUserId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
         mockMvc.perform(get("/server/club/my/score")

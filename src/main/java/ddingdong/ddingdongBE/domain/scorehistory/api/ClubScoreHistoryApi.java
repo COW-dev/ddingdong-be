@@ -19,6 +19,6 @@ public interface ClubScoreHistoryApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    ScoreHistoryFilterByClubResponse getMyScoreHistories(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    ScoreHistoryFilterByClubResponse findMyScoreHistories(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
 }

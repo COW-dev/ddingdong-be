@@ -19,12 +19,12 @@ public class AdminScoreHistoryController implements AdminScoreHistoryApi {
     private final ScoreHistoryService scoreHistoryService;
 
     public void register(Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
-        scoreHistoryService.register(clubId, createScoreHistoryRequest);
+        scoreHistoryService.create(clubId, createScoreHistoryRequest);
     }
 
-    public ScoreHistoryFilterByClubResponse getScoreHistories(Long clubId) {
+    public ScoreHistoryFilterByClubResponse findAllScoreHistories(Long clubId) {
         Club club = clubService.getByClubId(clubId);
-        List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.getScoreHistories(clubId).stream()
+        List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.findAllByClubId(clubId).stream()
                 .map(ScoreHistoryResponse::from)
                 .toList();
         return ScoreHistoryFilterByClubResponse.of(club, scoreHistoryResponses);
