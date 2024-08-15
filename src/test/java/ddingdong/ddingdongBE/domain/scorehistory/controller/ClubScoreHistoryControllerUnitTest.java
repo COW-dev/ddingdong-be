@@ -14,18 +14,18 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
-import ddingdong.ddingdongBE.support.WebApiTestSupport;
-import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-class AdminScoreHistoryControllerTest extends WebApiTestSupport {
+class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
 
-    @WithMockAuthenticatedUser(role = "ADMIN")
-    @DisplayName("동아리 점수 내역 조회 요청을 수행한다.")
+    @WithMockAuthenticatedUser(role = "CLUB")
+    @DisplayName("동아리- 내 점수 내역 조회 요청을 수행한다.")
     @Test
-    void findAllScoreHistories() throws Exception {
+    void getScoreHistories() throws Exception {
         //given
         Club club = Club.builder()
                 .id(1L)
@@ -40,11 +40,11 @@ class AdminScoreHistoryControllerTest extends WebApiTestSupport {
                         .scoreCategory(ACTIVITY_REPORT)
                         .amount(5)
                         .reason("reasonB").build());
-        when(clubService.getByClubId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.findAllByClubId(club.getId())).thenReturn(scoreHistories);
+        when(clubService.getByUserId(anyLong())).thenReturn(club);
+        when(scoreHistoryService.findAllByUserId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
-        mockMvc.perform(get("/server/admin/{clubId}/score", 1L)
+        mockMvc.perform(get("/server/club/my/score")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -54,4 +54,5 @@ class AdminScoreHistoryControllerTest extends WebApiTestSupport {
                 .andExpect(jsonPath("$.scoreHistories[0].reason").value("reasonA"))
                 .andExpect(jsonPath("$.scoreHistories[0].amount").value(5));
     }
+
 }

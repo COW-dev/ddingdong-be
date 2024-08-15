@@ -18,8 +18,8 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDoc
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.support.WebApiTestSupport;
-import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -27,7 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 
-public class AdminDocumentControllerTest extends WebApiTestSupport {
+public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
 
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")

@@ -17,15 +17,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
-import ddingdong.ddingdongBE.support.WebApiTestSupport;
-import ddingdong.ddingdongBE.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 
-class AdminQuestionControllerTest extends WebApiTestSupport {
+class AdminQuestionControllerUnitTest extends WebApiUnitTestSupport {
 
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("question 생성 요청을 수행한다.")
