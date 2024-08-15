@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: test
 
+  flyway:
+    enabled: false
+
   datasource:
     url: jdbc:h2:mem:ddingdongdb;
     driver-class-name: org.h2.Driver
