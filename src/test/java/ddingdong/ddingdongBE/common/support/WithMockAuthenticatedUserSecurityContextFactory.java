@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.support;
+package ddingdong.ddingdongBE.common.support;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.user.entity.Role;

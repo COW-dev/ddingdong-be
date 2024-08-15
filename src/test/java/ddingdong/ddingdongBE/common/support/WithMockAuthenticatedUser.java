@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.support;
+package ddingdong.ddingdongBE.common.support;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
