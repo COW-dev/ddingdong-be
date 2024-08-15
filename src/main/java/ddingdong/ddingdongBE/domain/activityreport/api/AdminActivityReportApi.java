@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.api;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityTermInfoRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,8 @@ public interface AdminActivityReportApi {
     @Operation(summary = "활동 보고서 전체 조회")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<AllActivityReportResponse> getActivityReports();
+    @SecurityRequirement(name = "AccessToken")
+    List<ActivityReportListResponse> getActivityReports();
 
     @Operation(summary = "활동 보고서 회차별 기간 조회 API")
     @GetMapping("/term")

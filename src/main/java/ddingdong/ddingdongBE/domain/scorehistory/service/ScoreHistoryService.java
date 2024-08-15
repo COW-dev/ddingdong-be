@@ -38,7 +38,7 @@ public class ScoreHistoryService {
         return scoreHistoryRepository.findByClubId(club.getId());
     }
 
-    private static float roundToThirdPoint(float value) {
+    private float roundToThirdPoint(float value) {
         return Math.round(value * 1000.0) / 1000.0F;
     }
 }

@@ -3,12 +3,12 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.RegisterActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AllActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.DetailActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ActivityReportService {
 
@@ -35,20 +35,17 @@ public class ActivityReportService {
     private static final int CORRECTION_VALUE = 1;
     private static final int TERM_LENGTH_OF_DAYS = 14;
 
-
     private final ClubService clubService;
     private final FileInformationService fileInformationService;
     private final ActivityReportRepository activityReportRepository;
 
-    @Transactional(readOnly = true)
-    public List<AllActivityReportResponse> getAll() {
+    public List<ActivityReportListResponse> getAll() {
         List<ActivityReport> activityReports = activityReportRepository.findAll();
 
         return parseToActivityReportResponse(activityReports);
     }
 
-    @Transactional(readOnly = true)
-    public List<AllActivityReportResponse> getMyActivityReports(final User user) {
+    public List<ActivityReportListResponse> getMyActivityReports(final User user) {
         Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubName(
@@ -57,44 +54,55 @@ public class ActivityReportService {
         return parseToActivityReportResponse(activityReports);
     }
 
-    @Transactional(readOnly = true)
-    public List<DetailActivityReportResponse> getActivityReport(final String term,
-        final String clubName) {
-        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
-            clubName, term);
+    public List<ActivityReportResponse> getActivityReport(
+        final String term,
+        final String clubName
+    ) {
+        List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(clubName, term);
 
         return activityReports.stream().map(activityReport -> {
             List<String> imageUrls = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId());
-            return DetailActivityReportResponse.of(activityReport, imageUrls);
+            return ActivityReportResponse.of(activityReport, imageUrls);
         }).collect(Collectors.toList());
     }
 
-    public Long register(final User user,
-        final RegisterActivityReportRequest registerActivityReportRequest) {
-
+    @Transactional
+    public Long create(
+        final User user,
+        final CreateActivityReportRequest createActivityReportRequest
+    ) {
         Club club = clubService.getByUserId(user.getId());
-        ActivityReport activityReport = registerActivityReportRequest.toEntity(club);
+        ActivityReport activityReport = createActivityReportRequest.toEntity(club);
 
         ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
 
         return savedActivityReport.getId();
     }
 
-    public List<ActivityReportDto> update(final User user, final String term,
-        final List<UpdateActivityReportRequest> requests) {
+    @Transactional
+    public List<ActivityReportDto> update(
+        final User user,
+        final String term,
+        final List<UpdateActivityReportRequest> requests
+    ) {
         Club club = clubService.getByUserId(user.getId());
 
         List<ActivityReport> activityReports = activityReportRepository.findByClubNameAndTerm(
-            club.getName(), term);
+            club.getName(),
+            term
+        );
 
         return IntStream.range(0, activityReports.size())
-            .mapToObj(index -> {
-                activityReports.get(index).update(requests.get(index));
-                return ActivityReportDto.from(activityReports.get(index));
-            }).collect(Collectors.toList());
+            .mapToObj(index ->
+                {
+                    activityReports.get(index).update(requests.get(index));
+                    return ActivityReportDto.from(activityReports.get(index));
+                }
+            ).collect(Collectors.toList());
     }
 
+    @Transactional
     public List<ActivityReportDto> delete(final User user, final String term) {
         Club club = clubService.getByUserId(user.getId());
 
@@ -130,7 +138,7 @@ public class ActivityReportService {
         return String.valueOf(result);
     }
 
-    private List<AllActivityReportResponse> parseToActivityReportResponse(
+    private List<ActivityReportListResponse> parseToActivityReportResponse(
         final List<ActivityReport> activityReports) {
         Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
             Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
@@ -146,7 +154,7 @@ public class ActivityReportService {
                 List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream()
                     .map(ActivityReportDto::new)
                     .collect(Collectors.toList());
-                return AllActivityReportResponse.of(clubName, term, activityReportDtos);
+                return ActivityReportListResponse.of(clubName, term, activityReportDtos);
             });
 
         }).collect(Collectors.toList());

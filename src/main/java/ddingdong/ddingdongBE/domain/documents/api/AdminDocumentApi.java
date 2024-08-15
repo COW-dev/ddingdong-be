@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
-
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
@@ -35,7 +34,8 @@ public interface AdminDocumentApi {
     void generateDocument(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
+            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
+    );
 
     @Operation(summary = "어드민 자료실 목록 조회 API")
     @GetMapping
