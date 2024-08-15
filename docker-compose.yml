@@ -1,4 +1,4 @@
-services:    # 컨테이너 정의(컨테이너의 집합체를 보주로 서비스라고 함)
+services:
   ddingdong-local-db:
     image: mysql:8.0
     container_name: ddingdong_local_mysql
