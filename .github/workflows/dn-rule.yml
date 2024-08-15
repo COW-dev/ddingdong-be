@@ -65,7 +65,7 @@ jobs:
                       avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
                       embeds: [
                         {
-                          title: `📢 PR #${prNumber} - ${pr.title} Review D-${day - 1} 📢`,
+                          title: `📢 **PR #${prNumber} - ${pr.title} Review D-${day - 1}** 📢`,
                           description: `리뷰를 작성해주세요! 리뷰 작성 기간이 ${day - 1}일 남았습니다.`,
                           url: pr.html_url,
                           color: 4620980,
@@ -87,7 +87,7 @@ jobs:
                       avatar_url: 'https://avatars.githubusercontent.com/u/9919?s=200&v=4',
                       embeds: [
                         {
-                          title: `❗ PR #${prNumber} - ${pr.title} Review D-0 ❗`,
+                          title: `❗ **PR #${prNumber} - ${pr.title} Review D-0** ❗`,
                           description: `리뷰 마감일이 지났습니다! 리뷰를 작성해주세요.`,
                           url: pr.html_url,
                           color: 4620980,
