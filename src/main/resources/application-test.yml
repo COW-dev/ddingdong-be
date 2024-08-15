@@ -5,21 +5,16 @@ spring:
 
   flyway:
     enabled: false
-
-  datasource:
-    url: jdbc:h2:mem:ddingdongdb;
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
+    
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: true
     properties:
       hibernate:
+        show-sql: true
         format_sql: true
         auto_quote_keyword: true
+        dialect: org.hibernate.dialect.MySQL8InnoDBDialect
 
   sql:
     init:

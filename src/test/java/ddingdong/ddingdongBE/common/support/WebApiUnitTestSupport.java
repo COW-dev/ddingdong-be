@@ -1,7 +1,9 @@
-package ddingdong.ddingdongBE.support;
+package ddingdong.ddingdongBE.common.support;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
@@ -25,37 +27,44 @@ import org.springframework.web.context.WebApplicationContext;
 
 @ActiveProfiles("test")
 @WebMvcTest(controllers = {
-        AdminDocumentController.class,
-        DocumentController.class,
-        AdminQuestionController.class,
-        QuestionController.class,
-        AdminScoreHistoryController.class,
-        ClubScoreHistoryController.class
+    AdminDocumentController.class,
+    DocumentController.class,
+    AdminQuestionController.class,
+    QuestionController.class,
+    AdminScoreHistoryController.class,
+    ClubScoreHistoryController.class
 })
-public abstract class WebApiTestSupport {
+public abstract class WebApiUnitTestSupport {
 
-    @Autowired
-    private WebApplicationContext context;
-    @Autowired
-    protected MockMvc mockMvc;
-    @MockBean
-    protected DocumentService documentService;
-    @MockBean
-    protected FileService fileService;
-    @MockBean
-    protected FileInformationService fileInformationService;
-    @MockBean
-    protected QuestionService questionService;
-    @MockBean
-    protected ClubService clubService;
-    @MockBean
-    protected ScoreHistoryService scoreHistoryService;
+  @Autowired
+  private WebApplicationContext context;
+  @Autowired
+  protected MockMvc mockMvc;
+  @MockBean
+  protected DocumentService documentService;
+  @MockBean
+  protected FileService fileService;
+  @MockBean
+  protected FileInformationService fileInformationService;
+  @MockBean
+  protected QuestionService questionService;
+  @MockBean
+  protected ClubService clubService;
+  @MockBean
+  protected ScoreHistoryService scoreHistoryService;
 
-    @BeforeEach
-    void setUp() {
-        mockMvc = MockMvcBuilders.webAppContextSetup(context)
-                .apply(springSecurity())
-                .build();
-    }
+  @Autowired
+  protected ObjectMapper objectMapper;
+
+  protected String toJson(Object object) throws JsonProcessingException {
+    return objectMapper.writeValueAsString(object);
+  }
+
+  @BeforeEach
+  void setUp() {
+    mockMvc = MockMvcBuilders.webAppContextSetup(context)
+        .apply(springSecurity())
+        .build();
+  }
 
 }

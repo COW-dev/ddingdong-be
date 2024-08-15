@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.user.repository;
 import static ddingdong.ddingdongBE.domain.user.entity.Role.*;
 import static org.assertj.core.api.Assertions.*;
 
+import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -11,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
-@DataJpaTest
-class UserRepositoryTest {
+class UserRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
     private UserRepository userRepository;
