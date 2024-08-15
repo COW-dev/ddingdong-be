@@ -11,14 +11,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update question set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
+@Table(name = "question")
 public class Question extends BaseEntity {
 
     @Id
@@ -34,6 +40,9 @@ public class Question extends BaseEntity {
 
     @Column(nullable = false)
     private String reply;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     @Builder
     private Question(Long id, User user, String question, String reply, LocalDateTime createdAt) {

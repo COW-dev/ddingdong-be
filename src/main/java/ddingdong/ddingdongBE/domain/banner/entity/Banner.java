@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.banner.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -14,10 +15,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update banner set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
+@Table(appliesTo = "banner")
 public class Banner extends BaseEntity {
 
     @Id
@@ -33,6 +40,9 @@ public class Banner extends BaseEntity {
     private String subTitle;
 
     private String colorCode;
+
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
     @Builder
     public Banner(User user, String title, String subTitle, String colorCode) {

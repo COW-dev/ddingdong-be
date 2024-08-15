@@ -16,14 +16,18 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.Where;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"studentName", "studentNumber"}))
 @TypeDef(name = "json", typeClass = JsonType.class)
+@SQLDelete(sql = "update stamp_history set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
+@Table(name = "stamp_history", uniqueConstraints = @UniqueConstraint(columnNames = {"studentName", "studentNumber"}))
 public class StampHistory extends BaseEntity {
 
     @Id
@@ -48,8 +52,10 @@ public class StampHistory extends BaseEntity {
 
     private String certificationImageUrl;
 
-    @Builder
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
+    @Builder
     private StampHistory(Long id, String studentName, String department, String studentNumber,
                          String telephone, LocalDateTime completedAt, String certificationImageUrl) {
         this.id = id;

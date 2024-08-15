@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -17,10 +18,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update fix_zone set is_deleted = true where id=?")
+@Where(clause = "is_deleted = false")
+@Table(appliesTo = "fix_zone")
 public class FixZone extends BaseEntity {
 
 	@Id
@@ -39,6 +46,9 @@ public class FixZone extends BaseEntity {
 	private String content;
 
 	private boolean isCompleted;
+
+	@Column(name = "is_deleted")
+	private boolean isDeleted;
 
 	@Builder
 	private FixZone(Long id, Club club, String title, String content, boolean isCompleted) {
