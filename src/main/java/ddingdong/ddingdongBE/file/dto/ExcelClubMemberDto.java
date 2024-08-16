@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.club.controller.dto.request;
+package ddingdong.ddingdongBE.file.dto;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
@@ -13,8 +13,7 @@ import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 
 @Getter
-@NoArgsConstructor
-public class ClubMemberDto {
+public class ExcelClubMemberDto {
 
     private Long id;
 
@@ -29,8 +28,8 @@ public class ClubMemberDto {
     private String department;
 
     @Builder
-    public ClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
-                         String department) {
+    private ExcelClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
+                              String department) {
         this.id = id;
         this.name = name;
         this.studentNumber = studentNumber;
@@ -39,15 +38,6 @@ public class ClubMemberDto {
         this.department = department;
     }
 
-    public static ClubMemberDto from(ClubMember clubMember) {
-        return ClubMemberDto.builder()
-                .id(clubMember.getId())
-                .name(clubMember.getName())
-                .studentNumber(clubMember.getStudentNumber())
-                .phoneNumber(clubMember.getPhoneNumber())
-                .position(clubMember.getPosition().getName())
-                .department(clubMember.getDepartment()).build();
-    }
 
     public ClubMember toEntity(Club club) {
         return ClubMember.builder()
@@ -59,8 +49,8 @@ public class ClubMemberDto {
                 .department(department).build();
     }
 
-    public static ClubMemberDto fromExcelRow(Row row) {
-        ClubMemberDto clubMemberDto = ClubMemberDto.builder().build();
+    public static ExcelClubMemberDto fromExcelRow(Row row) {
+        ExcelClubMemberDto clubMemberDto = ExcelClubMemberDto.builder().build();
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();

@@ -9,7 +9,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.common.exception.PersistenceException;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubMemberResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubResponse;
@@ -26,6 +26,7 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.FileStore;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -75,11 +76,11 @@ public class ClubService {
         List<String> introduceImageUrls = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + clubId);
 
-        List<ClubMemberDto> clubMemberDtos = club.getClubMembers().stream()
-                .map(ClubMemberDto::from)
+        List<ClubMemberResponse> clubMemberResponses = club.getClubMembers().stream()
+                .map(ClubMemberResponse::from)
                 .toList();
 
-        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
+        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberResponses);
     }
 
     @Transactional(readOnly = true)
@@ -92,11 +93,11 @@ public class ClubService {
         List<String> introduceImageUrls = fileInformationService.getImageUrls(
                 IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
 
-        List<ClubMemberDto> clubMemberDtos = club.getClubMembers().stream()
-                .map(ClubMemberDto::from)
+        List<ClubMemberResponse> clubMemberResponses = club.getClubMembers().stream()
+                .map(ClubMemberResponse::from)
                 .toList();
 
-        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
+        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberResponses);
     }
 
     public void delete(Long clubId) {
