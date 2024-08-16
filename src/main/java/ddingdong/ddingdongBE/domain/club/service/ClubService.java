@@ -33,7 +33,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class ClubService {
 
     private final ClubRepository clubRepository;
@@ -42,7 +42,8 @@ public class ClubService {
     private final FileStore fileStore;
     private final FileInformationRepository fileInformationRepository;
 
-    public Long register(RegisterClubRequest request) {
+    @Transactional
+    public Long create(RegisterClubRequest request) {
         User clubUser = authService.registerClubUser(request.getUserId(), request.getPassword(), request.getClubName());
 
         Club club = request.toEntity(clubUser);
@@ -51,23 +52,20 @@ public class ClubService {
         return savedClub.getId();
     }
 
-    @Transactional(readOnly = true)
-    public List<ClubResponse> getAllClubs(LocalDateTime now) {
+    public List<ClubResponse> findAllWithRecruitTimeCheckPoint(LocalDateTime now) {
         return clubRepository.findAll().stream()
                 .map(club -> ClubResponse.of(club, checkRecruit(now, club).getText()))
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public List<AdminClubResponse> getAllForAdmin() {
+    public List<AdminClubResponse> findAllForAdmin() {
         return clubRepository.findAll().stream()
                 .map(club -> AdminClubResponse.of(club, fileInformationService.getImageUrls(
                         IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId())))
                 .toList();
     }
 
-    @Transactional(readOnly = true)
-    public DetailClubResponse getClub(Long clubId) {
+    public DetailClubResponse findByClubId(Long clubId) {
         Club club = getByClubId(clubId);
 
         List<String> profileImageUrl = fileInformationService.getImageUrls(
@@ -83,7 +81,6 @@ public class ClubService {
         return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
     }
 
-    @Transactional(readOnly = true)
     public DetailClubResponse getMyClub(Long userId) {
         Club club = getByUserId(userId);
 
@@ -100,18 +97,21 @@ public class ClubService {
         return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberDtos);
     }
 
+    @Transactional
     public void delete(Long clubId) {
         Club club = getByClubId(clubId);
 
         clubRepository.delete(club);
     }
 
-    public float editClubScore(Long clubId, float score) {
+    @Transactional
+    public float updateClubScore(Long clubId, float score) {
         Club club = getByClubId(clubId);
 
         return club.editScore(generateNewScore(club.getScore(), score));
     }
 
+    @Transactional
     public Long update(Long userId, UpdateClubRequest request) {
         Club club = getByUserId(userId);
         updateIntroduceImageInformation(request, club);
