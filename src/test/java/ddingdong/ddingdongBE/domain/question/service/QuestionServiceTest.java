@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.question.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.domain.question.repository.QuestionRepository;
 import java.util.Optional;
@@ -9,11 +10,9 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 
-@ActiveProfiles("test")
 @SpringBootTest
-class QuestionServiceTest {
+class QuestionServiceTest extends TestContainerSupport {
 
     @Autowired
     private QuestionService questionService;
