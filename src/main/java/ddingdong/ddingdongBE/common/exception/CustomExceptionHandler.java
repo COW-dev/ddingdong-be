@@ -81,23 +81,6 @@ public class CustomExceptionHandler {
         String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
             : request.getRemoteAddr();
 
-//        StringBuilder builder = new StringBuilder();
-//        List<FieldError> fieldErrors = exception.getBindingResult().getFieldErrors();
-//        for (FieldError fieldError : fieldErrors) {
-//            builder.append("[").append(fieldError.getField()).append("](은)는 ")
-//                .append(fieldError.getDefaultMessage())
-//                .append(" 입력된 값: ").append(fieldError.getRejectedValue())
-//                .append("|");
-//        }
-//        String message = builder.toString();
-//
-//        log.warn("{} {}{} from {}\n{}", requestMethod, requestUrl, queryString, clientIp, exception.getMessage());
-//
-//        return new ErrorResponse(
-//            String.valueOf(HttpStatus.BAD_REQUEST.value()),
-//            message
-//        );
-
         String message = exception.getBindingResult().getFieldErrors().stream()
             .findFirst()
             .map(FieldError::getDefaultMessage)
