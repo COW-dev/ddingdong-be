@@ -122,7 +122,7 @@ public class CustomExceptionHandler {
         );
     }
 
-    // TODO : 해당 에러 대신 PersistenceException.NotFound()로 전환 필요
+    // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleNoSuchElementException(NoSuchElementException e) {
