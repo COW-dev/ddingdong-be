@@ -35,6 +35,11 @@ jobs:
       - name: Grant Docker socket permissions
         run: sudo chmod 666 /var/run/docker.sock
 
+      - name: Setup TestContainers properties
+        run: |
+          mkdir -p ~/.testcontainers
+          cp src/test/resources/testcontainers.properties ~/.testcontainers/testcontainers.properties
+
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
           TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
