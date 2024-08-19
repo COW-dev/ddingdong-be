@@ -45,7 +45,8 @@ dependencies {
     implementation 'org.apache.poi:poi-ooxml:5.2.0'
     implementation 'io.hypersistence:hypersistence-utils-hibernate-55:3.7.2'
     implementation 'io.sentry:sentry-logback:7.6.0'
-    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.17.0'
+
 
     //security
     implementation 'org.springframework.boot:spring-boot-starter-security'
@@ -57,9 +58,10 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     // TestContainer
-    testImplementation 'org.testcontainers:testcontainers'
-    testImplementation 'org.testcontainers:junit-jupiter'
-    testImplementation 'org.testcontainers:mysql'
+    testImplementation 'org.testcontainers:testcontainers:1.19.0'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.0'
+    // mysql 컨테이너
+    testImplementation 'org.testcontainers:mysql:1.19.0'
 }
 
 tasks.named('test') {
