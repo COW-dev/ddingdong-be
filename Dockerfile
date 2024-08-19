@@ -2,8 +2,7 @@
 FROM gradle:jdk17 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon --info --stacktrace \
-                                 -Dorg.gradle.jvmargs="-Xmx2g -XX:MaxMetaspaceSize=512m"
+RUN gradle build --no-daemon
 
 # Package stage
 FROM openjdk:17
