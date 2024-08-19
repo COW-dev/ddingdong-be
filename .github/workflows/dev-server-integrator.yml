@@ -13,16 +13,6 @@ jobs:
       - name: Check Out Repository
         uses: actions/checkout@v4
 
-      - name: Check Docker Installation
-        run: |
-          docker --version
-          docker info
-
-      - name: Start Docker service
-        run: |
-            sudo systemctl start docker
-            sudo systemctl status docker
-
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:

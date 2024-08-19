@@ -19,12 +19,10 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 @NoArgsConstructor(access = PROTECTED)
 @ActiveProfiles("test")
 @Import(TestConfig.class)
-@Testcontainers
 public abstract class TestContainerSupport {
 
   private static final String MYSQL_IMAGE = "mysql:8";
   private static final int MYSQL_PORT = 3306;
-  @Container
   private static final JdbcDatabaseContainer<?> MYSQL;
 
   @Autowired
