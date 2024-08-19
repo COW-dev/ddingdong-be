@@ -32,6 +32,13 @@ jobs:
         with:
           registry-type: public
 
+
+      - name: Setup Docker permissions
+        run: |
+          sudo chmod 666 /var/run/docker.sock
+          sudo usermod -aG docker $USER
+          sudo service docker restart
+
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
