@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - develop
-      - fix/DEV-000-ci-error
 
 jobs:
   build_and_push:
@@ -25,13 +24,6 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public
-
-      - name: docker permission
-        run: |
-          sudo groups $USER
-          sudo groupadd docker
-          sudo usermod -a -G docker $USER
-          sudo systemctl restart docker
 
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
