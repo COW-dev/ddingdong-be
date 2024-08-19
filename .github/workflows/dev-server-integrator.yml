@@ -19,7 +19,9 @@ jobs:
           docker info
 
       - name: Start Docker service
-        run: sudo service docker start
+        run: |
+            sudo systemctl start docker
+            sudo systemctl status docker
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
