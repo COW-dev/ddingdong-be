@@ -32,6 +32,17 @@ jobs:
         with:
           registry-type: public
 
+      - name: Check Docker
+        run: |
+          docker --version
+          docker info
+      - name: Add user to docker group
+        run: |
+          sudo usermod -aG docker $USER
+          newgrp docker
+      - name: Set Docker socket path
+        run: echo "TESTCONTAINERS_DOCKER_SOCKET_OVERRIDE=/var/run/docker.sock" >> $GITHUB_ENV
+
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
