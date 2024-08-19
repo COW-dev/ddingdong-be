@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - fix/DEV-000-ci-error
 
 jobs:
   build_and_push:
