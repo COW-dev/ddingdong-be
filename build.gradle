@@ -58,10 +58,10 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     // TestContainer
-    testImplementation 'org.testcontainers:testcontainers:1.19.0'
-    testImplementation 'org.testcontainers:junit-jupiter:1.19.0'
+    testImplementation 'org.testcontainers:testcontainers:1.20.0'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.0'
     // mysql 컨테이너
-    testImplementation 'org.testcontainers:mysql:1.19.0'
+    testImplementation 'org.testcontainers:mysql:1.20.0'
 }
 
 tasks.named('test') {
