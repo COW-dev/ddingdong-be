@@ -10,14 +10,16 @@ jobs:
   build_and_push:
     runs-on: ubuntu-latest
     steps:
-      - name: Set up JDK 17
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
       - name: Check Out Repository
         uses: actions/checkout@v4
+
+      - name: Check Docker Installation
+        run: |
+          docker --version
+          docker info
+
+      - name: Start Docker service
+        run: sudo service docker start
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -32,17 +34,8 @@ jobs:
         with:
           registry-type: public
 
-      - name: Grant Docker socket permissions
-        run: sudo chmod 666 /var/run/docker.sock
-
-      - name: Setup TestContainers properties
-        run: |
-          mkdir -p ~/.testcontainers
-          cp src/test/resources/testcontainers.properties ~/.testcontainers/testcontainers.properties
-
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:
-          TESTCONTAINERS_HOST_OVERRIDE: host.docker.internal
           REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
           REGISTRY_ALIAS: ${{ secrets.DEV_ECR_REGISTRY_ALIAS }}
           REPOSITORY: dev-ecr
