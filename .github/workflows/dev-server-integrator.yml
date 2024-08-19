@@ -25,6 +25,9 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v2
         with:
           registry-type: public
+      - name: Build and test
+        run: |
+          ./gradlew build test --info
 
       - name: Build, tag, and push docker image to Amazon ECR Public
         env:

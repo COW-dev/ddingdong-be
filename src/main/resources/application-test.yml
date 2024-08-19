@@ -2,10 +2,6 @@ spring:
   config:
     activate:
       on-profile: test
-  datasource:
-    hikari:
-      connection-timeout: 30000
-      maximum-pool-size: 10
 
   jpa:
     hibernate:
