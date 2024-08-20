@@ -23,24 +23,17 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(CustomException.class)
-    public ErrorResponse handleCustomException(
-        CustomException exception,
-        HttpServletRequest request
-    ) {
-        String requestMethod = request.getMethod();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
-            : request.getRemoteAddr();
+    public ErrorResponse handleCustomException(CustomException exception, HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
 
         log.warn(
-            requestMethod + requestUrl + queryString + " from ip: " + clientIp
+            connectionInfo
                 + "\n"
-                + HttpStatus.BAD_REQUEST.value() + " : " + exception.message
+                + HttpStatus.BAD_REQUEST.value() + " : " + exception.getMessage()
         );
 
         return new ErrorResponse(
-            String.valueOf(HttpStatus.BAD_REQUEST.value()),
+            HttpStatus.BAD_REQUEST.value(),
             exception.message
         );
     }
@@ -51,20 +44,16 @@ public class CustomExceptionHandler {
         IllegalArgumentException exception,
         HttpServletRequest request
     ) {
-        String requestMethod = request.getMethod();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
-            : request.getRemoteAddr();
+        String connectionInfo = createLogConnectionInfo(request);
 
         log.warn(
-            requestMethod + requestUrl + queryString + " from ip: " + clientIp
+            connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + exception.getMessage()
         );
 
         return new ErrorResponse(
-            String.valueOf(HttpStatus.BAD_REQUEST.value()),
+            HttpStatus.BAD_REQUEST.value(),
             exception.getMessage()
         );
     }
@@ -75,11 +64,7 @@ public class CustomExceptionHandler {
         MethodArgumentNotValidException exception,
         HttpServletRequest request
     ) {
-        String requestMethod = request.getMethod();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
-            : request.getRemoteAddr();
+        String connectionInfo = createLogConnectionInfo(request);
 
         String message = exception.getBindingResult().getFieldErrors().stream()
             .findFirst()
@@ -87,13 +72,13 @@ public class CustomExceptionHandler {
             .orElse("입력된 값이 올바르지 않습니다.");
 
         log.warn(
-            requestMethod + requestUrl + queryString + " from ip: " + clientIp
+            connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + message
         );
 
         return new ErrorResponse(
-            String.valueOf(HttpStatus.BAD_REQUEST.value()),
+            HttpStatus.BAD_REQUEST.value(),
             message
         );
     }
@@ -104,20 +89,16 @@ public class CustomExceptionHandler {
         Throwable exception,
         HttpServletRequest request
     ) {
-        String requestMethod = request.getMethod();
-        String requestUrl = request.getRequestURI();
-        String queryString = request.getQueryString();
-        String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
-            : request.getRemoteAddr();
+        String connectionInfo = createLogConnectionInfo(request);
 
         log.warn(
-            requestMethod + requestUrl + queryString + " from ip: " + clientIp
+            connectionInfo
                 + "\n"
                 + "[SYSTEM-ERROR]" + " : " + exception.getMessage()
         );
 
         return new ErrorResponse(
-            String.valueOf(HttpStatus.INTERNAL_SERVER_ERROR.value()),
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
             "Internal Sever Error"
         );
     }
@@ -147,4 +128,16 @@ public class CustomExceptionHandler {
     public ExceptionResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
+
+
+    private String createLogConnectionInfo(HttpServletRequest request) {
+        String requestMethod = request.getMethod();
+        String requestUrl = request.getRequestURI();
+        String queryString = request.getQueryString();
+        String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
+            : request.getRemoteAddr();
+
+        return requestMethod + requestUrl + queryString + " from ip: " + clientIp;
+    }
+
 }
