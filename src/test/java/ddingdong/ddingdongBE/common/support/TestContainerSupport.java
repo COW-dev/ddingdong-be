@@ -14,6 +14,7 @@ import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
 
+
 @NoArgsConstructor(access = PROTECTED)
 @ActiveProfiles("test")
 @Import(TestConfig.class)
