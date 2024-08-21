@@ -80,7 +80,18 @@ public class CustomExceptionHandler {
         );
     }
 
-    // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AuthenticationException.class)
+    public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
+
+        loggingApplicationError(connectionInfo
+                + "\n"
+                + exception.getClass().getSimpleName() + " : " + exception.message);
+
+        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
+        );
+    }
 
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
