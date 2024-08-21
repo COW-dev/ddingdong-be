@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_CLUB;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.BEFORE_RECRUIT;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.END_RECRUIT;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.RECRUITING;
@@ -9,6 +8,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.service.AuthService;
+import ddingdong.ddingdongBE.common.exception.PersistenceException;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
@@ -26,7 +26,6 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.FileStore;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -123,12 +122,12 @@ public class ClubService {
 
     public Club getByUserId(final Long userId) {
         return clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+            .orElseThrow(() -> new PersistenceException.ResourceNotFound("Club(userId=" + userId + "를 찾을 수 없습니다."));
     }
 
     public Club getByClubId(final Long clubId) {
         return clubRepository.findById(clubId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_CLUB.getText()));
+            .orElseThrow(() -> new PersistenceException.ResourceNotFound("존재하지 않는 동아리입니다."));
     }
 
     private void updateIntroduceImageInformation(UpdateClubRequest request, Club club) {

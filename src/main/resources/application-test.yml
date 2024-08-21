@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: test
 
+  flyway:
+    enabled: false
+    
   jpa:
     hibernate:
       ddl-auto: create
@@ -41,3 +44,8 @@ jwt:
   issuer: "ddingdong"
   secret: "test"
   expiration: 3600
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace

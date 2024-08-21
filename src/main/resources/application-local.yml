@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: local
 
+  flyway:
+    enabled: false
+
   datasource:
     url: jdbc:mysql://localhost:3307/ddingdong_local_db
     driver-class-name: com.mysql.cj.jdbc.Driver

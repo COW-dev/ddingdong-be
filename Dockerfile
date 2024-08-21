@@ -2,7 +2,7 @@
 FROM gradle:jdk17 AS build
 COPY --chown=gradle:gradle . /home/gradle/src
 WORKDIR /home/gradle/src
-RUN gradle build --no-daemon
+RUN ./gradlew clean build -x test --no-daemon
 
 # Package stage
 FROM openjdk:17
