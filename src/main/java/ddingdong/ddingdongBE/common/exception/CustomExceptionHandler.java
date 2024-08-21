@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.common.exception;
 
 import io.swagger.v3.oas.annotations.Hidden;
+import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
 import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -22,95 +23,92 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(CustomException.class)
-    public ErrorResponse handleCustomException(CustomException exception, HttpServletRequest request) {
+    @ExceptionHandler(PersistenceException.class)
+    public ErrorResponse handlePersistenceException(PersistenceException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        log.warn(
-            connectionInfo
+        loggingApplicationError(connectionInfo
                 + "\n"
-                + HttpStatus.BAD_REQUEST.value() + " : " + exception.getMessage()
-        );
+                + HttpStatus.BAD_REQUEST.value() + " : " + exception.getMessage());
 
         return new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            exception.message
+                exception.errorCode,
+                exception.message,
+                LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleIllegalArgumentException(
-        IllegalArgumentException exception,
-        HttpServletRequest request
+            IllegalArgumentException exception,
+            HttpServletRequest request
     ) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        log.warn(
-            connectionInfo
+        loggingApplicationError(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.getMessage()
-        );
+                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
         return new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            exception.getMessage()
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidException(
-        MethodArgumentNotValidException exception,
-        HttpServletRequest request
+            MethodArgumentNotValidException exception,
+            HttpServletRequest request
     ) {
         String connectionInfo = createLogConnectionInfo(request);
 
         String message = exception.getBindingResult().getFieldErrors().stream()
-            .findFirst()
-            .map(FieldError::getDefaultMessage)
-            .orElse("입력된 값이 올바르지 않습니다.");
+                .findFirst()
+                .map(FieldError::getDefaultMessage)
+                .orElse("입력된 값이 올바르지 않습니다.");
 
-        log.warn(
-            connectionInfo
+        loggingApplicationError(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + message
-        );
+                + exception.getClass().getSimpleName() + " : " + message);
 
         return new ErrorResponse(
-            HttpStatus.BAD_REQUEST.value(),
-            message
+                HttpStatus.BAD_REQUEST.value(),
+                exception.getMessage(),
+                LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
     public ErrorResponse handleSystemException(
-        Throwable exception,
-        HttpServletRequest request
+            Throwable exception,
+            HttpServletRequest request
     ) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        log.warn(
-            connectionInfo
+        loggingApplicationError(connectionInfo
                 + "\n"
-                + "[SYSTEM-ERROR]" + " : " + exception.getMessage()
-        );
+                + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
 
         return new ErrorResponse(
-            HttpStatus.INTERNAL_SERVER_ERROR.value(),
-            "Internal Sever Error"
+                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                "Internal Sever Error",
+                LocalDateTime.now()
         );
     }
 
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
+
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleNoSuchElementException(NoSuchElementException e) {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
-
     // TODO : 커스텀 exception으로 변경 필요
+
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException e) {
         return switch (e.getErrorMessage()) {
@@ -129,15 +127,17 @@ public class CustomExceptionHandler {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
-
     private String createLogConnectionInfo(HttpServletRequest request) {
         String requestMethod = request.getMethod();
         String requestUrl = request.getRequestURI();
         String queryString = request.getQueryString();
         String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
-            : request.getRemoteAddr();
+                : request.getRemoteAddr();
 
         return requestMethod + requestUrl + queryString + " from ip: " + clientIp;
     }
 
+    private void loggingApplicationError(String applicationLog) {
+        log.warn("errorLog = {}", applicationLog);
+    }
 }
