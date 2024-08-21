@@ -7,15 +7,16 @@ import java.util.Arrays;
 import java.util.Iterator;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 
 @Getter
 public class ExcelClubMemberDto {
 
-    private Long id;
+    private static final DataFormatter formatter = new DataFormatter();
+
 
     private String name;
 
@@ -28,9 +29,8 @@ public class ExcelClubMemberDto {
     private String department;
 
     @Builder
-    private ExcelClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
-                              String department) {
-        this.id = id;
+    private ExcelClubMemberDto(String name, String studentNumber, String phoneNumber, String position,
+                               String department) {
         this.name = name;
         this.studentNumber = studentNumber;
         this.phoneNumber = phoneNumber;
@@ -60,10 +60,10 @@ public class ExcelClubMemberDto {
                 }
             } else if (cell.getCellType() == CellType.NUMERIC) {
                 if (cell.getNumericCellValue() != 0) {
-                    clubMemberDto.setValueByCell(String.valueOf(cell.getNumericCellValue()), cell.getColumnIndex());
+                    String stringCellValue = formatter.formatCellValue(cell);
+                    clubMemberDto.setValueByCell(stringCellValue, cell.getColumnIndex());
                 }
             }
-
         }
         return clubMemberDto;
     }
@@ -82,7 +82,7 @@ public class ExcelClubMemberDto {
     }
 
     private void validatePositionValue(String stringCellValue) {
-        if (Arrays.stream(Position.values()).noneMatch(position-> position.name().equals(stringCellValue))) {
+        if (Arrays.stream(Position.values()).noneMatch(position -> position.name().equals(stringCellValue))) {
             throw new IllegalArgumentException("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다. ");
         }
     }
