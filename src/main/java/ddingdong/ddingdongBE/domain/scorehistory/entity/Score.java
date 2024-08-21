@@ -36,7 +36,7 @@ public class Score {
         return Objects.hash(getValue());
     }
 
-    public static Score of(float value) {
+    public static Score from(float value) {
         return new Score(value);
     }
 

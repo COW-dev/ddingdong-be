@@ -25,11 +25,11 @@ class AdminScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("동아리 점수 내역 조회 요청을 수행한다.")
     @Test
-    void getScoreHistories() throws Exception {
+    void findAllScoreHistories() throws Exception {
         //given
         Club club = Club.builder()
                 .id(1L)
-                .score(Score.of(55)).build();
+                .score(Score.from(55)).build();
         List<ScoreHistory> scoreHistories = List.of(ScoreHistory.builder()
                         .club(club)
                         .scoreCategory(CARRYOVER_SCORE)
@@ -41,7 +41,7 @@ class AdminScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
                         .amount(5)
                         .reason("reasonB").build());
         when(clubService.getByClubId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.getScoreHistories(club.getId())).thenReturn(scoreHistories);
+        when(scoreHistoryService.findAllByClubId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
         mockMvc.perform(get("/server/admin/{clubId}/score", 1L)

@@ -8,7 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -29,40 +28,30 @@ public class CustomExceptionHandler {
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + HttpStatus.BAD_REQUEST.value() + " : " + exception.getMessage());
+                + HttpStatus.BAD_REQUEST.value() + " : " + exception.message);
 
-        return new ErrorResponse(
-                exception.errorCode,
-                exception.message,
-                LocalDateTime.now()
+        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
-    public ErrorResponse handleIllegalArgumentException(
-            IllegalArgumentException exception,
-            HttpServletRequest request
-    ) {
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException exception,
+                                                        HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                exception.getMessage(),
-                LocalDateTime.now()
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorResponse handleMethodArgumentNotValidException(
-            MethodArgumentNotValidException exception,
-            HttpServletRequest request
-    ) {
+    public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException exception,
+                                                               HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         String message = exception.getBindingResult().getFieldErrors().stream()
@@ -74,50 +63,41 @@ public class CustomExceptionHandler {
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + message);
 
-        return new ErrorResponse(
-                HttpStatus.BAD_REQUEST.value(),
-                exception.getMessage(),
-                LocalDateTime.now()
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
-    public ErrorResponse handleSystemException(
-            Throwable exception,
-            HttpServletRequest request
-    ) {
+    public ErrorResponse handleSystemException(Throwable exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
                 + "\n"
                 + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
 
-        return new ErrorResponse(
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
-                "Internal Sever Error",
-                LocalDateTime.now()
+        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Sever Error", LocalDateTime.now()
+        );
+    }
+
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(AuthenticationException.class)
+    public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
+
+        loggingApplicationError(connectionInfo
+                + "\n"
+                + exception.getClass().getSimpleName() + " : " + exception.message);
+
+        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
         );
     }
 
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
-
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ExceptionResponse handleNoSuchElementException(NoSuchElementException e) {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
-    }
-    // TODO : 커스텀 exception으로 변경 필요
-
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseEntity<ExceptionResponse> handleAuthenticationException(AuthenticationException e) {
-        return switch (e.getErrorMessage()) {
-            case INVALID_PASSWORD, UNREGISTER_ID -> ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(ExceptionResponse.of(HttpStatus.UNAUTHORIZED, e.getMessage()));
-
-            default -> ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage()));
-        };
     }
 
     // TODO : presigned url 도입 시, 삭제 예정
@@ -127,6 +107,7 @@ public class CustomExceptionHandler {
         return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
     }
 
+
     private String createLogConnectionInfo(HttpServletRequest request) {
         String requestMethod = request.getMethod();
         String requestUrl = request.getRequestURI();
@@ -134,7 +115,7 @@ public class CustomExceptionHandler {
         String clientIp = request.getHeader("X-Forwarded-For") != null ? request.getHeader("X-Forwarded-For")
                 : request.getRemoteAddr();
 
-        return requestMethod + requestUrl + queryString + " from ip: " + clientIp;
+        return requestMethod + requestUrl + "?" + queryString + " from ip: " + clientIp;
     }
 
     private void loggingApplicationError(String applicationLog) {
