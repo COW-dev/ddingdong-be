@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.entity;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -21,7 +22,7 @@ public enum ScoreCategory {
         try {
             return ScoreCategory.valueOf(category);
         } catch (IllegalArgumentException e) {
-            throw new IllegalArgumentException(ILLEGAL_SCORE_CATEGORY.getText());
+            throw new InvalidatedEnumValue(ILLEGAL_SCORE_CATEGORY.getText());
         }
     }
 }

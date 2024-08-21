@@ -5,6 +5,7 @@ abstract class CustomException extends RuntimeException {
     int errorCode;
 
     public CustomException(String message, int errorCode) {
+        super(message);
         this.message = message;
         this.errorCode = errorCode;
     }
