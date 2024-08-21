@@ -1,10 +1,11 @@
 package ddingdong.ddingdongBE.domain.scorehistory.api;
 
-import ddingdong.ddingdongBE.common.exception.ExceptionResponse;
+import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.CreateScoreHistoryRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -28,16 +29,28 @@ public interface AdminScoreHistoryApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", description = "점수 등록 성공"),
             @ApiResponse(responseCode = "400",
-                    description = "잘못된 요청, 올바르지 않은 점수변동내역 카테고리",
+                    description = "잘못된 요청",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            //TODO: Exception 핸들링 작업 완료 시 명세 확인
-                            schema = @Schema(implementation = ExceptionResponse.class))
-            ),
-            @ApiResponse(responseCode = "400",
-                    description = "잘못된 요청, 존재하지 않는 동아리",
-                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ExceptionResponse.class))
-            ),
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "올바르지 않은 점수변동내역 카테고리",
+                                            value = """
+                                                    {
+                                                    "status": 400,
+                                                     "message": "올바르지 않은 점수변동내역 카테고리입니다.",
+                                                     "timestamp": "2024-08-22T00:08:46.990585"
+                                                    }
+                                                    """),
+                                    @ExampleObject(name = "존재하지 않는 동아리",
+                                            value = """
+                                                    {
+                                                      "status": 400,
+                                                      "message": "존재하지않는 동아리입니다.",
+                                                      "timestamp": "2024-08-22T00:08:46.990585"
+                                                    }
+                                                    """),
+                            })
+            )
     })
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
@@ -51,10 +64,21 @@ public interface AdminScoreHistoryApi {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ScoreHistoryFilterByClubResponse.class))),
             @ApiResponse(responseCode = "400",
-                    description = "잘못된 요청, 존재하지 않는 동아리",
+                    description = "잘못된 요청",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ExceptionResponse.class))
-            ),
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "존재하지 않는 동아리",
+                                            value = """
+                                                    {
+                                                      "status": 400,
+                                                      "message": "존재하지않는 동아리입니다.",
+                                                      "timestamp": "2024-08-22T00:08:46.990585"
+                                                    }
+                                                    """
+                                    )
+                            })
+            )
     })
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
