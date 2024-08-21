@@ -4,6 +4,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.club.api.CentralClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
@@ -12,12 +13,14 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import java.util.List;
 
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -29,22 +32,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/server/club/my")
 @RequiredArgsConstructor
 @Slf4j
-public class CentralClubApiController {
+public class CentralClubApiController implements CentralClubApi {
 
     private final ClubService clubService;
     private final ClubMemberService clubMemberService;
     private final FileService fileService;
 
-    @GetMapping
     public DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
         return clubService.getMyClub(user.getId());
     }
 
-    @PatchMapping()
     public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
                            @ModelAttribute UpdateClubRequest param,
                            @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
@@ -63,12 +63,22 @@ public class CentralClubApiController {
         }
     }
 
-    @PutMapping(value = "/club-members")
-    public void updateClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                  @RequestPart(value = "data", required = false) UpdateClubMemberRequest request,
-                                  @RequestPart(name = "file", required = false) Optional<MultipartFile> clubMemberListFile) {
-        User user = principalDetails.getUser();
-        clubMemberService.updateClubMembers(user.getId(), request, clubMemberListFile);
+    @Override
+    public void createClubMembers(PrincipalDetails principalDetails, MultipartFile clubMemberListFile) {
+
     }
+
+    @Override
+    public void updateClubMembers(PrincipalDetails principalDetails, UpdateClubMemberRequest request) {
+
+    }
+
+
+////    public void updateClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails,
+////                                  @RequestPart(value = "data", required = false) UpdateClubMemberRequest request,
+////                                  @RequestPart(name = "file", required = false) Optional<MultipartFile> clubMemberListFile) {
+////        User user = principalDetails.getUser();
+////        clubMemberService.updateClubMembers(user.getId(), request, clubMemberListFile);
+//    }
 
 }

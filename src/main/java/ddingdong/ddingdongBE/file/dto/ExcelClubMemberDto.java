@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.file.dto;
 
+import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonValidatedStringCellValue;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
@@ -83,7 +84,7 @@ public class ExcelClubMemberDto {
 
     private void validatePositionValue(String stringCellValue) {
         if (Arrays.stream(Position.values()).noneMatch(position -> position.name().equals(stringCellValue))) {
-            throw new IllegalArgumentException("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다. ");
+            throw new NonValidatedStringCellValue("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다.");
         }
     }
 }
