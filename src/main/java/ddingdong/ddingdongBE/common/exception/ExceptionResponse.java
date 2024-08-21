@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 
+// TODO : 모든 에러 전환 후에 삭제 필요
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ExceptionResponse {
