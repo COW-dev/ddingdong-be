@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.file.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NON_EXCEL_CLUB_MEMBER_LIST_FILE;
-
 import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.ExcelIO;
 import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcelFile;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -35,7 +33,7 @@ public class ExcelFileService {
     private void isExcelFile(MultipartFile file) {
         String fileName = file.getOriginalFilename();
         if (fileName != null && !(fileName.endsWith(".xls") || fileName.endsWith(".xlsx"))) {
-            throw new NonExcelFile(NON_EXCEL_CLUB_MEMBER_LIST_FILE.getText());
+            throw new NonExcelFile();
         }
     }
 
@@ -50,7 +48,7 @@ public class ExcelFileService {
                 }
             }
         } catch (IOException | NotOfficeXmlFileException e) {
-            throw new ExcelIO("올바른 엑셀 파일을 사용해주세요.");
+            throw new ExcelIO();
         }
         return requestedClubMembersDto;
     }

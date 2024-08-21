@@ -6,8 +6,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.groups.Tuple.tuple;
 
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
+import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException;
 import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcelFile;
-import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonValidatedStringCellValue;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
@@ -96,7 +97,8 @@ class ExcelFileServiceTest extends TestContainerSupport {
 
         //when //then
         assertThatThrownBy(() -> excelFileService.extractClubMembersInformation(club, nonExcelFile))
-                .isInstanceOf(NonExcelFile.class);
+                .isInstanceOf(NonExcelFile.class)
+                .hasMessage(ParsingExcelFileException.NON_EXCEL_FILE_ERROR_MESSAGE);
     }
 
 
@@ -115,7 +117,8 @@ class ExcelFileServiceTest extends TestContainerSupport {
 
         // when
         assertThatThrownBy(() -> excelFileService.extractClubMembersInformation(club, invalidExcelFile))
-                .isInstanceOf(ExcelIO.class);
+                .isInstanceOf(ExcelIO.class)
+                .hasMessage(ParsingExcelFileException.EXCEL_IO_ERROR_MESSAGE);
     }
 
     @DisplayName("동아리원 명단 엑셀 파일에서 올바른 동아리원 역할(LEADER, EXECUTION, MEMBER)이 아닐 경우 예외가 발생한다.")
@@ -154,6 +157,7 @@ class ExcelFileServiceTest extends TestContainerSupport {
 
         //when //then
         assertThatThrownBy(() -> excelFileService.extractClubMembersInformation(club, nonValidExcelFile))
-                .isInstanceOf(NonValidatedStringCellValue.class);
+                .isInstanceOf(InvalidatedEnumValue.class)
+                .hasMessage("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다.");
     }
 }

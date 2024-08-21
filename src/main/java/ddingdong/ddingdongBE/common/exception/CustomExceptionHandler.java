@@ -1,5 +1,9 @@
 package ddingdong.ddingdongBE.common.exception;
 
+import static org.springframework.http.HttpStatus.BAD_REQUEST;
+import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
+
 import io.swagger.v3.oas.annotations.Hidden;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -7,7 +11,6 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,20 +24,20 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 public class CustomExceptionHandler {
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(PersistenceException.class)
-    public ErrorResponse handlePersistenceException(PersistenceException exception, HttpServletRequest request) {
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(CustomException.class)
+    public ErrorResponse handlePersistenceException(CustomException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + HttpStatus.BAD_REQUEST.value() + " : " + exception.message);
+                + BAD_REQUEST.value() + " : " + exception.message);
 
         return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException exception,
                                                         HttpServletRequest request) {
@@ -44,11 +47,11 @@ public class CustomExceptionHandler {
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
+        return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ErrorResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException exception,
                                                                HttpServletRequest request) {
@@ -63,11 +66,11 @@ public class CustomExceptionHandler {
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + message);
 
-        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
+        return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
     }
 
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Throwable.class)
     public ErrorResponse handleSystemException(Throwable exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
@@ -76,35 +79,22 @@ public class CustomExceptionHandler {
                 + "\n"
                 + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
 
-        return new ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), "Internal Sever Error", LocalDateTime.now()
-        );
+        return new ErrorResponse(INTERNAL_SERVER_ERROR.value(), "Internal Sever Error", LocalDateTime.now());
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(AuthenticationException.class)
-    public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
-        String connectionInfo = createLogConnectionInfo(request);
-
-        loggingApplicationError(connectionInfo
-                + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.message);
-
-        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
-        );
-    }
 
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
     @ExceptionHandler(NoSuchElementException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(BAD_REQUEST)
     public ExceptionResponse handleNoSuchElementException(NoSuchElementException e) {
-        return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ExceptionResponse.of(BAD_REQUEST, e.getMessage());
     }
 
     // TODO : presigned url 도입 시, 삭제 예정
     @ExceptionHandler(MissingServletRequestPartException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(NOT_FOUND)
     public ExceptionResponse handleMissingServletRequestPartException(MissingServletRequestPartException e) {
-        return ExceptionResponse.of(HttpStatus.BAD_REQUEST, e.getMessage());
+        return ExceptionResponse.of(BAD_REQUEST, e.getMessage());
     }
 
 
