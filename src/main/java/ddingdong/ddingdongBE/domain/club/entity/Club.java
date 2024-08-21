@@ -31,8 +31,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update club set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update club set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "club")
 public class Club extends BaseEntity {
 
@@ -80,8 +80,8 @@ public class Club extends BaseEntity {
     @Embedded
     private Score score;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public Club(Long id, User user, String name, String category, String tag, String leader, Location location,

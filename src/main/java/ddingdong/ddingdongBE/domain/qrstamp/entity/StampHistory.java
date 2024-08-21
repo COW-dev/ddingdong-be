@@ -25,8 +25,8 @@ import org.hibernate.annotations.Where;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @TypeDef(name = "json", typeClass = JsonType.class)
-@SQLDelete(sql = "update stamp_history set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update stamp_history set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(name = "stamp_history", uniqueConstraints = @UniqueConstraint(columnNames = {"studentName", "studentNumber"}))
 public class StampHistory extends BaseEntity {
 
@@ -52,8 +52,8 @@ public class StampHistory extends BaseEntity {
 
     private String certificationImageUrl;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     private StampHistory(Long id, String studentName, String department, String studentNumber,

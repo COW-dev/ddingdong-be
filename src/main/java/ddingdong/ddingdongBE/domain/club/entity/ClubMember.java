@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -23,8 +24,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update club_member set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update club_member set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "club_member")
 public class ClubMember extends BaseEntity {
 
@@ -47,8 +48,8 @@ public class ClubMember extends BaseEntity {
 
     private String department;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public ClubMember(Long id, Club club, String name, String studentNumber, String phoneNumber, Position position,

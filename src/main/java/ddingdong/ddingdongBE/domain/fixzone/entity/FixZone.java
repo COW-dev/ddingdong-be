@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.fixzone.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;
@@ -25,8 +26,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update fix_zone set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update fix_zone set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "fix_zone")
 public class FixZone extends BaseEntity {
 
@@ -47,8 +48,8 @@ public class FixZone extends BaseEntity {
 
 	private boolean isCompleted;
 
-	@Column(name = "is_deleted")
-	private boolean isDeleted;
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
 
 	@Builder
 	private FixZone(Long id, Club club, String title, String content, boolean isCompleted) {

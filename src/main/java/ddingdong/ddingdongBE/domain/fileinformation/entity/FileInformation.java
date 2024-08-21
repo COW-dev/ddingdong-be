@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.fileinformation.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -19,8 +20,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update file_information set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update file_information set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "file_information")
 public class FileInformation extends BaseEntity {
 
@@ -40,8 +41,9 @@ public class FileInformation extends BaseEntity {
 
     private String findParam;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
 
     @Builder
     public FileInformation(String uploadName, String storedName, FileTypeCategory fileTypeCategory,

@@ -22,8 +22,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update question set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update question set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(name = "question")
 public class Question extends BaseEntity {
 
@@ -41,8 +41,8 @@ public class Question extends BaseEntity {
     @Column(nullable = false)
     private String reply;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     private Question(Long id, User user, String question, String reply, LocalDateTime createdAt) {

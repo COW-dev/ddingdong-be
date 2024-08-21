@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -18,8 +19,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update activity_report_term_info set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update activity_report_term_info set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "activity_report_term_info")
 public class ActivityReportTermInfo {
 
@@ -36,8 +37,8 @@ public class ActivityReportTermInfo {
     @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate endDate;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public ActivityReportTermInfo(int term, LocalDate startDate, LocalDate endDate) {

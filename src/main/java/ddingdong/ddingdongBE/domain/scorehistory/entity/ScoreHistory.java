@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -25,8 +26,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update score_history set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update score_history set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(name = "score_history")
 public class ScoreHistory extends BaseEntity {
 
@@ -45,8 +46,8 @@ public class ScoreHistory extends BaseEntity {
 
     private String reason;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public ScoreHistory(Club club, float amount, ScoreCategory scoreCategory, String reason) {

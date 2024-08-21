@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.banner.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,8 +23,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update banner set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update banner set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(appliesTo = "banner")
 public class Banner extends BaseEntity {
 
@@ -41,8 +42,8 @@ public class Banner extends BaseEntity {
 
     private String colorCode;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public Banner(User user, String title, String subTitle, String colorCode) {

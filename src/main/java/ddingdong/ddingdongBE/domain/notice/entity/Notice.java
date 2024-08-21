@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.notice.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -22,8 +23,8 @@ import org.hibernate.annotations.Where;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "update notice set is_deleted = true where id=?")
-@Where(clause = "is_deleted = false")
+@SQLDelete(sql = "update notice set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
 @Table(name = "notice")
 public class Notice extends BaseEntity {
 
@@ -39,8 +40,8 @@ public class Notice extends BaseEntity {
 
     private String content;
 
-    @Column(name = "is_deleted")
-    private boolean isDeleted;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public Notice(User user, String title, String content) {
