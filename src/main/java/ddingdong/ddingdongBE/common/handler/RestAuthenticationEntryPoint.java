@@ -1,16 +1,16 @@
 package ddingdong.ddingdongBE.common.handler;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_PASSWORD;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NON_VALIDATED_TOKEN;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.valueOf;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import ddingdong.ddingdongBE.common.exception.ErrorMessage;
-import ddingdong.ddingdongBE.common.exception.ExceptionResponse;
+import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
@@ -20,32 +20,13 @@ public class RestAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response,
                          AuthenticationException authException) throws IOException {
-
-        Object exceptionAttribute = request.getAttribute("exception");
-
-        if (exceptionAttribute == null) {
-            responseAuthenticationException(response, INVALID_PASSWORD);
-            return;
-        }
-
-        try {
-            ErrorMessage errorMessage = valueOf(exceptionAttribute.toString());
-            if (errorMessage.equals(NON_VALIDATED_TOKEN)) {
-                responseAuthenticationException(response, errorMessage);
-                return;
-            }
-            responseAuthenticationException(response, INVALID_PASSWORD);
-        } catch (IllegalArgumentException e) {
-            responseAuthenticationException(response, INVALID_PASSWORD);
-        }
-    }
-
-    private void responseAuthenticationException(HttpServletResponse response, ErrorMessage errorMessage)
-            throws IOException {
-        ExceptionResponse exceptionResponse = ExceptionResponse.of(HttpStatus.UNAUTHORIZED,
-                errorMessage.getText());
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        ErrorResponse errorResponse = new ErrorResponse(UNAUTHORIZED.value(),
+                ErrorMessage.NON_VALIDATED_TOKEN.getText(), LocalDateTime.now());
         response.setContentType("application/json;charset=UTF-8");
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.getWriter().write(new ObjectMapper().writeValueAsString(exceptionResponse));
+        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
     }
 }

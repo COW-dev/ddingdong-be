@@ -18,9 +18,9 @@ public class ClubScoreHistoryController implements ClubScoreHistoryApi {
     private final ClubService clubService;
     private final ScoreHistoryService scoreHistoryService;
 
-    public ScoreHistoryFilterByClubResponse getMyScoreHistories(PrincipalDetails principalDetails) {
+    public ScoreHistoryFilterByClubResponse findMyScoreHistories(PrincipalDetails principalDetails) {
         Club club = clubService.getByUserId(principalDetails.getUser().getId());
-        List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.getMyScoreHistories(club.getId())
+        List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.findAllByUserId(club.getId())
                 .stream()
                 .map(ScoreHistoryResponse::from)
                 .toList();

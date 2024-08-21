@@ -22,12 +22,12 @@ public class AdminClubApiController {
 
     @PostMapping
     public void register(@RequestBody RegisterClubRequest registerClubRequest) {
-        clubService.register(registerClubRequest);
+        clubService.create(registerClubRequest);
     }
 
     @GetMapping
     public List<AdminClubResponse> getClubs() {
-        return clubService.getAllForAdmin();
+        return clubService.findAllForAdmin();
     }
 
     @DeleteMapping("/{clubId}")

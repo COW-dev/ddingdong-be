@@ -1,7 +1,9 @@
 package ddingdong.ddingdongBE.auth.service;
 
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ALREADY_EXIST_CLUB_ID;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_PASSWORD;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.UNREGISTER_ID;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -9,7 +11,8 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.common.config.JwtConfig;
-import ddingdong.ddingdongBE.common.exception.AuthenticationException;
+import ddingdong.ddingdongBE.common.exception.AuthenticationException.InvalidPassword;
+import ddingdong.ddingdongBE.common.exception.AuthenticationException.UnRegisteredId;
 import ddingdong.ddingdongBE.domain.user.entity.Password;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -50,10 +53,10 @@ public class JwtAuthService implements AuthService{
     @Override
     public String signIn(SignInRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(() -> new AuthenticationException(UNREGISTER_ID));
+                .orElseThrow(() -> new UnRegisteredId(UNREGISTER_ID.getText()));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AuthenticationException(INVALID_PASSWORD);
+            throw new InvalidPassword(INVALID_PASSWORD.getText());
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 

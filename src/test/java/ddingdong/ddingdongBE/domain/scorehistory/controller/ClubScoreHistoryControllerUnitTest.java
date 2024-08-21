@@ -29,7 +29,7 @@ class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
         //given
         Club club = Club.builder()
                 .id(1L)
-                .score(Score.of(55)).build();
+                .score(Score.from(55)).build();
         List<ScoreHistory> scoreHistories = List.of(ScoreHistory.builder()
                         .club(club)
                         .scoreCategory(CARRYOVER_SCORE)
@@ -41,7 +41,7 @@ class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
                         .amount(5)
                         .reason("reasonB").build());
         when(clubService.getByUserId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.getMyScoreHistories(club.getId())).thenReturn(scoreHistories);
+        when(scoreHistoryService.findAllByUserId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
         mockMvc.perform(get("/server/club/my/score")

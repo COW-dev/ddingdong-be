@@ -20,12 +20,12 @@ public class UserClubApiController {
 
     @GetMapping
     public List<ClubResponse> getClubs() {
-        return clubService.getAllClubs(LocalDateTime.now());
+        return clubService.findAllWithRecruitTimeCheckPoint(LocalDateTime.now());
     }
 
     @GetMapping("/{clubId}")
     public DetailClubResponse getDetailClub(@PathVariable Long clubId) {
-        return clubService.getClub(clubId);
+        return clubService.findByClubId(clubId);
     }
 
 }

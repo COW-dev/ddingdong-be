@@ -31,7 +31,7 @@ public class RegisterClubRequest {
                 .leader(leaderName)
                 .location(Location.of("S0000"))
                 .phoneNumber(PhoneNumber.of("010-0000-0000"))
-                .score(Score.of(0)).build();
+                .score(Score.from(0)).build();
     }
 
 }

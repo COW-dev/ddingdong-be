@@ -1,15 +1,24 @@
 package ddingdong.ddingdongBE.common.exception;
 
-import lombok.Getter;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@Getter
-public class AuthenticationException extends RuntimeException{
+sealed public class AuthenticationException extends CustomException {
 
-    private final ErrorMessage errorMessage;
-    private final String message;
+    public AuthenticationException(String message, int errorCode) {
+        super(message, errorCode);
+    }
 
-    public AuthenticationException(ErrorMessage errorMessage) {
-        this.errorMessage = errorMessage;
-        this.message = errorMessage.getText();
+    public static final class UnRegisteredId extends AuthenticationException {
+
+        public UnRegisteredId(String message) {
+            super(message, UNAUTHORIZED.value());
+        }
+    }
+
+    public static final class InvalidPassword extends AuthenticationException {
+
+        public InvalidPassword(String message) {
+            super(message, UNAUTHORIZED.value());
+        }
     }
 }
