@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -10,10 +11,17 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
+
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update activity_report_term_info set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
+@Table(appliesTo = "activity_report_term_info")
 public class ActivityReportTermInfo {
 
     @Id
@@ -28,6 +36,9 @@ public class ActivityReportTermInfo {
 
     @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate endDate;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
     @Builder
     public ActivityReportTermInfo(int term, LocalDate startDate, LocalDate endDate) {

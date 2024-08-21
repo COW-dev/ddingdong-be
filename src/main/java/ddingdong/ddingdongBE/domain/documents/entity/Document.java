@@ -15,10 +15,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update document set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
+@Table(appliesTo = "document")
 public class Document extends BaseEntity {
 
     @Id
@@ -34,6 +40,10 @@ public class Document extends BaseEntity {
 
     @Column(nullable = false, length = 1024)
     private String content;
+
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
 
     @Builder
     private Document(Long id, User user, String title, String content, LocalDateTime createdAt) {

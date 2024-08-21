@@ -3,6 +3,9 @@ spring:
     activate:
       on-profile: test
 
+  flyway:
+    enabled: false
+    
   jpa:
     hibernate:
       ddl-auto: create

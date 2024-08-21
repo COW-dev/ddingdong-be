@@ -20,10 +20,16 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update activity_report set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
+@Table(appliesTo = "activity_report")
 public class ActivityReport extends BaseEntity {
 
 	@Id
@@ -43,6 +49,9 @@ public class ActivityReport extends BaseEntity {
 
 	@ElementCollection
 	private List<Participant> participants;
+
+	@Column(name = "deleted_at")
+	private LocalDateTime deletedAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "club_id")
