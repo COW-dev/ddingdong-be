@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -23,6 +24,32 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Order(Ordered.HIGHEST_PRECEDENCE)
 @Slf4j
 public class CustomExceptionHandler {
+
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(Throwable.class)
+    public ErrorResponse handleSystemException(Throwable exception, HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
+
+        loggingApplicationError(connectionInfo
+                + "\n"
+                + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
+
+        return new ErrorResponse(INTERNAL_SERVER_ERROR.value(), "Internal Sever Error", LocalDateTime.now());
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException exception,
+                                                        HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
+
+        loggingApplicationError(connectionInfo
+                + "\n"
+                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
+
+        return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
+        );
+    }
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(CustomException.class)
@@ -37,17 +64,16 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(BAD_REQUEST)
-    @ExceptionHandler(IllegalArgumentException.class)
-    public ErrorResponse handleIllegalArgumentException(IllegalArgumentException exception,
-                                                        HttpServletRequest request) {
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(AuthenticationException.class)
+    public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
+                + exception.getClass().getSimpleName() + " : " + exception.message);
 
-        return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
+        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
         );
     }
 
@@ -68,18 +94,6 @@ public class CustomExceptionHandler {
 
         return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
-    }
-
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(Throwable.class)
-    public ErrorResponse handleSystemException(Throwable exception, HttpServletRequest request) {
-        String connectionInfo = createLogConnectionInfo(request);
-
-        loggingApplicationError(connectionInfo
-                + "\n"
-                + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
-
-        return new ErrorResponse(INTERNAL_SERVER_ERROR.value(), "Internal Sever Error", LocalDateTime.now());
     }
 
 
