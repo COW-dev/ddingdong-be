@@ -1,10 +1,6 @@
 package ddingdong.ddingdongBE.auth.service;
 
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ALREADY_EXIST_CLUB_ID;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.INVALID_PASSWORD;
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.UNREGISTER_ID;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.JWTVerifier;
@@ -12,7 +8,9 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.common.config.JwtConfig;
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.InvalidPassword;
+import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonExistUserRole;
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.UnRegisteredId;
+import ddingdong.ddingdongBE.common.exception.RegisterClubException.AlreadyExistClubId;
 import ddingdong.ddingdongBE.domain.user.entity.Password;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -31,7 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class JwtAuthService implements AuthService{
+public class JwtAuthService implements AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -53,10 +51,10 @@ public class JwtAuthService implements AuthService{
     @Override
     public String signIn(SignInRequest request) {
         User user = userRepository.findByUserId(request.getUserId())
-                .orElseThrow(() -> new UnRegisteredId(UNREGISTER_ID.getText()));
+                .orElseThrow(UnRegisteredId::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new InvalidPassword(INVALID_PASSWORD.getText());
+            throw new InvalidPassword();
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);
 
@@ -77,7 +75,7 @@ public class JwtAuthService implements AuthService{
 
         return authorities.stream()
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("USER_ROLE이 존재하지 않습니다."))
+                .orElseThrow(NonExistUserRole::new)
                 .getAuthority();
     }
 
@@ -117,7 +115,7 @@ public class JwtAuthService implements AuthService{
 
     private void checkExistUserId(String userId) {
         if (userRepository.existsByUserId(userId)) {
-            throw new IllegalArgumentException(ALREADY_EXIST_CLUB_ID.getText());
+            throw new AlreadyExistClubId();
         }
     }
 }
