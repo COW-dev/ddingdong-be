@@ -22,8 +22,8 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 public class CustomExceptionHandler {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    @ExceptionHandler(PersistenceException.class)
-    public ErrorResponse handlePersistenceException(PersistenceException exception, HttpServletRequest request) {
+    @ExceptionHandler(CustomException.class)
+    public ErrorResponse handleCustomException(CustomException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
@@ -80,7 +80,7 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(AuthenticationException.class)
     public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
