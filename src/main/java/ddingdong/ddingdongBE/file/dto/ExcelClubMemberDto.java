@@ -18,6 +18,7 @@ public class ExcelClubMemberDto {
 
     private static final DataFormatter formatter = new DataFormatter();
 
+    private Long id;
 
     private String name;
 
@@ -30,8 +31,9 @@ public class ExcelClubMemberDto {
     private String department;
 
     @Builder
-    private ExcelClubMemberDto(String name, String studentNumber, String phoneNumber, String position,
+    private ExcelClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
                                String department) {
+        this.id = id;
         this.name = name;
         this.studentNumber = studentNumber;
         this.phoneNumber = phoneNumber;
@@ -42,6 +44,7 @@ public class ExcelClubMemberDto {
 
     public ClubMember toEntity(Club club) {
         return ClubMember.builder()
+                .id(id)
                 .club(club)
                 .name(name)
                 .studentNumber(studentNumber)
@@ -71,14 +74,15 @@ public class ExcelClubMemberDto {
 
     private void setValueByCell(String stringCellValue, int columnIndex) {
         switch (columnIndex) {
-            case 0 -> this.name = stringCellValue;
-            case 1 -> this.studentNumber = stringCellValue;
-            case 2 -> this.phoneNumber = stringCellValue;
-            case 3 -> {
+            case 0 -> this.id = Long.valueOf(stringCellValue);
+            case 1 -> this.name = stringCellValue;
+            case 2 -> this.studentNumber = stringCellValue;
+            case 3 -> this.phoneNumber = stringCellValue;
+            case 4 -> {
                 validatePositionValue(stringCellValue);
                 this.position = stringCellValue;
             }
-            case 4 -> this.department = stringCellValue;
+            case 5 -> this.department = stringCellValue;
         }
     }
 

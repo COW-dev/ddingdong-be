@@ -42,25 +42,28 @@ class ExcelFileServiceTest extends TestContainerSupport {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Members");
         Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("이름");
-        header.createCell(1).setCellValue("학번");
-        header.createCell(2).setCellValue("연락처");
-        header.createCell(3).setCellValue("비교(임원진) - 영어만");
-        header.createCell(4).setCellValue("학과(부)");
+        header.createCell(0).setCellValue("id");
+        header.createCell(1).setCellValue("이름");
+        header.createCell(2).setCellValue("학번");
+        header.createCell(3).setCellValue("연락처");
+        header.createCell(4).setCellValue("비교(임원진) - 영어만");
+        header.createCell(5).setCellValue("학과(부)");
 
         Row row1 = sheet.createRow(1);
-        row1.createCell(0).setCellValue("5uhwann");
-        row1.createCell(1).setCellValue("60001234");
-        row1.createCell(2).setCellValue("010-1234-5678");
-        row1.createCell(3).setCellValue("LEADER");
-        row1.createCell(4).setCellValue("융합소프트웨어학부");
+        row1.createCell(0).setCellValue(1);
+        row1.createCell(1).setCellValue("5uhwann");
+        row1.createCell(2).setCellValue("60001234");
+        row1.createCell(3).setCellValue("010-1234-5678");
+        row1.createCell(4).setCellValue("LEADER");
+        row1.createCell(5).setCellValue("융합소프트웨어학부");
 
         Row row2 = sheet.createRow(2);
-        row2.createCell(0).setCellValue("5uhwann");
-        row2.createCell(1).setCellValue(60001234);
-        row2.createCell(2).setCellValue("010-1234-5678");
-        row2.createCell(3).setCellValue("LEADER");
-        row2.createCell(4).setCellValue("융합소프트웨어학부");
+        row2.createCell(0).setCellValue(2);
+        row2.createCell(1).setCellValue("5uhwann");
+        row2.createCell(2).setCellValue(60001234);
+        row2.createCell(3).setCellValue("010-1234-5678");
+        row2.createCell(4).setCellValue("LEADER");
+        row2.createCell(5).setCellValue("융합소프트웨어학부");
         workbook.write(out);
         workbook.close();
 
@@ -129,18 +132,20 @@ class ExcelFileServiceTest extends TestContainerSupport {
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Members");
         Row header = sheet.createRow(0);
-        header.createCell(0).setCellValue("이름");
-        header.createCell(1).setCellValue("학번");
-        header.createCell(2).setCellValue("연락처");
-        header.createCell(3).setCellValue("비교(임원진) - 영어만");
-        header.createCell(4).setCellValue("학과(부)");
+        header.createCell(0).setCellValue("id");
+        header.createCell(1).setCellValue("이름");
+        header.createCell(2).setCellValue("학번");
+        header.createCell(3).setCellValue("연락처");
+        header.createCell(4).setCellValue("비교(임원진) - 영어만");
+        header.createCell(5).setCellValue("학과(부)");
 
         Row row1 = sheet.createRow(1);
-        row1.createCell(0).setCellValue("5uhwann");
-        row1.createCell(1).setCellValue("60001234");
-        row1.createCell(2).setCellValue("010-1234-5678");
-        row1.createCell(3).setCellValue("NonValidatedStringCellValue");
-        row1.createCell(4).setCellValue("융합소프트웨어학부");
+        row1.createCell(0).setCellValue(1);
+        row1.createCell(1).setCellValue("5uhwann");
+        row1.createCell(2).setCellValue("60001234");
+        row1.createCell(3).setCellValue("010-1234-5678");
+        row1.createCell(4).setCellValue("member");
+        row1.createCell(5).setCellValue("융합소프트웨어학부");
 
         workbook.write(out);
         workbook.close();
