@@ -58,6 +58,8 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.23")
     // TestContainer
     testImplementation 'org.testcontainers:testcontainers:1.20.1'
     testImplementation 'org.testcontainers:junit-jupiter:1.20.1'
