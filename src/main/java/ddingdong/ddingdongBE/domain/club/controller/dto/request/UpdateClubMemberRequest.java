@@ -1,55 +1,49 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
-import java.util.List;
+import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import io.swagger.v3.oas.annotations.media.Schema;
+import javax.validation.constraints.NotNull;
 import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
-@Getter
-@NoArgsConstructor
-public class UpdateClubMemberRequest {
+@Schema(
+        name = "UpdateClubMemberRequest",
+        description = "동아리원 정보 수정 요청"
+)
+@Builder
+public record UpdateClubMemberRequest(
 
-    List<UpdatedClubMember> clubMemberList;
+        @Schema(description = "이름", example = "홍길동")
+        @NotNull(message = "이름은 필수로 입력해야 합니다.")
+        String name,
 
-    @Getter
-    @NoArgsConstructor
-    public static class UpdatedClubMember {
+        @Schema(description = "학번", example = "60001234")
+        @NotNull(message = "학번은 필수로 입력해야 합니다.")
+        String studentNumber,
 
-        private Long id;
+        @Schema(description = "전화번호", example = "010-1234-5678")
+        @NotNull(message = "전화번호는 필수로 입력해야 합니다.")
+        String phoneNumber,
 
-        private String name;
+        @Schema(description = "동아리원 역할",
+                example = "LEADER",
+                allowableValues = {"LEADER", "EXECUTION", "MEMBER"}
+        )
+        @NotNull(message = "역할은 필수로 입력해야 합니다.")
+        String position,
 
-        private String studentNumber;
+        @Schema(description = "학과(부)", example = "융합소프트웨어학부")
+        @NotNull(message = "학과(부)는 필수로 입력해야 합니다.")
+        String department
+) {
 
-        private String phoneNumber;
-
-        private String position;
-
-        private String department;
-
-        @Builder
-        public UpdatedClubMember(Long id, String name, String studentNumber, String phoneNumber, String position,
-                                 String department) {
-            this.id = id;
-            this.name = name;
-            this.studentNumber = studentNumber;
-            this.phoneNumber = phoneNumber;
-            this.position = position;
-            this.department = department;
-        }
-
-        public ClubMember toEntity(Club club) {
-            return ClubMember.builder()
-                    .club(club)
-                    .name(name)
-                    .studentNumber(studentNumber)
-                    .phoneNumber(phoneNumber)
-                    .position(Position.valueOf(position))
-                    .department(department).build();
-        }
-
+    public UpdateClubMemberCommand toCommand() {
+        return UpdateClubMemberCommand.builder()
+                .name(name)
+                .studentNumber(studentNumber)
+                .phoneNumber(phoneNumber)
+                .position(Position.from(position))
+                .department(department).build();
     }
+
 }

@@ -61,4 +61,12 @@ public class ClubMember extends BaseEntity {
         this.position = position;
         this.department = department;
     }
+
+    public void updateInformation(ClubMember updateClubMember) {
+        this.name = updateClubMember.getName();
+        this.studentNumber = updateClubMember.getStudentNumber();
+        this.phoneNumber = updateClubMember.getPhoneNumber();
+        this.position = updateClubMember.getPosition();
+        this.department = updateClubMember.getDepartment();
+    }
 }

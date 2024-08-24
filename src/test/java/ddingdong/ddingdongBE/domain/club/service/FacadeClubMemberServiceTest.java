@@ -7,8 +7,10 @@ import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.club.entity.Position;
 import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.io.ByteArrayInputStream;
@@ -27,16 +29,22 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class ClubMemberServiceTest extends TestContainerSupport {
+class FacadeClubMemberServiceTest extends TestContainerSupport {
 
     @Autowired
-    private ClubMemberService clubMemberService;
+    private FacadeClubMemberService facadeClubMemberService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ClubRepository clubRepository;
     @Autowired
     private ClubMemberRepository clubMemberRepository;
+    @Autowired
+    private ClubMemberService clubMemberService;
+
+    private final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
+            .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+            .build();
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
@@ -79,9 +87,6 @@ class ClubMemberServiceTest extends TestContainerSupport {
                 in
         );
 
-        FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-                .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-                .build();
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
@@ -90,7 +95,7 @@ class ClubMemberServiceTest extends TestContainerSupport {
         clubMemberRepository.saveAll(clubMembers);
 
         //when
-        clubMemberService.updateMemberList(savedUser.getId(), validExcelFile);
+        facadeClubMemberService.updateMemberList(savedUser.getId(), validExcelFile);
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
@@ -98,6 +103,34 @@ class ClubMemberServiceTest extends TestContainerSupport {
                 .anyMatch(cm -> cm.getId() >= 3 && cm.getId() <= 5);
         assertThat(updatedClubMemberList.size()).isEqualTo(2);
         assertThat(has3To6Id).isFalse();
+    }
+
+    @DisplayName("동아리원 정보를 수정한다.")
+    @Test
+    void update() {
+        //given
+        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample());
+        ClubMember savedClubMember = clubMemberRepository.save(
+                fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
+
+        UpdateClubMemberCommand updateClubMemberCommand = UpdateClubMemberCommand.builder()
+                .name("test")
+                .phoneNumber("010-1234-5678")
+                .studentNumber("60001234")
+                .position(Position.LEADER)
+                .department("test").build();
+
+        //when
+        facadeClubMemberService.update(savedClubMember.getId(), updateClubMemberCommand);
+
+        //then
+        ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
+        assertThat(updatedClubMember.getName()).isEqualTo("test");
+        assertThat(updatedClubMember.getPhoneNumber()).isEqualTo("010-1234-5678");
+        assertThat(updatedClubMember.getStudentNumber()).isEqualTo("60001234");
+        assertThat(updatedClubMember.getPosition()).isEqualTo(Position.LEADER);
+        assertThat(updatedClubMember.getDepartment()).isEqualTo("test");
     }
 
 }
