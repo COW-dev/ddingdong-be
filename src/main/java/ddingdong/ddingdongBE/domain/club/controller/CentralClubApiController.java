@@ -13,9 +13,14 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.club.service.FacadeClubMemberService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestPart;
@@ -30,6 +35,22 @@ public class CentralClubApiController implements CentralClubApi {
     private final ClubService clubService;
     private final FacadeClubMemberService facadeClubMemberService;
     private final FileService fileService;
+
+    @Override
+    public ResponseEntity<byte[]> getMyClubMemberListFile(PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        byte[] clubMemberListFileData = facadeClubMemberService.getClubMemberListFile(user.getId());
+        String filename = "동아리원명단.xlsx";
+        String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.set(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename*=UTF-8''" + encodedFilename);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(clubMemberListFileData);
+    }
 
     public DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();

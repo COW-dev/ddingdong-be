@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.club.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
-import com.navercorp.fixturemonkey.api.introspector.BuilderArbitraryIntrospector;
+import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
@@ -42,9 +42,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
     @Autowired
     private ClubMemberService clubMemberService;
 
-    private final FixtureMonkey fixtureMonkey = FixtureMonkey.builder()
-            .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
-            .build();
+    private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test

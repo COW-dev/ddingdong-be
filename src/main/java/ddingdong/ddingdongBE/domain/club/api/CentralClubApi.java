@@ -17,6 +17,7 @@ import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -33,12 +34,21 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/server/club/my")
 public interface CentralClubApi {
 
+    @Operation(summary = "동아리원 명단 다운로드 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "명단 다운로드 성공")})
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/club-members/excel")
+    ResponseEntity<byte[]> getMyClubMemberListFile(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
+    @Operation(summary = "내 동아리 정보 조회 API")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping
     DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
+    @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping()
@@ -109,7 +119,7 @@ public interface CentralClubApi {
     })
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    @PatchMapping(value = "/club-members/{club-member-id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    void updateClubMembers(@PathVariable(name = "club-member-id") Long clubMemberId,
+    @PatchMapping("/club-members/{clubMemberId}")
+    void updateClubMembers(@PathVariable() Long clubMemberId,
                            @RequestBody @Valid UpdateClubMemberRequest request);
 }

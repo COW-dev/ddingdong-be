@@ -8,9 +8,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import javax.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @Service
@@ -21,6 +21,12 @@ public class FacadeClubMemberService {
     private final ClubService clubService;
     private final ClubMemberService clubMemberService;
     private final ExcelFileService excelFileService;
+
+    @Transactional(readOnly = true)
+    public byte[] getClubMemberListFile(Long userId) {
+        Club club = clubService.getByUserId(userId);
+        return excelFileService.generateClubMemberListFile(club.getClubMembers());
+    }
 
     public void updateMemberList(Long userId, MultipartFile clubMemberListFile) {
         Club club = clubService.getByUserId(userId);
