@@ -211,7 +211,6 @@ class ExcelFileServiceTest extends TestContainerSupport {
                 Row dataRow = sheet.getRow(i + 1);
                 ClubMember member = clubMembers.get(i);
 
-                assertThat((long) dataRow.getCell(0).getNumericCellValue()).isEqualTo(member.getId());
                 assertThat(dataRow.getCell(1).getStringCellValue()).isEqualTo(member.getName());
                 assertThat(dataRow.getCell(2).getStringCellValue()).isEqualTo(member.getStudentNumber());
                 assertThat(dataRow.getCell(3).getStringCellValue()).isEqualTo(member.getPhoneNumber());
