@@ -42,7 +42,7 @@ public class Club extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "club")
+    @OneToMany(mappedBy = "club", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<ClubMember> clubMembers = new ArrayList<>();
 
     private String name;
