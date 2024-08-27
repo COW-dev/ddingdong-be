@@ -25,7 +25,7 @@ public class ClubMemberService {
     }
 
     public void deleteAll(List<ClubMember> clubMembers) {
-        clubMemberRepository.deleteAll(clubMembers);
+        clubMemberRepository.deleteAllInBatch(clubMembers);
     }
 
 }
