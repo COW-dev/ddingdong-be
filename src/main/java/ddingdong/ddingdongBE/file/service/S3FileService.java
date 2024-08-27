@@ -28,14 +28,11 @@ public class S3FileService {
     private final AmazonS3Client amazonS3Client;
 
     public URL generatePreSignedUrl(String path) {
-        path = createFilePath(path);
+        String S3FilePath = createFilePath(path);
 
-        Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 5;
-        expiration.setTime(expTimeMillis);
+        Date expiration = setExpirationTime();
         try {
-            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, path)
+            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, S3FilePath)
                     .withMethod(HttpMethod.PUT)
                     .withExpiration(expiration);
 
@@ -48,6 +45,14 @@ public class S3FileService {
             throw new AwsClient();
         }
 
+    }
+
+    private Date setExpirationTime() {
+        Date expiration = new Date();
+        long expTimeMillis = expiration.getTime();
+        expTimeMillis += 1000 * 60 * 5;
+        expiration.setTime(expTimeMillis);
+        return expiration;
     }
 
     private String createFilePath(String fileName) {
