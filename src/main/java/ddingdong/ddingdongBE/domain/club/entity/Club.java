@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -17,7 +16,6 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
@@ -117,14 +115,13 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    private static LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
-    }
-
     public float editScore(Score score) {
         this.score = score;
-
         return this.score.getValue();
+    }
+
+    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }

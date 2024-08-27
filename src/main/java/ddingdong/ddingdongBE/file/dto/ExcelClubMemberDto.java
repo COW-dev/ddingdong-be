@@ -1,5 +1,6 @@
-package ddingdong.ddingdongBE.domain.club.controller.dto.request;
+package ddingdong.ddingdongBE.file.dto;
 
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
@@ -7,14 +8,15 @@ import java.util.Arrays;
 import java.util.Iterator;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.DataFormatter;
 import org.apache.poi.ss.usermodel.Row;
 
 @Getter
-@NoArgsConstructor
-public class ClubMemberDto {
+public class ExcelClubMemberDto {
+
+    private static final DataFormatter formatter = new DataFormatter();
 
     private Long id;
 
@@ -29,8 +31,8 @@ public class ClubMemberDto {
     private String department;
 
     @Builder
-    public ClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
-                         String department) {
+    private ExcelClubMemberDto(Long id, String name, String studentNumber, String phoneNumber, String position,
+                               String department) {
         this.id = id;
         this.name = name;
         this.studentNumber = studentNumber;
@@ -39,18 +41,10 @@ public class ClubMemberDto {
         this.department = department;
     }
 
-    public static ClubMemberDto from(ClubMember clubMember) {
-        return ClubMemberDto.builder()
-                .id(clubMember.getId())
-                .name(clubMember.getName())
-                .studentNumber(clubMember.getStudentNumber())
-                .phoneNumber(clubMember.getPhoneNumber())
-                .position(clubMember.getPosition().getName())
-                .department(clubMember.getDepartment()).build();
-    }
 
     public ClubMember toEntity(Club club) {
         return ClubMember.builder()
+                .id(id)
                 .club(club)
                 .name(name)
                 .studentNumber(studentNumber)
@@ -59,8 +53,8 @@ public class ClubMemberDto {
                 .department(department).build();
     }
 
-    public static ClubMemberDto fromExcelRow(Row row) {
-        ClubMemberDto clubMemberDto = ClubMemberDto.builder().build();
+    public static ExcelClubMemberDto fromExcelRow(Row row) {
+        ExcelClubMemberDto clubMemberDto = ExcelClubMemberDto.builder().build();
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
@@ -70,30 +64,31 @@ public class ClubMemberDto {
                 }
             } else if (cell.getCellType() == CellType.NUMERIC) {
                 if (cell.getNumericCellValue() != 0) {
-                    clubMemberDto.setValueByCell(String.valueOf(cell.getNumericCellValue()), cell.getColumnIndex());
+                    String stringCellValue = formatter.formatCellValue(cell);
+                    clubMemberDto.setValueByCell(stringCellValue, cell.getColumnIndex());
                 }
             }
-
         }
         return clubMemberDto;
     }
 
     private void setValueByCell(String stringCellValue, int columnIndex) {
         switch (columnIndex) {
-            case 0 -> this.name = stringCellValue;
-            case 1 -> this.studentNumber = stringCellValue;
-            case 2 -> this.phoneNumber = stringCellValue;
-            case 3 -> {
+            case 0 -> this.id = Long.valueOf(stringCellValue);
+            case 1 -> this.name = stringCellValue;
+            case 2 -> this.studentNumber = stringCellValue;
+            case 3 -> this.phoneNumber = stringCellValue;
+            case 4 -> {
                 validatePositionValue(stringCellValue);
                 this.position = stringCellValue;
             }
-            case 4 -> this.department = stringCellValue;
+            case 5 -> this.department = stringCellValue;
         }
     }
 
-    private void validatePositionValue(String stringCellValue) {
-        if (Arrays.stream(Position.values()).noneMatch(position-> position.name().equals(stringCellValue))) {
-            throw new IllegalArgumentException("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다. ");
+    private void validatePositionValue(String stringCellValue) throws InvalidatedEnumValue {
+        if (Arrays.stream(Position.values()).noneMatch(position -> position.name().equals(stringCellValue))) {
+            throw new InvalidatedEnumValue("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다.");
         }
     }
 }

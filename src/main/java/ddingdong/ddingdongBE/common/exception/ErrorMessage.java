@@ -23,6 +23,5 @@ public enum ErrorMessage {
     NO_SUCH_FIX_ZONE_COMMENT("존재하지 않는 픽스존 댓글입니다."),
     NO_SUCH_DOCUMENT("해당 자료가 존재하지 않습니다."),
     NO_SUCH_QUESTION("해당 질문이 존재하지 않습니다.");
-
     private final String text;
 }

@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -61,5 +60,13 @@ public class ClubMember extends BaseEntity {
         this.phoneNumber = phoneNumber;
         this.position = position;
         this.department = department;
+    }
+
+    public void updateInformation(ClubMember updateClubMember) {
+        this.name = updateClubMember.getName();
+        this.studentNumber = updateClubMember.getStudentNumber();
+        this.phoneNumber = updateClubMember.getPhoneNumber();
+        this.position = updateClubMember.getPosition();
+        this.department = updateClubMember.getDepartment();
     }
 }
