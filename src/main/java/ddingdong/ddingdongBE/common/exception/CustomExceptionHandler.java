@@ -58,9 +58,9 @@ public class CustomExceptionHandler {
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + BAD_REQUEST.value() + " : " + exception.message);
+                + exception.getErrorCode() + " : " + exception.getMessage());
 
-        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
+        return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
         );
     }
 
@@ -71,9 +71,9 @@ public class CustomExceptionHandler {
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.message);
+                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
-        return new ErrorResponse(exception.errorCode, exception.message, LocalDateTime.now()
+        return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
         );
     }
 

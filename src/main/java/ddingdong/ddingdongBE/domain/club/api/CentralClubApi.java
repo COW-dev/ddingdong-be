@@ -51,7 +51,7 @@ public interface CentralClubApi {
     @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    @PatchMapping()
+    @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
                     @ModelAttribute UpdateClubRequest param,
                     @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
@@ -120,6 +120,6 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping("/club-members/{clubMemberId}")
-    void updateClubMembers(@PathVariable() Long clubMemberId,
+    void updateClubMembers(@PathVariable Long clubMemberId,
                            @RequestBody @Valid UpdateClubMemberRequest request);
 }

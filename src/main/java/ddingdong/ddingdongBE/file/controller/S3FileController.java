@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.file;
+package ddingdong.ddingdongBE.file.controller;
 
 import ddingdong.ddingdongBE.file.api.S3FileAPi;
 import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;

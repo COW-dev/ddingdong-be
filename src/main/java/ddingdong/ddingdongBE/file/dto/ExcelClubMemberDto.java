@@ -58,15 +58,11 @@ public class ExcelClubMemberDto {
         Iterator<Cell> cellIterator = row.cellIterator();
         while (cellIterator.hasNext()) {
             Cell cell = cellIterator.next();
-            if (cell.getCellType() == CellType.STRING) {
-                if (cell.getStringCellValue() != null) {
-                    clubMemberDto.setValueByCell(cell.getStringCellValue(), cell.getColumnIndex());
-                }
-            } else if (cell.getCellType() == CellType.NUMERIC) {
-                if (cell.getNumericCellValue() != 0) {
-                    String stringCellValue = formatter.formatCellValue(cell);
-                    clubMemberDto.setValueByCell(stringCellValue, cell.getColumnIndex());
-                }
+            if (cell.getCellType() == CellType.STRING && cell.getStringCellValue() != null) {
+                clubMemberDto.setValueByCell(cell.getStringCellValue(), cell.getColumnIndex());
+            } else if (cell.getCellType() == CellType.NUMERIC && cell.getNumericCellValue() != 0) {
+                String stringCellValue = formatter.formatCellValue(cell);
+                clubMemberDto.setValueByCell(stringCellValue, cell.getColumnIndex());
             }
         }
         return clubMemberDto;
@@ -86,7 +82,7 @@ public class ExcelClubMemberDto {
         }
     }
 
-    private void validatePositionValue(String stringCellValue) throws InvalidatedEnumValue {
+    private void validatePositionValue(String stringCellValue) {
         if (Arrays.stream(Position.values()).noneMatch(position -> position.name().equals(stringCellValue))) {
             throw new InvalidatedEnumValue("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다.");
         }

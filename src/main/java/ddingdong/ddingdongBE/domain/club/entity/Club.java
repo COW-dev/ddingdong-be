@@ -102,8 +102,8 @@ public class Club extends BaseEntity {
         this.content = request.getContent() != null ? request.getContent() : this.content;
         this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
         this.phoneNumber =
-                request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
-        this.location = request.getLocation() != null ? Location.of(request.getLocation()) : this.location;
+                request.getPhoneNumber() != null ? PhoneNumber.from(request.getPhoneNumber()) : this.phoneNumber;
+        this.location = request.getLocation() != null ? Location.from(request.getLocation()) : this.location;
         this.startRecruitPeriod =
                 request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
         this.endRecruitPeriod =
