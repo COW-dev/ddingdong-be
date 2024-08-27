@@ -53,7 +53,7 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(CustomException.class)
-    public ErrorResponse handlePersistenceException(CustomException exception, HttpServletRequest request) {
+    public ErrorResponse handleCustomException(CustomException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationError(connectionInfo
