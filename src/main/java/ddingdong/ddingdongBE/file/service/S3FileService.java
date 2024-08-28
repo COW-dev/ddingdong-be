@@ -53,7 +53,7 @@ public class S3FileService {
 
     }
 
-    public String getUploadedFileUrl(String fileName, String uploadFileName) {
+    public String getUploadedFileUrl(String fileName, String fileId) {
         String region = amazonS3Client.getRegionName();
         String fileExtension = extractFileExtension(fileName);
 
@@ -62,7 +62,7 @@ public class S3FileService {
                 region,
                 serverProfile,
                 fileExtension,
-                uploadFileName);
+                fileId);
     }
 
     private Date setExpirationTime() {
