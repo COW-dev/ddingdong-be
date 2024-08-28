@@ -31,10 +31,7 @@ public class ClubPost extends BaseEntity {
   private Long id;
 
   @Column(nullable = false)
-  private String title;
-
-  @Column(nullable = false)
-  private String content;
+  private String activityContent;
 
   @Column(nullable = false)
   private String mediaUrl;
@@ -46,18 +43,9 @@ public class ClubPost extends BaseEntity {
   private Club club;
 
   @Builder
-  private ClubPost(String title, String content, String mediaUrl) {
-    this.title = title;
-    this.content = content;
+  private ClubPost(String activityContent, String mediaUrl) {
+    this.activityContent = activityContent;
     this.mediaUrl = mediaUrl;
-  }
-
-  public static ClubPost create(String title, String content, String mediaUrl) {
-    return ClubPost.builder()
-        .title(title)
-        .content(content)
-        .mediaUrl(mediaUrl)
-        .build();
   }
 
   public void updateClub(Club club) {
@@ -65,8 +53,7 @@ public class ClubPost extends BaseEntity {
   }
 
   public void update(ClubPost updateClubPost) {
-    this.title = updateClubPost.getTitle();
-    this.content = updateClubPost.getContent();
+    this.activityContent = updateClubPost.getActivityContent();
     this.mediaUrl = updateClubPost.getMediaUrl();
   }
 }

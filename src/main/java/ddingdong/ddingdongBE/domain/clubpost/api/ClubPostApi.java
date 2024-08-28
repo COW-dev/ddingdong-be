@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.clubpost.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.ClubFeedResponse;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.CreateClubPostRequest;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.UpdateClubPostRequest;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
@@ -24,15 +24,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "Club - Post", description = "Club Post API")
-@RequestMapping("/server/club/posts")
-public interface ClubPostAPI {
+@Tag(name = "Post - Club", description = "Club Post API")
+@RequestMapping("/server")
+public interface ClubPostApi {
 
   @Operation(summary = "동아리 게시물 생성 API")
   @ApiResponse(responseCode = "201", description = "동아리 게시물 생성 성공")
   @ResponseStatus(HttpStatus.CREATED)
   @SecurityRequirement(name = "AccessToken")
-  @PostMapping
+  @PostMapping("/club/posts")
   void createClubPost(
       @AuthenticationPrincipal PrincipalDetails principalDetails,
       @RequestBody @Valid CreateClubPostRequest request
@@ -42,7 +42,7 @@ public interface ClubPostAPI {
   @ApiResponse(responseCode = "200", description = "동아리 게시물 수정 성공")
   @ResponseStatus(HttpStatus.OK)
   @SecurityRequirement(name = "AccessToken")
-  @PutMapping("/{clubPostId}")
+  @PutMapping("/club/posts/{clubPostId}")
   void updateClubPost(
       @PathVariable Long clubPostId,
       @RequestBody @Valid UpdateClubPostRequest request);
@@ -51,27 +51,27 @@ public interface ClubPostAPI {
   @ApiResponse(responseCode = "200", description = "동아리 게시물 삭제 성공")
   @ResponseStatus(HttpStatus.OK)
   @SecurityRequirement(name = "AccessToken")
-  @DeleteMapping("/{clubPostId}")
+  @DeleteMapping("/club/posts/{clubPostId}")
   void deleteClubPost(@PathVariable Long clubPostId);
 
   @Operation(summary = "동아리 게시물 상세 조회 API")
   @ApiResponse(responseCode = "200", description = "동아리 게시물 상세 조회 성공",
   content = @Content(schema = @Schema(implementation = ClubPostResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/{clubPostId}")
+  @GetMapping("/club/posts/{clubPostId}")
   ClubPostResponse getClubPost(@PathVariable Long clubPostId);
 
   @Operation(summary = "동아리 게시물 전체 조회 API")
   @ApiResponse(responseCode = "200", description = "동아리 게시물 전체 조회 성공",
       content = @Content(schema = @Schema(implementation = ClubPostListResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/{clubId}")
+  @GetMapping("/club/{clubId}/posts")
   ClubPostListResponse getClubPosts(@PathVariable Long clubId);
 
   @Operation(summary = "동아리 전체 피드 조회 API")
   @ApiResponse(responseCode = "200", description = "동아리 전체 피드 조회 성공",
       content = @Content(schema = @Schema(implementation = ClubFeedResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping
+  @GetMapping("/club/posts")
   ClubFeedResponse getClubFeeds();
 }

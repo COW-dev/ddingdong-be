@@ -6,15 +6,13 @@ import lombok.Builder;
 @Builder
 public record UpdateClubPostCommand(
     Long clubPostId,
-    String title,
-    String content,
+    String activityContent,
     String mediaUrl
 ) {
 
   public ClubPost toEntity() {
     return ClubPost.builder()
-        .title(title)
-        .content(content)
+        .activityContent(activityContent)
         .mediaUrl(mediaUrl)
         .build();
   }

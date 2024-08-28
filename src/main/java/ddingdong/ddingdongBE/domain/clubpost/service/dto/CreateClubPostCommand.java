@@ -6,12 +6,14 @@ import lombok.Builder;
 @Builder
 public record CreateClubPostCommand(
     Long userId,
-    String title,
-    String content,
+    String activityContent,
     String mediaUrl
 ) {
 
   public ClubPost toEntity() {
-    return ClubPost.create(title, content, mediaUrl);
+    return ClubPost.builder()
+        .activityContent(activityContent)
+        .mediaUrl(mediaUrl)
+        .build();
   }
 }
