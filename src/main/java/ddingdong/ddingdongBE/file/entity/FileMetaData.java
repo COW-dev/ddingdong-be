@@ -23,7 +23,7 @@ public class FileMetaData extends BaseEntity {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    private FileDomain fileDomain;
+    private FileCategory fileCategory;
 
     @Column(nullable = false)
     private String fileId;
@@ -31,15 +31,11 @@ public class FileMetaData extends BaseEntity {
     @Column(nullable = false)
     private String fileName;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
-    private boolean isActivated;
-
     @Builder
-    public FileMetaData(Long id, FileDomain fileDomain, String fileId, String fileName, boolean isActivated) {
+    public FileMetaData(Long id, FileCategory fileCategory, String fileId, String fileName) {
         this.id = id;
-        this.fileDomain = fileDomain;
+        this.fileCategory = fileCategory;
         this.fileId = fileId;
         this.fileName = fileName;
-        this.isActivated = isActivated;
     }
 }
