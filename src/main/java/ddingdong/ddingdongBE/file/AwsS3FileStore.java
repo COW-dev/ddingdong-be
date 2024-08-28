@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 
 import java.io.IOException;
 import java.net.URLEncoder;
