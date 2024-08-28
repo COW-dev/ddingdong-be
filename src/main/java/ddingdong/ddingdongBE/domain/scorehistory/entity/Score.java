@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class Score {
 
-    @Column(name = "score")
+    @Column(name = "score", nullable = false, columnDefinition = "DECIMAL(10,3) DEFAULT 0")
     private float value;
 
     private Score(float value) {

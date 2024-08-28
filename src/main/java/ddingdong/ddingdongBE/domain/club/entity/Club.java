@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDateTime;
@@ -38,6 +37,9 @@ public class Club extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
@@ -45,30 +47,37 @@ public class Club extends BaseEntity {
     @OneToMany(mappedBy = "club")
     private List<ClubMember> clubMembers = new ArrayList<>();
 
+    @Column(nullable = false)
     private String name;
 
+    @Column(nullable = false)
     private String category;
 
+    @Column(nullable = false)
     private String tag;
 
-    private String content;
-
+    @Column(nullable = false)
     private String leader;
 
     @Embedded
+    @Column(nullable = false)
     private PhoneNumber phoneNumber;
 
     @Embedded
+    @Column(nullable = false)
     private Location location;
 
     private LocalDateTime startRecruitPeriod;
 
     private LocalDateTime endRecruitPeriod;
 
+    @Column(nullable = false)
     private String regularMeeting;
 
+    @Column(nullable = false)
     private String introduction;
 
+    @Column(nullable = false)
     private String activity;
 
     private String ideal;
@@ -78,21 +87,37 @@ public class Club extends BaseEntity {
     @Embedded
     private Score score;
 
-    @Column(name = "deleted_at")
-    private LocalDateTime deletedAt;
+    private String profileImageUrl;
+
+    private String introductionImageUrl;
+
 
     @Builder
-    public Club(Long id, User user, String name, String category, String tag, String leader, Location location,
-                PhoneNumber phoneNumber, Score score) {
+    private Club(Long id, LocalDateTime deletedAt, User user, List<ClubMember> clubMembers, String name,
+                 String category, String tag, String leader, PhoneNumber phoneNumber, Location location,
+                 LocalDateTime startRecruitPeriod, LocalDateTime endRecruitPeriod, String regularMeeting,
+                 String introduction, String activity, String ideal, String formUrl, Score score,
+                 String profileImageUrl, String introductionImageUrl) {
         this.id = id;
+        this.deletedAt = deletedAt;
         this.user = user;
+        this.clubMembers = clubMembers;
         this.name = name;
         this.category = category;
         this.tag = tag;
         this.leader = leader;
-        this.location = location;
-        this.score = score;
         this.phoneNumber = phoneNumber;
+        this.location = location;
+        this.startRecruitPeriod = startRecruitPeriod;
+        this.endRecruitPeriod = endRecruitPeriod;
+        this.regularMeeting = regularMeeting;
+        this.introduction = introduction;
+        this.activity = activity;
+        this.ideal = ideal;
+        this.formUrl = formUrl;
+        this.score = score;
+        this.profileImageUrl = profileImageUrl;
+        this.introductionImageUrl = introductionImageUrl;
     }
 
     public void updateClubInfo(UpdateClubRequest request) {
