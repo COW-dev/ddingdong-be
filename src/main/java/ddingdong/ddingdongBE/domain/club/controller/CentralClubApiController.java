@@ -11,6 +11,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubReques
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.club.service.FacadeClubMemberService;
+import ddingdong.ddingdongBE.domain.club.service.FacadeClubService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.net.URLEncoder;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class CentralClubApiController implements CentralClubApi {
 
     private final ClubService clubService;
+    private final FacadeClubService facadeClubService;
     private final FacadeClubMemberService facadeClubMemberService;
     private final FileService fileService;
 
@@ -57,23 +59,12 @@ public class CentralClubApiController implements CentralClubApi {
         return clubService.getMyClub(user.getId());
     }
 
-    public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                           @ModelAttribute UpdateClubRequest param,
-                           @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                           @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images) {
+    @Override
+    public void updateClub(PrincipalDetails principalDetails, UpdateClubRequest request) {
         User user = principalDetails.getUser();
-        Long updatedClubId = clubService.update(user.getId(), param);
-
-        if (profileImage != null) {
-            fileService.deleteFile(updatedClubId, IMAGE, CLUB_PROFILE);
-            fileService.uploadFile(updatedClubId, profileImage, IMAGE, CLUB_PROFILE);
-        }
-
-        if (images != null) {
-            fileService.deleteFile(updatedClubId, IMAGE, CLUB_INTRODUCE);
-            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB_INTRODUCE);
-        }
+        facadeClubService.updateClub(user.getId(), request.toCommand());
     }
+
 
     @Override
     public void updateClubMemberList(PrincipalDetails principalDetails, MultipartFile clubMemberListFile) {
