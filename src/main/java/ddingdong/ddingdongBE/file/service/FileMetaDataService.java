@@ -13,7 +13,7 @@ public class FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
 
-    public void crate(FileMetaData fileMetaData) {
+    public void create(FileMetaData fileMetaData) {
         fileMetaDataRepository.save(fileMetaData);
     }
 

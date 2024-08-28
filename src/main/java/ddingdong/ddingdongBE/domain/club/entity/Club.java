@@ -120,24 +120,20 @@ public class Club extends BaseEntity {
         this.introductionImageUrl = introductionImageUrl;
     }
 
-    public void updateClubInfo(UpdateClubRequest request) {
-        this.name = request.getName() != null ? request.getName() : this.name;
-        this.category = request.getCategory() != null ? request.getCategory() : this.category;
-        this.tag = request.getTag() != null ? request.getTag() : this.tag;
-        this.content = request.getContent() != null ? request.getContent() : this.content;
-        this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
-        this.phoneNumber =
-                request.getPhoneNumber() != null ? PhoneNumber.from(request.getPhoneNumber()) : this.phoneNumber;
-        this.location = request.getLocation() != null ? Location.from(request.getLocation()) : this.location;
-        this.startRecruitPeriod =
-                request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
-        this.endRecruitPeriod =
-                request.getEndRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getEndRecruitPeriod());
-        this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
-        this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
-        this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
-        this.ideal = request.getIdeal() != null ? request.getIdeal() : this.ideal;
-        this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
+    public void updateClubInfo(Club club) {
+        this.name = club.name;
+        this.category = club.category;
+        this.tag = club.tag;
+        this.leader = club.leader;
+        this.phoneNumber = club.phoneNumber;
+        this.location = club.location;
+        this.startRecruitPeriod = club.startRecruitPeriod;
+        this.endRecruitPeriod = club.endRecruitPeriod;
+        this.regularMeeting = club.regularMeeting;
+        this.introduction = club.introduction;
+        this.activity = club.activity;
+        this.ideal = club.ideal;
+        this.formUrl = club.formUrl;
     }
 
     public float editScore(Score score) {
@@ -145,6 +141,7 @@ public class Club extends BaseEntity {
         return this.score.getValue();
     }
 
+    // TODO : 기존 클라이언트 명세 확인
     private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);

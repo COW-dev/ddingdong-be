@@ -111,12 +111,9 @@ public class ClubService {
     }
 
     @Transactional
-    public Long update(Long userId, UpdateClubRequest request) {
+    public Long update(Long userId, Club updatedClub) {
         Club club = getByUserId(userId);
-        updateIntroduceImageInformation(request, club);
-        updateProfileImageInformation(request, club);
-
-        club.updateClubInfo(request);
+        club.updateClubInfo(updatedClub);
         return club.getId();
     }
 
@@ -128,40 +125,6 @@ public class ClubService {
     public Club getByClubId(final Long clubId) {
         return clubRepository.findById(clubId)
             .orElseThrow(() -> new PersistenceException.ResourceNotFound("존재하지 않는 동아리입니다."));
-    }
-
-    private void updateIntroduceImageInformation(UpdateClubRequest request, Club club) {
-        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
-        if (!request.getIntroduceImageUrls().isEmpty()) {
-            List<FileInformation> deleteInformation = fileInformation.stream()
-                    .filter(information -> !request.getIntroduceImageUrls()
-                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
-                                    + information.getStoredName()))
-                    .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(fileInformation);
-        }
-    }
-
-    private void updateProfileImageInformation(UpdateClubRequest request, Club club) {
-        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
-        if (!request.getProfileImageUrls().isEmpty()) {
-            List<FileInformation> deleteInformation = fileInformation.stream()
-                    .filter(information -> !request.getProfileImageUrls()
-                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
-                                    + information.getStoredName()))
-                    .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(fileInformation);
-        }
     }
 
     private Score generateNewScore(Score beforeUpdateScore, float value) {
