@@ -5,6 +5,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import ddingdong.ddingdongBE.domain.clubpost.repository.ClubPostRepository;
 import ddingdong.ddingdongBE.domain.clubpost.service.dto.CreateClubPostCommand;
+import ddingdong.ddingdongBE.domain.clubpost.service.dto.UpdateClubPostCommand;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,11 +27,11 @@ public class ClubPostService {
 
   @Transactional
   public void update(UpdateClubPostCommand command) {
-    ClubPost clubPost = findById(command.clubPostId());
+    ClubPost clubPost = getById(command.clubPostId());
     clubPost.update(command.toEntity());
   }
 
-  public ClubPost findById(Long clubPostId) {
+  public ClubPost getById(Long clubPostId) {
     return clubPostRepository.findById(clubPostId)
         .orElseThrow(() -> new ResourceNotFound("존재하지 않은 동아리 게시물입니다."));
   }
@@ -37,5 +39,19 @@ public class ClubPostService {
   @Transactional
   public void deleteById(Long clubPostId) {
     clubPostRepository.deleteById(clubPostId);
+  }
+
+  public List<ClubPost> getRecentAllByClubId(Long clubId) {
+    return clubPostRepository.findAllByClubIdOrderByCreatedAt(clubId);
+  }
+
+  public List<String> getAllMediaUrl(List<ClubPost> clubPosts) {
+    return clubPosts.stream()
+        .map(ClubPost::getMediaUrl)
+        .toList();
+  }
+
+  public List<ClubPost> findAllRecentPostByClub() {
+    return clubPostRepository.findLatestGroupByClub();
   }
 }
