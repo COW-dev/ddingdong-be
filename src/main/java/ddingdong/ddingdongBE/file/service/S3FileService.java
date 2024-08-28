@@ -53,6 +53,18 @@ public class S3FileService {
 
     }
 
+    public String getUploadedFileUrl(String fileName, String uploadFileName) {
+        String region = amazonS3Client.getRegionName();
+        String fileExtension = extractFileExtension(fileName);
+
+        return String.format("https://%s.s3.%s.amazonaws.com/%s/%s/%s",
+                bucketName,
+                region,
+                serverProfile,
+                fileExtension,
+                uploadFileName);
+    }
+
     private Date setExpirationTime() {
         Date expiration = new Date();
         long expTimeMillis = expiration.getTime();
@@ -62,8 +74,12 @@ public class S3FileService {
     }
 
     private String createFilePath(String fileName, UUID uploadFileName) {
-        String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+        String fileExtension = extractFileExtension(fileName);
         return String.format("%s/%s/%s", serverProfile, fileExtension, uploadFileName.toString());
+    }
+
+    private String extractFileExtension(String fileName) {
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
 }

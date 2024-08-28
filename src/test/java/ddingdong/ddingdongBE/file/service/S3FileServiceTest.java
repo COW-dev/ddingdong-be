@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.file.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
@@ -10,6 +11,7 @@ import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @ActiveProfiles("test")
@@ -46,6 +49,25 @@ class S3FileServiceTest {
         );
         assertThat(uploadUrlResponse.uploadUrl()).isEqualTo(expectedUrl.toString());
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadUrlResponse.uploadFileName())).isTrue();
+    }
+
+    @DisplayName("s3 uploadedFileUrl을 조회한다.")
+    @Test
+    void getUploadedFileUrl() {
+        //given
+        String fileName = "image.jpg";
+        String uploadFileName = "test";
+
+        when(amazonS3Client.getRegionName()).thenReturn("ap-northeast-2");
+
+        ReflectionTestUtils.setField(s3FileService, "bucketName", "test");
+        ReflectionTestUtils.setField(s3FileService, "serverProfile", "test");
+
+        //when
+        String uploadedFileUrl = s3FileService.getUploadedFileUrl(fileName, uploadFileName);
+
+        //then
+        Assertions.assertThat(uploadedFileUrl).isEqualTo("https://test.s3.ap-northeast-2.amazonaws.com/test/jpg/test");
     }
 
 }
