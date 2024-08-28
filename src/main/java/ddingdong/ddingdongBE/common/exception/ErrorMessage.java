@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ErrorMessage {
-    ILLEGAL_CLUB_LOCATION_PATTERN("올바르지 않은 동아리 위치 양식입니다."),
+    ILLEGAL_CLUB_LOCATION_PATTERN("올바르지 않은 동아리 위치 형식입니다."),
     ILLEGAL_CLUB_PHONE_NUMBER_PATTERN("올바르지 않은 동아리 전화번호 양식입니다."),
     ILLEGAL_PASSWORD_PATTERN("올바르지 않은 비밀번호 양식입니다."),
     ILLEGAL_SCORE_CATEGORY("올바르지 않은 점수변동내역 카테고리입니다."),
