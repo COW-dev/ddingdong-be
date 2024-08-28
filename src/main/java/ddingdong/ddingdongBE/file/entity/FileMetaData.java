@@ -31,11 +31,15 @@ public class FileMetaData extends BaseEntity {
     @Column(nullable = false)
     private String fileName;
 
+    @Column(nullable = false, columnDefinition = "TINYINT(1) DEFAULT 0")
+    private boolean isActivated;
+
     @Builder
-    private FileMetaData(Long id, FileDomain fileDomain, String fileId, String fileName) {
+    public FileMetaData(Long id, FileDomain fileDomain, String fileId, String fileName, boolean isActivated) {
         this.id = id;
         this.fileDomain = fileDomain;
         this.fileId = fileId;
         this.fileName = fileName;
+        this.isActivated = isActivated;
     }
 }
