@@ -42,7 +42,7 @@ public class Location {
         return Objects.hash(getValue());
     }
 
-    public static Location of(String value) {
+    public static Location from(String value) {
         validateLocation(value);
         return Location.builder().value(value).build();
     }

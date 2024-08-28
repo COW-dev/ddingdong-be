@@ -45,7 +45,7 @@ public class PhoneNumber {
         return Objects.hash(getNumber());
     }
 
-    public static PhoneNumber of(String phoneNumber) {
+    public static PhoneNumber from(String phoneNumber) {
         validate(phoneNumber);
         return PhoneNumber.builder()
                 .number(phoneNumber)

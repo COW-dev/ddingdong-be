@@ -47,6 +47,7 @@ dependencies {
     implementation 'io.hypersistence:hypersistence-utils-hibernate-55:3.7.2'
     implementation 'io.sentry:sentry-logback:7.6.0'
     implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.github.f4b6a3:uuid-creator:6.0.0'
 
 
     //security
@@ -58,7 +59,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:{version}")
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
     testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.23")
     // TestContainer
     testImplementation 'org.testcontainers:testcontainers:1.20.1'
