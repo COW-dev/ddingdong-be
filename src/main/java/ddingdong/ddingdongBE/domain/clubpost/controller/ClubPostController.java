@@ -2,8 +2,11 @@ package ddingdong.ddingdongBE.domain.clubpost.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.clubpost.api.ClubPostAPI;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.CreateClubPostRequest;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.UpdateClubPostRequest;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
 import ddingdong.ddingdongBE.domain.clubpost.service.ClubPostFacadeService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -36,5 +39,20 @@ public class ClubPostController implements ClubPostAPI {
   @Override
   public void deleteClubPost(Long clubPostId) {
     clubPostFacadeService.delete(clubPostId);
+  }
+
+  @Override
+  public ClubPostResponse getClubPost(Long clubPostId) {
+    return clubPostFacadeService.getByClubPostId(clubPostId);
+  }
+
+  @Override
+  public ClubPostListResponse getClubPosts(Long clubId) {
+    return clubPostFacadeService.getRecentAllByClubId(clubId);
+  }
+
+  @Override
+  public ClubFeedResponse getClubFeeds() {
+    return clubPostFacadeService.findAllRecentPostByClub();
   }
 }

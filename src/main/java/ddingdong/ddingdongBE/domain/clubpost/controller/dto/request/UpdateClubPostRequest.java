@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubpost.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.clubpost.service.UpdateClubPostCommand;
+import ddingdong.ddingdongBE.domain.clubpost.service.dto.UpdateClubPostCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.clubpost.service;
+package ddingdong.ddingdongBE.domain.clubpost.service.dto;
 
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import lombok.Builder;
