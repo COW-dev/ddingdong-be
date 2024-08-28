@@ -4,12 +4,12 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record ClubPostListResponse(
+public record ClubFeedResponse(
     List<String> mediaUrls
 ) {
 
-  public static ClubPostListResponse from(List<String> mediaUrls) {
-    return ClubPostListResponse.builder()
+  public static ClubFeedResponse from(List<String> mediaUrls) {
+    return ClubFeedResponse.builder()
         .mediaUrls(mediaUrls)
         .build();
   }

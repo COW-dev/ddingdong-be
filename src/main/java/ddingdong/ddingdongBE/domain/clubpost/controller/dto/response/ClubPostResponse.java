@@ -6,20 +6,18 @@ import lombok.Builder;
 
 @Builder
 public record ClubPostResponse(
-    String title,
-    String content,
+    String activityContent,
     String mediaUrl,
     String clubName,
-    LocalDate crateDate
+    LocalDate createdDate
 ) {
 
   public static ClubPostResponse from(ClubPost clubPost) {
     return ClubPostResponse.builder()
-        .title(clubPost.getTitle())
-        .content(clubPost.getContent())
+        .activityContent(clubPost.getActivityContent())
         .mediaUrl(clubPost.getMediaUrl())
         .clubName(clubPost.getClub().getName())
-        .crateDate(LocalDate.from(clubPost.getCreatedAt()))
+        .createdDate(LocalDate.from(clubPost.getCreatedAt()))
         .build();
   }
 }
