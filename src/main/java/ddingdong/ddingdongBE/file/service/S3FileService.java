@@ -5,10 +5,13 @@ import com.amazonaws.AmazonServiceException;
 import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
+import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
 import java.net.URL;
 import java.util.Date;
+import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,16 +30,19 @@ public class S3FileService {
 
     private final AmazonS3Client amazonS3Client;
 
-    public URL generatePreSignedUrl(String path) {
-        String S3FilePath = createFilePath(path);
+    public UploadUrlResponse generatePreSignedUrl(String fileName) {
+        UUID uploadFileName = UuidCreator.getTimeOrderedEpoch();
+        String s3FilePath = createFilePath(fileName, uploadFileName);
 
         Date expiration = setExpirationTime();
         try {
-            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName, S3FilePath)
+            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName,
+                    s3FilePath)
                     .withMethod(HttpMethod.PUT)
                     .withExpiration(expiration);
 
-            return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+            URL uploadUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
+            return UploadUrlResponse.of(uploadUrl.toString(), uploadFileName.toString());
         } catch (AmazonServiceException e) {
             log.warn("AWS Service Error : {}", e.getMessage());
             throw new AwsService();
@@ -55,9 +61,9 @@ public class S3FileService {
         return expiration;
     }
 
-    private String createFilePath(String fileName) {
+    private String createFilePath(String fileName, UUID uploadFileName) {
         String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
-        return String.format("%s/%s/%s", serverProfile, fileExtension, fileName);
+        return String.format("%s/%s/%s", serverProfile, fileExtension, uploadFileName.toString());
     }
 
 }

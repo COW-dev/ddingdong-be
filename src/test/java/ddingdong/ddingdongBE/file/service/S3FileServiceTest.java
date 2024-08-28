@@ -1,13 +1,15 @@
 package ddingdong.ddingdongBE.file.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
-import org.assertj.core.api.Assertions;
+import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,10 +38,14 @@ class S3FileServiceTest {
         given(amazonS3Client.generatePresignedUrl(any(GeneratePresignedUrlRequest.class))).willReturn(expectedUrl);
 
         //when
-        URL generatedUrl = s3FileService.generatePreSignedUrl(fileName);
+        UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(fileName);
 
         //then
-        Assertions.assertThat(generatedUrl).isEqualTo(expectedUrl);
+        Pattern UUID7_PATTERN = Pattern.compile(
+                "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+        );
+        assertThat(uploadUrlResponse.uploadUrl()).isEqualTo(expectedUrl.toString());
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadUrlResponse.uploadFileName())).isTrue();
     }
 
 }

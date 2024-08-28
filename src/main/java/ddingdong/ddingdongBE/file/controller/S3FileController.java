@@ -14,7 +14,6 @@ public class S3FileController implements S3FileAPi {
 
     @Override
     public UploadUrlResponse getUploadUrl(String fileName) {
-        String uploadUrl = s3FileService.generatePreSignedUrl(fileName).toString();
-        return UploadUrlResponse.from(uploadUrl);
+        return s3FileService.generatePreSignedUrl(fileName);
     }
 }
