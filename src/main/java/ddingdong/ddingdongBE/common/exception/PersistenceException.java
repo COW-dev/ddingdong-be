@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.common.exception;
 
-import static org.springframework.http.HttpStatus.*;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 sealed public class PersistenceException extends CustomException {
 
@@ -13,5 +13,6 @@ sealed public class PersistenceException extends CustomException {
         public ResourceNotFound(String message) {
             super(message, NOT_FOUND.value());
         }
+
     }
 }
