@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubCommand;
 import ddingdong.ddingdongBE.file.controller.dto.request.FileMetaDataRequest;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
@@ -31,10 +33,12 @@ public record UpdateClubRequest(
         @Schema(description = "동아리방 위치", example = "S0000")
         @NotNull(message = "동아리방 위치는 필수입니다.")
         String location,
-        @Schema(description = "모집 시작 기간", example = "2024-08-19 00:00:00")
-        String startRecruitPeriod,
-        @Schema(description = "모집 마감 기간", example = "2024-08-19 00:00:00")
-        String endRecruitPeriod,
+        @Schema(description = "모집 시작 기간", example = "2024-08-19T00:00:00")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        LocalDateTime startRecruitPeriod,
+        @Schema(description = "모집 마감 기간", example = "2024-08-19T00:00:00")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        LocalDateTime endRecruitPeriod,
         @Schema(description = "정기모임", example = "매주 월요일 18:00시")
         @NotNull(message = "정기모임 정보는 필수입니다.")
         String regularMeeting,

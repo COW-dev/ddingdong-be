@@ -52,7 +52,7 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
-    void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails, @RequestBody UpdateClubRequest request);
+    void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails, @Valid @RequestBody UpdateClubRequest request);
 
     @Operation(summary = "동아리원 명단 등록 API")
     @ApiResponses(value = {

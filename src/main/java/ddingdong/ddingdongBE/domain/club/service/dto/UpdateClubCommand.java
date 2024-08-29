@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
 import ddingdong.ddingdongBE.file.service.dto.FileMetaDataCommand;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import lombok.Builder;
 
 @Builder
@@ -16,8 +15,8 @@ public record UpdateClubCommand(
         String clubLeader,
         String phoneNumber,
         String location,
-        String startRecruitPeriod,
-        String endRecruitPeriod,
+        LocalDateTime startRecruitPeriod,
+        LocalDateTime endRecruitPeriod,
         String regularMeeting,
         String introduction,
         String activity,
@@ -35,8 +34,8 @@ public record UpdateClubCommand(
                 .leader(clubLeader)
                 .phoneNumber(PhoneNumber.from(phoneNumber))
                 .location(Location.from(location))
-                .startRecruitPeriod(parseLocalDateTime(startRecruitPeriod))
-                .endRecruitPeriod(parseLocalDateTime(endRecruitPeriod))
+                .startRecruitPeriod(startRecruitPeriod)
+                .endRecruitPeriod(endRecruitPeriod)
                 .regularMeeting(regularMeeting)
                 .introduction(introduction)
                 .activity(activity)
@@ -45,14 +44,6 @@ public record UpdateClubCommand(
                 .profileImageUrl(profileImageUrl)
                 .introductionImageUrl(introductionImageUrl)
                 .build();
-    }
-
-    private LocalDateTime parseLocalDateTime(String dateTimeString) {
-        try {
-            return LocalDateTime.parse(dateTimeString);
-        } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid date format: " + dateTimeString, e);
-        }
     }
 
 }
