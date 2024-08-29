@@ -11,14 +11,13 @@ public record GetAllNoticeByPageResponse(
 ) {
 
     public static GetAllNoticeByPageResponse from(List<Notice> notices) {
+        List<NoticeResponseDto> noticeResponses = notices.stream()
+            .map(NoticeResponseDto::from)
+            .toList();
 
         return GetAllNoticeByPageResponse
             .builder()
-            .notices(
-                notices.stream()
-                    .map(NoticeResponseDto::from)
-                    .toList()
-            )
+            .notices(noticeResponses)
             .build();
     }
 
