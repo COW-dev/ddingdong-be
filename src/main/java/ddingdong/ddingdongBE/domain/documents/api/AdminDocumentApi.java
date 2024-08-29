@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDetailDocumentResponse;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,15 +32,10 @@ public interface AdminDocumentApi {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     void generateDocument(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles);
-
-    @Operation(summary = "어드민 자료실 목록 조회 API")
-    @GetMapping
-    @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
-    List<AdminDocumentResponse> getAllDocuments();
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+        @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
+    );
 
     @Operation(summary = "어드민 자료실 상세 조회 API")
     @GetMapping("/{documentId}")
