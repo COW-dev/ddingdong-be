@@ -12,7 +12,7 @@ public record UploadUrlResponse(
 
         @Schema(description = "presignedUrl", example = "https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg")
         String uploadUrl,
-        @Schema(description = "업로드 파일 이름(UUID)", example = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d")
+        @Schema(description = "업로드 파일 식별자(UUID)", example = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d")
         String fileId
 ) {
 
