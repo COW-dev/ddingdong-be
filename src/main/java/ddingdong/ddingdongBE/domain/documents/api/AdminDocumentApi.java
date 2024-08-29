@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
-
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
