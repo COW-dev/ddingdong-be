@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.Column;
@@ -141,11 +140,5 @@ public class Club extends BaseEntity {
     public float editScore(Score score) {
         this.score = score;
         return this.score.getValue();
-    }
-
-    // TODO : 기존 클라이언트 명세 확인
-    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }

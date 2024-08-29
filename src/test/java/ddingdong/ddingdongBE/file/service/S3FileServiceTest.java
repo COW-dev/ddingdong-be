@@ -7,9 +7,11 @@ import static org.mockito.Mockito.when;
 
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -56,7 +58,7 @@ class S3FileServiceTest {
     void getUploadedFileUrl() {
         //given
         String fileName = "image.jpg";
-        String uploadFileName = "test";
+        UUID fileId = UuidCreator.getTimeOrderedEpoch();
 
         when(amazonS3Client.getRegionName()).thenReturn("ap-northeast-2");
 
@@ -64,10 +66,12 @@ class S3FileServiceTest {
         ReflectionTestUtils.setField(s3FileService, "serverProfile", "test");
 
         //when
-        String uploadedFileUrl = s3FileService.getUploadedFileUrl(fileName, uploadFileName);
+        String uploadedFileUrl = s3FileService.getUploadedFileUrl(fileName, fileId);
 
         //then
-        Assertions.assertThat(uploadedFileUrl).isEqualTo("https://test.s3.ap-northeast-2.amazonaws.com/test/jpg/test");
+        String uploadFileName = fileId.toString();
+        Assertions.assertThat(uploadedFileUrl)
+                .isEqualTo("https://test.s3.ap-northeast-2.amazonaws.com/test/jpg/" + uploadFileName);
     }
 
 }

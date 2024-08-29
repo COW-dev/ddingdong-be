@@ -29,7 +29,7 @@ class LocationTest {
         //when //then
         assertThatThrownBy(() -> Location.from(givenValue))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("올바르지 않은 동아리 위치 양식입니다.");
+                .hasMessage("올바르지 않은 동아리 위치 형식입니다.");
     }
 
 }
