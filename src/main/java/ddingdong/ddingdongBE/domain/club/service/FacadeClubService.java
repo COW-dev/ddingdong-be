@@ -18,6 +18,7 @@ public class FacadeClubService {
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
+    @Transactional
     public void updateClub(Long userId, UpdateClubCommand command) {
         String profileImageUrl = saveImageMetaDataAndFindUploadedUrl(
                 command.profileImageFileMetaDataCommand(), FileCategory.CLUB_PROFILE_IMAGE);

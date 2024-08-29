@@ -134,6 +134,8 @@ public class Club extends BaseEntity {
         this.activity = club.activity;
         this.ideal = club.ideal;
         this.formUrl = club.formUrl;
+        this.profileImageUrl = club.profileImageUrl;
+        this.introductionImageUrl = club.introductionImageUrl;
     }
 
     public float editScore(Score score) {
