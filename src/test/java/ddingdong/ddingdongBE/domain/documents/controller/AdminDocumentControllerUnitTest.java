@@ -14,12 +14,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
+import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
-import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -53,28 +53,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andExpect(status().isCreated());
 
         verify(fileService).uploadDownloadableFile(anyLong(), anyList(), any(), any());
-    }
-
-    @WithMockAuthenticatedUser(role = "ADMIN")
-    @DisplayName("documents 조회 요청을 수행한다.")
-    @Test
-    void getAllDocumentsDocuments() throws Exception {
-        //given
-        List<Document> foundDocuments = List.of(
-                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
-                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getAll()).thenReturn(foundDocuments);
-
-        //when //then
-        mockMvc.perform(get("/server/admin/documents")
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(foundDocuments.size())))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].title").value("A"))
-                .andExpect(jsonPath("$[1].id").value(2L))
-                .andExpect(jsonPath("$[1].title").value("B"));
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")

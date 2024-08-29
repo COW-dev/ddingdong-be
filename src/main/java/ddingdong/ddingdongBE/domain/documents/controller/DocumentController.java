@@ -4,8 +4,9 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
 import ddingdong.ddingdongBE.domain.documents.api.DocumentApi;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GetDocumentByPageRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DetailDocumentResponse;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.GetDocumentByPageResponse;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
@@ -22,10 +23,14 @@ public class DocumentController implements DocumentApi {
     private final DocumentService documentService;
     private final FileInformationService fileInformationService;
 
-    public List<DocumentResponse> getAllDocuments() {
-        return documentService.getAll().stream()
-                .map(DocumentResponse::from)
-                .toList();
+    public GetDocumentByPageResponse getAllDocuments(GetDocumentByPageRequest request) {
+        List<Document> documents = documentService.getAllDocumentByPage(
+            request.getPage(),
+            request.getLimit()
+        );
+
+        return GetDocumentByPageResponse.from(documents);
+
     }
 
     public DetailDocumentResponse getDetailDocument(@PathVariable Long documentId) {

@@ -9,10 +9,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -27,20 +27,24 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     void getAllDocuments() throws Exception {
         //given
         List<Document> foundDocuments = List.of(
-                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
-                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getAll()).thenReturn(foundDocuments);
+            Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
+            Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build()
+        );
+
+        when(documentService.getAllDocumentByPage(1, 10)).thenReturn(foundDocuments);
 
         //when //then
         mockMvc.perform(get("/server/documents")
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(foundDocuments.size())))
-                .andExpect(jsonPath("$[0].id").value(1L))
-                .andExpect(jsonPath("$[0].title").value("A"))
-                .andExpect(jsonPath("$[1].id").value(2L))
-                .andExpect(jsonPath("$[1].title").value("B"));
+                .with(csrf())
+                .param("page", "1")
+                .param("limit", "10"))
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpect(jsonPath("$.documents", hasSize(foundDocuments.size())))
+            .andExpect(jsonPath("$.documents[0].id").value(1L))
+            .andExpect(jsonPath("$.documents[0].title").value("A"))
+            .andExpect(jsonPath("$.documents[1].id").value(2L))
+            .andExpect(jsonPath("$.documents[1].title").value("B"));
     }
 
     @WithMockAuthenticatedUser
