@@ -13,12 +13,12 @@ public record GetDocumentByPageResponse(
 ) {
 
     public static GetDocumentByPageResponse from(List<Document> documents) {
+        List<DocumentDto> documentDtos = documents.stream()
+            .map(DocumentDto::from)
+            .toList();
+
         return GetDocumentByPageResponse.builder()
-            .documents(
-                documents.stream()
-                    .map(DocumentDto::from)
-                    .toList()
-            )
+            .documents(documentDtos)
             .build();
     }
 
