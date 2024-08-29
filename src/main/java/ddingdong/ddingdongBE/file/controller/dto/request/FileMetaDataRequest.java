@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.file.controller.dto.request;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.file.service.dto.FileMetaDataCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -18,7 +19,7 @@ public record FileMetaDataRequest(
 
     public FileMetaDataCommand toCommand() {
         return FileMetaDataCommand.builder()
-                .fileId(fileId)
+                .fileId(UuidCreator.fromString(fileId))
                 .fileName(fileName)
                 .build();
     }

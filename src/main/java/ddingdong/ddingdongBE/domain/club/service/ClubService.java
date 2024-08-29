@@ -77,7 +77,7 @@ public class ClubService {
                 .map(ClubMemberResponse::from)
                 .toList();
 
-        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberResponses);
+        return DetailClubResponse.of(club, clubMemberResponses);
     }
 
     public DetailClubResponse getMyClub(Long userId) {
@@ -93,7 +93,7 @@ public class ClubService {
                 .map(ClubMemberResponse::from)
                 .toList();
 
-        return DetailClubResponse.of(club, profileImageUrl, introduceImageUrls, clubMemberResponses);
+        return DetailClubResponse.of(club, clubMemberResponses);
     }
 
     @Transactional

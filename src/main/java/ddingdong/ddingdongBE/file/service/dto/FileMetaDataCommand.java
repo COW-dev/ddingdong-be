@@ -2,11 +2,12 @@ package ddingdong.ddingdongBE.file.service.dto;
 
 import ddingdong.ddingdongBE.file.entity.FileCategory;
 import ddingdong.ddingdongBE.file.entity.FileMetaData;
+import java.util.UUID;
 import lombok.Builder;
 
 @Builder
 public record FileMetaDataCommand(
-        String fileId,
+        UUID fileId,
         String fileName
 ) {
 
