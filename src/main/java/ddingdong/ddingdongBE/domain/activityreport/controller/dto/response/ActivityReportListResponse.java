@@ -5,7 +5,7 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class AllActivityReportResponse {
+public class ActivityReportListResponse {
     private String name;
 
     private String term;
@@ -13,13 +13,13 @@ public class AllActivityReportResponse {
     private List<ActivityReportDto> activityReports;
 
     @Builder
-    public AllActivityReportResponse(String name, String term, List<ActivityReportDto> activityReportDtos) {
+    public ActivityReportListResponse(String name, String term, List<ActivityReportDto> activityReportDtos) {
         this.name = name;
         this.term = term;
         this.activityReports = activityReportDtos;
     }
 
-    public static AllActivityReportResponse of(String name, String term, List<ActivityReportDto> activityReportDtos) {
-        return new AllActivityReportResponse(name, term, activityReportDtos);
+    public static ActivityReportListResponse of(String name, String term, List<ActivityReportDto> activityReportDtos) {
+        return new ActivityReportListResponse(name, term, activityReportDtos);
     }
 }

@@ -8,7 +8,7 @@ import java.util.List;
 import lombok.Getter;
 
 @Getter
-public class DetailActivityReportResponse {
+public class ActivityReportResponse {
 
 	private Long id;
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
@@ -23,8 +23,9 @@ public class DetailActivityReportResponse {
 	private List<String> imageUrls;
 	private List<Participant> participants;
 
-	public DetailActivityReportResponse(Long id, String name, String content, String place, LocalDateTime startDate,
-		LocalDateTime endDate, List<String> imageUrls, List<Participant> participants, LocalDateTime createdAt) {
+	public ActivityReportResponse(Long id, String name, String content, String place, LocalDateTime startDate,
+								  LocalDateTime endDate, List<String> imageUrls, List<Participant> participants,
+								  LocalDateTime createdAt) {
 		this.id = id;
 		this.name = name;
 		this.content = content;
@@ -36,8 +37,8 @@ public class DetailActivityReportResponse {
 		this.createdAt = createdAt;
 	}
 
-	public static DetailActivityReportResponse of(ActivityReport activityReport, List<String> imageUrls) {
-		return new DetailActivityReportResponse(
+	public static ActivityReportResponse of(ActivityReport activityReport, List<String> imageUrls) {
+		return new ActivityReportResponse(
 			activityReport.getId(),
 			activityReport.getClub().getName(),
 			activityReport.getContent(),
