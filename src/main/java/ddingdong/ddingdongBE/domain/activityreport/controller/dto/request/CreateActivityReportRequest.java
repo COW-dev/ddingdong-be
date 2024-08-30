@@ -4,15 +4,13 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-
 import lombok.Getter;
 
 @Getter
-public class RegisterActivityReportRequest {
+public class CreateActivityReportRequest {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
