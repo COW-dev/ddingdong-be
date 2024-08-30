@@ -119,22 +119,22 @@ public class Club extends BaseEntity {
         this.introductionImageUrl = introductionImageUrl;
     }
 
-    public void updateClubInfo(Club club) {
-        this.name = club.name;
-        this.category = club.category;
-        this.tag = club.tag;
-        this.leader = club.leader;
-        this.phoneNumber = club.phoneNumber;
-        this.location = club.location;
-        this.startRecruitPeriod = club.startRecruitPeriod;
-        this.endRecruitPeriod = club.endRecruitPeriod;
-        this.regularMeeting = club.regularMeeting;
-        this.introduction = club.introduction;
-        this.activity = club.activity;
-        this.ideal = club.ideal;
-        this.formUrl = club.formUrl;
-        this.profileImageUrl = club.profileImageUrl;
-        this.introductionImageUrl = club.introductionImageUrl;
+    public void updateClubInfo(Club updatedClub) {
+        this.name = updatedClub.name;
+        this.category = updatedClub.category;
+        this.tag = updatedClub.tag;
+        this.leader = updatedClub.leader;
+        this.phoneNumber = updatedClub.phoneNumber;
+        this.location = updatedClub.location;
+        this.startRecruitPeriod = updatedClub.startRecruitPeriod;
+        this.endRecruitPeriod = updatedClub.endRecruitPeriod;
+        this.regularMeeting = updatedClub.regularMeeting;
+        this.introduction = updatedClub.introduction;
+        this.activity = updatedClub.activity;
+        this.ideal = updatedClub.ideal;
+        this.formUrl = updatedClub.formUrl;
+        this.profileImageUrl = updatedClub.profileImageUrl;
+        this.introductionImageUrl = updatedClub.introductionImageUrl;
     }
 
     public float editScore(Score score) {

@@ -50,7 +50,7 @@ class S3FileServiceTest {
                 "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
         );
         assertThat(uploadUrlResponse.uploadUrl()).isEqualTo(expectedUrl.toString());
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadUrlResponse.fileId())).isTrue();
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadUrlResponse.fileId().toString())).isTrue();
     }
 
     @DisplayName("s3 uploadedFileUrl을 조회한다.")

@@ -42,7 +42,7 @@ public class S3FileService {
                     .withExpiration(expiration);
 
             URL uploadUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
-            return UploadUrlResponse.of(uploadUrl.toString(), fileId.toString());
+            return UploadUrlResponse.of(uploadUrl.toString(), fileId);
         } catch (AmazonServiceException e) {
             log.warn("AWS Service Error : {}", e.getMessage());
             throw new AwsService();
