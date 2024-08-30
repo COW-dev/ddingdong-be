@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.file.dto;
+package ddingdong.ddingdongBE.file.service.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

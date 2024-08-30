@@ -11,4 +11,11 @@ public class FixtureMonkeyFactory {
                 .build();
     }
 
+    public static FixtureMonkey getBuilderIntrospectorNotNullMonkey() {
+        return FixtureMonkey.builder()
+                .objectIntrospector(BuilderArbitraryIntrospector.INSTANCE)
+                .defaultNotNull(true)
+                .build();
+    }
+
 }

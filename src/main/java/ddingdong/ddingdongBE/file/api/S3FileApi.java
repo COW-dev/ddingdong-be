@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "S3File", description = "AWS S3 File API")
 @RequestMapping("/server/file")
-public interface S3FileAPi {
+public interface S3FileApi {
 
     @Operation(summary = "AWS S3 presignedUrl 발급 API")
     @ApiResponses(value = {

@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.file;
 
-import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 
 import java.util.List;
 import org.springframework.web.multipart.MultipartFile;

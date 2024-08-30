@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.file.dto;
+package ddingdong.ddingdongBE.file.service.dto;
 
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import ddingdong.ddingdongBE.domain.club.entity.Club;

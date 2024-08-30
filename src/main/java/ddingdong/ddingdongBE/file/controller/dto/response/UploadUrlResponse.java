@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.file.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.UUID;
 import lombok.Builder;
 
 @Schema(
@@ -12,14 +13,14 @@ public record UploadUrlResponse(
 
         @Schema(description = "presignedUrl", example = "https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg")
         String uploadUrl,
-        @Schema(description = "업로드 파일 이름(UUID)", example = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d")
-        String uploadFileName
+        @Schema(description = "업로드 파일 식별자(UUID)", example = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d")
+        UUID fileId
 ) {
 
-    public static UploadUrlResponse of(String uploadUrl, String uploadFileName) {
+    public static UploadUrlResponse of(String uploadUrl, UUID fileId) {
         return UploadUrlResponse.builder()
                 .uploadUrl(uploadUrl)
-                .uploadFileName(uploadFileName)
+                .fileId(fileId)
                 .build();
     }
 

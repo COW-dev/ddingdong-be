@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.ClubResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,14 +13,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import javax.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,16 +44,13 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping
-    DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    ClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
-    void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                    @ModelAttribute UpdateClubRequest param,
-                    @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                    @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images);
+    void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails, @Valid @RequestBody UpdateClubRequest request);
 
     @Operation(summary = "동아리원 명단 등록 API")
     @ApiResponses(value = {
