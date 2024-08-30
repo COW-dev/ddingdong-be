@@ -21,13 +21,12 @@ public class FacadeClubPostService {
 
   public void create(CreateClubPostCommand command) {
     Club club = clubService.getByUserId(command.userId());
-    ClubPost clubPost = command.toEntity();
-    clubPost.updateClub(club);
+    ClubPost clubPost = command.toEntity(club);
     clubPostService.save(clubPost);
   }
 
   public void update(UpdateClubPostCommand command) {
-    clubPostService.update(command);
+    clubPostService.update(command.clubPostId(), command.toEntity());
   }
 
   public void delete(Long clubPostId) {

@@ -43,17 +43,14 @@ public class ClubPost extends BaseEntity {
   private Club club;
 
   @Builder
-  private ClubPost(String activityContent, String mediaUrl) {
+  private ClubPost(String activityContent, String mediaUrl, Club club) {
     this.activityContent = activityContent;
     this.mediaUrl = mediaUrl;
-  }
-
-  public void updateClub(Club club) {
     this.club = club;
   }
 
-  public void update(ClubPost updateClubPost) {
-    this.activityContent = updateClubPost.getActivityContent();
-    this.mediaUrl = updateClubPost.getMediaUrl();
+  public void update(ClubPost updateClubPostInfo) {
+    this.activityContent = updateClubPostInfo.getActivityContent();
+    this.mediaUrl = updateClubPostInfo.getMediaUrl();
   }
 }

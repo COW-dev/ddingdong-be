@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import ddingdong.ddingdongBE.domain.clubpost.repository.ClubPostRepository;
-import ddingdong.ddingdongBE.domain.clubpost.service.dto.UpdateClubPostCommand;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -23,9 +22,9 @@ public class ClubPostService {
   }
 
   @Transactional
-  public void update(UpdateClubPostCommand command) {
-    ClubPost clubPost = getById(command.clubPostId());
-    clubPost.update(command.toEntity());
+  public void update(Long clubPostId, ClubPost updateClubPostInfo) {
+    ClubPost clubPost = getById(clubPostId);
+    clubPost.update(updateClubPostInfo);
   }
 
   public ClubPostResponse getResponseById(Long clubPostId) {
