@@ -10,7 +10,7 @@ import javax.validation.constraints.Size;
 )
 public record CreateClubPostRequest(
 
-    @Schema(description = "내용", example = "카우 일기장 내용입니다.")
+    @Schema(description = "활동 내용", example = "카우 일기장 내용입니다.")
     @Size(min = 2, max = 20, message = "게시물 활동 내용은 최소한 2글자 이상, 최대 20글자 이하이어야 합니다.")
     @NotNull(message = "게시물 내용은 필수로 입력해야 합니다.")
     String activityContent,

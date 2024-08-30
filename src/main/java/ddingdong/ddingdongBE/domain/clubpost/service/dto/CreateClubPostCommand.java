@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubpost.service.dto;
 
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import lombok.Builder;
 
@@ -10,10 +11,11 @@ public record CreateClubPostCommand(
     String mediaUrl
 ) {
 
-  public ClubPost toEntity() {
+  public ClubPost toEntity(Club club) {
     return ClubPost.builder()
         .activityContent(activityContent)
         .mediaUrl(mediaUrl)
+        .club(club)
         .build();
   }
 }
