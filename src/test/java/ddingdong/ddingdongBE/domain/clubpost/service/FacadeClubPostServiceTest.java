@@ -67,7 +67,7 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
         .orElse(null);
     assertThat(findClubPost).isNotNull();
     assertThat(findClubPost.getActivityContent()).isEqualTo(command.activityContent());
-    assertThat(findClubPost.getMediaUrl()).isEqualTo(command.mediaUrl());
+    assertThat(findClubPost.getFileUrl()).isEqualTo(command.fileName());
   }
 
   @DisplayName("게시물을 수정할 수 있습니다.")
@@ -75,7 +75,6 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
   void updateClubPost() {
     // given
     ClubPost clubPost = fixtureMonkey.giveMeOne(ClubPost.class);
-    clubPost.updateClub(null);
     ClubPost savedPost = clubPostRepository.save(clubPost);
 
     UpdateClubPostCommand updateClubPostCommand = fixtureMonkey.giveMeBuilder(UpdateClubPostCommand.class)
@@ -88,7 +87,7 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
     ClubPost findClubPost = clubPostRepository.findById(savedPost.getId()).orElse(null);
     assertThat(findClubPost).isNotNull();
     assertThat(findClubPost.getActivityContent()).isEqualTo(updateClubPostCommand.activityContent());
-    assertThat(findClubPost.getMediaUrl()).isEqualTo(updateClubPostCommand.mediaUrl());
+    assertThat(findClubPost.getFileUrl()).isEqualTo(updateClubPostCommand.mediaName());
   }
 
   @DisplayName("게시물을 삭제할 수 있습니다.")
@@ -128,8 +127,8 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
     // then
     assertThat(response).isNotNull();
     assertThat(response.mediaUrls()).size().isEqualTo(2);
-    assertThat(response.mediaUrls().get(0)).isEqualTo(savedPost1.getMediaUrl());
-    assertThat(response.mediaUrls().get(1)).isEqualTo(savedPost2.getMediaUrl());
+    assertThat(response.mediaUrls().get(0)).isEqualTo(savedPost1.getFileUrl());
+    assertThat(response.mediaUrls().get(1)).isEqualTo(savedPost2.getFileUrl());
   }
 
   @DisplayName("게시물을 상세 조회할 수 있다.")
@@ -148,7 +147,7 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
     // then
     assertThat(response).isNotNull();
     assertThat(response.clubName()).isEqualTo("카우");
-    assertThat(response.mediaUrl()).isEqualTo(savedPost.getMediaUrl());
+    assertThat(response.mediaUrl()).isEqualTo(savedPost.getFileUrl());
     assertThat(response.activityContent()).isEqualTo(savedPost.getActivityContent());
     assertThat(response.createdDate()).isEqualTo(LocalDate.from(savedPost.getCreatedAt()));
   }
@@ -188,9 +187,9 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
     ClubFeedResponse response = facadeClubPostService.findAllRecentPostByClub();
     // then
     assertThat(response).isNotNull();
-    assertThat(response.mediaUrls()).size().isEqualTo(3);
-    assertThat(response.mediaUrls().get(0)).isEqualTo(post1.getMediaUrl());
-    assertThat(response.mediaUrls().get(1)).isEqualTo(post3.getMediaUrl());
-    assertThat(response.mediaUrls().get(2)).isEqualTo(post5.getMediaUrl());
+    assertThat(response.fileUrls()).size().isEqualTo(3);
+    assertThat(response.fileUrls().get(0)).isEqualTo(post1.getFileUrl());
+    assertThat(response.fileUrls().get(1)).isEqualTo(post3.getFileUrl());
+    assertThat(response.fileUrls().get(2)).isEqualTo(post5.getFileUrl());
   }
 }

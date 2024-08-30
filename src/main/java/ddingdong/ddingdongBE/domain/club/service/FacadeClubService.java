@@ -72,7 +72,7 @@ public class FacadeClubService {
 
     private String saveImageMetaDataAndFindUploadedUrl(FileMetaDataCommand fileMetaDataCommand, FileCategory category) {
         if (fileMetaDataCommand != null) {
-            fileMetaDataService.create(fileMetaDataCommand.toEntity(category));
+            fileMetaDataService.save(fileMetaDataCommand.toEntity(category));
             return s3FileService.getUploadedFileUrl(fileMetaDataCommand.fileName(),
                     fileMetaDataCommand.fileId());
         }

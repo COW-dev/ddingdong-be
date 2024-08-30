@@ -16,13 +16,13 @@ public record CreateClubPostRequest(
     String activityContent,
     @Schema(description = "이미지&동영상 url")
     @NotNull(message = "게시물 사진 혹은 동영상의 URL을 필수로 입력해야 합니다.")
-    String mediaUrl
+    String fileName
 ) {
 
   public CreateClubPostCommand toCommand(Long userId) {
     return CreateClubPostCommand.builder()
         .activityContent(activityContent)
-        .mediaUrl(mediaUrl)
+        .fileName(fileName)
         .userId(userId)
         .build();
   }

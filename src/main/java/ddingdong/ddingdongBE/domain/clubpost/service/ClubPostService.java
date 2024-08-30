@@ -48,7 +48,7 @@ public class ClubPostService {
 
   public List<String> getAllMediaUrl(List<ClubPost> clubPosts) {
     return clubPosts.stream()
-        .map(ClubPost::getMediaUrl)
+        .map(ClubPost::getFileUrl)
         .toList();
   }
 

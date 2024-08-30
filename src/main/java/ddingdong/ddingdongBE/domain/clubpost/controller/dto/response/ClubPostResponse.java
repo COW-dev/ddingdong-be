@@ -7,7 +7,7 @@ import lombok.Builder;
 @Builder
 public record ClubPostResponse(
     String activityContent,
-    String mediaUrl,
+    String fileUrl,
     String clubName,
     LocalDate createdDate
 ) {
@@ -15,7 +15,7 @@ public record ClubPostResponse(
   public static ClubPostResponse from(ClubPost clubPost) {
     return ClubPostResponse.builder()
         .activityContent(clubPost.getActivityContent())
-        .mediaUrl(clubPost.getMediaUrl())
+        .fileUrl(clubPost.getFileUrl())
         .clubName(clubPost.getClub().getName())
         .createdDate(LocalDate.from(clubPost.getCreatedAt()))
         .build();

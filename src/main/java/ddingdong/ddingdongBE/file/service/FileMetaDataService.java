@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.file.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.file.entity.FileCategory;
 import ddingdong.ddingdongBE.file.entity.FileMetaData;
 import ddingdong.ddingdongBE.file.repository.FileMetaDataRepository;
 import java.util.UUID;
@@ -16,7 +17,17 @@ public class FileMetaDataService {
     private final FileMetaDataRepository fileMetaDataRepository;
 
     @Transactional
-    public void create(FileMetaData fileMetaData) {
+    public void save(FileMetaData fileMetaData) {
+        fileMetaDataRepository.save(fileMetaData);
+    }
+
+    @Transactional
+    public void create(UUID fileId, String fileName, FileCategory fileCategory) {
+        FileMetaData fileMetaData = FileMetaData.builder()
+            .fileId(fileId)
+            .fileName(fileName)
+            .fileCategory(fileCategory)
+            .build();
         fileMetaDataRepository.save(fileMetaData);
     }
 
@@ -25,4 +36,7 @@ public class FileMetaDataService {
                 .orElseThrow(() -> new ResourceNotFound("FimeMetaData(fileId=" + fileId + "를 찾을 수 없습니다."));
     }
 
+    public void delete(UUID originFileId) {
+        fileMetaDataRepository.deleteById(originFileId);
+    }
 }

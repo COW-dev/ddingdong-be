@@ -8,13 +8,13 @@ import lombok.Builder;
 public record CreateClubPostCommand(
     Long userId,
     String activityContent,
-    String mediaUrl
+    String fileName
 ) {
 
-  public ClubPost toEntity(Club club) {
+  public ClubPost toEntity(Club club, String fileUrl) {
     return ClubPost.builder()
         .activityContent(activityContent)
-        .mediaUrl(mediaUrl)
+        .fileUrl(fileUrl)
         .club(club)
         .build();
   }
