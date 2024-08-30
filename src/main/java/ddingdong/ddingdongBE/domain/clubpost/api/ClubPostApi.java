@@ -1,11 +1,12 @@
 package ddingdong.ddingdongBE.domain.clubpost.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.CreateClubPostRequest;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.UpdateClubPostRequest;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.PresignedUrlResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -33,7 +34,7 @@ public interface ClubPostApi {
   @ResponseStatus(HttpStatus.CREATED)
   @SecurityRequirement(name = "AccessToken")
   @PostMapping("/club/posts")
-  void createClubPost(
+  PresignedUrlResponse createClubPost(
       @AuthenticationPrincipal PrincipalDetails principalDetails,
       @RequestBody @Valid CreateClubPostRequest request
   );
@@ -43,7 +44,7 @@ public interface ClubPostApi {
   @ResponseStatus(HttpStatus.OK)
   @SecurityRequirement(name = "AccessToken")
   @PutMapping("/club/posts/{clubPostId}")
-  void updateClubPost(
+  PresignedUrlResponse updateClubPost(
       @PathVariable Long clubPostId,
       @RequestBody @Valid UpdateClubPostRequest request);
 

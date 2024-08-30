@@ -2,11 +2,12 @@ package ddingdong.ddingdongBE.domain.clubpost.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.clubpost.api.ClubPostApi;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.CreateClubPostRequest;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.UpdateClubPostRequest;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
+import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.PresignedUrlResponse;
 import ddingdong.ddingdongBE.domain.clubpost.service.FacadeClubPostService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -19,21 +20,21 @@ public class ClubPostController implements ClubPostApi {
   private final FacadeClubPostService facadeClubPostService;
 
   @Override
-  public void createClubPost(
+  public PresignedUrlResponse createClubPost(
       PrincipalDetails principalDetails,
       CreateClubPostRequest request
   ) {
     User user = principalDetails.getUser();
     Long userId = user.getId();
-    facadeClubPostService.create(request.toCommand(userId));
+    return facadeClubPostService.create(request.toCommand(userId));
   }
 
   @Override
-  public void updateClubPost(
+  public PresignedUrlResponse updateClubPost(
       Long clubPostId,
       UpdateClubPostRequest request
   ) {
-    facadeClubPostService.update(request.toCommand(clubPostId));
+    return facadeClubPostService.update(request.toCommand(clubPostId));
   }
 
   @Override

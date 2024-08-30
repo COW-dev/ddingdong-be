@@ -34,7 +34,7 @@ public class ClubPost extends BaseEntity {
   private String activityContent;
 
   @Column(nullable = false)
-  private String mediaUrl;
+  private String fileUrl;
 
   @Column(name = "deleted_at")
   private LocalDateTime deletedAt;
@@ -43,14 +43,14 @@ public class ClubPost extends BaseEntity {
   private Club club;
 
   @Builder
-  private ClubPost(String activityContent, String mediaUrl, Club club) {
+  private ClubPost(String activityContent, String fileUrl, Club club) {
     this.activityContent = activityContent;
-    this.mediaUrl = mediaUrl;
+    this.fileUrl = fileUrl;
     this.club = club;
   }
 
   public void update(ClubPost updateClubPostInfo) {
     this.activityContent = updateClubPostInfo.getActivityContent();
-    this.mediaUrl = updateClubPostInfo.getMediaUrl();
+    this.fileUrl = updateClubPostInfo.getFileUrl();
   }
 }

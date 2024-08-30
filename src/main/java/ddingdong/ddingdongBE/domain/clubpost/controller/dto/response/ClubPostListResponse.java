@@ -5,12 +5,12 @@ import lombok.Builder;
 
 @Builder
 public record ClubPostListResponse(
-    List<String> mediaUrls
+    List<String> fileUrls
 ) {
 
-  public static ClubPostListResponse from(List<String> mediaUrls) {
+  public static ClubPostListResponse from(List<String> fileUrls) {
     return ClubPostListResponse.builder()
-        .mediaUrls(mediaUrls)
+        .fileUrls(fileUrls)
         .build();
   }
 }
