@@ -14,20 +14,11 @@ import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.List;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import java.math.BigDecimal;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
 class FacadeClubMemberServiceTest extends TestContainerSupport {
@@ -117,7 +108,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 fixtureMonkey.giveMeBuilder(Club.class)
                         .set("user", savedUser)
                         .set("clubMembers", null)
-                        .set("score", Score.from(0))
+                        .set("score", Score.from(new BigDecimal(0)))
                         .sample());
         ClubMember savedClubMember = clubMemberRepository.save(
                 fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
