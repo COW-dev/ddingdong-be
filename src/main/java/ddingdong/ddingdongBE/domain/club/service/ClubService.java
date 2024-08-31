@@ -17,6 +17,7 @@ import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -63,7 +64,7 @@ public class ClubService {
     }
 
     @Transactional
-    public float updateClubScore(Long clubId, float score) {
+    public BigDecimal updateClubScore(Long clubId, BigDecimal score) {
         Club club = getByClubId(clubId);
 
         return club.editScore(generateNewScore(club.getScore(), score));
@@ -86,8 +87,10 @@ public class ClubService {
             .orElseThrow(() -> new PersistenceException.ResourceNotFound("존재하지 않는 동아리입니다."));
     }
 
-    private Score generateNewScore(Score beforeUpdateScore, float value) {
-        return Score.from(beforeUpdateScore.getValue() + value);
+    private Score generateNewScore(Score beforeUpdateScore, BigDecimal value) {
+        BigDecimal currentValue = beforeUpdateScore.getValue();
+        BigDecimal newValue = currentValue.add(value);
+        return Score.from(newValue);
     }
 
     private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {

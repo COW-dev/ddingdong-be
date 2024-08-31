@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -39,7 +40,7 @@ public class ScoreHistory extends BaseEntity {
     @JoinColumn(name = "club_id")
     private Club club;
 
-    private float amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private ScoreCategory scoreCategory;
@@ -50,7 +51,7 @@ public class ScoreHistory extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    public ScoreHistory(Club club, float amount, ScoreCategory scoreCategory, String reason) {
+    public ScoreHistory(Club club, BigDecimal amount, ScoreCategory scoreCategory, String reason) {
         this.club = club;
         this.amount = amount;
         this.scoreCategory = scoreCategory;

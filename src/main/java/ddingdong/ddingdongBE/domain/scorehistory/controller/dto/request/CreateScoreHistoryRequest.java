@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreCategory;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
 import javax.validation.constraints.NotNull;
 import lombok.Builder;
 
@@ -26,7 +27,7 @@ public record CreateScoreHistoryRequest(
 
         @Schema(description = "변동 점수", example = "10")
         @NotNull(message = "변동 점수는 필수입니다.")
-        float amount
+        BigDecimal amount
 ) {
 
     public ScoreHistory toEntity(Club club) {

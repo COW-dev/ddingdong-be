@@ -5,6 +5,8 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.CreateScoreHistoryRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import ddingdong.ddingdongBE.domain.scorehistory.repository.ScoreHistoryRepository;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,7 +23,7 @@ public class ScoreHistoryService {
     public void create(final Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
         Club club = clubService.getByClubId(clubId);
 
-        float score = roundToThirdPoint(createScoreHistoryRequest.amount());
+        BigDecimal score = roundToThirdPoint(createScoreHistoryRequest.amount());
         clubService.updateClubScore(clubId, score);
         scoreHistoryRepository.save(createScoreHistoryRequest.toEntity(club));
     }
@@ -37,7 +39,7 @@ public class ScoreHistoryService {
         return scoreHistoryRepository.findByClubId(club.getId());
     }
 
-    private float roundToThirdPoint(float value) {
-        return Math.round(value * 1000.0) / 1000.0F;
+    private BigDecimal roundToThirdPoint(BigDecimal value) {
+        return value.setScale(3, RoundingMode.HALF_UP);
     }
 }

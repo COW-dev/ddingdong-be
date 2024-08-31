@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.club.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -137,7 +138,7 @@ public class Club extends BaseEntity {
         this.introductionImageUrl = updatedClub.introductionImageUrl;
     }
 
-    public float editScore(Score score) {
+    public BigDecimal editScore(Score score) {
         this.score = score;
         return this.score.getValue();
     }
