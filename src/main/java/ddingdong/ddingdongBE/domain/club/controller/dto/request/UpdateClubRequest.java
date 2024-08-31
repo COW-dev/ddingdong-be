@@ -26,7 +26,7 @@ public record UpdateClubRequest(
         String tag,
         @Schema(description = "동아리 회장", example = "홍길동")
         @NotNull(message = "동아리 회장은 필수입니다.")
-        String clubLeader,
+        String leader,
         @Schema(description = "회장 전화번호", example = "010-1234-5678")
         @NotNull(message = "전화번호는 필수입니다.")
         String phoneNumber,
@@ -61,7 +61,7 @@ public record UpdateClubRequest(
                 .name(name)
                 .category(category)
                 .tag(tag)
-                .clubLeader(clubLeader)
+                .clubLeader(leader)
                 .phoneNumber(phoneNumber)
                 .location(location)
                 .startRecruitPeriod(startRecruitPeriod)
