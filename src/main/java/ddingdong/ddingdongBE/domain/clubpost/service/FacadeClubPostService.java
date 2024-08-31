@@ -67,20 +67,29 @@ public class FacadeClubPostService {
     ClubPost clubPost = clubPostService.getById(clubPostId);
     Club club = clubPost.getClub();
     FileUrlResponse postFileResponse = fileMetaDataService.getFileUrlResponseByUrl(clubPost.getFileUrl());
-    FileUrlResponse clubProfileResponse = fileMetaDataService.getFileUrlResponseByUrl(club.getProfileImageUrl());
-    return ClubPostResponse.of(clubPost, postFileResponse, clubProfileResponse);
+    FileUrlResponse clubProfileFileResponse = fileMetaDataService.getFileUrlResponseByUrl(club.getProfileImageUrl());
+    return ClubPostResponse.of(clubPost, postFileResponse, clubProfileFileResponse);
   }
 
-  public ClubPostListResponse getRecentAllByClubId(Long clubId) {
+  public ClubPostListResponse getAllByClubId(Long clubId) {
+    Club club = clubService.getByClubId(clubId);
     List<ClubPost> clubPosts = clubPostService.getRecentAllByClubId(clubId);
-    List<String> fileUrls = clubPostService.getAllMediaUrl(clubPosts);
-    return ClubPostListResponse.from(fileUrls);
+    List<FileUrlResponse> postFileResponses = createPostFileResponses(clubPosts);
+    FileUrlResponse clubProfileFileResponse = fileMetaDataService.getFileUrlResponseByUrl(club.getProfileImageUrl());
+    return ClubPostListResponse.of(club, postFileResponses, clubProfileFileResponse);
   }
 
   public ClubFeedResponse findAllRecentPostByClub() {
     List<ClubPost> clubPosts = clubPostService.findAllRecentPostByClub();
+    List<FileUrlResponse> postFileResponses = createPostFileResponses(clubPosts);
+    return ClubFeedResponse.from(postFileResponses);
+  }
+
+  private List<FileUrlResponse> createPostFileResponses(List<ClubPost> clubPosts) {
     List<String> fileUrls = clubPostService.getAllMediaUrl(clubPosts);
-    return ClubFeedResponse.from(fileUrls);
+    return fileUrls.stream()
+        .map(fileMetaDataService::getFileUrlResponseByUrl)
+        .toList();
   }
 
   private boolean isChangeFile(Long clubPostId, String updateFileUrl) {

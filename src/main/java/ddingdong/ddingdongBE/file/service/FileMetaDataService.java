@@ -43,6 +43,7 @@ public class FileMetaDataService {
                 .orElseThrow(() -> new ResourceNotFound("FimeMetaData(fileId=" + fileId + "를 찾을 수 없습니다."));
     }
 
+    //TODO : fileId를 못찾는 경우 예외 처리 필요
     public FileUrlResponse getFileUrlResponseByUrl(String fileUrl) {
         if (fileUrl == null) {
             return null;

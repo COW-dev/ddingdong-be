@@ -47,7 +47,7 @@ public class ClubPostController implements ClubPostApi {
 
   @Override
   public ClubPostListResponse getClubPosts(Long clubId) {
-    return facadeClubPostService.getRecentAllByClubId(clubId);
+    return facadeClubPostService.getAllByClubId(clubId);
   }
 
   @Override

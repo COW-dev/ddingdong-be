@@ -11,11 +11,11 @@ public record ClubPostResponse(
     @Schema(name = "활동 내용", example = "카우 활동내역입니다.")
     String activityContent,
     @Schema(name = "동아리 명", example = "카우")
-    String clubName,
+    String name,
     @Schema(name = "동아리 게시물 파일 정보", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
     FileUrlResponse clubPostFile,
     @Schema(name = "동아리 프로필 이미지 정보", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
-    FileUrlResponse clubProfileImage,
+    FileUrlResponse profileImageFile,
     @Schema(name = "생성 날짜", example = "2024-xx-xx")
     LocalDate createdDate
 ) {
@@ -23,9 +23,9 @@ public record ClubPostResponse(
   public static ClubPostResponse of(ClubPost clubPost, FileUrlResponse postFileResponse, FileUrlResponse clubProfileImageResponse) {
     return ClubPostResponse.builder()
         .activityContent(clubPost.getActivityContent())
-        .clubName(clubPost.getClub().getName())
+        .name(clubPost.getClub().getName())
         .clubPostFile(postFileResponse)
-        .clubProfileImage(clubProfileImageResponse)
+        .profileImageFile(clubProfileImageResponse)
         .createdDate(LocalDate.from(clubPost.getCreatedAt()))
         .build();
   }

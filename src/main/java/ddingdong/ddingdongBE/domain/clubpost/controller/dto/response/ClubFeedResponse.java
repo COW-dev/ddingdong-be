@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubpost.controller.dto.response;
 
+import ddingdong.ddingdongBE.file.controller.dto.response.FileUrlResponse;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
@@ -10,12 +11,13 @@ import lombok.Builder;
 )
 @Builder
 public record ClubFeedResponse(
-    List<String> fileUrls
+    @Schema(name = "동아리 게시물 파일 정보리스트", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
+    List<FileUrlResponse> clubPostFiles
 ) {
 
-  public static ClubFeedResponse from(List<String> fileUrls) {
+  public static ClubFeedResponse from(List<FileUrlResponse> clubPostFiles) {
     return ClubFeedResponse.builder()
-        .fileUrls(fileUrls)
+        .clubPostFiles(clubPostFiles)
         .build();
   }
 }
