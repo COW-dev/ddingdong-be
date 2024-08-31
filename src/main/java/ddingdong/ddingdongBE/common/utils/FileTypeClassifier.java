@@ -33,7 +33,7 @@ public class FileTypeClassifier {
   private String getFileExtension(String fileName) {
     int lastIndexOf = fileName.lastIndexOf(".");
     if (lastIndexOf == -1) {
-      return ""; // 확장자가 없는 경우
+      return "";
     }
     return fileName.substring(lastIndexOf + 1).toLowerCase();
   }

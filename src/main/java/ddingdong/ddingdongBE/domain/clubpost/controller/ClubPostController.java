@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.domain.clubpost.controller.dto.request.UpdateClubPo
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.PresignedUrlResponse;
 import ddingdong.ddingdongBE.domain.clubpost.service.FacadeClubPostService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -20,20 +19,20 @@ public class ClubPostController implements ClubPostApi {
   private final FacadeClubPostService facadeClubPostService;
 
   @Override
-  public PresignedUrlResponse createClubPost(
+  public void createClubPost(
       PrincipalDetails principalDetails,
       CreateClubPostRequest request
   ) {
     User user = principalDetails.getUser();
-    return facadeClubPostService.create(request.toCommand(user.getId()));
+    facadeClubPostService.create(request.toCommand(user.getId()));
   }
 
   @Override
-  public PresignedUrlResponse updateClubPost(
+  public void updateClubPost(
       Long clubPostId,
       UpdateClubPostRequest request
   ) {
-    return facadeClubPostService.update(request.toCommand(clubPostId));
+    facadeClubPostService.update(request.toCommand(clubPostId));
   }
 
   @Override

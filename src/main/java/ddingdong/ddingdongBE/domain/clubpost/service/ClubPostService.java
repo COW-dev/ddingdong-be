@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubpost.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import ddingdong.ddingdongBE.domain.clubpost.repository.ClubPostRepository;
 import java.util.List;
@@ -25,11 +24,6 @@ public class ClubPostService {
   public void update(Long clubPostId, ClubPost updateClubPostInfo) {
     ClubPost clubPost = getById(clubPostId);
     clubPost.update(updateClubPostInfo);
-  }
-
-  public ClubPostResponse getResponseById(Long clubPostId) {
-    ClubPost clubPost = getById(clubPostId);
-    return ClubPostResponse.from(clubPost);
   }
 
   public ClubPost getById(Long clubPostId) {

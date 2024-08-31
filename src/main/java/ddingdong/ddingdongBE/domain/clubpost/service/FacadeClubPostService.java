@@ -6,14 +6,14 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostListResponse;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubPostResponse;
-import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.PresignedUrlResponse;
 import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import ddingdong.ddingdongBE.domain.clubpost.service.dto.CreateClubPostCommand;
 import ddingdong.ddingdongBE.domain.clubpost.service.dto.UpdateClubPostCommand;
-import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
+import ddingdong.ddingdongBE.file.controller.dto.response.FileUrlResponse;
 import ddingdong.ddingdongBE.file.entity.FileCategory;
 import ddingdong.ddingdongBE.file.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.FileMetaDataCommand;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -32,36 +32,30 @@ public class FacadeClubPostService {
   private final FileTypeClassifier fileTypeClassifier;
 
   @Transactional
-  public PresignedUrlResponse create(CreateClubPostCommand command) {
-    UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(command.fileName());
-    FileCategory fileCategory = fileTypeClassifier.classifyFileType(command.fileName());
-    fileMetaDataService.create(uploadUrlResponse.fileId(), command.fileName(), fileCategory);
+  public void create(CreateClubPostCommand command) {
+    FileMetaDataCommand fileMetaDataCommand = command.fileMetaDataCommand();
+    FileCategory fileCategory = fileTypeClassifier.classifyFileType(fileMetaDataCommand.fileName());
+    fileMetaDataService.create(fileMetaDataCommand.fileId(), fileMetaDataCommand.fileName(), fileCategory);
 
     Club club = clubService.getByUserId(command.userId());
-    String fileUrl = s3FileService.getUploadedFileUrl(command.fileName(), uploadUrlResponse.fileId());
+    String fileUrl = s3FileService.getUploadedFileUrl(fileMetaDataCommand.fileName(), fileMetaDataCommand.fileId());
     ClubPost clubPost = command.toEntity(club, fileUrl);
     clubPostService.save(clubPost);
-    return PresignedUrlResponse.of(uploadUrlResponse.uploadUrl());
   }
 
   @Transactional
-  public PresignedUrlResponse update(UpdateClubPostCommand command) {
+  public void update(UpdateClubPostCommand command) {
     Long clubPostId = command.clubPostId();
-    UUID originFileId = command.fileMetaDataCommand().fileId();
+    UUID updateFileId = command.fileMetaDataCommand().fileId();
     String updateFileName = command.fileMetaDataCommand().fileName();
 
-    if(isNotChangeFile(clubPostId, originFileId, updateFileName)) {
-      String originFileUrl = s3FileService.getUploadedFileUrl(updateFileName, originFileId);
-      clubPostService.update(clubPostId, command.toEntity(originFileUrl));
-      return null;
+    String updateFileUrl = s3FileService.getUploadedFileUrl(updateFileName, updateFileId);
+    if(isChangeFile(clubPostId, updateFileUrl)) {
+      FileCategory fileCategory = fileTypeClassifier.classifyFileType(updateFileName);
+      fileMetaDataService.create(updateFileId, updateFileName, fileCategory);
+      return;
     }
-
-    UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(updateFileName);
-    String updateFileUrl = s3FileService.getUploadedFileUrl(updateFileName, originFileId);
-    fileMetaDataService.delete(originFileId);
-    fileMetaDataService.create(uploadUrlResponse.fileId(), updateFileName, FileCategory.CLUB_POST_IMAGE);
-    clubPostService.update(clubPostId, command.toEntity(updateFileName));
-    return PresignedUrlResponse.of(uploadUrlResponse.uploadUrl());
+    clubPostService.update(clubPostId, command.toEntity(updateFileUrl));
   }
 
   @Transactional
@@ -70,7 +64,11 @@ public class FacadeClubPostService {
   }
 
   public ClubPostResponse getByClubPostId(Long clubPostId) {
-    return clubPostService.getResponseById(clubPostId);
+    ClubPost clubPost = clubPostService.getById(clubPostId);
+    Club club = clubPost.getClub();
+    FileUrlResponse postFileResponse = fileMetaDataService.getFileUrlResponseByUrl(clubPost.getFileUrl());
+    FileUrlResponse clubProfileResponse = fileMetaDataService.getFileUrlResponseByUrl(club.getProfileImageUrl());
+    return ClubPostResponse.of(clubPost, postFileResponse, clubProfileResponse);
   }
 
   public ClubPostListResponse getRecentAllByClubId(Long clubId) {
@@ -85,9 +83,8 @@ public class FacadeClubPostService {
     return ClubFeedResponse.from(fileUrls);
   }
 
-  private boolean isNotChangeFile(Long clubPostId, UUID updateFileId, String updateFileName) {
+  private boolean isChangeFile(Long clubPostId, String updateFileUrl) {
     ClubPost clubPost = clubPostService.getById(clubPostId);
-    String updateFileUrl = s3FileService.getUploadedFileUrl(updateFileName, updateFileId);
-    return updateFileUrl.equals(clubPost.getFileUrl());
+    return !updateFileUrl.equals(clubPost.getFileUrl());
   }
 }

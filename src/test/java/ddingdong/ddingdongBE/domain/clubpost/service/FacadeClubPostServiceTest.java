@@ -67,7 +67,7 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
         .orElse(null);
     assertThat(findClubPost).isNotNull();
     assertThat(findClubPost.getActivityContent()).isEqualTo(command.activityContent());
-    assertThat(findClubPost.getFileUrl()).isEqualTo(command.fileName());
+    assertThat(findClubPost.getFileUrl()).isEqualTo(command.fileId());
   }
 
   @DisplayName("게시물을 수정할 수 있습니다.")

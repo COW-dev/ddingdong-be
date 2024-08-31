@@ -19,7 +19,7 @@ public record UpdateClubPostRequest(
 
     @Schema(description = "이미지&동영상 id와 name")
     @NotNull(message = "게시물 사진 혹은 동영상의 id와 name을 필수로 입력해야 합니다.")
-    FileMetaDataRequest clubPostInfo
+    FileMetaDataRequest fileMetaDataRequest
 ) {
 
   public UpdateClubPostCommand toCommand(Long clubPostId) {
@@ -31,7 +31,7 @@ public record UpdateClubPostRequest(
   }
 
   private FileMetaDataCommand getClubPostInfoCommand() {
-    return Optional.ofNullable(clubPostInfo)
+    return Optional.ofNullable(fileMetaDataRequest)
         .map(FileMetaDataRequest::toCommand)
         .orElse(null);
   }

@@ -73,9 +73,9 @@ public class S3FileService {
         return expiration;
     }
 
-    private String createFilePath(String fileName, UUID uploadFileName) {
+    private String createFilePath(String fileName, UUID fileId) {
         String fileExtension = extractFileExtension(fileName);
-        return String.format("%s/%s/%s", serverProfile, fileExtension, uploadFileName.toString());
+        return String.format("%s/%s/%s", serverProfile, fileExtension, fileId.toString());
     }
 
     private String extractFileExtension(String fileName) {
