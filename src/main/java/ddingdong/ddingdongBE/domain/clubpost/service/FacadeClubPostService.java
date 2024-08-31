@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubpost.service;
 
+import ddingdong.ddingdongBE.common.utils.FileTypeClassifier;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubpost.controller.dto.response.ClubFeedResponse;
@@ -28,16 +29,17 @@ public class FacadeClubPostService {
   private final ClubService clubService;
   private final S3FileService s3FileService;
   private final FileMetaDataService fileMetaDataService;
+  private final FileTypeClassifier fileTypeClassifier;
 
   @Transactional
   public PresignedUrlResponse create(CreateClubPostCommand command) {
     UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(command.fileName());
+    FileCategory fileCategory = fileTypeClassifier.classifyFileType(command.fileName());
+    fileMetaDataService.create(uploadUrlResponse.fileId(), command.fileName(), fileCategory);
 
     Club club = clubService.getByUserId(command.userId());
     String fileUrl = s3FileService.getUploadedFileUrl(command.fileName(), uploadUrlResponse.fileId());
     ClubPost clubPost = command.toEntity(club, fileUrl);
-
-    fileMetaDataService.create(uploadUrlResponse.fileId(), command.fileName(), FileCategory.CLUB_POST_FILE);
     clubPostService.save(clubPost);
     return PresignedUrlResponse.of(uploadUrlResponse.uploadUrl());
   }
@@ -57,7 +59,7 @@ public class FacadeClubPostService {
     UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(updateFileName);
     String updateFileUrl = s3FileService.getUploadedFileUrl(updateFileName, originFileId);
     fileMetaDataService.delete(originFileId);
-    fileMetaDataService.create(uploadUrlResponse.fileId(), updateFileName, FileCategory.CLUB_POST_FILE);
+    fileMetaDataService.create(uploadUrlResponse.fileId(), updateFileName, FileCategory.CLUB_POST_IMAGE);
     clubPostService.update(clubPostId, command.toEntity(updateFileName));
     return PresignedUrlResponse.of(uploadUrlResponse.uploadUrl());
   }

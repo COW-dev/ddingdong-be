@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.file.service;
 
-import static ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.ExcelIO;
+import static ddingdong.ddingdongBE.common.exception.ParsingFileException.ExcelIO;
 import static ddingdong.ddingdongBE.domain.club.entity.Position.LEADER;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -8,8 +8,8 @@ import static org.assertj.core.groups.Tuple.tuple;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
-import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException;
-import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcelFile;
+import ddingdong.ddingdongBE.common.exception.ParsingFileException;
+import ddingdong.ddingdongBE.common.exception.ParsingFileException.NonExcelFile;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -107,7 +107,7 @@ class ExcelFileServiceTest extends TestContainerSupport {
         //when //then
         assertThatThrownBy(() -> excelFileService.extractClubMembersInformation(club, nonExcelFile))
                 .isInstanceOf(NonExcelFile.class)
-                .hasMessage(ParsingExcelFileException.NON_EXCEL_FILE_ERROR_MESSAGE);
+                .hasMessage(ParsingFileException.NON_EXCEL_FILE_ERROR_MESSAGE);
     }
 
 
@@ -127,7 +127,7 @@ class ExcelFileServiceTest extends TestContainerSupport {
         // when
         assertThatThrownBy(() -> excelFileService.extractClubMembersInformation(club, invalidExcelFile))
                 .isInstanceOf(ExcelIO.class)
-                .hasMessage(ParsingExcelFileException.EXCEL_IO_ERROR_MESSAGE);
+                .hasMessage(ParsingFileException.EXCEL_IO_ERROR_MESSAGE);
     }
 
     @DisplayName("동아리원 명단 엑셀 파일에서 올바른 동아리원 역할(LEADER, EXECUTION, MEMBER)이 아닐 경우 예외가 발생한다.")

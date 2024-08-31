@@ -73,6 +73,6 @@ public interface ClubPostApi {
   @ApiResponse(responseCode = "200", description = "동아리 전체 피드 조회 성공",
       content = @Content(schema = @Schema(implementation = ClubFeedResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/club/posts")
+  @GetMapping("/club/feed")
   ClubFeedResponse getClubFeeds();
 }

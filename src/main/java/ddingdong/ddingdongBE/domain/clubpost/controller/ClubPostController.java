@@ -25,8 +25,7 @@ public class ClubPostController implements ClubPostApi {
       CreateClubPostRequest request
   ) {
     User user = principalDetails.getUser();
-    Long userId = user.getId();
-    return facadeClubPostService.create(request.toCommand(userId));
+    return facadeClubPostService.create(request.toCommand(user.getId()));
   }
 
   @Override

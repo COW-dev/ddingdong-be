@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.file.service;
 
-import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.ExcelIO;
-import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcelFile;
+import ddingdong.ddingdongBE.common.exception.ParsingFileException.ExcelIO;
+import ddingdong.ddingdongBE.common.exception.ParsingFileException.NonExcelFile;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.file.service.dto.ExcelClubMemberDto;
