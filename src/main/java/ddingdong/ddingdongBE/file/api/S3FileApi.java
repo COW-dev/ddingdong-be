@@ -23,7 +23,9 @@ public interface S3FileApi {
 
     @Operation(summary = "AWS S3 presignedUrl 발급 API")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "presignedUrl 발급 성공"),
+            @ApiResponse(responseCode = "200", description = "presignedUrl 발급 성공",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = UploadUrlResponse.class))),
             @ApiResponse(responseCode = "400",
                     description = "AWS 오류(서버 오류)",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
