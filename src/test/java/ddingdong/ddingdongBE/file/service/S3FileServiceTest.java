@@ -38,12 +38,13 @@ class S3FileServiceTest {
     void generatePreSignedUrl() throws MalformedURLException {
         //given
         String fileName = "image.jpg";
+        String contentType = "image/jpg";
 
         URL expectedUrl = new URL("https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg");
         given(amazonS3Client.generatePresignedUrl(any(GeneratePresignedUrlRequest.class))).willReturn(expectedUrl);
 
         //when
-        UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(fileName);
+        UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(fileName, contentType);
 
         //then
         Pattern UUID7_PATTERN = Pattern.compile(

@@ -30,7 +30,7 @@ public class S3FileService {
 
     private final AmazonS3Client amazonS3Client;
 
-    public UploadUrlResponse generatePreSignedUrl(String fileName) {
+    public UploadUrlResponse generatePreSignedUrl(String fileName, String contentType) {
         UUID fileId = UuidCreator.getTimeOrderedEpoch();
         String s3FilePath = createFilePath(fileName, fileId);
 
@@ -39,6 +39,7 @@ public class S3FileService {
             GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName,
                     s3FilePath)
                     .withMethod(HttpMethod.PUT)
+                    .withContentType(contentType)
                     .withExpiration(expiration);
 
             URL uploadUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);

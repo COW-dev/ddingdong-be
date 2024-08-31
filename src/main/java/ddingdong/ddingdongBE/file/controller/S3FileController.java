@@ -13,7 +13,7 @@ public class S3FileController implements S3FileApi {
     private final S3FileService s3FileService;
 
     @Override
-    public UploadUrlResponse getUploadUrl(String fileName) {
-        return s3FileService.generatePreSignedUrl(fileName);
+    public UploadUrlResponse getUploadUrl(String fileName, String contentType) {
+        return s3FileService.generatePreSignedUrl(fileName, contentType);
     }
 }

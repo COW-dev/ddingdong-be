@@ -53,6 +53,6 @@ public interface S3FileApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/upload-url")
-    UploadUrlResponse getUploadUrl(@RequestParam("fileName") String fileName);
+    UploadUrlResponse getUploadUrl(@RequestParam String fileName, @RequestParam String contentType);
 
 }
