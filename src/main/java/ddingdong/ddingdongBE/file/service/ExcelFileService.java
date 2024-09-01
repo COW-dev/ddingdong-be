@@ -35,7 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ExcelFileService {
 
-    private static final String CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH = "src/main/resources/static/club_member_excel_menual.png";
+    private static final String CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH = "static/club_member_excel_menual.png";
 
     public byte[] generateClubMemberListFile(List<ClubMember> clubMembers) {
         try (Workbook workbook = new XSSFWorkbook()) {
