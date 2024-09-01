@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.poi.openxml4j.exceptions.NotOfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
@@ -31,6 +32,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ExcelFileService {
@@ -53,6 +55,7 @@ public class ExcelFileService {
             workbook.write(outputStream);
             return outputStream.toByteArray();
         } catch (Exception e) {
+            log.info("excelError = {}", e.getMessage());
             throw new RuntimeException("Failed to generate Excel file", e);
         }
     }
