@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -18,9 +19,11 @@ public class CreateActivityReportRequest {
     private String content;
     private String place;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
     private LocalDateTime startDate;
 
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
     private LocalDateTime endDate;
 
