@@ -14,6 +14,7 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Curre
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -52,7 +53,9 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     ) {
         User user = principalDetails.getUser();
 
-        List<MultipartFile> images = List.of(firstImage, secondImage);
+        List<MultipartFile> images = new ArrayList<>();
+        images.add(firstImage);
+        images.add(secondImage);
 
         IntStream.range(0, requests.size())
             .forEach(index -> {
@@ -81,7 +84,10 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         User user = principalDetails.getUser();
 
         List<ActivityReportDto> activityReportDtos = activityReportService.update(user, term, requests);
-        List<MultipartFile> images = List.of(firstImage, secondImage);
+
+        List<MultipartFile> images = new ArrayList<>();
+        images.add(firstImage);
+        images.add(secondImage);
 
         IntStream.range(0, Math.min(activityReportDtos.size(), images.size()))
             .filter(index -> images.get(index) != null && !images.get(index).isEmpty())

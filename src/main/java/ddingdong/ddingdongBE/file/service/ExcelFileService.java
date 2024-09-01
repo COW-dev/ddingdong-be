@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.file.dto.ExcelClubMemberDto;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,6 +27,7 @@ import org.apache.poi.util.IOUtils;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,7 +35,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ExcelFileService {
 
-    private static final String CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH = "src/main/resources/static/club_member_excel_menual.png";
+    private static final String CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH = "static/club_member_excel_menual.png";
 
     public byte[] generateClubMemberListFile(List<ClubMember> clubMembers) {
         try (Workbook workbook = new XSSFWorkbook()) {
@@ -123,7 +123,8 @@ public class ExcelFileService {
     }
 
     private void addManualImage(Workbook workbook, Sheet sheet) throws IOException {
-        InputStream inputStream = new FileInputStream(CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH);
+        ClassPathResource imgFile = new ClassPathResource(CLUB_MEMBER_EXCEL_MANUAL_IMAGE_PATH);
+        InputStream inputStream = imgFile.getInputStream();
         byte[] bytes = IOUtils.toByteArray(inputStream);
         int pictureIdx = workbook.addPicture(bytes, Workbook.PICTURE_TYPE_PNG);
         inputStream.close();

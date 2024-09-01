@@ -3,7 +3,7 @@ name: Develop Server Integrator (CI)
 on:
   push:
     branches:
-      - develop
+      - fix/DEV-000
 
 jobs:
   build_and_push:
