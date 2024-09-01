@@ -35,8 +35,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     void generateDocument() throws Exception {
         // given
         GenerateDocumentRequest request = GenerateDocumentRequest.builder()
-                .title("testTitle")
-                .content("testContent").build();
+                .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFiles", "test.txt", "text/plain",
                 "test content".getBytes());
         when(documentService.create(any()))
@@ -46,7 +45,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         mockMvc.perform(multipart("/server/admin/documents")
                         .file(file)
                         .param("title", request.title())
-                        .param("content", request.content())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf()))
                 .andDo(print())
@@ -84,7 +82,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         //given
         Document document = Document.builder()
                 .title("title")
-                .content("content")
                 .createdAt(LocalDateTime.now()).build();
         when(documentService.getById(1L)).thenReturn(document);
 
@@ -98,7 +95,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.content").value("content"))
                 .andExpect(jsonPath("$.fileUrls", hasSize(fileResponses.size())))
                 .andExpect(jsonPath("$.fileUrls[0].name").value("fileA"))
                 .andExpect(jsonPath("$.fileUrls[0].fileUrl").value("fileAUrl"));
@@ -110,8 +106,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     void modify() throws Exception {
         // given
         ModifyDocumentRequest modifyRequest = ModifyDocumentRequest.builder()
-                .title("testTitle")
-                .content("testContent").build();
+                .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFilessymotion-prefix)", "test.txt", "text/plain",
                 "test content".getBytes());
         when(documentService.update(1L, modifyRequest.toEntity())).thenReturn(1L);
@@ -120,7 +115,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         mockMvc.perform(multipart("/server/admin/documents/{documentId}", 1L)
                         .file(file)
                         .param("title", modifyRequest.title())
-                        .param("content", modifyRequest.content())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf())
                         .with(request -> {

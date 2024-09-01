@@ -13,15 +13,12 @@ import lombok.Getter;
 @Builder
 public record ModifyDocumentRequest(
         @Schema(description = "자료 제목", example = "제목")
-        String title,
-
-        @Schema(description = "자료 내용", example = "내용") String content
+        String title
 ) {
 
     public Document toEntity() {
         return Document.builder()
                 .title(title)
-                .content(content)
                 .build();
     }
 }
