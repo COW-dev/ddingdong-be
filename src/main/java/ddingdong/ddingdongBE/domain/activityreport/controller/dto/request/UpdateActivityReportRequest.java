@@ -4,9 +4,11 @@ import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class UpdateActivityReportRequest {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";

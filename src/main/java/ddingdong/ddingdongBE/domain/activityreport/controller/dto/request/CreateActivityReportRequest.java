@@ -7,9 +7,11 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Getter
+@AllArgsConstructor
 public class CreateActivityReportRequest {
 
     public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
