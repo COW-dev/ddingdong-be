@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -9,6 +8,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
@@ -20,10 +20,10 @@ public class CreateActivityReportRequest {
     private String content;
     private String place;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     private LocalDateTime startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_FORMAT, timezone = "Asia/Seoul")
+    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
     private LocalDateTime endDate;
 
     private List<Participant> participants;
