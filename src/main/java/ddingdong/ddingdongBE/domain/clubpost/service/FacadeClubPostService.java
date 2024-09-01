@@ -53,7 +53,6 @@ public class FacadeClubPostService {
     if(isChangeFile(clubPostId, updateFileUrl)) {
       FileCategory fileCategory = fileTypeClassifier.classifyFileType(updateFileName);
       fileMetaDataService.create(updateFileId, updateFileName, fileCategory);
-      return;
     }
     clubPostService.update(clubPostId, command.toEntity(updateFileUrl));
   }
@@ -86,7 +85,7 @@ public class FacadeClubPostService {
   }
 
   private List<FileUrlResponse> createPostFileResponses(List<ClubPost> clubPosts) {
-    List<String> fileUrls = clubPostService.getAllMediaUrl(clubPosts);
+    List<String> fileUrls = clubPostService.getAllFileUrl(clubPosts);
     return fileUrls.stream()
         .map(fileMetaDataService::getFileUrlResponseByUrl)
         .toList();

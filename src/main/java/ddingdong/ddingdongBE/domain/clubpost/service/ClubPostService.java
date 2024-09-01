@@ -40,7 +40,7 @@ public class ClubPostService {
     return clubPostRepository.findAllByClubIdOrderById(clubId);
   }
 
-  public List<String> getAllMediaUrl(List<ClubPost> clubPosts) {
+  public List<String> getAllFileUrl(List<ClubPost> clubPosts) {
     return clubPosts.stream()
         .map(ClubPost::getFileUrl)
         .toList();

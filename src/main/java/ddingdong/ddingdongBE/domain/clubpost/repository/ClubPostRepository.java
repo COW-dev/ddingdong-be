@@ -10,15 +10,16 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface ClubPostRepository extends JpaRepository<ClubPost, Long> {
 
-  @Query(value = "SELECT * FROM club_post WHERE club_id = :clubId ORDER BY id"
+  @Query(value = "SELECT * FROM club_post WHERE club_id = :clubId AND deleted_at IS NULL ORDER BY id"
       , nativeQuery = true)
   List<ClubPost> findAllByClubIdOrderById(@Param("clubId") Long clubId);
 
   @Query(value = "SELECT * FROM club_post p WHERE p.id in "
       + "(SELECT min(id) "
       + "FROM club_post cp "
+      + "WHERE deleted_at IS NULL "
       + "GROUP BY club_id) "
-      + "ORDER BY id "
+      + "ORDER BY id"
       , nativeQuery = true)
   List<ClubPost> findLatestGroupByClub();
 

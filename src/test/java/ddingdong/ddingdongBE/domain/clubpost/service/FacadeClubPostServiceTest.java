@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.clubpost.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -14,10 +15,15 @@ import ddingdong.ddingdongBE.domain.clubpost.entity.ClubPost;
 import ddingdong.ddingdongBE.domain.clubpost.repository.ClubPostRepository;
 import ddingdong.ddingdongBE.domain.clubpost.service.dto.CreateClubPostCommand;
 import ddingdong.ddingdongBE.domain.clubpost.service.dto.UpdateClubPostCommand;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import ddingdong.ddingdongBE.file.service.FileMetaDataService;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.FileMetaDataCommand;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.UUID;
 import javax.persistence.EntityManager;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,7 +48,13 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
   @Autowired
   private EntityManager entityManager;
 
-  private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
+  @Autowired
+  private S3FileService s3FileService;
+
+  @Autowired
+  private FileMetaDataService fileMetaDataService;
+
+  private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorNotNullMonkey();
   @Autowired
   private ClubPostService clubPostService;
 
@@ -52,53 +64,68 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
     // given
     User user = fixtureMonkey.giveMeOne(User.class);
     User savedUser = userRepository.save(user);
-    userRepository.flush();
-    Club club = fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample();
+    Club club = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("user", savedUser)
+        .set("score", Score.from(0))
+        .set("clubMembers", null)
+        .sample();
     clubRepository.save(club);
     clubRepository.flush();
 
     CreateClubPostCommand command = fixtureMonkey.giveMeBuilder(CreateClubPostCommand.class)
         .set("userId", savedUser.getId())
+        .set("fileMetaDataCommand", new FileMetaDataCommand(UuidCreator.getTimeOrderedEpoch(), "example.png"))
         .sample();
     // when
     facadeClubPostService.create(command);
     // then
     ClubPost findClubPost = clubPostRepository.findById(1L)
         .orElse(null);
+    FileMetaDataCommand fileMetaDataCommand = command.fileMetaDataCommand();
+    String fileUrl = s3FileService.getUploadedFileUrl(fileMetaDataCommand.fileName(), fileMetaDataCommand.fileId());
     assertThat(findClubPost).isNotNull();
     assertThat(findClubPost.getActivityContent()).isEqualTo(command.activityContent());
-    assertThat(findClubPost.getFileUrl()).isEqualTo(command.fileId());
+    assertThat(findClubPost.getFileUrl()).isEqualTo(fileUrl);
   }
 
   @DisplayName("게시물을 수정할 수 있습니다.")
   @Test
   void updateClubPost() {
     // given
-    ClubPost clubPost = fixtureMonkey.giveMeOne(ClubPost.class);
+    ClubPost clubPost = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", null)
+        .sample();
     ClubPost savedPost = clubPostRepository.save(clubPost);
 
     UpdateClubPostCommand updateClubPostCommand = fixtureMonkey.giveMeBuilder(UpdateClubPostCommand.class)
         .set("clubPostId", savedPost.getId())
+        .set("fileMetaDataCommand", new FileMetaDataCommand(UuidCreator.getTimeOrderedEpoch(), "example.png")
+
+        )
         .sample();
     // when
-    clubPostService.update(updateClubPostCommand);
+    facadeClubPostService.update(updateClubPostCommand);
     clubPostRepository.flush();
     // then
     ClubPost findClubPost = clubPostRepository.findById(savedPost.getId()).orElse(null);
+    FileMetaDataCommand fileMetaDataCommand = updateClubPostCommand.fileMetaDataCommand();
+    String fileUrl = s3FileService.getUploadedFileUrl(fileMetaDataCommand.fileName(), fileMetaDataCommand.fileId());
     assertThat(findClubPost).isNotNull();
     assertThat(findClubPost.getActivityContent()).isEqualTo(updateClubPostCommand.activityContent());
-    assertThat(findClubPost.getFileUrl()).isEqualTo(updateClubPostCommand.mediaName());
+    assertThat(findClubPost.getFileUrl()).isEqualTo(fileUrl);
   }
 
   @DisplayName("게시물을 삭제할 수 있습니다.")
   @Test
   void deleteClubPost() {
     // given
-    ClubPost clubPost = fixtureMonkey.giveMeOne(ClubPost.class);
+    ClubPost clubPost = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", null)
+        .sample();
     ClubPost savedPost = clubPostRepository.save(clubPost);
     // when
-    Long clubId = savedPost.getId();
-    facadeClubPostService.delete(clubId);
+    Long clubPostId = savedPost.getId();
+    facadeClubPostService.delete(clubPostId);
     clubPostRepository.flush();
     // then
     ClubPost findClubPost = (ClubPost) entityManager.createNativeQuery("select * from club_post limit 1", ClubPost.class)
@@ -111,43 +138,53 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
   @Test
   void getAllClubPosts() {
     // given
-    Club club = Club.builder()
-        .name("카우")
-        .build();
+    Club club = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("name", "카우")
+        .set("score", Score.from(0))
+        .set("user", null)
+        .set("clubMembers", null)
+        .sample();
     Club savedclub = clubRepository.save(club);
 
-    ClubPost post1 = fixtureMonkey.giveMeOne(ClubPost.class);
-    ClubPost post2 = fixtureMonkey.giveMeOne(ClubPost.class);
-    post1.updateClub(savedclub);
-    post2.updateClub(savedclub);
+    ClubPost post1 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedclub)
+        .sample();
+    ClubPost post2 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedclub)
+        .sample();;
     ClubPost savedPost1 = clubPostRepository.save(post1);
     ClubPost savedPost2 = clubPostRepository.save(post2);
     // when
-    ClubPostListResponse response = facadeClubPostService.getRecentAllByClubId(savedclub.getId());
+    ClubPostListResponse response = facadeClubPostService.getAllByClubId(savedclub.getId());
     // then
     assertThat(response).isNotNull();
-    assertThat(response.mediaUrls()).size().isEqualTo(2);
-    assertThat(response.mediaUrls().get(0)).isEqualTo(savedPost1.getFileUrl());
-    assertThat(response.mediaUrls().get(1)).isEqualTo(savedPost2.getFileUrl());
+    assertThat(response.clubPostFiles()).size().isEqualTo(2);
+    assertThat(response.clubPostFiles().get(0).fileUrl()).isEqualTo(savedPost1.getFileUrl());
+    assertThat(response.clubPostFiles().get(1).fileUrl()).isEqualTo(savedPost2.getFileUrl());
   }
 
   @DisplayName("게시물을 상세 조회할 수 있다.")
   @Test
   void getClubPost() {
     // given
-    Club club = Club.builder()
-        .name("카우")
-        .build();
+    Club club = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("name", "카우")
+        .set("score", Score.from(0))
+        .set("user", null)
+        .set("clubMembers", null)
+        .sample();
     Club savedclub = clubRepository.save(club);
-    ClubPost post = fixtureMonkey.giveMeOne(ClubPost.class);
-    post.updateClub(savedclub);
+    ClubPost post = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedclub)
+        .sample();
     ClubPost savedPost = clubPostRepository.save(post);
     // when
     ClubPostResponse response = facadeClubPostService.getByClubPostId(savedPost.getId());
     // then
     assertThat(response).isNotNull();
-    assertThat(response.clubName()).isEqualTo("카우");
-    assertThat(response.mediaUrl()).isEqualTo(savedPost.getFileUrl());
+    assertThat(response.name()).isEqualTo("카우");
+    assertThat(response.clubPostFile().fileUrl()).isEqualTo(savedPost.getFileUrl());
+    assertThat(response.profileImageFile().fileUrl()).isEqualTo(savedclub.getProfileImageUrl());
     assertThat(response.activityContent()).isEqualTo(savedPost.getActivityContent());
     assertThat(response.createdDate()).isEqualTo(LocalDate.from(savedPost.getCreatedAt()));
   }
@@ -156,40 +193,65 @@ class FacadeClubPostServiceTest extends TestContainerSupport {
   @Test
   void findNewestPostsByClub() {
     // given
-    Club club1 = Club.builder()
-        .name("테스트1")
-        .build();
-    Club club2 = Club.builder()
-        .name("테스트2")
-        .build();
-    Club club3 = Club.builder()
-        .name("테스트3")
-        .build();
+    UUID fileId = UuidCreator.getTimeOrderedEpoch();
+    String fileName = "example.png";
+    String fileUrl = s3FileService.getUploadedFileUrl(fileName, fileId);
+    Club club1 = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("name", "테스트1")
+        .set("score", Score.from(0))
+        .set("user", null)
+        .set("clubMembers", null)
+        .sample();
+    Club club2 = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("name", "테스트2")
+        .set("score", Score.from(0))
+        .set("user", null)
+        .set("clubMembers", null)
+        .sample();
+    Club club3 = fixtureMonkey.giveMeBuilder(Club.class)
+        .set("name", "테스트3")
+        .set("score", Score.from(0))
+        .set("user", null)
+        .set("clubMembers", null)
+        .sample();
     Club savedClub1 = clubRepository.save(club1);
     Club savedClub2 = clubRepository.save(club2);
     Club savedClub3 = clubRepository.save(club3);
 
-    ClubPost post1 = fixtureMonkey.giveMeOne(ClubPost.class);
-    ClubPost post2 = fixtureMonkey.giveMeOne(ClubPost.class);
-    post1.updateClub(savedClub1);
-    post2.updateClub(savedClub1);
-    ClubPost post3 = fixtureMonkey.giveMeOne(ClubPost.class);
-    ClubPost post4 = fixtureMonkey.giveMeOne(ClubPost.class);
-    post3.updateClub(savedClub2);
-    post4.updateClub(savedClub2);
-    ClubPost post5 = fixtureMonkey.giveMeOne(ClubPost.class);
-    ClubPost post6 = fixtureMonkey.giveMeOne(ClubPost.class);
-    post5.updateClub(savedClub3);
-    post6.updateClub(savedClub3);
+    ClubPost post1 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub1)
+        .set("fileUrl", fileUrl)
+        .sample();
+    ClubPost post2 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub1)
+        .set("fileUrl", fileUrl)
+        .sample();
+    ClubPost post3 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub2)
+        .set("fileUrl", fileUrl)
+        .sample();
+    ClubPost post4 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub2)
+        .set("fileUrl", fileUrl)
+        .sample();
+    ClubPost post5 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub3)
+        .set("fileUrl", fileUrl)
+        .sample();
+    ClubPost post6 = fixtureMonkey.giveMeBuilder(ClubPost.class)
+        .set("club", savedClub3)
+        .set("fileUrl", fileUrl)
+        .sample();;
 
     clubPostRepository.saveAll(List.of(post1, post2, post3, post4, post5, post6));
+    clubPostRepository.flush();
     // when
     ClubFeedResponse response = facadeClubPostService.findAllRecentPostByClub();
     // then
     assertThat(response).isNotNull();
-    assertThat(response.fileUrls()).size().isEqualTo(3);
-    assertThat(response.fileUrls().get(0)).isEqualTo(post1.getFileUrl());
-    assertThat(response.fileUrls().get(1)).isEqualTo(post3.getFileUrl());
-    assertThat(response.fileUrls().get(2)).isEqualTo(post5.getFileUrl());
+    assertThat(response.clubPostFiles()).size().isEqualTo(3);
+    assertThat(response.clubPostFiles().get(0).fileUrl()).isEqualTo(post1.getFileUrl());
+    assertThat(response.clubPostFiles().get(0).fileUrl()).isEqualTo(post3.getFileUrl());
+    assertThat(response.clubPostFiles().get(0).fileUrl()).isEqualTo(post5.getFileUrl());
   }
 }
