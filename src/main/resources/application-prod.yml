@@ -1,0 +1,30 @@
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+
+  jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+    defer-datasource-initialization: false
+
+  sql:
+    init:
+      mode: never
+
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: ${JWT_SECRET}
+  expiration: 36000

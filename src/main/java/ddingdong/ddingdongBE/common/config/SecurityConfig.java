@@ -37,7 +37,9 @@ public class SecurityConfig {
                 .antMatchers(GET,
                         API_PREFIX + "/clubs/**",
                         API_PREFIX + "/notices/**",
-                        API_PREFIX + "/banners/**")
+                        API_PREFIX + "/banners/**",
+                        API_PREFIX + "/documents/**",
+                        API_PREFIX + "/questions/**")
                 .permitAll()
                 .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
                 .anyRequest()

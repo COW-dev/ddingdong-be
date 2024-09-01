@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ILLEGAL_CLUB_PHONE_NUMBER_PATTERN;
 
 import java.util.Objects;
 import javax.persistence.Access;
@@ -8,6 +8,7 @@ import javax.persistence.AccessType;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Access(AccessType.FIELD)
+@Builder
 public class PhoneNumber {
 
     private static final String PHONE_NUMBER_REGEX = "010-\\d{3,4}-\\d{4}";
@@ -23,7 +25,6 @@ public class PhoneNumber {
     private String number;
 
     private PhoneNumber(String number) {
-        validate(number);
         this.number = number;
     }
 
@@ -44,11 +45,14 @@ public class PhoneNumber {
         return Objects.hash(getNumber());
     }
 
-    public static PhoneNumber of(String phoneNumber) {
-        return new PhoneNumber(phoneNumber);
+    public static PhoneNumber from(String phoneNumber) {
+        validate(phoneNumber);
+        return PhoneNumber.builder()
+                .number(phoneNumber)
+                .build();
     }
 
-    private void validate(String number) {
+    private static void validate(String number) {
         if (!number.matches(PHONE_NUMBER_REGEX)) {
             throw new IllegalArgumentException(ILLEGAL_CLUB_PHONE_NUMBER_PATTERN.getText());
         }

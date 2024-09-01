@@ -1,15 +1,21 @@
+buildscript {
+    ext {
+        queryDslVersion = '5.0.0'
+    }
+}
+
 plugins {
     id 'java'
     id 'org.springframework.boot' version '2.7.12'
     id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'jacoco'
+    id 'org.jetbrains.kotlin.jvm'
+    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
 }
 
 group = 'ddingdong'
 version = '0.0.1-SNAPSHOT'
 
 java {
-    sourceCompatibility = '17'
 }
 
 jar {
@@ -27,63 +33,81 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    //develop
     implementation 'org.springframework.boot:spring-boot-starter-web'
-    implementation 'org.springframework.boot:spring-boot-starter-security'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
-
-    implementation 'io.hypersistence:hypersistence-utils-hibernate-55:3.7.2'
-
-    implementation 'com.auth0:java-jwt:4.2.1'
-
-    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
-    implementation 'com.mysql:mysql-connector-j'
-
-    implementation 'org.apache.poi:poi:5.2.0'
-    implementation 'org.apache.poi:poi-ooxml:5.2.0'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
     implementation 'org.springframework.boot:spring-boot-configuration-processor'
 
-    implementation 'io.sentry:sentry-logback:7.6.0'
-    implementation 'org.springdoc:springdoc-openapi-ui:1.6.11'
+    implementation "com.querydsl:querydsl-jpa:${queryDslVersion}"
+    implementation "com.querydsl:querydsl-apt:${queryDslVersion}"
 
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    annotationProcessor 'org.projectlombok:lombok'
+    //db
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'com.mysql:mysql-connector-j'
+    implementation 'org.flywaydb:flyway-core'
+    implementation "org.flywaydb:flyway-mysql"
+
+    //etc(기타)
+    implementation 'io.awspring.cloud:spring-cloud-starter-aws:2.4.4'
+    implementation 'org.apache.poi:poi:5.2.0'
+    implementation 'org.apache.poi:poi-ooxml:5.2.0'
+    implementation 'io.hypersistence:hypersistence-utils-hibernate-55:3.7.2'
+    implementation 'io.sentry:sentry-logback:7.6.0'
+    implementation 'com.fasterxml.jackson.core:jackson-core'
+    implementation 'com.github.f4b6a3:uuid-creator:6.0.0'
+
+    //security
+    implementation 'org.springframework.boot:spring-boot-starter-security'
+    implementation 'com.auth0:java-jwt:4.2.1'
+
+    //test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.security:spring-security-test'
+    testCompileOnly 'org.projectlombok:lombok'
+    testAnnotationProcessor 'org.projectlombok:lombok'
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher"
+    testImplementation("com.navercorp.fixturemonkey:fixture-monkey-starter:1.0.23")
+    // TestContainer
+    testImplementation 'org.testcontainers:testcontainers:1.20.1'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.1'
+    // mysql 컨테이너
+    testImplementation 'org.testcontainers:mysql:1.20.1'
 }
 
 tasks.named('test') {
     useJUnitPlatform()
 }
+def querydslDir = "$buildDir/generated/'querydsl'"
 
-jacoco {
-    toolVersion = '0.8.10'
+querydsl { // JPA 사용여부 및 사용 경로 설정
+    jpa = true
+    querydslSourcesDir = querydslDir
 }
 
-test {
-    finalizedBy jacocoTestReport
+sourceSets { // build시 사용할 sourceSet 추가 설정
+    main.java.srcDir querydslDir
 }
 
-jacocoTestReport {
-    reports {
-        html.enabled true
-        xml.enabled true
-        csv.enabled true
+compileQuerydsl { // querydsl 컴파일 시 사용할 옵션 설정
+    options.annotationProcessorPath = configurations.querydsl
+}
+
+// querydsl이 compileClassPath를 상속하도록 설정
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
     }
+    querydsl.extendsFrom compileClasspath
 }
 
-jacoco {
-	toolVersion = '0.8.10'
+compileQuerydsl.doFirst {
+    if (file(querydslDir).exists())
+        delete(file(querydslDir))
 }
 
-test {
-	finalizedBy jacocoTestReport
-}
-
-jacocoTestReport {
-	reports {
-		html.enabled true
-		xml.enabled true
-		csv.enabled true
-	}
+compileQuerydsl {
+    options.annotationProcessorPath = configurations.querydsl
 }

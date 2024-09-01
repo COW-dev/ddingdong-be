@@ -1,15 +1,35 @@
 package ddingdong.ddingdongBE.common.exception;
 
-import lombok.Getter;
+import static org.springframework.http.HttpStatus.UNAUTHORIZED;
 
-@Getter
-public class AuthenticationException extends RuntimeException{
+sealed public class AuthenticationException extends CustomException {
 
-    private final ErrorMessage errorMessage;
-    private final String message;
+    public static final String UNREGISTERED_ID_ERROR_MESSAGE = "등록되지 않은 ID입니다.";
+    public static final String INVALIDATED_PASSWORD_ERROR_MESSAGE = "잘못된 비밀번호입니다.";
+    public static final String NON_EXIST_USER_ROLE_ERROR_MESSAGE = "유저 권한이 존재하지 않습니다.";
 
-    public AuthenticationException(ErrorMessage errorMessage) {
-        this.errorMessage = errorMessage;
-        this.message = errorMessage.getText();
+    public AuthenticationException(String message, int errorCode) {
+        super(message, errorCode);
+    }
+
+    public static final class UnRegisteredId extends AuthenticationException {
+
+        public UnRegisteredId() {
+            super(UNREGISTERED_ID_ERROR_MESSAGE, UNAUTHORIZED.value());
+        }
+    }
+
+    public static final class InvalidPassword extends AuthenticationException {
+
+        public InvalidPassword() {
+            super(INVALIDATED_PASSWORD_ERROR_MESSAGE, UNAUTHORIZED.value());
+        }
+    }
+
+    public static final class NonExistUserRole extends AuthenticationException {
+
+        public NonExistUserRole() {
+            super(NON_EXIST_USER_ROLE_ERROR_MESSAGE, UNAUTHORIZED.value());
+        }
     }
 }

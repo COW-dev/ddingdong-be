@@ -5,14 +5,18 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DEV_DB_URL}
+    username: ${DEV_DB_USERNAME}
+    password: ${DEV_DB_PASSWORD}
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    database-platform: org.hibernate.dialect.MySQL8InnoDBDialect
     hibernate:
       ddl-auto: none
     properties:
-      hibernate:
+      hibernate.format_sql: true
+      dialect: org.hibernate.dialect.MySQL8InnoDBDialect
     defer-datasource-initialization: false
 
   sql:
@@ -25,8 +29,3 @@ jwt:
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 36000
-
-sentry:
-  dsn: ${SENTRY_DSN_KEY}
-  enable-tracing: true
-  environment: dev

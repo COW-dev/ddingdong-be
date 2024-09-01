@@ -4,11 +4,11 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.Column;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -16,17 +16,22 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Table;
+import org.hibernate.annotations.Where;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update club set deleted_at = CURRENT_TIMESTAMP where id=?")
+@Where(clause = "deleted_at IS NULL")
+@Table(appliesTo = "club")
 public class Club extends BaseEntity {
 
     @Id
@@ -73,9 +78,13 @@ public class Club extends BaseEntity {
     @Embedded
     private Score score;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Builder
-    public Club(User user, String name, String category, String tag, String leader, Location location,
+    public Club(Long id, User user, String name, String category, String tag, String leader, Location location,
                 PhoneNumber phoneNumber, Score score) {
+        this.id = id;
         this.user = user;
         this.name = name;
         this.category = category;
@@ -93,8 +102,8 @@ public class Club extends BaseEntity {
         this.content = request.getContent() != null ? request.getContent() : this.content;
         this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
         this.phoneNumber =
-                request.getPhoneNumber() != null ? PhoneNumber.of(request.getPhoneNumber()) : this.phoneNumber;
-        this.location = request.getLocation() != null ? Location.of(request.getLocation()) : this.location;
+                request.getPhoneNumber() != null ? PhoneNumber.from(request.getPhoneNumber()) : this.phoneNumber;
+        this.location = request.getLocation() != null ? Location.from(request.getLocation()) : this.location;
         this.startRecruitPeriod =
                 request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
         this.endRecruitPeriod =
@@ -106,14 +115,13 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    private static LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
-    }
-
     public float editScore(Score score) {
         this.score = score;
-
         return this.score.getValue();
+    }
+
+    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }

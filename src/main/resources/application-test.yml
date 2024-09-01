@@ -3,21 +3,49 @@ spring:
     activate:
       on-profile: test
 
-  datasource:
-    url: jdbc:h2:tcp://localhost/~/projects/ddingdong/ddingdong
-    driver-class-name: org.h2.Driver
-    username: sa
-    password:
-
+  flyway:
+    enabled: false
+    
   jpa:
     hibernate:
       ddl-auto: create
-    show-sql: true
     properties:
       hibernate:
+        show-sql: true
         format_sql: true
         auto_quote_keyword: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
 
   sql:
     init:
       mode: never
+
+  s3:
+    bucket: "test"
+    access-key: "test"
+    secret-key: "test"
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+cloud:
+  aws:
+    region:
+      static: "ap-northeast-2"
+    stack:
+      auto: false
+
+
+jwt:
+  header: "Authorization"
+  prefix: "Bearer"
+  issuer: "ddingdong"
+  secret: "test"
+  expiration: 3600
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.hibernate.type.descriptor.sql: trace

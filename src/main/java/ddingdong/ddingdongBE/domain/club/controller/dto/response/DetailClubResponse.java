@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.ClubMemberDto;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
@@ -47,14 +46,14 @@ public class DetailClubResponse {
 
     private List<String> introduceImageUrls;
 
-    private List<ClubMemberDto> clubMembers;
+    private List<ClubMemberResponse> clubMembers;
 
 
     @Builder
     public DetailClubResponse(String name, String category, String tag, String content, String leader,
                               PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
                               LocalDateTime endRecruitPeriod, String regularMeeting, String introduction,
-                              String activity, String ideal, String formUrl, List<ClubMemberDto> clubMembers,
+                              String activity, String ideal, String formUrl, List<ClubMemberResponse> clubMembers,
                               List<String> profileImageUrls, List<String> introduceImageUrls) {
         this.name = name;
         this.category = category;
@@ -76,7 +75,7 @@ public class DetailClubResponse {
     }
 
     public static DetailClubResponse of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls,
-                                        List<ClubMemberDto> clubMembers) {
+                                        List<ClubMemberResponse> clubMembers) {
         return DetailClubResponse.builder()
                 .name(club.getName())
                 .category(club.getCategory())

@@ -1,0 +1,17 @@
+services:
+  ddingdong-local-db:
+    image: mysql:8.0
+    container_name: ddingdong_local_mysql
+    platform: linux/x86_64
+    environment:   # 환경 변수 설정
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: ddingdong_local_db
+      MYSQL_CHARSET: utf8mb4
+      MYSQL_COLLATION: utf8mb4_unicode_ci
+      TZ: Asia/Seoul
+    ports:
+      - "3307:3306"
+    volumes:
+      - backup-store:/var/lib/mysql
+volumes:
+  backup-store :

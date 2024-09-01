@@ -1,104 +1,114 @@
 package ddingdong.ddingdongBE.domain.fixzone.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_FIX;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.FIX_ZONE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
-import java.util.List;
-
-import javax.transaction.Transactional;
-
-import org.springframework.stereotype.Service;
-
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFiXCompletionRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminDetailFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubDetailFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.ClubFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.entitiy.Fix;
-import ddingdong.ddingdongBE.domain.fixzone.repository.FixRepository;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetDetailFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneCommentResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
+import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
+import ddingdong.ddingdongBE.domain.fixzone.repository.FixZoneRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class FixZoneService {
 
-	private final FixRepository fixRepository;
-	private final FileInformationService fileInformationService;
+    private final FixZoneRepository fixZoneRepository;
+    private final FileInformationService fileInformationService;
 
-	public Long create(Club club, CreateFixRequest request) {
-		Fix createdFix = request.toEntity(club);
-		Fix savedFix = fixRepository.save(createdFix);
-		return savedFix.getId();
-	}
+    @Transactional
+    public Long create(Club club, CreateFixZoneRequest request) {
+        FixZone createdFixZone = request.toEntity(club);
 
-	public List<ClubFixResponse> getAllForClub() {
-			return fixRepository.findAll().stream()
-				.map(ClubFixResponse::from)
-				.toList();
-	}
+        return fixZoneRepository.save(createdFixZone).getId();
+    }
 
-	public ClubDetailFixResponse getForClub(Long fixId) {
-		Fix fix = fixRepository.findById(fixId)
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+    public GetDetailFixZoneResponse getFixZoneDetail(Long fixZoneId) {
+        FixZone fixZone = fixZoneRepository.findById(fixZoneId)
+            .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
 
-		List<String> imageUrls = fileInformationService.getImageUrls(
-			IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fix.getId());
+        List<String> imageUrls = fileInformationService.getImageUrls(
+            IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fixZone.getId()
+        );
 
-		return ClubDetailFixResponse.builder()
-			.id(fix.getId())
-			.title(fix.getTitle())
-			.createdAt(fix.getCreatedAt())
-			.content(fix.getContent())
-			.imageUrls(imageUrls).build();
-	}
+        return GetDetailFixZoneResponse.of(
+            fixZone.getId(),
+            fixZone.getClub().getLocation().getValue(),
+            fixZone.getClub().getName(),
+            fixZone.getTitle(),
+            fixZone.getCreatedAt(),
+            fixZone.getContent(),
+            fixZone.isCompleted(),
+            imageUrls,
+            getCommentResponses(fixZone)
+        );
+    }
 
-	public List<AdminFixResponse> getAllForAdmin() {
-		return fixRepository.findAll().stream()
-			.map(AdminFixResponse::from)
-			.toList();
-	}
+    private List<GetFixZoneCommentResponse> getCommentResponses(FixZone fixZone) {
+        List<FixZoneComment> comments = fixZone.getFixZoneComments();
 
-	public AdminDetailFixResponse getForAdmin(Long fixId) {
-		Fix fix = fixRepository.findById(fixId)
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+        return comments.stream()
+            .map(comment -> {
+                List<String> profileImageUrls = fileInformationService.getImageUrls(
+                    IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + comment.getClub().getId()
+                );
+                String profileImageUrl = profileImageUrls.isEmpty() ? null : profileImageUrls.get(0);
+                return GetFixZoneCommentResponse.of(comment, profileImageUrl);
+            })
+            .toList();
+    }
 
-		List<String> imageUrls = fileInformationService.getImageUrls(
-			IMAGE.getFileType() + FIX_ZONE.getFileDomain() + fix.getId());
+    public List<GetFixZoneResponse> getAll() {
+        return fixZoneRepository.findAll().stream()
+            .map(GetFixZoneResponse::of)
+            .toList();
+    }
 
-		return AdminDetailFixResponse.builder()
-			.id(fix.getId())
-			.title(fix.getTitle())
-			.createdAt(fix.getCreatedAt())
-			.club(fix.getClub().getName())
-			.location(fix.getClub().getLocation().getValue())
-			.content(fix.getContent())
-			.isCompleted(fix.isCompleted())
-			.imageUrls(imageUrls).build();
-	}
+    @Transactional
+    public void update(Long fixZoneId, UpdateFixZoneRequest request) {
+        FixZone fixZone = getById(fixZoneId);
 
-	public void update(Long fixId, UpdateFixRequest request) {
-		Fix fix = fixRepository.findById(fixId)
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+        fixZone.update(
+            request.getTitle(),
+            request.getContent()
+        );
+    }
 
-		fix.update(request);
-	}
+    @Transactional
+    public void updateToComplete(Long fixZoneId) {
+        FixZone fixZone = getById(fixZoneId);
 
-	public void updateIsCompleted(Long fixId, UpdateFiXCompletionRequest request) {
-		Fix fix = fixRepository.findById(fixId)
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+        fixZone.updateToComplete();
+    }
 
-		fix.updateIsCompleted(request.isCompleted());
-	}
+    @Transactional
+    public void delete(Long fixZoneId) {
+        FixZone fixZone = getById(fixZoneId);
+        fixZoneRepository.delete(fixZone);
+    }
 
-	public void delete(Long fixId) {
-		Fix fix = fixRepository.findById(fixId)
-			.orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
-		fixRepository.delete(fix);
-	}
+    public List<GetFixZoneResponse> getMyFixZones(Long clubId) {
+        return fixZoneRepository.findAllByClubId(clubId)
+            .stream()
+            .map(GetFixZoneResponse::of)
+            .toList();
+    }
+
+    public FixZone getById(Long fixZoneId) {
+        return fixZoneRepository.findById(fixZoneId)
+            .orElseThrow(() -> new IllegalArgumentException(NO_SUCH_FIX.getText()));
+    }
+
 }

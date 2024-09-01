@@ -15,7 +15,7 @@ class LocationTest {
     void createLocation(String givenValue) {
         //given
         //when
-        Location location = Location.of(givenValue);
+        Location location = Location.from(givenValue);
 
         //then
         assertThat(location.getValue()).isEqualTo(givenValue);
@@ -27,7 +27,7 @@ class LocationTest {
     void createLocationWithIllegalRegex(String givenValue) {
         //given
         //when //then
-        assertThatThrownBy(() -> Location.of(givenValue))
+        assertThatThrownBy(() -> Location.from(givenValue))
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("올바르지 않은 동아리 위치 양식입니다.");
     }

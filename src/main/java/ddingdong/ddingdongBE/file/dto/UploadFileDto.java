@@ -13,8 +13,6 @@ public class UploadFileDto {
 
     private String storedFileName;
 
-    private String key;
-
     @Builder
     public UploadFileDto(String uploadFileName, String storedFileName) {
         this.uploadFileName = uploadFileName;

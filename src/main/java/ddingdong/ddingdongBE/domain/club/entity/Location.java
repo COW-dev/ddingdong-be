@@ -6,12 +6,14 @@ import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Builder
 public class Location {
 
     private static final String LOCATION_REGEX = "^S[0-9]{4,5}";
@@ -20,7 +22,6 @@ public class Location {
     private String value;
 
     private Location(String value) {
-        validateLocation(value);
         this.value = value;
     }
 
@@ -41,12 +42,12 @@ public class Location {
         return Objects.hash(getValue());
     }
 
-    public static Location of(String value) {
-
-        return new Location(value);
+    public static Location from(String value) {
+        validateLocation(value);
+        return Location.builder().value(value).build();
     }
 
-    private void validateLocation(String value) {
+    private static void validateLocation(String value) {
         if (!value.matches(LOCATION_REGEX)) {
             throw new IllegalArgumentException(ILLEGAL_CLUB_LOCATION_PATTERN.getText());
         }

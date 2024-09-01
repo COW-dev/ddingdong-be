@@ -1,41 +1,69 @@
 package ddingdong.ddingdongBE.domain.fixzone.controller;
 
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.fixzone.controller.api.AdminFixZoneApi;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneCommentRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
+import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneCommentService;
+import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFiXCompletionRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminDetailFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixResponse;
-import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
-import lombok.RequiredArgsConstructor;
-
 @RestController
-@RequestMapping("/server/admin/fix")
 @RequiredArgsConstructor
-public class AdminFixZoneController {
+public class AdminFixZoneController implements AdminFixZoneApi {
 
 	private final FixZoneService fixZoneService;
+    private final FixZoneCommentService fixZoneCommentService;
+    private final ClubService clubService;
 
-	@GetMapping
-	public List<AdminFixResponse> getAllFixForAdmin() {
-		return fixZoneService.getAllForAdmin();
-	}
+    @Override
+    public List<GetFixZoneResponse> getFixZones() {
+        return fixZoneService.getAll();
+    }
 
-	@GetMapping("/{fixId}")
-	public AdminDetailFixResponse getFixForAdmin(@PathVariable Long fixId) {
-		return fixZoneService.getForAdmin(fixId);
-	}
+    @Override
+    public void updateFixZoneToComplete(Long fixZoneId) {
+        fixZoneService.updateToComplete(fixZoneId);
+    }
 
-	@PatchMapping("/{fixId}")
-	public void updateFix(@PathVariable Long fixId, @RequestBody UpdateFiXCompletionRequest request) {
-		fixZoneService.updateIsCompleted(fixId, request);
-	}
+    @Override
+    public void createFixZoneComment(
+        PrincipalDetails principalDetails,
+        CreateFixZoneCommentRequest request,
+        Long fixZoneId
+    ) {
+        FixZone fixZone = fixZoneService.getById(fixZoneId);
+        Club club = clubService.getByClubId(principalDetails.getUser().getId());
+
+        fixZoneCommentService.create(fixZone, club, request);
+    }
+
+    @Override
+    public void updateFixZoneComment(
+        PrincipalDetails principalDetails,
+        CreateFixZoneCommentRequest request,
+        Long fixZoneId,
+        Long commentId
+    ) {
+        Club club = clubService.getByClubId(principalDetails.getUser().getId());
+
+        fixZoneCommentService.update(club.getId(), commentId, request);
+    }
+
+    @Override
+    public void deleteFixZoneComment(
+        PrincipalDetails principalDetails,
+        Long fixZoneId,
+        Long commentId
+    ) {
+        Club club = clubService.getByClubId(principalDetails.getUser().getId());
+
+        fixZoneCommentService.delete(commentId);
+    }
+
 }

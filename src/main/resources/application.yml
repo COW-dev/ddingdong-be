@@ -1,12 +1,12 @@
 spring:
-  profiles:
-    default: dev
-
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: ${DB_URL}
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
 
   jpa:
     hibernate:
@@ -35,11 +35,6 @@ cloud:
       static: ${AWS_DEFAULT_REGION}
     stack:
       auto: false
-
-sentry:
-  dsn: ${SENTRY_KEY}
-  enable-tracing: true
-  environment: dev
 
 swagger:
   server:
