@@ -31,8 +31,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActivityReportService {
 
     private static final String START_DATE = "2024-09-02";
-    private static final int DEFAULT_TERM = 1;
-    private static final int CORRECTION_VALUE = 1;
+    private static final int DEFAULT_TERM = 8;
+    private static final int CORRECTION_VALUE = 8;
     private static final int TERM_LENGTH_OF_DAYS = 14;
 
     private final ClubService clubService;
@@ -131,7 +131,7 @@ public class ActivityReportService {
     private String calculateCurrentTerm(final int days) {
         int result = CORRECTION_VALUE + (days / TERM_LENGTH_OF_DAYS);
 
-        if (result <= 0) {
+        if (result <= CORRECTION_VALUE) {
             result = DEFAULT_TERM;
         }
 

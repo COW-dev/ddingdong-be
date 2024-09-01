@@ -27,7 +27,6 @@ class DocumentServiceTest extends TestContainerSupport {
         //given
         Document document = Document.builder()
                 .title("test")
-                .content("test")
                 .build();
 
         //when

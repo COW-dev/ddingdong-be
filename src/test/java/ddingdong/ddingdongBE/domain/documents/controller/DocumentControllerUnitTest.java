@@ -50,7 +50,6 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         //given
         Document document = Document.builder()
                 .title("title")
-                .content("content")
                 .createdAt(LocalDateTime.now()).build();
         when(documentService.getById(1L)).thenReturn(document);
 
@@ -64,7 +63,6 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.content").value("content"))
                 .andExpect(jsonPath("$.fileUrls", hasSize(fileResponses.size())))
                 .andExpect(jsonPath("$.fileUrls[0].name").value("fileA"))
                 .andExpect(jsonPath("$.fileUrls[0].fileUrl").value("fileAUrl"));

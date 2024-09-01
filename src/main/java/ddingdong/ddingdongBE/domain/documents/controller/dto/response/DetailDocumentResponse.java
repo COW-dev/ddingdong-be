@@ -18,9 +18,6 @@ public record DetailDocumentResponse(
         @Schema(description = "자료 제목", example = "자료 제목")
         String title,
 
-        @Schema(description = "자료 내용", example = "자료 내용")
-        String content,
-
         @Schema(description = "작성일", example = "2024-01-01")
         @JsonFormat(pattern = "yyyy-MM-dd")
         LocalDate createdAt,
@@ -33,7 +30,6 @@ public record DetailDocumentResponse(
                                             List<FileResponse> fileResponses) {
         return DetailDocumentResponse.builder()
                 .title(document.getTitle())
-                .content(document.getContent())
                 .createdAt(document.getCreatedAt().toLocalDate())
                 .fileUrls(fileResponses)
                 .build();

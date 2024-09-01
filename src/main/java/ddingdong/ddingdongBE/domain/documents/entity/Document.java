@@ -38,24 +38,19 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 1024)
-    private String content;
-
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
 
     @Builder
-    private Document(Long id, User user, String title, String content, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.title = title;
-        this.content = content;
         super.setCreatedAt(createdAt);
     }
 
     public void updateDocument(Document updatedDocument) {
         this.title = updatedDocument.getTitle();
-        this.content = updatedDocument.getContent();
     }
 }
