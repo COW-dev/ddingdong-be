@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
+import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.time.LocalDateTime;
 import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -12,10 +14,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-
-import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.club.entity.Club;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -75,10 +73,12 @@ public class ActivityReport extends BaseEntity {
 		this.place =
 			updateActivityReportRequest.getPlace() != null ? updateActivityReportRequest.getPlace() : this.place;
 		this.startDate =
-			updateActivityReportRequest.getStartDate() != null ? updateActivityReportRequest.getStartDate() :
+			updateActivityReportRequest.getStartDate() != null ? LocalDateTime.parse(
+				updateActivityReportRequest.getStartDate()) :
 				this.startDate;
 		this.endDate =
-			updateActivityReportRequest.getEndDate() != null ? updateActivityReportRequest.getEndDate() : this.endDate;
+			updateActivityReportRequest.getEndDate() != null ? LocalDateTime.parse(
+				updateActivityReportRequest.getEndDate()) : this.endDate;
 		this.participants =
 			updateActivityReportRequest.getParticipants() != null ? updateActivityReportRequest.getParticipants() :
 				this.participants;

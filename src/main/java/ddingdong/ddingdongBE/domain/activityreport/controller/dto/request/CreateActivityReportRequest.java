@@ -8,7 +8,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.springframework.format.annotation.DateTimeFormat;
 
 @Getter
 @AllArgsConstructor
@@ -19,12 +18,8 @@ public class CreateActivityReportRequest {
     private String term;
     private String content;
     private String place;
-
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
-    private LocalDateTime startDate;
-
-    @DateTimeFormat(pattern = "yyyy-mm-dd HH:mm")
-    private LocalDateTime endDate;
+    private String startDate;
+    private String endDate;
 
     private List<Participant> participants;
 
@@ -40,8 +35,8 @@ public class CreateActivityReportRequest {
                 .build();
     }
 
-    private LocalDateTime parseToDate(final LocalDateTime date) {
-        String dateString = date.format(DateTimeFormatter.ofPattern(DATE_FORMAT));
-        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+    private LocalDateTime parseToDate(final String date) {
+        return LocalDateTime.parse(date, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
+
 }
