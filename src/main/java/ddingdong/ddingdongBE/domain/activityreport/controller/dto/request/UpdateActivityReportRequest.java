@@ -10,11 +10,6 @@ import lombok.Getter;
 @AllArgsConstructor
 public class UpdateActivityReportRequest {
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
-
-    @Schema(description = "회차 정보")
-    private String term;
-
     @Schema(description = "내용")
     private String content;
 

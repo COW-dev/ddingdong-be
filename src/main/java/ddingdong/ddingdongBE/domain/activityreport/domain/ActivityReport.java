@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
@@ -74,11 +75,12 @@ public class ActivityReport extends BaseEntity {
 			updateActivityReportRequest.getPlace() != null ? updateActivityReportRequest.getPlace() : this.place;
 		this.startDate =
 			updateActivityReportRequest.getStartDate() != null ? LocalDateTime.parse(
-				updateActivityReportRequest.getStartDate()) :
-				this.startDate;
+				updateActivityReportRequest.getStartDate(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : this.startDate;
 		this.endDate =
 			updateActivityReportRequest.getEndDate() != null ? LocalDateTime.parse(
-				updateActivityReportRequest.getEndDate()) : this.endDate;
+				updateActivityReportRequest.getEndDate(),
+				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : this.endDate;
 		this.participants =
 			updateActivityReportRequest.getParticipants() != null ? updateActivityReportRequest.getParticipants() :
 				this.participants;
