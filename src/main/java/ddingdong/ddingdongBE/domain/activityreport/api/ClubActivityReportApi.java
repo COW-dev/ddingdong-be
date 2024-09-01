@@ -15,7 +15,6 @@ import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,7 +56,7 @@ public interface ClubActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     void createActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @ModelAttribute(value = "reportData") List<CreateActivityReportRequest> requests,
+        @RequestPart(value = "reportData") List<CreateActivityReportRequest> requests,
         @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
         @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
     );
@@ -69,7 +68,7 @@ public interface ClubActivityReportApi {
     void updateActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term,
-        @ModelAttribute(value = "reportData") List<UpdateActivityReportRequest> requests,
+        @RequestPart(value = "reportData") List<UpdateActivityReportRequest> requests,
         @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
         @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
     );
