@@ -5,6 +5,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.time.LocalDateTime;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -34,18 +36,23 @@ public class Feed extends BaseEntity {
   private String activityContent;
 
   @Column(nullable = false)
-  private String fileUrl;
+  private String thumbnailUrl;
 
-  @Column(name = "deleted_at")
-  private LocalDateTime deletedAt;
+  @Column(nullable = false)
+  @Enumerated(EnumType.STRING)
+  private FeedType feedType;
 
   @ManyToOne(fetch = FetchType.LAZY)
   private Club club;
 
+  @Column(name = "deleted_at")
+  private LocalDateTime deletedAt;
+
   @Builder
-  private Feed(String activityContent, String fileUrl, Club club) {
+  private Feed(String activityContent, String fileUrl, Club club, FeedType feedType) {
     this.activityContent = activityContent;
-    this.fileUrl = fileUrl;
+    this.thumbnailUrl = fileUrl;
     this.club = club;
+    this.feedType = feedType;
   }
 }
