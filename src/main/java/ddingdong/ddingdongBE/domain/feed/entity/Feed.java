@@ -49,9 +49,9 @@ public class Feed extends BaseEntity {
   private LocalDateTime deletedAt;
 
   @Builder
-  private Feed(String activityContent, String fileUrl, Club club, FeedType feedType) {
+  private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType) {
     this.activityContent = activityContent;
-    this.thumbnailUrl = fileUrl;
+    this.thumbnailUrl = thumbnailUrl;
     this.club = club;
     this.feedType = feedType;
   }
