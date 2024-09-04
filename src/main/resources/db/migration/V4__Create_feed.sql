@@ -7,5 +7,5 @@ CREATE TABLE feed (
         club_id BIGINT,
         created_at DATETIME NOT NULL,
         updated_at DATETIME NOT NULL,
-        FOREIGN KEY (club_id) REFERENCES club(id)
+        CONSTRAINT fk_feed_club_id FOREIGN KEY (club_id) REFERENCES club(id)
 );
