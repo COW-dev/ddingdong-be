@@ -59,6 +59,5 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     Assertions.assertThat(feeds.get(1).getId()).isEqualTo(2L);
     Assertions.assertThat(feeds.get(2).getThumbnailUrl()).isEqualTo("썸네일1");
     Assertions.assertThat(feeds.get(2).getId()).isEqualTo(1L);
-
   }
 }
