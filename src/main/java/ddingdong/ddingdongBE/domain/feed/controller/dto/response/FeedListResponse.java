@@ -18,7 +18,7 @@ public record FeedListResponse(
     return FeedListResponse.builder()
         .id(feed.getId())
         .thumbnailUrl(feed.getThumbnailUrl())
-        .feedType(String.valueOf(feed.getFeedType()))
+        .feedType(feed.getFeedType().toString())
         .build();
   }
 }
