@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeFeedService {
 
-  private final ClubService clubService;
   private final FeedService feedService;
 
   public List<FeedListResponse> getAllByClubId(Long clubId) {
