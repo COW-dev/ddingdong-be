@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.Create
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -81,5 +82,11 @@ public interface ClubActivityReportApi {
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term
     );
+
+    @Operation(summary = "활동 보고서 회차별 기간 조회 API")
+    @GetMapping("/activity-reports/term")
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    List<ActivityReportTermInfoResponse> getActivityTermInfos();
 
 }

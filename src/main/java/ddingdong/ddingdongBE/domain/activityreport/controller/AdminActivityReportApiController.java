@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.activityreport.controller;
 import ddingdong.ddingdongBE.domain.activityreport.api.AdminActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityTermInfoRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportTermInfoService;
 import java.util.List;
@@ -21,11 +20,6 @@ public class AdminActivityReportApiController implements AdminActivityReportApi 
     @GetMapping
     public List<ActivityReportListResponse> getActivityReports() {
         return activityReportService.getAll();
-    }
-
-    @Override
-    public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
-        return activityReportTermInfoService.getAll();
     }
 
     @Override
