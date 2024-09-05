@@ -20,7 +20,7 @@ spring:
         format_sql: true
         dialect: org.hibernate.dialect.MySQL8Dialect
         show-sql: true
-    defer-datasource-initialization: true
+    defer-datasource-initialization: false
 
   sql:
     init:
