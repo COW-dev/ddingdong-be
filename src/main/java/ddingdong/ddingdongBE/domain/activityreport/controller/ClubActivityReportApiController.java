@@ -10,8 +10,10 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.Update
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
+import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportTermInfoService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.ArrayList;
@@ -27,6 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class ClubActivityReportApiController implements ClubActivityReportApi {
 
     private final ActivityReportService activityReportService;
+    private final ActivityReportTermInfoService activityReportTermInfoService;
     private final FileService fileService;
 
     public CurrentTermResponse getCurrentTerm() {
@@ -117,4 +120,10 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         activityReportService.delete(user, term)
             .forEach(it -> fileService.deleteFile(it.getId(), IMAGE, ACTIVITY_REPORT));
     }
+
+    @Override
+    public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
+        return activityReportTermInfoService.getAll();
+    }
+
 }

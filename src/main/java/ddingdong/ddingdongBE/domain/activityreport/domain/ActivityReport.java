@@ -69,20 +69,36 @@ public class ActivityReport extends BaseEntity {
 	}
 
 	public void update(final UpdateActivityReportRequest updateActivityReportRequest) {
-		this.content =
-			updateActivityReportRequest.getContent() != null ? updateActivityReportRequest.getContent() : this.content;
-		this.place =
-			updateActivityReportRequest.getPlace() != null ? updateActivityReportRequest.getPlace() : this.place;
-		this.startDate =
-			updateActivityReportRequest.getStartDate() != null ? LocalDateTime.parse(
-				updateActivityReportRequest.getStartDate(),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : this.startDate;
-		this.endDate =
-			updateActivityReportRequest.getEndDate() != null ? LocalDateTime.parse(
-				updateActivityReportRequest.getEndDate(),
-				DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")) : this.endDate;
-		this.participants =
-			updateActivityReportRequest.getParticipants() != null ? updateActivityReportRequest.getParticipants() :
-				this.participants;
+		this.content = updateActivityReportRequest.getContent() != null
+			? updateActivityReportRequest.getContent()
+			: this.content;
+
+		this.place = updateActivityReportRequest.getPlace() != null
+			? updateActivityReportRequest.getPlace()
+			: this.place;
+
+		this.startDate = processDate(updateActivityReportRequest.getStartDate(), this.startDate);
+		this.endDate = processDate(updateActivityReportRequest.getEndDate(), this.endDate);
+
+		this.participants = updateActivityReportRequest.getParticipants() != null
+			? updateActivityReportRequest.getParticipants()
+			: this.participants;
 	}
+
+	private LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
+		if (dateString == null) {
+			return currentDate;
+		}
+
+		if (dateString.isBlank()) {
+			return null;
+		}
+
+		return parseToLocalDateTime(dateString);
+	}
+
+	private LocalDateTime parseToLocalDateTime(String dateString) {
+		return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+	}
+
 }
