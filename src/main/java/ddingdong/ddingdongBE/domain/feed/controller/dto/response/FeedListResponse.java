@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
+import lombok.NonNull;
 
 @Builder
 public record FeedListResponse(
@@ -14,7 +15,7 @@ public record FeedListResponse(
     String feedType
 ) {
 
-  public static FeedListResponse from(Feed feed) {
+  public static FeedListResponse from(@NonNull Feed feed) {
     return FeedListResponse.builder()
         .id(feed.getId())
         .thumbnailUrl(feed.getThumbnailUrl())
