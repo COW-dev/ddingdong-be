@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -17,7 +18,7 @@ import lombok.Builder;
 public record ScoreHistoryFilterByClubResponse(
 
         @Schema(description = "동아리 총 점수", example = "50")
-        float totalScore,
+        BigDecimal totalScore,
         @ArraySchema(schema = @Schema(description = "점수내역 목록", implementation = ScoreHistoryResponse.class))
         List<ScoreHistoryResponse> scoreHistories
 ) {
@@ -41,7 +42,7 @@ public record ScoreHistoryFilterByClubResponse(
             @Schema(description = "점수 내역 이유", example = "활동보고서 작성")
             String reason,
             @Schema(description = "변동 점수", example = "10")
-            float amount,
+            BigDecimal amount,
             @Schema(description = "작성일", example = "2024-01-01")
             @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
             LocalDateTime createdAt

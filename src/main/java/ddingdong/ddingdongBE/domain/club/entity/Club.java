@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -115,7 +116,7 @@ public class Club extends BaseEntity {
         this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
     }
 
-    public float editScore(Score score) {
+    public BigDecimal editScore(Score score) {
         this.score = score;
         return this.score.getValue();
     }
