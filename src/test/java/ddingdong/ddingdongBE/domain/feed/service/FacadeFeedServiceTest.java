@@ -12,6 +12,8 @@ import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListRespons
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
+import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -39,6 +41,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     Club club = fixture.giveMeBuilder(Club.class)
         .set("name", "카우")
         .set("user", null)
+            .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub = clubRepository.save(club);
     Feed feed1 = fixture.giveMeBuilder(Feed.class)
