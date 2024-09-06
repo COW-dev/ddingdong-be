@@ -29,6 +29,6 @@ public interface FeedApi {
   @ApiResponse(responseCode = "200", description = "전체 동아리 최신 피드 조회 성공",
       content = @Content(schema = @Schema(implementation = NewestFeedListResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping
+  @GetMapping("/newest")
   List<NewestFeedListResponse> getNewestAllFeed();
 }
