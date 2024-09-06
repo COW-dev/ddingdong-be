@@ -10,25 +10,25 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Feed - User", description = "Feed API")
-@RequestMapping("/server/feeds")
+@RequestMapping("/server")
 public interface FeedApi {
 
   @Operation(summary = "동아리 피드 전체 조회 API")
   @ApiResponse(responseCode = "200", description = "동아리 피드 전체 조회 성공",
       content = @Content(schema = @Schema(implementation = FeedListResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping
-  List<FeedListResponse> getAllFeedByClubId(@RequestParam Long clubId);
+  @GetMapping("/clubs/{clubId}/feeds")
+  List<FeedListResponse> getAllFeedByClubId(@PathVariable Long clubId);
 
   @Operation(summary = "전체 동아리 최신 피드 조회 API")
   @ApiResponse(responseCode = "200", description = "전체 동아리 최신 피드 조회 성공",
       content = @Content(schema = @Schema(implementation = NewestFeedListResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/newest")
+  @GetMapping("/feeds")
   List<NewestFeedListResponse> getNewestAllFeed();
 }
