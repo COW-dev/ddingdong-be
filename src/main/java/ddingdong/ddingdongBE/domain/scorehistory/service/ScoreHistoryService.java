@@ -40,6 +40,6 @@ public class ScoreHistoryService {
     }
 
     private BigDecimal roundToThirdPoint(BigDecimal value) {
-        return value.setScale(3, RoundingMode.HALF_UP);
+        return value.setScale(3, RoundingMode.DOWN);
     }
 }
