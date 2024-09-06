@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.scorehistory.entity;
 
+import java.math.BigDecimal;
 import java.util.Objects;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -15,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class Score {
 
     @Column(name = "score")
-    private float value;
+    private BigDecimal value;
 
-    private Score(float value) {
+    private Score(BigDecimal value) {
         this.value = value;
     }
 
@@ -30,7 +31,7 @@ public class Score {
             return false;
         }
         Score score = (Score) o;
-        return getValue() == score.getValue();
+        return Objects.equals(getValue(), score.getValue());
     }
 
     @Override
@@ -38,7 +39,7 @@ public class Score {
         return Objects.hash(getValue());
     }
 
-    public static Score from(float value) {
+    public static Score from(BigDecimal value) {
         return new Score(value);
     }
 

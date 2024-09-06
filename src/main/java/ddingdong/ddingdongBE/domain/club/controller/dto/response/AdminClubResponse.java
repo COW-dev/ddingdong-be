@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -15,12 +16,12 @@ public class AdminClubResponse {
 
     private String category;
 
-    private float score;
+    private BigDecimal score;
 
     private List<String> profileImageUrls;
 
     @Builder
-    private AdminClubResponse(Long id, String name, String category, float score, List<String> profileImageUrls) {
+    private AdminClubResponse(Long id, String name, String category, BigDecimal score, List<String> profileImageUrls) {
         this.id = id;
         this.name = name;
         this.category = category;
