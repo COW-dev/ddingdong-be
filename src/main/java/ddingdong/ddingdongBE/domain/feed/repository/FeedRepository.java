@@ -14,4 +14,14 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
       + "ORDER BY id DESC"
       , nativeQuery = true)
   List<Feed> findAllByClubIdOrderById(@Param("clubId") Long clubId);
+
+  @Query(value = "SELECT * FROM feed f "
+      + "WHERE f.id in "
+      + "(SELECT max(id) "
+      + "FROM feed "
+      + "WHERE deleted_at IS NULL "
+      + "GROUP BY club_id) "
+      + "ORDER BY id DESC "
+      , nativeQuery = true)
+  List<Feed> findNewestAll();
 }
