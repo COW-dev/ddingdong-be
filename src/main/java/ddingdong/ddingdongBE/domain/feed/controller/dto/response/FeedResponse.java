@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -22,7 +22,7 @@ public record FeedResponse(
     LocalDate createdDate
 ) {
 
-  public static FeedResponse from(FeedInfo info) {
+  public static FeedResponse from(FeedQuery info) {
     return FeedResponse.builder()
         .id(info.id())
         .clubInfo(info.clubInfo())

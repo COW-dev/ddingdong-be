@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.feed.service.dto.response;
+package ddingdong.ddingdongBE.domain.feed.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Builder
-public record FeedInfo(
+public record FeedQuery(
     Long id,
     ClubInfo clubInfo,
     String activityContent,
@@ -15,8 +15,8 @@ public record FeedInfo(
     LocalDate createdDate
 ) {
 
-  public static FeedInfo of(Feed feed, ClubInfo clubInfo) {
-    return FeedInfo.builder()
+  public static FeedQuery of(Feed feed, ClubInfo clubInfo) {
+    return FeedQuery.builder()
         .id(feed.getId())
         .clubInfo(clubInfo)
         .activityContent(feed.getActivityContent())

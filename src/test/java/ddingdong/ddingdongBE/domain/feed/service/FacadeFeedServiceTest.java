@@ -14,9 +14,8 @@ import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedListInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import java.math.BigDecimal;
@@ -74,7 +73,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .sample();
     feedRepository.saveAll(List.of(feed1, feed2, feed3));
     // when
-    List<FeedListInfo> infos = facadeFeedService.getAllByClubId(1L);
+    List<FeedListQuery> infos = facadeFeedService.getAllByClubId(1L);
     // then
     assertThat(infos).hasSize(3);
     assertThat(infos)
@@ -135,7 +134,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .sample();
     feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
     // when
-    List<NewestFeedListInfo> infos = facadeFeedService.getNewestAll();
+    List<FeedListQuery> infos = facadeFeedService.getNewestAll();
     // then
     assertThat(infos).hasSize(3);
     assertThat(infos.get(0).thumbnailUrl()).isEqualTo(feed6.getThumbnailUrl());
@@ -168,7 +167,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .sample();
     Feed savedFeed = feedRepository.save(feed);
     // when
-    FeedInfo info = facadeFeedService.getById(savedFeed.getId());
+    FeedQuery info = facadeFeedService.getById(savedFeed.getId());
     // then
     assertThat(info).isNotNull();
     assertThat(info.id()).isEqualTo(savedFeed.getId());

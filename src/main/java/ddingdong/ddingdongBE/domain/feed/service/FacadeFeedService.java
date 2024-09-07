@@ -5,9 +5,8 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedListInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import java.util.List;
@@ -23,24 +22,24 @@ public class FacadeFeedService {
   private final FeedService feedService;
   private final FileInformationService fileInformationService;
 
-  public List<FeedListInfo> getAllByClubId(Long clubId) {
+  public List<FeedListQuery> getAllByClubId(Long clubId) {
     List<Feed> feeds = feedService.getAllByClubId(clubId);
     return feeds.stream()
-        .map(FeedListInfo::from)
+        .map(FeedListQuery::from)
         .toList();
   }
 
-  public List<NewestFeedListInfo> getNewestAll() {
+  public List<FeedListQuery> getNewestAll() {
     List<Feed> feeds = feedService.getNewestAll();
     return feeds.stream()
-        .map(NewestFeedListInfo::from)
+        .map(FeedListQuery::from)
         .toList();
   }
 
-  public FeedInfo getById(Long feedId) {
+  public FeedQuery getById(Long feedId) {
     Feed feed = feedService.getById(feedId);
     ClubInfo clubInfo = extractClubInfo(feed.getClub());
-    return FeedInfo.of(feed, clubInfo);
+    return FeedQuery.of(feed, clubInfo);
   }
 
   private ClubInfo extractClubInfo(Club club) {

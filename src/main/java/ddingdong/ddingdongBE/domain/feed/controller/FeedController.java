@@ -5,9 +5,8 @@ import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListRespons
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedListResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FacadeFeedService;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedListInfo;
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,23 +19,23 @@ public class FeedController implements FeedApi {
 
   @Override
   public List<FeedListResponse> getAllFeedByClubId(Long clubId) {
-    List<FeedListInfo> feedListInfos = facadeFeedService.getAllByClubId(clubId);
-    return feedListInfos.stream()
+    List<FeedListQuery> feedListQueries = facadeFeedService.getAllByClubId(clubId);
+    return feedListQueries.stream()
         .map(FeedListResponse::from)
         .toList();
   }
 
   @Override
   public List<NewestFeedListResponse> getNewestAllFeed() {
-    List<NewestFeedListInfo> newestFeedListInfos = facadeFeedService.getNewestAll();
-    return newestFeedListInfos.stream()
+    List<FeedListQuery> newestFeedListQueries = facadeFeedService.getNewestAll();
+    return newestFeedListQueries.stream()
         .map(NewestFeedListResponse::from)
         .toList();
   }
 
   @Override
   public FeedResponse getByFeedId(Long feedId) {
-    FeedInfo feedInfo = facadeFeedService.getById(feedId);
-    return FeedResponse.from(feedInfo);
+    FeedQuery feedquery = facadeFeedService.getById(feedId);
+    return FeedResponse.from(feedquery);
   }
 }

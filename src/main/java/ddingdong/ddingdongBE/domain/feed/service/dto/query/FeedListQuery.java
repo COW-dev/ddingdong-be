@@ -1,18 +1,17 @@
-package ddingdong.ddingdongBE.domain.feed.service.dto.response;
+package ddingdong.ddingdongBE.domain.feed.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import lombok.Builder;
-import org.springframework.lang.NonNull;
 
 @Builder
-public record NewestFeedListInfo(
+public record FeedListQuery(
     Long id,
     String thumbnailUrl,
     String feedType
 ) {
 
-  public static NewestFeedListInfo from(@NonNull Feed feed) {
-    return NewestFeedListInfo.builder()
+  public static FeedListQuery from(Feed feed) {
+    return FeedListQuery.builder()
         .id(feed.getId())
         .thumbnailUrl(feed.getThumbnailUrl())
         .feedType(feed.getFeedType().toString())

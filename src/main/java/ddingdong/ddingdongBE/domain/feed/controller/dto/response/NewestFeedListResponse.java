@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -14,7 +14,7 @@ public record NewestFeedListResponse(
     String feedType
 ) {
 
-  public static NewestFeedListResponse from(NewestFeedListInfo info) {
+  public static NewestFeedListResponse from(FeedListQuery info) {
     return NewestFeedListResponse.builder()
         .id(info.id())
         .thumbnailUrl(info.thumbnailUrl())

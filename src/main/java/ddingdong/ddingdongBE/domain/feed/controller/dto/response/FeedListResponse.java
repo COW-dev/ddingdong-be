@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -14,7 +14,7 @@ public record FeedListResponse(
     String feedType
 ) {
 
-  public static FeedListResponse from(FeedListInfo info) {
+  public static FeedListResponse from(FeedListQuery info) {
     return FeedListResponse.builder()
         .id(info.id())
         .thumbnailUrl(info.thumbnailUrl())
