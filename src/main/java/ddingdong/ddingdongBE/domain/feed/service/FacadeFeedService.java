@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListResponse;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedListResponse;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +19,13 @@ public class FacadeFeedService {
     List<Feed> feeds = feedService.getAllByClubId(clubId);
     return feeds.stream()
         .map(FeedListResponse::from)
+        .toList();
+  }
+
+  public List<NewestFeedListResponse> getNewestAll() {
+    List<Feed> feeds = feedService.getNewestAll();
+    return feeds.stream()
+        .map(NewestFeedListResponse::from)
         .toList();
   }
 }

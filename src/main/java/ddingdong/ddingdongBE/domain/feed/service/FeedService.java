@@ -17,4 +17,8 @@ public class FeedService {
   public List<Feed> getAllByClubId(Long clubId) {
     return feedRepository.findAllByClubIdOrderById(clubId);
   }
+
+  public List<Feed> getNewestAll() {
+    return feedRepository.findNewestAll();
+  }
 }
