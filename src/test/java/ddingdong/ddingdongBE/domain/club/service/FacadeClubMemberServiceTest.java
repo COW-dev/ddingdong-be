@@ -11,11 +11,13 @@ import ddingdong.ddingdongBE.domain.club.entity.Position;
 import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.List;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -86,7 +88,10 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         );
 
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample());
+        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
+                .set("user", savedUser)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
                 .set("club", savedClub)
                 .sampleList(5);
@@ -108,7 +113,10 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
     void update() {
         //given
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample());
+        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
+                .set("user", savedUser)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .sample());
         ClubMember savedClubMember = clubMemberRepository.save(
                 fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
 

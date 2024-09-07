@@ -7,6 +7,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
+import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
+import java.math.BigDecimal;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -15,13 +17,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 class FeedRepositoryTest extends DataJpaTestSupport {
 
-  @Autowired
-  private ClubRepository clubRepository;
+    @Autowired
+    private ClubRepository clubRepository;
 
-  @Autowired
-  private FeedRepository feedRepository;
+    @Autowired
+    private FeedRepository feedRepository;
 
-  private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+    private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
   @DisplayName("동아리 ID로 해당 동아리의 모든 피드를 최신순으로 조회한다.")
   @Test

@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.math.BigDecimal;
 import lombok.Getter;
 
 @Getter
@@ -31,7 +32,7 @@ public class RegisterClubRequest {
                 .leader(leaderName)
                 .location(Location.from("S0000"))
                 .phoneNumber(PhoneNumber.from("010-0000-0000"))
-                .score(Score.from(0)).build();
+                .score(Score.from(BigDecimal.ZERO)).build();
     }
 
 }
