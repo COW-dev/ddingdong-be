@@ -88,7 +88,10 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         );
 
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class).set("user", savedUser).sample());
+        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
+                .set("user", savedUser)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
                 .set("club", savedClub)
                 .sampleList(5);
