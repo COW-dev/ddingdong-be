@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import org.springframework.lang.NonNull;
 
 @Builder
 public record NewestFeedListResponse(
@@ -15,7 +14,7 @@ public record NewestFeedListResponse(
     String feedType
 ) {
 
-  public static NewestFeedListResponse from(@NonNull NewestFeedListInfo info) {
+  public static NewestFeedListResponse from(NewestFeedListInfo info) {
     return NewestFeedListResponse.builder()
         .id(info.id())
         .thumbnailUrl(info.thumbnailUrl())
