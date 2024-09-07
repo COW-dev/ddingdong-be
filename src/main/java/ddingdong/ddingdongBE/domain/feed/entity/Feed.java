@@ -28,31 +28,31 @@ import org.hibernate.annotations.Where;
 @Table(appliesTo = "feed")
 public class Feed extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String activityContent;
+    @Column(nullable = false, length = 100)
+    private String activityContent;
 
-  @Column(nullable = false)
-  private String thumbnailUrl;
+    @Column(nullable = false)
+    private String thumbnailUrl;
 
-  @Column(nullable = false)
-  @Enumerated(EnumType.STRING)
-  private FeedType feedType;
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private FeedType feedType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Club club;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Club club;
 
-  @Column(name = "deleted_at")
-  private LocalDateTime deletedAt;
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
 
-  @Builder
-  private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType) {
-    this.activityContent = activityContent;
-    this.thumbnailUrl = thumbnailUrl;
-    this.club = club;
-    this.feedType = feedType;
-  }
+    @Builder
+    private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType) {
+        this.activityContent = activityContent;
+        this.thumbnailUrl = thumbnailUrl;
+        this.club = club;
+        this.feedType = feedType;
+    }
 }
