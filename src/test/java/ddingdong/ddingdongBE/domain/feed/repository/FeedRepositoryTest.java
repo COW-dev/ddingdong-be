@@ -70,14 +70,17 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     Club club1 = fixture.giveMeBuilder(Club.class)
         .set("name", "카우1")
         .set("user", null)
+        .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club club2 = fixture.giveMeBuilder(Club.class)
         .set("name", "카우2")
         .set("user", null)
+        .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club club3 = fixture.giveMeBuilder(Club.class)
         .set("name", "카우3")
         .set("user", null)
+        .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub1 = clubRepository.save(club1);
     Club savedClub2 = clubRepository.save(club2);
