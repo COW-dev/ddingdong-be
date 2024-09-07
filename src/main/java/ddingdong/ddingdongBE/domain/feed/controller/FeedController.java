@@ -2,8 +2,12 @@ package ddingdong.ddingdongBE.domain.feed.controller;
 
 import ddingdong.ddingdongBE.domain.feed.api.FeedApi;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListResponse;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedListResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FacadeFeedService;
+import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.response.FeedListInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.response.NewestFeedListInfo;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,5 +32,11 @@ public class FeedController implements FeedApi {
     return newestFeedListInfos.stream()
         .map(NewestFeedListResponse::from)
         .toList();
+  }
+
+  @Override
+  public FeedResponse getByFeedId(Long feedId) {
+    FeedInfo feedInfo = facadeFeedService.getById(feedId);
+    return FeedResponse.from(feedInfo);
   }
 }
