@@ -7,7 +7,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubInfo;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

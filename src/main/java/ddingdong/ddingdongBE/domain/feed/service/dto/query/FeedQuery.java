@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
 import java.time.LocalDate;
 import lombok.Builder;
 

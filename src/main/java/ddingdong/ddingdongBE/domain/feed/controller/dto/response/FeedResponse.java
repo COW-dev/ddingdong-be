@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.vo.ClubInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -10,7 +10,7 @@ import lombok.Builder;
 public record FeedResponse(
     @Schema(description = "피드 ID", example = "1")
     Long id,
-    @Schema(description = "동아리 정보", implementation = ClubInfo.class)
+    @Schema(description = "동아리 정보")
     ClubInfo clubInfo,
     @Schema(description = "활동 내용", example = "안녕하세요. 카우 피드에요")
     String activityContent,
