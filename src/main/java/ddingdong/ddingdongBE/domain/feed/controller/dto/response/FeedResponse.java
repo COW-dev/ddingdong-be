@@ -10,7 +10,7 @@ import lombok.Builder;
 public record FeedResponse(
     @Schema(description = "피드 ID", example = "1")
     Long id,
-    @Schema(description = "동아리 정보")
+    @Schema(description = "동아리 정보", implementation = ClubInfo.class)
     ClubInfo clubInfo,
     @Schema(description = "활동 내용", example = "안녕하세요. 카우 피드에요")
     String activityContent,
