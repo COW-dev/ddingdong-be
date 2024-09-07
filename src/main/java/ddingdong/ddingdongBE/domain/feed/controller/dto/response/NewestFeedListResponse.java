@@ -1,9 +1,8 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
-import org.springframework.lang.NonNull;
 
 @Builder
 public record NewestFeedListResponse(
@@ -15,11 +14,11 @@ public record NewestFeedListResponse(
     String feedType
 ) {
 
-  public static NewestFeedListResponse from(@NonNull Feed feed) {
+  public static NewestFeedListResponse from(FeedListQuery info) {
     return NewestFeedListResponse.builder()
-        .id(feed.getId())
-        .thumbnailUrl(feed.getThumbnailUrl())
-        .feedType(feed.getFeedType().toString())
+        .id(info.id())
+        .thumbnailUrl(info.thumbnailUrl())
+        .feedType(info.feedType())
         .build();
   }
 }

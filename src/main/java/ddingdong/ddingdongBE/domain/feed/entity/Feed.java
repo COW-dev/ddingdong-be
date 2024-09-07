@@ -39,6 +39,9 @@ public class Feed extends BaseEntity {
     private String thumbnailUrl;
 
     @Column(nullable = false)
+    private String fileUrl;
+
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FeedType feedType;
 
@@ -49,10 +52,11 @@ public class Feed extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType) {
+    private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType, String fileUrl) {
         this.activityContent = activityContent;
         this.thumbnailUrl = thumbnailUrl;
         this.club = club;
         this.feedType = feedType;
+        this.fileUrl = fileUrl;
     }
 }

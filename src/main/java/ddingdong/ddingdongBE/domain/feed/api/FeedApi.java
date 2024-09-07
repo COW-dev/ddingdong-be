@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.api;
 
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListResponse;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,4 +32,11 @@ public interface FeedApi {
   @ResponseStatus(HttpStatus.OK)
   @GetMapping("/feeds")
   List<NewestFeedListResponse> getNewestAllFeed();
+
+  @Operation(summary = "동아리 피드 상세 조회 API")
+  @ApiResponse(responseCode = "200", description = "동아리 피드 상세 조회 API",
+      content = @Content(schema = @Schema(implementation = FeedResponse.class)))
+  @ResponseStatus(HttpStatus.OK)
+  @GetMapping("/feeds/{feedId}")
+  FeedResponse getByFeedId(@PathVariable Long feedId);
 }
