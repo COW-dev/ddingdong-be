@@ -16,9 +16,7 @@ INSERT INTO club(name,
                  introduction,
                  activity,
                  ideal,
-                 form_url,
-                 profile_image_url,
-                 introduction_image_url)
+                 form_url)
 VALUES ('카우',
         '학술',
         '김세빈',
@@ -32,8 +30,6 @@ VALUES ('카우',
         '매주 월요일 18:00시',
         '동아리 소개입니다.',
         '동아리 활동내용입니다.',
-        NULL,
-        NULL,
         NULL,
         NULL
        );
