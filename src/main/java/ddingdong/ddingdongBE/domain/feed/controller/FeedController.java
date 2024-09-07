@@ -16,11 +16,17 @@ public class FeedController implements FeedApi {
 
   @Override
   public List<FeedListResponse> getAllFeedByClubId(Long clubId) {
-    return facadeFeedService.getAllByClubId(clubId);
+    List<FeedListInfo> feedListInfos = facadeFeedService.getAllByClubId(clubId);
+    return feedListInfos.stream()
+        .map(FeedListResponse::from)
+        .toList();
   }
 
   @Override
   public List<NewestFeedListResponse> getNewestAllFeed() {
-    return facadeFeedService.getNewestAll();
+    List<NewestFeedListInfo> newestFeedListInfos = facadeFeedService.getNewestAll();
+    return newestFeedListInfos.stream()
+        .map(NewestFeedListResponse::from)
+        .toList();
   }
 }

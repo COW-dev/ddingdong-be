@@ -15,17 +15,17 @@ public class FacadeFeedService {
 
   private final FeedService feedService;
 
-  public List<FeedListResponse> getAllByClubId(Long clubId) {
+  public List<FeedListInfo> getAllByClubId(Long clubId) {
     List<Feed> feeds = feedService.getAllByClubId(clubId);
     return feeds.stream()
-        .map(FeedListResponse::from)
+        .map(FeedListInfo::from)
         .toList();
   }
 
-  public List<NewestFeedListResponse> getNewestAll() {
+  public List<NewestFeedListInfo> getNewestAll() {
     List<Feed> feeds = feedService.getNewestAll();
     return feeds.stream()
-        .map(NewestFeedListResponse::from)
+        .map(NewestFeedListInfo::from)
         .toList();
   }
 }
