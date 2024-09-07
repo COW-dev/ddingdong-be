@@ -42,7 +42,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     Club club = fixture.giveMeBuilder(Club.class)
         .set("name", "카우")
         .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
+        .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub = clubRepository.save(club);
     Feed feed1 = fixture.giveMeBuilder(Feed.class)
