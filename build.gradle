@@ -1,15 +1,7 @@
-buildscript {
-    ext {
-        queryDslVersion = '5.0.0'
-    }
-}
-
 plugins {
     id 'java'
-    id 'org.springframework.boot' version '2.7.12'
-    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
-    id 'org.jetbrains.kotlin.jvm'
-    id "com.ewerk.gradle.plugins.querydsl" version "1.0.10"
+    id 'org.springframework.boot' version '3.2.6'
+    id 'io.spring.dependency-management' version '1.1.3'
 }
 
 group = 'ddingdong'
@@ -79,35 +71,4 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
-}
-def querydslDir = "$buildDir/generated/'querydsl'"
-
-querydsl { // JPA 사용여부 및 사용 경로 설정
-    jpa = true
-    querydslSourcesDir = querydslDir
-}
-
-sourceSets { // build시 사용할 sourceSet 추가 설정
-    main.java.srcDir querydslDir
-}
-
-compileQuerydsl { // querydsl 컴파일 시 사용할 옵션 설정
-    options.annotationProcessorPath = configurations.querydsl
-}
-
-// querydsl이 compileClassPath를 상속하도록 설정
-configurations {
-    compileOnly {
-        extendsFrom annotationProcessor
-    }
-    querydsl.extendsFrom compileClasspath
-}
-
-compileQuerydsl.doFirst {
-    if (file(querydslDir).exists())
-        delete(file(querydslDir))
-}
-
-compileQuerydsl {
-    options.annotationProcessorPath = configurations.querydsl
 }
