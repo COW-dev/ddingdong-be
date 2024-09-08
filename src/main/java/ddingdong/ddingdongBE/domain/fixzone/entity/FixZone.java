@@ -2,9 +2,6 @@ package ddingdong.ddingdongBE.domain.fixzone.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -15,20 +12,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Table;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @SQLDelete(sql = "update fix_zone set deleted_at = CURRENT_TIMESTAMP where id=?")
-@Where(clause = "deleted_at IS NULL")
-@Table(appliesTo = "fix_zone")
+@SQLRestriction("deleted_at IS NULL")
 public class FixZone extends BaseEntity {
 
 	@Id

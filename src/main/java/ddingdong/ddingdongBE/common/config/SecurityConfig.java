@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -28,48 +29,43 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
             throws Exception {
         http
-                .authorizeHttpRequests()
-                .antMatchers(API_PREFIX + "/auth/**",
-                        API_PREFIX + "/events/**")
-                .permitAll()
-                .antMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
-                .antMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
-                .antMatchers(GET,
-                        API_PREFIX + "/clubs/**",
-                        API_PREFIX + "/notices/**",
-                        API_PREFIX + "/banners/**",
-                        API_PREFIX + "/documents/**",
-                        API_PREFIX + "/questions/**",
-                        API_PREFIX + "/feeds/**")
-                .permitAll()
-                .antMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**").permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .cors()
-                .configurationSource(corsConfigurationSource())
-                .and()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(API_PREFIX + "/auth/**",
+                                API_PREFIX + "/events/**")
+                        .permitAll()
+                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
+                        .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
+                        .requestMatchers(GET,
+                                API_PREFIX + "/clubs/**",
+                                API_PREFIX + "/notices/**",
+                                API_PREFIX + "/banners/**",
+                                API_PREFIX + "/documents/**",
+                                API_PREFIX + "/questions/**",
+                                API_PREFIX + "/feeds/**")
+                        .permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource())
+                )
                 /*
                 csrf, headers, http-basic, rememberMe, formLogin 비활성화
                 */
-                .formLogin()
-                .disable()
-                .logout()
-                .disable()
-                .csrf()
-                .disable()
-                .headers()
-                .disable()
-                .httpBasic()
-                .disable()
-                .rememberMe()
-                .disable()
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .rememberMe(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 /*
                 Session 설정
                  */
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
                 /*
                 Jwt 필터
                  */
@@ -77,9 +73,10 @@ public class SecurityConfig {
                 /*
                 exceptionHandling
                  */
-                .exceptionHandling()
-                .authenticationEntryPoint(restAuthenticationEntryPoint())
-                .accessDeniedHandler(accessDeniedHandler());
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(restAuthenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler())
+                );
 
         return http.build();
     }

@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.feed.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import java.time.LocalDateTime;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,20 +11,19 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Table;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @SQLDelete(sql = "update club_post set deleted_at = CURRENT_TIMESTAMP where id=?")
-@Where(clause = "deleted_at IS NULL")
-@Table(appliesTo = "feed")
+@SQLRestriction("deleted_at IS NULL")
 public class Feed extends BaseEntity {
 
     @Id
