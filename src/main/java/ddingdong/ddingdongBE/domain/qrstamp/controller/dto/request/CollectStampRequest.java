@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.qrstamp.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.qrstamp.entity.StampHistory;
-import javax.validation.constraints.Size;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

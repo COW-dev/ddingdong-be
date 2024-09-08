@@ -1,10 +1,10 @@
 package ddingdong.ddingdongBE.common.support;
 
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Query;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.springframework.context.annotation.Profile;
