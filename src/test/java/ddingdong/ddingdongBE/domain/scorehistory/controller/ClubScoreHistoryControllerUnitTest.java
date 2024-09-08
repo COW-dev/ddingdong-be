@@ -24,7 +24,7 @@ import org.junit.jupiter.api.Test;
 class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
 
     @WithMockAuthenticatedUser(role = "CLUB")
-    @DisplayName("동아리- 내 점수 내역 조회 요청을 수행한다.")
+    @DisplayName("동아리 - 내 점수 내역 조회 요청을 수행한다.")
     @Test
     void getScoreHistories() throws Exception {
         //given
@@ -42,7 +42,7 @@ class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
                         .amount(new BigDecimal(5))
                         .reason("reasonB").build());
         when(clubService.getByUserId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.findAllByUserId(club.getId())).thenReturn(scoreHistories);
+        when(scoreHistoryService.findAllByClubId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
         mockMvc.perform(get("/server/club/my/score")
