@@ -5,7 +5,7 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import jakarta.annotation.processing.Generated;
+import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 
 
@@ -42,3 +42,4 @@ public class QActivityReportTermInfo extends EntityPathBase<ActivityReportTermIn
     }
 
 }
+
