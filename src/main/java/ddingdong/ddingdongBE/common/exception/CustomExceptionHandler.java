@@ -7,7 +7,7 @@ import static org.springframework.http.HttpStatus.NOT_FOUND;
 import io.swagger.v3.oas.annotations.Hidden;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;

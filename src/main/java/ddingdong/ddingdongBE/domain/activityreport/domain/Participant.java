@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
-import javax.persistence.Embeddable;
+import jakarta.persistence.Embeddable;
 
 import lombok.AccessLevel;
 import lombok.Getter;
