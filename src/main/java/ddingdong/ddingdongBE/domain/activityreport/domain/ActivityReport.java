@@ -47,7 +47,7 @@ public class ActivityReport extends BaseEntity {
 	@ElementCollection
 	private List<Participant> participants;
 
-	@Column(name = "deleted_at")
+	@Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
 	private LocalDateTime deletedAt;
 
 	@ManyToOne(fetch = FetchType.LAZY)

@@ -35,7 +35,7 @@ public class ActivityReportTermInfo {
     @Column(nullable = false, columnDefinition = "DATE")
     private LocalDate endDate;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder

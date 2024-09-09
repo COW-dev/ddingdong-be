@@ -46,7 +46,7 @@ public class FixZone extends BaseEntity {
 
 	private boolean isCompleted;
 
-	@Column(name = "deleted_at")
+	@Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
 	private LocalDateTime deletedAt;
 
 	@Builder

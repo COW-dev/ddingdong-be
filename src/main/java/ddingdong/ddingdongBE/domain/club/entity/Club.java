@@ -77,7 +77,7 @@ public class Club extends BaseEntity {
     @Embedded
     private Score score;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder

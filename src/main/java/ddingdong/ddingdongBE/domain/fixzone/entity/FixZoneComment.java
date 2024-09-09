@@ -40,7 +40,7 @@ public class FixZoneComment extends BaseEntity {
 
     private String content;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
