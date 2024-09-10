@@ -11,7 +11,7 @@ public record FeedResponse(
     @Schema(description = "피드 ID", example = "1")
     Long id,
     @Schema(description = "동아리 정보")
-    ClubInfo clubInfo,
+    ClubInfoResponse clubInfo,
     @Schema(description = "활동 내용", example = "안녕하세요. 카우 피드에요")
     String activityContent,
     @Schema(description = "CDN URL", example = "https://example.cloudfront.net")
@@ -22,10 +22,28 @@ public record FeedResponse(
     LocalDate createdDate
 ) {
 
+  @Builder
+  record ClubInfoResponse(
+      @Schema(description = "동아리 ID", example = "1")
+      Long id,
+      @Schema(description = "동아리 이름", example = "카우")
+      String name,
+      @Schema(description = "동아리 프로필 이미지 url", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
+      String profileImageUrl
+  ) {
+    public static ClubInfoResponse from(ClubInfo clubInfo) {
+      return ClubInfoResponse.builder()
+          .id(clubInfo.id())
+          .name(clubInfo.name())
+          .profileImageUrl(clubInfo.profileImageUrl())
+          .build();
+    }
+  }
+
   public static FeedResponse from(FeedQuery info) {
     return FeedResponse.builder()
         .id(info.id())
-        .clubInfo(info.clubInfo())
+        .clubInfo(ClubInfoResponse.from(info.clubInfo()))
         .activityContent(info.activityContent())
         .fileUrl(info.fileUrl())
         .feedType(info.feedType())
