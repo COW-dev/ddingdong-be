@@ -162,7 +162,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     Club savedClub = clubRepository.save(club);
 
     given(fileInformationService.getImageUrls(IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + savedClub.getId()))
-        .willReturn(new ArrayList<>(List.of("동아리 프로필 url")));
+        .willReturn(new ArrayList<>());
 
     LocalDateTime now = LocalDateTime.now();
     Feed feed = fixture.giveMeBuilder(Feed.class)
@@ -183,6 +183,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     assertThat(info.clubProfileQuery().name()).isEqualTo(savedClub.getName());
     assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
     assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
+    assertThat(info.clubProfileQuery().profileImageUrl()).isEqualTo(null);
     assertThat(info.fileUrl()).isEqualTo(savedFeed.getFileUrl());
     assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
   }
