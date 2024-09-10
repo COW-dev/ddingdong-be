@@ -68,9 +68,3 @@ ALTER TABLE score_history
     DROP FOREIGN KEY FK1otphxnm3ngxfkbw3lmbwqt78,
     ADD CONSTRAINT FK_score_history_club_id
     FOREIGN KEY (club_id) REFERENCES club (id);
-
--- stamp_history 테이블
-ALTER TABLE stamp_history
-    DROP CONSTRAINT UKa6unq1wuou1ab2pcekgcmcxo1,
-    ADD CONSTRAINT UK_stamp_history_student
-        UNIQUE (student_name, student_number);
