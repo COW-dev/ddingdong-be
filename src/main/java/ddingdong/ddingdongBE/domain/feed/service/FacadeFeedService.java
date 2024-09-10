@@ -7,7 +7,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,16 +38,17 @@ public class FacadeFeedService {
 
   public FeedQuery getById(Long feedId) {
     Feed feed = feedService.getById(feedId);
-    ClubInfo clubInfo = extractClubInfo(feed.getClub());
-    return FeedQuery.of(feed, clubInfo);
+    ClubProfileQuery clubProfileQuery = extractClubInfo(feed.getClub());
+    return FeedQuery.of(feed, clubProfileQuery);
   }
 
-  private ClubInfo extractClubInfo(Club club) {
+  private ClubProfileQuery extractClubInfo(Club club) {
     String clubName = club.getName();
     List<String> profileImageUrls = fileInformationService.getImageUrls(
         IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId()
     );
-    return ClubInfo.builder()
+    return ClubProfileQuery.builder()
+        .id(club.getId())
         .name(clubName)
         .profileImageUrl(profileImageUrls.get(0))
         .build();

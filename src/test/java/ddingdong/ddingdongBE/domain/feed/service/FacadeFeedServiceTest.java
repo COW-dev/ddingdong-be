@@ -56,6 +56,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub = clubRepository.save(club);
+
     Feed feed1 = fixture.giveMeBuilder(Feed.class)
         .set("club", savedClub)
         .set("thumbnailUrl", "썸네일1")
@@ -72,8 +73,10 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .set("feedType", FeedType.IMAGE)
         .sample();
     feedRepository.saveAll(List.of(feed1, feed2, feed3));
+
     // when
     List<FeedListQuery> infos = facadeFeedService.getAllByClubId(1L);
+
     // then
     assertThat(infos).hasSize(3);
     assertThat(infos)
@@ -133,8 +136,10 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .set("thumbnailUrl", "클럽 3 최신 url")
         .sample();
     feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
+
     // when
     List<FeedListQuery> infos = facadeFeedService.getNewestAll();
+
     // then
     assertThat(infos).hasSize(3);
     assertThat(infos.get(0).thumbnailUrl()).isEqualTo(feed6.getThumbnailUrl());
@@ -155,8 +160,10 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub = clubRepository.save(club);
+
     given(fileInformationService.getImageUrls(IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + savedClub.getId()))
         .willReturn(new ArrayList<>(List.of("동아리 프로필 url")));
+
     LocalDateTime now = LocalDateTime.now();
     Feed feed = fixture.giveMeBuilder(Feed.class)
         .set("club", savedClub)
@@ -166,16 +173,17 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         .set("createdAt", now)
         .sample();
     Feed savedFeed = feedRepository.save(feed);
+
     // when
     FeedQuery info = facadeFeedService.getById(savedFeed.getId());
+
     // then
     assertThat(info).isNotNull();
     assertThat(info.id()).isEqualTo(savedFeed.getId());
-    assertThat(info.clubInfo().name()).isEqualTo(savedClub.getName());
+    assertThat(info.clubProfileQuery().name()).isEqualTo(savedClub.getName());
     assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
     assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
     assertThat(info.fileUrl()).isEqualTo(savedFeed.getFileUrl());
     assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
-
   }
 }

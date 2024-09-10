@@ -35,6 +35,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         .set("score", Score.from(BigDecimal.ZERO))
         .sample();
     Club savedClub = clubRepository.save(club);
+
     Feed feed1 = fixture.giveMeBuilder(Feed.class)
         .set("club", savedClub)
         .set("thumbnailUrl", "썸네일1")
@@ -53,8 +54,10 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     feedRepository.save(feed1);
     feedRepository.save(feed2);
     feedRepository.save(feed3);
+
     // when
     List<Feed> feeds = feedRepository.findAllByClubIdOrderById(savedClub.getId());
+
     // then
     Assertions.assertThat(feeds.get(0).getThumbnailUrl()).isEqualTo("썸네일3");
     Assertions.assertThat(feeds.get(0).getId()).isEqualTo(3L);
@@ -112,8 +115,10 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         .set("thumbnailUrl", "클럽 3 최신 url")
         .sample();
     feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
+
     // when
     List<Feed> newestFeeds = feedRepository.findNewestAll();
+
     // then
     Assertions.assertThat(newestFeeds.size()).isEqualTo(3);
     Assertions.assertThat(newestFeeds.get(0).getId()).isEqualTo(6L);
