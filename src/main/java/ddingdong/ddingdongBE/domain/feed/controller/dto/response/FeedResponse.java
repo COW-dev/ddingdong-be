@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubInfo;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubInformationQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -11,7 +11,7 @@ public record FeedResponse(
     @Schema(description = "피드 ID", example = "1")
     Long id,
     @Schema(description = "동아리 정보")
-    ClubInfoResponse clubInfo,
+    ClubInformationResponse clubInfo,
     @Schema(description = "활동 내용", example = "안녕하세요. 카우 피드에요")
     String activityContent,
     @Schema(description = "CDN URL", example = "https://example.cloudfront.net")
@@ -23,7 +23,7 @@ public record FeedResponse(
 ) {
 
   @Builder
-  record ClubInfoResponse(
+  record ClubInformationResponse(
       @Schema(description = "동아리 ID", example = "1")
       Long id,
       @Schema(description = "동아리 이름", example = "카우")
@@ -31,11 +31,11 @@ public record FeedResponse(
       @Schema(description = "동아리 프로필 이미지 url", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
       String profileImageUrl
   ) {
-    public static ClubInfoResponse from(ClubInfo clubInfo) {
-      return ClubInfoResponse.builder()
-          .id(clubInfo.id())
-          .name(clubInfo.name())
-          .profileImageUrl(clubInfo.profileImageUrl())
+    public static ClubInformationResponse from(ClubInformationQuery query) {
+      return ClubInformationResponse.builder()
+          .id(query.id())
+          .name(query.name())
+          .profileImageUrl(query.profileImageUrl())
           .build();
     }
   }
@@ -43,7 +43,7 @@ public record FeedResponse(
   public static FeedResponse from(FeedQuery info) {
     return FeedResponse.builder()
         .id(info.id())
-        .clubInfo(ClubInfoResponse.from(info.clubInfo()))
+        .clubInfo(ClubInformationResponse.from(info.clubInformationQuery()))
         .activityContent(info.activityContent())
         .fileUrl(info.fileUrl())
         .feedType(info.feedType())

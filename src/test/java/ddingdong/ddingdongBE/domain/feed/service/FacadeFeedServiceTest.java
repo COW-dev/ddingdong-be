@@ -180,7 +180,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     // then
     assertThat(info).isNotNull();
     assertThat(info.id()).isEqualTo(savedFeed.getId());
-    assertThat(info.clubInfo().name()).isEqualTo(savedClub.getName());
+    assertThat(info.clubInformationQuery().name()).isEqualTo(savedClub.getName());
     assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
     assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
     assertThat(info.fileUrl()).isEqualTo(savedFeed.getFileUrl());
