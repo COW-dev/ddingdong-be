@@ -48,6 +48,7 @@ public class FacadeFeedService {
         IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId()
     );
     return ClubInfo.builder()
+        .id(club.getId())
         .name(clubName)
         .profileImageUrl(profileImageUrls.get(0))
         .build();
