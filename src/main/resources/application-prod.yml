@@ -27,3 +27,7 @@ jwt:
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 36000
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: prod
