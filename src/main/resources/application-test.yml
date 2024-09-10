@@ -14,7 +14,6 @@ spring:
         show-sql: true
         format_sql: true
         auto_quote_keyword: true
-        dialect: org.hibernate.dialect.MySQL8Dialect
 
   sql:
     init:

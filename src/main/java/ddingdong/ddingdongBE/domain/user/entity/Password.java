@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.user.entity;
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
 
 import java.util.Objects;
-import javax.persistence.Column;
+import jakarta.persistence.Column;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -3,10 +3,10 @@ package ddingdong.ddingdongBE.domain.club.entity;
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ILLEGAL_CLUB_PHONE_NUMBER_PATTERN;
 
 import java.util.Objects;
-import javax.persistence.Access;
-import javax.persistence.AccessType;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
+import jakarta.persistence.Access;
+import jakarta.persistence.AccessType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;

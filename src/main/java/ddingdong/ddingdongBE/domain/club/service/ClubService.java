@@ -24,6 +24,7 @@ import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationServi
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.FileStore;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -104,7 +105,7 @@ public class ClubService {
     }
 
     @Transactional
-    public float updateClubScore(Long clubId, float score) {
+    public BigDecimal updateClubScore(Long clubId, BigDecimal score) {
         Club club = getByClubId(clubId);
 
         return club.editScore(generateNewScore(club.getScore(), score));
@@ -164,8 +165,8 @@ public class ClubService {
         }
     }
 
-    private Score generateNewScore(Score beforeUpdateScore, float value) {
-        return Score.from(beforeUpdateScore.getValue() + value);
+    private Score generateNewScore(Score beforeUpdateScore, BigDecimal value) {
+        return Score.from(beforeUpdateScore.getValue().add(value));
     }
 
     private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {

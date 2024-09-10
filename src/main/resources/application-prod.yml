@@ -11,7 +11,6 @@ spring:
 
   jpa:
     database: mysql
-    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
     hibernate:
       ddl-auto: none
     properties:
@@ -28,3 +27,7 @@ jwt:
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 36000
+
+sentry:
+  dsn: ${SENTRY_DSN}
+  environment: prod

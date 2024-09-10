@@ -16,6 +16,7 @@ import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
+import java.math.BigDecimal;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,25 +24,25 @@ import org.junit.jupiter.api.Test;
 class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
 
     @WithMockAuthenticatedUser(role = "CLUB")
-    @DisplayName("동아리- 내 점수 내역 조회 요청을 수행한다.")
+    @DisplayName("동아리 - 내 점수 내역 조회 요청을 수행한다.")
     @Test
     void getScoreHistories() throws Exception {
         //given
         Club club = Club.builder()
                 .id(1L)
-                .score(Score.from(55)).build();
+                .score(Score.from(new BigDecimal(55))).build();
         List<ScoreHistory> scoreHistories = List.of(ScoreHistory.builder()
                         .club(club)
                         .scoreCategory(CARRYOVER_SCORE)
-                        .amount(5)
+                        .amount(new BigDecimal(5))
                         .reason("reasonA").build(),
                 ScoreHistory.builder()
                         .club(club)
                         .scoreCategory(ACTIVITY_REPORT)
-                        .amount(5)
+                        .amount(new BigDecimal(5))
                         .reason("reasonB").build());
         when(clubService.getByUserId(anyLong())).thenReturn(club);
-        when(scoreHistoryService.findAllByUserId(club.getId())).thenReturn(scoreHistories);
+        when(scoreHistoryService.findAllByClubId(club.getId())).thenReturn(scoreHistories);
 
         //when //then
         mockMvc.perform(get("/server/club/my/score")

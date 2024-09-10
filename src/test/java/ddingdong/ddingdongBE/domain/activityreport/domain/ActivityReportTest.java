@@ -1,10 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
