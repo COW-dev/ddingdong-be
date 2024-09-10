@@ -150,11 +150,12 @@ public class CustomExceptionHandler {
         log.warn("errorLog = {}", applicationLog);
     }
 
-    public String getRequestBody(HttpServletRequest request) {
-        try {
+    private String getRequestBody(HttpServletRequest request) {
+        try (
             InputStream inputStream = request.getInputStream();
             BufferedReader reader = new BufferedReader(
-                new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+                new InputStreamReader(inputStream, StandardCharsets.UTF_8))
+        ) {
             StringBuilder stringBuilder = new StringBuilder();
             String line;
 
@@ -166,5 +167,6 @@ public class CustomExceptionHandler {
         } catch (Exception e) {
             return null;
         }
+
     }
 }
