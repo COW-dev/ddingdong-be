@@ -38,5 +38,5 @@ public interface FeedApi {
       content = @Content(schema = @Schema(implementation = FeedResponse.class)))
   @ResponseStatus(HttpStatus.OK)
   @GetMapping("/feeds/{feedId}")
-  FeedResponse getByFeedId(@PathVariable Long feedId);
+  FeedResponse getByFeedId(@PathVariable("feedId") Long feedId);
 }

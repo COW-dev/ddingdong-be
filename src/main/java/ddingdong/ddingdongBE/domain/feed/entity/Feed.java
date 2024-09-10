@@ -22,7 +22,7 @@ import org.hibernate.annotations.SQLRestriction;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "update club_post set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLDelete(sql = "update feed set deleted_at = CURRENT_TIMESTAMP where id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class Feed extends BaseEntity {
 
