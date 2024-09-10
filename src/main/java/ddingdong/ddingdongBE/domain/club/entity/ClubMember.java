@@ -45,7 +45,7 @@ public class ClubMember extends BaseEntity {
 
     private String department;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder

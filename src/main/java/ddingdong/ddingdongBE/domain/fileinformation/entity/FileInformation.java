@@ -39,7 +39,7 @@ public class FileInformation extends BaseEntity {
 
     private String findParam;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
 

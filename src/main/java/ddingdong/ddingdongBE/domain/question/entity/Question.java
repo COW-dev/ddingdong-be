@@ -39,7 +39,7 @@ public class Question extends BaseEntity {
     @Column(nullable = false)
     private String reply;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder

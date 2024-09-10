@@ -43,7 +43,7 @@ public class ScoreHistory extends BaseEntity {
 
     private String reason;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder

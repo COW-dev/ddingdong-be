@@ -36,7 +36,7 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
 

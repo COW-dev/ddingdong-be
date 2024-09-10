@@ -40,7 +40,7 @@ public class Banner extends BaseEntity {
 
     private String colorCode;
 
-    @Column(name = "deleted_at")
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
