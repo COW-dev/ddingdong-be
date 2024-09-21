@@ -8,7 +8,7 @@ import java.time.LocalDate;
         description = "활동 보고서 회차 전체 조회 응답"
 )
 public record ActivityReportTermInfoResponse(
-        @Schema(description = "회차")
+        @Schema(description = "회차", example = "1")
         int term,
         @Schema(description = "시작 일자", example = "2024-07-22")
         LocalDate startDate,

@@ -1,27 +1,52 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
+import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class UpdateActivityReportRequest {
-
+public record UpdateActivityReportRequest(
     @Schema(description = "내용")
-    private String content;
+    String content,
 
     @Schema(description = "활동 장소")
-    private String place;
+    String place,
 
     @Schema(description = "활동 시작 일자")
-    private String startDate;
+    String startDate,
 
     @Schema(description = "활동 종료 일자")
-    private String endDate;
+    String endDate,
 
     @Schema(description = "활동 참여자 목록")
-    private List<Participant> participants;
+    List<Participant> participants
+) {
+
+    public ActivityReport toEntity() {
+        return ActivityReport.builder()
+            .content(content)
+            .place(place)
+            .startDate(processDate(startDate, LocalDateTime.now()))
+            .endDate(processDate(endDate, LocalDateTime.now()))
+            .participants(participants)
+            .build();
+    }
+
+    private LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
+        if (dateString == null) {
+            return currentDate;
+        }
+
+        if (dateString.isBlank()) {
+            return null;
+        }
+
+        return parseToLocalDateTime(dateString);
+    }
+
+    private LocalDateTime parseToLocalDateTime(String dateString) {
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+    }
 }

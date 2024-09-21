@@ -7,54 +7,56 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 
-@Getter
-@AllArgsConstructor
-public class CreateActivityReportRequest {
+public record CreateActivityReportRequest(
+    @Schema(description = "활동 보고서 회차 정보", example = "1")
+    String term,
 
-    public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+    @Schema(description = "활동 보고서 내용", example = "세션을 진행하였습니다")
+    String content,
 
-    @Schema(description = "활동 보고서 회차 정보")
-    private String term;
+    @Schema(description = "활동 장소", example = "S1353")
+    String place,
 
-    @Schema(description = "활동 보고서 내용")
-    private String content;
+    @Schema(description = "활동 시작 일시", example = "2024-01-01")
+    String startDate,
 
-    @Schema(description = "활동 장소")
-    private String place;
+    @Schema(description = "활동 종료 일시", example = "2024-01-02")
+    String endDate,
 
-    @Schema(description = "활동 시작 일시")
-    private String startDate;
+    @Schema(description = "활동 참여자 명단",
+        example = """
+            [{
+            "name" : "홍길동",
+            "studentId" : "1",
+            "department" : "서부서"
+            }]
+           """)
+    List<Participant> participants
+) {
 
-    @Schema(description = "활동 종료 일시")
-    private String endDate;
+  public static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
-    @Schema(description = "활동 참여자 명단")
-    private List<Participant> participants;
+  public ActivityReport toEntity(Club club) {
+    LocalDateTime startDateTime = parseToLocalDateTime(startDate);
+    LocalDateTime endDateTime = parseToLocalDateTime(endDate);
 
-    public ActivityReport toEntity(Club club) {
-        LocalDateTime startDateTime = parseToLocalDateTime(startDate);
-        LocalDateTime endDateTime = parseToLocalDateTime(endDate);
+    return ActivityReport.builder()
+        .term(this.term)
+        .content(this.content)
+        .place(this.place)
+        .startDate(startDateTime)
+        .endDate(endDateTime)
+        .participants(this.participants)
+        .club(club)
+        .build();
+  }
 
-        return ActivityReport.builder()
-            .term(this.term)
-            .content(this.content)
-            .place(this.place)
-            .startDate(startDateTime)
-            .endDate(endDateTime)
-            .participants(this.participants)
-            .club(club)
-            .build();
+  private LocalDateTime parseToLocalDateTime(String dateString) {
+    if (dateString == null || dateString.isBlank()) {
+      return null;
     }
 
-    private LocalDateTime parseToLocalDateTime(String dateString) {
-        if (dateString == null || dateString.isBlank()) {
-            return null;
-        }
-
-        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
-    }
-
+    return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
+  }
 }
