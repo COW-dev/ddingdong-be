@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -13,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -66,37 +64,11 @@ public class ActivityReport extends BaseEntity {
 		this.club = club;
 	}
 
-	public void update(final UpdateActivityReportRequest updateActivityReportRequest) {
-		this.content = updateActivityReportRequest.getContent() != null
-			? updateActivityReportRequest.getContent()
-			: this.content;
-
-		this.place = updateActivityReportRequest.getPlace() != null
-			? updateActivityReportRequest.getPlace()
-			: this.place;
-
-		this.startDate = processDate(updateActivityReportRequest.getStartDate(), this.startDate);
-		this.endDate = processDate(updateActivityReportRequest.getEndDate(), this.endDate);
-
-		this.participants = updateActivityReportRequest.getParticipants() != null
-			? updateActivityReportRequest.getParticipants()
-			: this.participants;
+	public void update(final ActivityReport updatedActivityReport) {
+		this.content = updatedActivityReport.getContent();
+		this.place = updatedActivityReport.getPlace();
+		this.startDate = updatedActivityReport.getStartDate();
+		this.endDate = updatedActivityReport.getEndDate();
+		this.participants = updatedActivityReport.getParticipants();
 	}
-
-	private LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
-		if (dateString == null) {
-			return currentDate;
-		}
-
-		if (dateString.isBlank()) {
-			return null;
-		}
-
-		return parseToLocalDateTime(dateString);
-	}
-
-	private LocalDateTime parseToLocalDateTime(String dateString) {
-		return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-	}
-
 }
