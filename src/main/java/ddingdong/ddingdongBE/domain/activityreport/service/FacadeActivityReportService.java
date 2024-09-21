@@ -135,15 +135,14 @@ public class FacadeActivityReportService {
       MultipartFile secondImage) {
     List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
     IntStream.range(0, activityReportInfos.size())
+        .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
         .forEach(index -> {
-          if (index < images.size() && images.get(index) != null && !images.get(index).isEmpty()) {
             fileService.uploadFile(
                 activityReportInfos.get(index).id(),
                 Collections.singletonList(images.get(index)),
                 IMAGE,
                 ACTIVITY_REPORT
             );
-          }
         });
   }
 
