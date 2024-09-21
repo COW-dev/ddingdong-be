@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
@@ -16,11 +17,15 @@ public record ActivityReportListResponse(
     List<ActivityReportDto> activityReports
 ) {
 
-    public static ActivityReportListResponse of(String name, String term, List<ActivityReportDto> activityReportDtos) {
+    public static ActivityReportListResponse from(ActivityReportListQuery query) {
+        List<ActivityReportDto> activityReports = query.activityReports().stream()
+            .map(ActivityReportDto::from)
+            .toList();
+
         return ActivityReportListResponse.builder()
-            .name(name)
-            .term(term)
-            .activityReports(activityReportDtos)
+            .name(query.name())
+            .term(query.term())
+            .activityReports(activityReports)
             .build();
     }
 }

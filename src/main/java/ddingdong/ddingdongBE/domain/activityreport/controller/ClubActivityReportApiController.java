@@ -11,7 +11,10 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Curre
 import ddingdong.ddingdongBE.domain.activityreport.service.FacadeActivityReportService;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +29,17 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
 
     @Override
     public CurrentTermResponse getCurrentTerm() {
-        return facadeActivityReportService.getCurrentTerm();
+        String currentTerm = facadeActivityReportService.getCurrentTerm();
+        return CurrentTermResponse.from(currentTerm);
     }
 
     @Override
     public List<ActivityReportListResponse> getMyActivityReports(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        return facadeActivityReportService.getMyActivityReports(user);
+        List<ActivityReportListQuery> queries = facadeActivityReportService.getMyActivityReports(user);
+        return queries.stream()
+            .map(ActivityReportListResponse::from)
+            .toList();
     }
 
     @Override
@@ -40,7 +47,10 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         String term,
         String clubName
     ) {
-        return facadeActivityReportService.getActivityReport(term, clubName);
+        List<ActivityReportQuery> queries = facadeActivityReportService.getActivityReport(term, clubName);
+        return queries.stream()
+            .map(ActivityReportResponse::from)
+            .toList();
     }
 
     @Override
@@ -55,8 +65,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             .map(CreateActivityReportRequest::toCommand)
             .toList();
         facadeActivityReportService.create(user, commands);
-        List<ActivityReportQuery> activityReportQueries = facadeActivityReportService.getActivityReportInfos(user, commands);
-        facadeActivityReportService.uploadImages(activityReportQueries, firstImage, secondImage);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, commands);
+        facadeActivityReportService.uploadImages(activityReportInfos, firstImage, secondImage);
     }
 
     @Override
@@ -72,8 +82,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
         facadeActivityReportService.update(user, term, commands);
-        List<ActivityReportQuery> activityReportQueries = facadeActivityReportService.getActivityReportInfos(user, term);
-        facadeActivityReportService.updateImages(activityReportQueries, firstImage, secondImage);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
+        facadeActivityReportService.updateImages(activityReportInfos, firstImage, secondImage);
     }
 
     @Override
@@ -82,13 +92,16 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         String term
     ) {
         User user = principalDetails.getUser();
-        List<ActivityReportQuery> activityReportQueries = facadeActivityReportService.getActivityReportInfos(user, term);
-        facadeActivityReportService.deleteImages(activityReportQueries);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
+        facadeActivityReportService.deleteImages(activityReportInfos);
         facadeActivityReportService.delete(user, term);
     }
 
     @Override
     public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
-        return facadeActivityReportService.getActivityReportTermInfos();
+        List<ActivityReportTermInfoQuery> queries = facadeActivityReportService.getActivityReportTermInfos();
+        return queries.stream()
+            .map(ActivityReportTermInfoResponse::from)
+            .toList();
     }
 }

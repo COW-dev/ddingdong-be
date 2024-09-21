@@ -3,18 +3,15 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
-import ddingdong.ddingdongBE.domain.activityreport.controller.ClubActivityReportApiController;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
@@ -41,43 +38,37 @@ public class FacadeActivityReportService {
   private final ClubService clubService;
   private final FileInformationService fileInformationService;
   private final FileService fileService;
-  private final ClubActivityReportApiController clubActivityReportApiController;
 
-  public List<ActivityReportResponse> getActivityReport(
+  public List<ActivityReportQuery> getActivityReport(
       String term,
       String clubName
   ) {
     List<ActivityReport> activityReports = activityReportService.getActivityReport(term, clubName);
     return activityReports.stream()
-        .map(this::parseToResponse)
+        .map(this::parseToQuery)
         .toList();
   }
 
-  public List<ActivityReportListResponse> getActivityReports() {
+  public List<ActivityReportListQuery> getActivityReports() {
     List<ActivityReport> activityReports = activityReportService.getActivityReports();
-    return parseToListResponse(activityReports);
+    return parseToListQuery(activityReports);
   }
 
-  public List<ActivityReportListResponse> getMyActivityReports(User user) {
+  public List<ActivityReportListQuery> getMyActivityReports(User user) {
     Club club = clubService.getByUserId(user.getId());
     List<ActivityReport> activityReports = activityReportService.getActivityReportsByClub(club);
-    return parseToListResponse(activityReports);
+    return parseToListQuery(activityReports);
   }
 
-  public List<ActivityReportTermInfoResponse> getActivityReportTermInfos() {
+  public List<ActivityReportTermInfoQuery> getActivityReportTermInfos() {
     List<ActivityReportTermInfo> termInfos = activityReportTermInfoService.getActivityReportTermInfos();
     return termInfos.stream()
-        .map(termInfo -> new ActivityReportTermInfoResponse(
-            termInfo.getTerm(),
-            termInfo.getStartDate(),
-            termInfo.getEndDate()
-        ))
+        .map(ActivityReportTermInfoQuery::from)
         .toList();
   }
 
-  public CurrentTermResponse getCurrentTerm() {
-    String currentTerm = activityReportTermInfoService.getCurrentTerm();
-    return CurrentTermResponse.from(currentTerm);
+  public String getCurrentTerm() {
+    return activityReportTermInfoService.getCurrentTerm();
   }
 
   @Transactional
@@ -118,7 +109,7 @@ public class FacadeActivityReportService {
     activityReportService.deleteAll(activityReports);
   }
 
-  public List<ActivityReportQuery> getActivityReportInfos(
+  public List<ActivityReportInfo> getActivityReportInfos(
       User user,
       String term
   ) {
@@ -127,11 +118,11 @@ public class FacadeActivityReportService {
         term);
 
     return activityReports.stream()
-        .map(ActivityReportQuery::from)
+        .map(ActivityReportInfo::from)
         .toList();
   }
 
-  public List<ActivityReportQuery> getActivityReportInfos(
+  public List<ActivityReportInfo> getActivityReportInfos(
       User user,
       List<CreateActivityReportCommand> commands
   ) {
@@ -140,14 +131,14 @@ public class FacadeActivityReportService {
   }
 
   @Transactional
-  public void uploadImages(List<ActivityReportQuery> activityReportQueries, MultipartFile firstImage,
+  public void uploadImages(List<ActivityReportInfo> activityReportInfos, MultipartFile firstImage,
       MultipartFile secondImage) {
     List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
-    IntStream.range(0, activityReportQueries.size())
+    IntStream.range(0, activityReportInfos.size())
         .forEach(index -> {
           if (index < images.size() && images.get(index) != null && !images.get(index).isEmpty()) {
             fileService.uploadFile(
-                activityReportQueries.get(index).id(),
+                activityReportInfos.get(index).id(),
                 Collections.singletonList(images.get(index)),
                 IMAGE,
                 ACTIVITY_REPORT
@@ -157,21 +148,21 @@ public class FacadeActivityReportService {
   }
 
   @Transactional
-  public void updateImages(List<ActivityReportQuery> activityReportQueries, MultipartFile firstImage,
+  public void updateImages(List<ActivityReportInfo> activityReportInfos, MultipartFile firstImage,
       MultipartFile secondImage) {
     List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
 
-    IntStream.range(0, activityReportQueries.size())
+    IntStream.range(0, activityReportInfos.size())
         .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
         .forEach(index -> {
               fileService.deleteFile(
-                  activityReportQueries.get(index).id(),
+                  activityReportInfos.get(index).id(),
                   IMAGE,
                   ACTIVITY_REPORT
               );
 
               fileService.uploadFile(
-                  activityReportQueries.get(index).id(),
+                  activityReportInfos.get(index).id(),
                   Collections.singletonList(images.get(index)),
                   IMAGE,
                   ACTIVITY_REPORT
@@ -181,8 +172,8 @@ public class FacadeActivityReportService {
   }
 
   @Transactional
-  public void deleteImages(List<ActivityReportQuery> activityReportQueries) {
-    activityReportQueries.forEach(query -> {
+  public void deleteImages(List<ActivityReportInfo> activityReportInfos) {
+    activityReportInfos.forEach(query -> {
       fileService.deleteFile(query.id(), IMAGE, ACTIVITY_REPORT);
     });
   }
@@ -194,14 +185,14 @@ public class FacadeActivityReportService {
         .orElse(null);
   }
 
-  private ActivityReportResponse parseToResponse(ActivityReport activityReport) {
+  private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
     String imagePath =
         IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId();
     List<String> imageUrls = fileInformationService.getImageUrls(imagePath);
-    return ActivityReportResponse.of(activityReport, imageUrls);
+    return ActivityReportQuery.of(activityReport, imageUrls);
   }
 
-  private List<ActivityReportListResponse> parseToListResponse(
+  private List<ActivityReportListQuery> parseToListQuery(
       final List<ActivityReport> activityReports) {
     Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
         Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
@@ -214,12 +205,12 @@ public class FacadeActivityReportService {
 
       return termMap.entrySet().stream().map(termEntry -> {
         String term = termEntry.getKey();
-        List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream()
-            .map(ActivityReportDto::new)
-            .collect(Collectors.toList());
-        return ActivityReportListResponse.of(clubName, term, activityReportDtos);
+        List<ActivityReportInfo> activityReportInfos = termEntry.getValue().stream()
+            .map(ActivityReportInfo::new)
+            .toList();
+        return ActivityReportListQuery.of(clubName, term, activityReportInfos);
       });
 
-    }).collect(Collectors.toList());
+    }).toList();
   }
 }

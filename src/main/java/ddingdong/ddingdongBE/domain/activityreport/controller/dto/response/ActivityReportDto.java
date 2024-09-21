@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -10,9 +10,9 @@ public record ActivityReportDto(
     Long id
 ) {
 
-    public static ActivityReportDto from(ActivityReport activityReport) {
+    public static ActivityReportDto from(ActivityReportInfo activityReportInfo) {
         return ActivityReportDto.builder()
-            .id(activityReport.getId())
+            .id(activityReportInfo.id())
             .build();
     }
 }

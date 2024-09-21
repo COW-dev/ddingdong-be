@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,17 +53,17 @@ public record ActivityReportResponse(
 		List<Participant> participants
 ) {
 
-	public static ActivityReportResponse of(ActivityReport activityReport, List<String> imageUrls) {
+	public static ActivityReportResponse from(ActivityReportQuery query) {
 		return ActivityReportResponse.builder()
-				.id(activityReport.getId())
-				.createdAt(activityReport.getCreatedAt())
-				.name(activityReport.getClub().getName())
-				.content(activityReport.getContent())
-				.place(activityReport.getPlace())
-				.startDate(activityReport.getStartDate())
-				.endDate(activityReport.getEndDate())
-				.ImageUrls(imageUrls)
-				.participants(activityReport.getParticipants())
+				.id(query.id())
+				.createdAt(query.createdAt())
+				.name(query.name())
+				.content(query.content())
+				.place(query.place())
+				.startDate(query.startDate())
+				.endDate(query.endDate())
+				.ImageUrls(query.ImageUrls())
+				.participants(query.participants())
 				.build();
 	}
 }
