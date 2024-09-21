@@ -29,7 +29,7 @@ public interface AdminActivityReportApi {
     List<ActivityReportListResponse> getActivityReports();
 
     @Operation(summary = "활동 보고서 회차별 기간 설정 API")
-    @ApiResponse(responseCode = "200", description = "활동 보고서 전체 조회 성공")
+    @ApiResponse(responseCode = "201", description = "활동 보고서 회차 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/term")
