@@ -4,9 +4,11 @@ import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import org.springframework.format.annotation.DateTimeFormat;
 
 public record CreateActivityReportRequest(
     @Schema(description = "활동 보고서 회차 정보", example = "1")
@@ -18,9 +20,13 @@ public record CreateActivityReportRequest(
     @Schema(description = "활동 장소", example = "S1353")
     String place,
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 yyyy-MM-dd 형식이어야 합니다.")
     @Schema(description = "활동 시작 일시", example = "2024-01-01")
     String startDate,
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 yyyy-MM-dd 형식이어야 합니다.")
     @Schema(description = "활동 종료 일시", example = "2024-01-02")
     String endDate,
 

@@ -15,6 +15,7 @@ public record CreateActivityTermInfoRequest(
         @DateTimeFormat(pattern = "yyyy-MM-dd")
         @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 yyyy-MM-dd 형식이어야 합니다.")
         LocalDate startDate,
+
         @Schema(description = "설정할 총 회차 수", example = "10 (=총 10회 설정)")
         int totalTermCount
 ) {

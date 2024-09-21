@@ -10,8 +10,10 @@ import java.time.LocalDate;
 public record ActivityReportTermInfoResponse(
         @Schema(description = "회차", example = "1")
         int term,
+
         @Schema(description = "시작 일자", example = "2024-07-22")
         LocalDate startDate,
+
         @Schema(description = "마감 일자", example = "2024-08-04")
         LocalDate endDate
 ) {
