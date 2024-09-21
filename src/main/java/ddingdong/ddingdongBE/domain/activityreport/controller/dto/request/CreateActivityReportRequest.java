@@ -42,6 +42,7 @@ public record CreateActivityReportRequest(
         .place(place)
         .startDate(startDate)
         .endDate(endDate)
+        .participants(participants)
         .build();
   }
 }
