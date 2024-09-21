@@ -4,8 +4,6 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.ClubActivityReportApiController;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
@@ -13,7 +11,10 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Activ
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
@@ -87,12 +88,12 @@ public class FacadeActivityReportService {
   @Transactional
   public void create(
       User user,
-      List<CreateActivityReportRequest> requests
+      List<CreateActivityReportCommand> commands
   ) {
     Club club = clubService.getByUserId(user.getId());
 
-    requests.forEach(request -> {
-      ActivityReport activityReport = request.toEntity(club);
+    commands.forEach(command -> {
+      ActivityReport activityReport = command.toEntity(club);
       activityReportService.create(activityReport);
     });
   }
@@ -101,11 +102,11 @@ public class FacadeActivityReportService {
   public void update(
       User user,
       String term,
-      List<UpdateActivityReportRequest> requests
+      List<UpdateActivityReportCommand> commands
   ) {
     Club club = clubService.getByUserId(user.getId());
-    List<ActivityReport> updateActivityReports = requests.stream()
-        .map(UpdateActivityReportRequest::toEntity)
+    List<ActivityReport> updateActivityReports = commands.stream()
+        .map(UpdateActivityReportCommand::toEntity)
         .toList();
     activityReportService.update(club.getName(), term, updateActivityReports);
   }
@@ -117,7 +118,7 @@ public class FacadeActivityReportService {
     activityReportService.deleteAll(activityReports);
   }
 
-  public List<ActivityReportDto> getActivityReportDtos(
+  public List<ActivityReportQuery> getActivityReportInfos(
       User user,
       String term
   ) {
@@ -126,27 +127,27 @@ public class FacadeActivityReportService {
         term);
 
     return activityReports.stream()
-        .map(ActivityReportDto::from)
+        .map(ActivityReportQuery::from)
         .toList();
   }
 
-  public List<ActivityReportDto> getActivityReportDtos(
+  public List<ActivityReportQuery> getActivityReportInfos(
       User user,
-      List<CreateActivityReportRequest> requests
+      List<CreateActivityReportCommand> commands
   ) {
-    String term = getRequestTerm(requests);
-    return getActivityReportDtos(user, term);
+    String term = getRequestTerm(commands);
+    return getActivityReportInfos(user, term);
   }
 
   @Transactional
-  public void uploadImages(List<ActivityReportDto> activityReportDtos, MultipartFile firstImage,
+  public void uploadImages(List<ActivityReportQuery> activityReportQueries, MultipartFile firstImage,
       MultipartFile secondImage) {
     List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
-    IntStream.range(0, activityReportDtos.size())
+    IntStream.range(0, activityReportQueries.size())
         .forEach(index -> {
           if (index < images.size() && images.get(index) != null && !images.get(index).isEmpty()) {
             fileService.uploadFile(
-                activityReportDtos.get(index).id(),
+                activityReportQueries.get(index).id(),
                 Collections.singletonList(images.get(index)),
                 IMAGE,
                 ACTIVITY_REPORT
@@ -156,21 +157,21 @@ public class FacadeActivityReportService {
   }
 
   @Transactional
-  public void updateImages(List<ActivityReportDto> activityReportDtos, MultipartFile firstImage,
+  public void updateImages(List<ActivityReportQuery> activityReportQueries, MultipartFile firstImage,
       MultipartFile secondImage) {
     List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
 
-    IntStream.range(0, activityReportDtos.size())
+    IntStream.range(0, activityReportQueries.size())
         .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
         .forEach(index -> {
               fileService.deleteFile(
-                  activityReportDtos.get(index).id(),
+                  activityReportQueries.get(index).id(),
                   IMAGE,
                   ACTIVITY_REPORT
               );
 
               fileService.uploadFile(
-                  activityReportDtos.get(index).id(),
+                  activityReportQueries.get(index).id(),
                   Collections.singletonList(images.get(index)),
                   IMAGE,
                   ACTIVITY_REPORT
@@ -180,16 +181,16 @@ public class FacadeActivityReportService {
   }
 
   @Transactional
-  public void deleteImages(List<ActivityReportDto> activityReportDtos) {
-    activityReportDtos.forEach(activityReportDto -> {
-      fileService.deleteFile(activityReportDto.id(), IMAGE, ACTIVITY_REPORT);
+  public void deleteImages(List<ActivityReportQuery> activityReportQueries) {
+    activityReportQueries.forEach(query -> {
+      fileService.deleteFile(query.id(), IMAGE, ACTIVITY_REPORT);
     });
   }
 
-  private String getRequestTerm(List<CreateActivityReportRequest> requests) {
-    return requests.stream()
+  private String getRequestTerm(List<CreateActivityReportCommand> commands) {
+    return commands.stream()
         .findFirst()
-        .map(CreateActivityReportRequest::term)
+        .map(CreateActivityReportCommand::term)
         .orElse(null);
   }
 
