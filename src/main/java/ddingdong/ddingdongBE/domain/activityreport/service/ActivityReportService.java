@@ -39,10 +39,8 @@ public class ActivityReportService {
     private final FileInformationService fileInformationService;
     private final ActivityReportRepository activityReportRepository;
 
-    public List<ActivityReportListResponse> getAll() {
-        List<ActivityReport> activityReports = activityReportRepository.findAll();
-
-        return parseToActivityReportResponse(activityReports);
+    public List<ActivityReport> getAll() {
+        return activityReportRepository.findAll();
     }
 
     public List<ActivityReportListResponse> getMyActivityReports(final User user) {
@@ -136,27 +134,5 @@ public class ActivityReportService {
         }
 
         return String.valueOf(result);
-    }
-
-    private List<ActivityReportListResponse> parseToActivityReportResponse(
-        final List<ActivityReport> activityReports) {
-        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
-            Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
-                Collectors.groupingBy(ActivityReport::getTerm,
-                    Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
-
-        return groupedData.entrySet().stream().flatMap(entry -> {
-            String clubName = entry.getKey();
-            Map<String, List<Long>> termMap = entry.getValue();
-
-            return termMap.entrySet().stream().map(termEntry -> {
-                String term = termEntry.getKey();
-                List<ActivityReportDto> activityReportDtos = termEntry.getValue().stream()
-                    .map(ActivityReportDto::new)
-                    .collect(Collectors.toList());
-                return ActivityReportListResponse.of(clubName, term, activityReportDtos);
-            });
-
-        }).collect(Collectors.toList());
     }
 }
