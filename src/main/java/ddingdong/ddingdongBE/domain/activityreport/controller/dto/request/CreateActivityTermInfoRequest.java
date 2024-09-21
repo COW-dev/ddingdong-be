@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import jakarta.validation.constraints.Pattern;
@@ -17,4 +18,11 @@ public record CreateActivityTermInfoRequest(
         @Schema(description = "설정할 총 회차 수", example = "10 (=총 10회 설정)")
         int totalTermCount
 ) {
+
+    public CreateActivityTermInfoCommand toCommand() {
+        return CreateActivityTermInfoCommand.builder()
+            .startDate(startDate)
+            .totalTermCount(totalTermCount)
+            .build();
+    }
 }
