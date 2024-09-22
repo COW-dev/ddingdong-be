@@ -6,9 +6,9 @@ import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Access(AccessType.FIELD)
 @Builder
+@EqualsAndHashCode
 public class PhoneNumber {
 
     private static final String PHONE_NUMBER_REGEX = "\\d{2,3}-\\d{3,4}-\\d{4}";
@@ -26,23 +27,6 @@ public class PhoneNumber {
 
     private PhoneNumber(String number) {
         this.number = number;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) {
-            return true;
-        }
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
-        PhoneNumber that = (PhoneNumber) o;
-        return Objects.equals(getNumber(), that.getNumber());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getNumber());
     }
 
     public static PhoneNumber from(String phoneNumber) {
