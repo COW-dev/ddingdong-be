@@ -2,11 +2,11 @@ package ddingdong.ddingdongBE.domain.club.entity;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ILLEGAL_CLUB_PHONE_NUMBER_PATTERN;
 
-import java.util.Objects;
 import jakarta.persistence.Access;
 import jakarta.persistence.AccessType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Builder
 public class PhoneNumber {
 
-    private static final String PHONE_NUMBER_REGEX = "010-\\d{3,4}-\\d{4}";
+    private static final String PHONE_NUMBER_REGEX = "\\d{2,3}-\\d{3,4}-\\d{4}";
 
     @Column(name = "phone_number")
     private String number;

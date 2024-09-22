@@ -31,3 +31,20 @@ jwt:
 sentry:
   dsn: ${SENTRY_DSN}
   environment: prod
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: info, health
+      base-path: ${ACTUATOR_BASE_PATH}
+    jmx:
+      exposure:
+        exclude: "*"
+  server:
+    port: 9090
