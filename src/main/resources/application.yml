@@ -39,3 +39,8 @@ cloud:
 swagger:
   server:
     url: ${SERVER_URL:http://localhost:8080}
+
+
+security:
+  actuator:
+    base-path: ${ACTUATOR_ALLOWANCE_SECURITY_PATH:/default}
