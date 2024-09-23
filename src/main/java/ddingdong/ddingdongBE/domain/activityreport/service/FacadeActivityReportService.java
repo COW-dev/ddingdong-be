@@ -123,7 +123,8 @@ public class FacadeActivityReportService {
             term);
 
         if (activityReports.isEmpty()) {
-            throw new ResourceNotFound("ActivityReport를 찾을 수 없습니다.");
+            throw new ResourceNotFound("동아리 이름 : " + club.getName() + ", term :" + term
+                + "\nActivityReport를 찾을 수 없습니다.");
         }
 
         return activityReports.stream()
