@@ -36,7 +36,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public List<ActivityReportListResponse> getMyActivityReports(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        List<ActivityReportListQuery> queries = facadeActivityReportService.getMyActivityReports(user);
+        List<ActivityReportListQuery> queries = facadeActivityReportService.getMyActivityReports(
+            user);
         return queries.stream()
             .map(ActivityReportListResponse::from)
             .toList();
@@ -47,7 +48,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         String term,
         String clubName
     ) {
-        List<ActivityReportQuery> queries = facadeActivityReportService.getActivityReport(term, clubName);
+        List<ActivityReportQuery> queries = facadeActivityReportService.getActivityReport(term,
+            clubName);
         return queries.stream()
             .map(ActivityReportResponse::from)
             .toList();
@@ -65,7 +67,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             .map(CreateActivityReportRequest::toCommand)
             .toList();
         facadeActivityReportService.create(user, commands);
-        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, commands);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
+            user, commands);
         facadeActivityReportService.uploadImages(activityReportInfos, firstImage, secondImage);
     }
 
@@ -82,7 +85,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
         facadeActivityReportService.update(user, term, commands);
-        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
+            user, term);
         facadeActivityReportService.updateImages(activityReportInfos, firstImage, secondImage);
     }
 
@@ -92,7 +96,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         String term
     ) {
         User user = principalDetails.getUser();
-        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
+            user, term);
         facadeActivityReportService.deleteImages(activityReportInfos);
         facadeActivityReportService.delete(user, term);
     }

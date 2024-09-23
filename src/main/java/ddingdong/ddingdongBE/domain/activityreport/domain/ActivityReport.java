@@ -27,48 +27,55 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 public class ActivityReport extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String term;
+    private String term;
 
-	@Column(length = 100)
-	private String content;
+    @Column(length = 100)
+    private String content;
 
-	private String place;
+    private String place;
 
-	private LocalDateTime startDate;
+    private LocalDateTime startDate;
 
-	private LocalDateTime endDate;
+    private LocalDateTime endDate;
 
-	@ElementCollection
-	private List<Participant> participants;
+    @ElementCollection
+    private List<Participant> participants;
 
-	@Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-	private LocalDateTime deletedAt;
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "club_id")
-	private Club club;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
+    private Club club;
 
-	@Builder
-	public ActivityReport(String term, String content, String place, LocalDateTime startDate, LocalDateTime endDate,
-		List<Participant> participants, Club club) {
-		this.term = term;
-		this.content = content;
-		this.place = place;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.participants = participants;
-		this.club = club;
-	}
+    @Builder
+    public ActivityReport(
+        String term,
+        String content,
+        String place,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        List<Participant> participants,
+        Club club
+    ) {
+        this.term = term;
+        this.content = content;
+        this.place = place;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.participants = participants;
+        this.club = club;
+    }
 
-	public void update(final ActivityReport updatedActivityReport) {
-		this.content = updatedActivityReport.getContent();
-		this.place = updatedActivityReport.getPlace();
-		this.startDate = updatedActivityReport.getStartDate();
-		this.endDate = updatedActivityReport.getEndDate();
-		this.participants = updatedActivityReport.getParticipants();
-	}
+    public void update(final ActivityReport updatedActivityReport) {
+        this.content = updatedActivityReport.getContent();
+        this.place = updatedActivityReport.getPlace();
+        this.startDate = updatedActivityReport.getStartDate();
+        this.endDate = updatedActivityReport.getEndDate();
+        this.participants = updatedActivityReport.getParticipants();
+    }
 }

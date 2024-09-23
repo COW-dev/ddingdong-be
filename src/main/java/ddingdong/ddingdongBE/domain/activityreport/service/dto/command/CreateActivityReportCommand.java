@@ -17,15 +17,15 @@ public record CreateActivityReportCommand(
     List<Participant> participants
 ) {
 
-  public ActivityReport toEntity(Club club) {
-    return ActivityReport.builder()
-        .term(term)
-        .content(content)
-        .place(place)
-        .startDate(TimeUtils.parseToLocalDateTime(startDate))
-        .endDate(TimeUtils.parseToLocalDateTime(endDate))
-        .participants(participants)
-        .club(club)
-        .build();
-  }
+    public ActivityReport toEntity(Club club) {
+        return ActivityReport.builder()
+            .term(term)
+            .content(content)
+            .place(place)
+            .startDate(TimeUtils.parseToLocalDateTime(startDate))
+            .endDate(TimeUtils.parseToLocalDateTime(endDate))
+            .participants(participants)
+            .club(club)
+            .build();
+    }
 }

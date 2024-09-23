@@ -23,12 +23,12 @@ public record UpdateActivityReportRequest(
 
     @Schema(description = "활동 참여자 목록",
         example = """
-            [{
-            "name" : "홍길동",
-            "studentId" : "1",
-            "department" : "서부서"
-            }]
-           """)
+             [{
+             "name" : "홍길동",
+             "studentId" : "1",
+             "department" : "서부서"
+             }]
+            """)
     List<Participant> participants
 ) {
 

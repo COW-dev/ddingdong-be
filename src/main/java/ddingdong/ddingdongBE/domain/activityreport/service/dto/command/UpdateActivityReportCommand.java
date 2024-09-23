@@ -17,13 +17,13 @@ public record UpdateActivityReportCommand(
 ) {
 
 
-  public ActivityReport toEntity() {
-    return ActivityReport.builder()
-        .content(content)
-        .place(place)
-        .startDate(TimeUtils.processDate(startDate, LocalDateTime.now()))
-        .endDate(TimeUtils.processDate(endDate, LocalDateTime.now()))
-        .participants(participants)
-        .build();
-  }
+    public ActivityReport toEntity() {
+        return ActivityReport.builder()
+            .content(content)
+            .place(place)
+            .startDate(TimeUtils.processDate(startDate, LocalDateTime.now()))
+            .endDate(TimeUtils.processDate(endDate, LocalDateTime.now()))
+            .participants(participants)
+            .build();
+    }
 }

@@ -21,11 +21,11 @@ public record ActivityReportTermInfoResponse(
     LocalDate endDate
 ) {
 
-  public static ActivityReportTermInfoResponse from(ActivityReportTermInfoQuery query) {
-    return ActivityReportTermInfoResponse.builder()
-        .term(query.term())
-        .startDate(query.startDate())
-        .endDate(query.endDate())
-        .build();
-  }
+    public static ActivityReportTermInfoResponse from(ActivityReportTermInfoQuery query) {
+        return ActivityReportTermInfoResponse.builder()
+            .term(query.term())
+            .startDate(query.startDate())
+            .endDate(query.endDate())
+            .build();
+    }
 }

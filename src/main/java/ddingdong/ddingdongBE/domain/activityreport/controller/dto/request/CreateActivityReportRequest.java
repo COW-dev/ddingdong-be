@@ -26,23 +26,23 @@ public record CreateActivityReportRequest(
 
     @Schema(description = "활동 참여자 명단",
         example = """
-            [{
-            "name" : "홍길동",
-            "studentId" : "1",
-            "department" : "서부서"
-            }]
-           """)
+             [{
+             "name" : "홍길동",
+             "studentId" : "1",
+             "department" : "서부서"
+             }]
+            """)
     List<Participant> participants
 ) {
 
-  public CreateActivityReportCommand toCommand() {
-    return CreateActivityReportCommand.builder()
-        .term(term)
-        .content(content)
-        .place(place)
-        .startDate(startDate)
-        .endDate(endDate)
-        .participants(participants)
-        .build();
-  }
+    public CreateActivityReportCommand toCommand() {
+        return CreateActivityReportCommand.builder()
+            .term(term)
+            .content(content)
+            .place(place)
+            .startDate(startDate)
+            .endDate(endDate)
+            .participants(participants)
+            .build();
+    }
 }

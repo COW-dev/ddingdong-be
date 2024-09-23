@@ -14,47 +14,47 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class ActivityReportService {
 
-  private final ActivityReportRepository activityReportRepository;
+    private final ActivityReportRepository activityReportRepository;
 
-  public List<ActivityReport> getActivityReports() {
-    return activityReportRepository.findAll();
-  }
+    public List<ActivityReport> getActivityReports() {
+        return activityReportRepository.findAll();
+    }
 
-  public List<ActivityReport> getActivityReportsByClub(final Club club) {
-    return activityReportRepository.findByClubName(club.getName());
-  }
+    public List<ActivityReport> getActivityReportsByClub(final Club club) {
+        return activityReportRepository.findByClubName(club.getName());
+    }
 
-  public List<ActivityReport> getActivityReport(
-      final String term,
-      final String clubName
-  ) {
-    return activityReportRepository.findByClubNameAndTerm(clubName, term);
-  }
+    public List<ActivityReport> getActivityReport(
+        final String term,
+        final String clubName
+    ) {
+        return activityReportRepository.findByClubNameAndTerm(clubName, term);
+    }
 
-  @Transactional
-  public Long create(final ActivityReport activityReport) {
-    ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
-    return savedActivityReport.getId();
-  }
+    @Transactional
+    public Long create(final ActivityReport activityReport) {
+        ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
+        return savedActivityReport.getId();
+    }
 
-  @Transactional
-  public void update(
-      final String clubName,
-      final String term,
-      final List<ActivityReport> updateActivityReports
-  ) {
-    List<ActivityReport> activityReports = getActivityReport(term, clubName);
+    @Transactional
+    public void update(
+        final String clubName,
+        final String term,
+        final List<ActivityReport> updateActivityReports
+    ) {
+        List<ActivityReport> activityReports = getActivityReport(term, clubName);
 
-    IntStream.range(0, updateActivityReports.size())
-        .forEach(index -> {
-          ActivityReport activityReport = activityReports.get(index);
-          ActivityReport updatedActivityReport = updateActivityReports.get(index);
-          activityReport.update(updatedActivityReport);
-        });
-  }
+        IntStream.range(0, updateActivityReports.size())
+            .forEach(index -> {
+                ActivityReport activityReport = activityReports.get(index);
+                ActivityReport updatedActivityReport = updateActivityReports.get(index);
+                activityReport.update(updatedActivityReport);
+            });
+    }
 
-  @Transactional
-  public void deleteAll(List<ActivityReport> activityReports) {
-    activityReportRepository.deleteAll(activityReports);
-  }
+    @Transactional
+    public void deleteAll(List<ActivityReport> activityReports) {
+        activityReportRepository.deleteAll(activityReports);
+    }
 }
