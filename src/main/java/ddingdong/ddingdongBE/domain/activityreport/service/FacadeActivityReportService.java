@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
@@ -121,17 +122,13 @@ public class FacadeActivityReportService {
             club.getName(),
             term);
 
+        if (activityReports.isEmpty()) {
+            throw new ResourceNotFound("ActivityReport를 찾을 수 없습니다.");
+        }
+
         return activityReports.stream()
             .map(ActivityReportInfo::from)
             .toList();
-    }
-
-    public List<ActivityReportInfo> getActivityReportInfos(
-        User user,
-        List<CreateActivityReportCommand> commands
-    ) {
-        String term = getRequestTerm(commands);
-        return getActivityReportInfos(user, term);
     }
 
     @Transactional
@@ -181,7 +178,7 @@ public class FacadeActivityReportService {
         });
     }
 
-    private String getRequestTerm(List<CreateActivityReportCommand> commands) {
+    public String getRequestTerm(List<CreateActivityReportCommand> commands) {
         return commands.stream()
             .findFirst()
             .map(CreateActivityReportCommand::term)

@@ -67,8 +67,9 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             .map(CreateActivityReportRequest::toCommand)
             .toList();
         facadeActivityReportService.create(user, commands);
-        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
-            user, commands);
+
+        String term = facadeActivityReportService.getRequestTerm(commands);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
         facadeActivityReportService.uploadImages(activityReportInfos, firstImage, secondImage);
     }
 
