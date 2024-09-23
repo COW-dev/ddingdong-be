@@ -1,0 +1,34 @@
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml # 동기화 작업을 이루기 위해 promtail이 읽은 마지막 로그 정보를 저장하는 곳
+
+clients:
+  - url: ${LOKI_URL}
+
+scrape_configs:
+  - job_name: all
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: all_logs
+          __path__: /var/log/all/*.log
+
+  - job_name: warn
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: warn_logs
+          __path__: /var/log/warn/*.log
+
+  - job_name: error
+    static_configs:
+      - targets:
+          - localhost
+        labels:
+          job: error_logs
+          __path__: /var/log/error/*.log
