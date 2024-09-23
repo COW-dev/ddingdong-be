@@ -21,6 +21,11 @@ spring:
     init:
       mode: never
 
+  security:
+    user:
+      name: ${MONITORING_USERNAME}
+      password: ${MONITORING_USER_PASSWORD}
+
 jwt:
   header: "Authorization"
   prefix: "Bearer"
@@ -46,5 +51,7 @@ management:
     jmx:
       exposure:
         exclude: "*"
+    prometheus:
+      enabled: true
   server:
     port: 9090
