@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.command;
 
-import ddingdong.ddingdongBE.common.utils.TimeUtils;
+import ddingdong.ddingdongBE.common.utils.TimeParser;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import java.time.LocalDateTime;
@@ -21,8 +21,8 @@ public record UpdateActivityReportCommand(
         return ActivityReport.builder()
             .content(content)
             .place(place)
-            .startDate(TimeUtils.processDate(startDate, LocalDateTime.now()))
-            .endDate(TimeUtils.processDate(endDate, LocalDateTime.now()))
+            .startDate(TimeParser.processDate(startDate, LocalDateTime.now()))
+            .endDate(TimeParser.processDate(endDate, LocalDateTime.now()))
             .participants(participants)
             .build();
     }

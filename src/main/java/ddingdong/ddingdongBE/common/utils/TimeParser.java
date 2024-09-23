@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.common.utils;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimeUtils {
+public class TimeParser {
 
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
