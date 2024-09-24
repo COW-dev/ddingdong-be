@@ -54,7 +54,6 @@ jobs:
           cp Procfile deploy/Procfile
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
-          cp promtail-config.yml deploy/promtail-config.yml # promtail 설정 파일 추가
           cd deploy && zip -r deploy.zip .
 
         # Beanstalk Deploy 플러그인 사용
