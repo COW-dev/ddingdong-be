@@ -15,7 +15,7 @@ scrape_configs:
           - localhost
         labels:
           job: all_logs
-          __path__: /var/etc/currnet/log/all/*.log
+          __path__: /var/app/current/log/all/*.log
 
   - job_name: warn
     static_configs:
@@ -23,7 +23,7 @@ scrape_configs:
           - localhost
         labels:
           job: warn_logs
-          __path__: /var/etc/currnet/log/warn/*.log
+          __path__: /var/app/current/log/warn/*.log
 
   - job_name: error
     static_configs:
@@ -31,4 +31,4 @@ scrape_configs:
           - localhost
         labels:
           job: error_logs
-          __path__:  /var/etc/currnet/log/*.log
+          __path__:  /var/app/current/log/error/*.log
