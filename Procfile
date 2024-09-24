@@ -1,1 +1,1 @@
-web: appstart && docker-compose -f /var/app/promtail/promtail-docker-compose.yml up -d
+web: appstart && docker-compose -f /var/app/server/promtail-docker-compose.yml up -d
