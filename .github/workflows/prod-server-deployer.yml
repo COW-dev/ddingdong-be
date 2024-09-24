@@ -67,7 +67,7 @@ jobs:
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
-          wait_for_environment_recovery: 180
+          wait_for_environment_recovery: 300
 
       - name: Test with Gradle
         run: ./gradlew test --no-daemon
