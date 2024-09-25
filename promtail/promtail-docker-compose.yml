@@ -1,0 +1,13 @@
+services:
+
+  promtail:
+    image: grafana/promtail:2.9.1
+    container_name: promtail
+    environment:
+      - LOKI_URL=${LOKI_URL}  # .env 파일에서 Loki 서버 URL 참조
+    volumes:
+      - /var/app/current/promtail/promtail-config.yml:/var/app/current/promtail-config.yml
+      - /var/app/current/logs:/var/logs  # 로컬 로그 파일 경로를 Promtail에 마운트
+    command: -config.file=/var/app/current/promtail/promtail-config.yml
+    ports:
+      - "9080:9080"  # Promtail의 웹 UI를 호스트와 매핑
