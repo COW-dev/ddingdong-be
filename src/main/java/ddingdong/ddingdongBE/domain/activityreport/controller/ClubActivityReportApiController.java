@@ -1,25 +1,22 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.api.ClubActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportDto;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
-import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportService;
-import ddingdong.ddingdongBE.domain.activityreport.service.ActivityReportTermInfoService;
+import ddingdong.ddingdongBE.domain.activityreport.service.FacadeActivityReportService;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.file.service.FileService;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,26 +25,37 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class ClubActivityReportApiController implements ClubActivityReportApi {
 
-    private final ActivityReportService activityReportService;
-    private final ActivityReportTermInfoService activityReportTermInfoService;
-    private final FileService fileService;
+    private final FacadeActivityReportService facadeActivityReportService;
 
+    @Override
     public CurrentTermResponse getCurrentTerm() {
-        return activityReportService.getCurrentTerm();
+        String currentTerm = facadeActivityReportService.getCurrentTerm();
+        return CurrentTermResponse.from(currentTerm);
     }
 
+    @Override
     public List<ActivityReportListResponse> getMyActivityReports(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        return activityReportService.getMyActivityReports(user);
+        List<ActivityReportListQuery> queries = facadeActivityReportService.getMyActivityReports(
+            user);
+        return queries.stream()
+            .map(ActivityReportListResponse::from)
+            .toList();
     }
 
+    @Override
     public List<ActivityReportResponse> getActivityReport(
         String term,
         String clubName
     ) {
-        return activityReportService.getActivityReport(term, clubName);
+        List<ActivityReportQuery> queries = facadeActivityReportService.getActivityReport(term,
+            clubName);
+        return queries.stream()
+            .map(ActivityReportResponse::from)
+            .toList();
     }
 
+    @Override
     public void createActivityReport(
         PrincipalDetails principalDetails,
         List<CreateActivityReportRequest> requests,
@@ -55,28 +63,17 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         MultipartFile secondImage
     ) {
         User user = principalDetails.getUser();
+        List<CreateActivityReportCommand> commands = requests.stream()
+            .map(CreateActivityReportRequest::toCommand)
+            .toList();
+        facadeActivityReportService.create(user, commands);
 
-        List<MultipartFile> images = new ArrayList<>();
-        images.add(firstImage);
-        images.add(secondImage);
-
-        IntStream.range(0, requests.size())
-            .forEach(index -> {
-                CreateActivityReportRequest request = requests.get(index);
-                Long registeredActivityReportId = activityReportService.create(user, request);
-
-                if (index < images.size() && images.get(index) != null && !images.get(index).isEmpty()) {
-                    fileService.uploadFile(
-                        registeredActivityReportId,
-                        Collections.singletonList(images.get(index)),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-                }
-            });
-
+        String term = facadeActivityReportService.getRequestTerm(commands);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(user, term);
+        facadeActivityReportService.uploadImages(activityReportInfos, firstImage, secondImage);
     }
 
+    @Override
     public void updateActivityReport(
         PrincipalDetails principalDetails,
         String term,
@@ -85,45 +82,32 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         MultipartFile secondImage
     ) {
         User user = principalDetails.getUser();
-
-        List<ActivityReportDto> activityReportDtos = activityReportService.update(user, term, requests);
-
-        List<MultipartFile> images = new ArrayList<>();
-        images.add(firstImage);
-        images.add(secondImage);
-
-        IntStream.range(0, Math.min(activityReportDtos.size(), images.size()))
-            .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
-            .forEach(index -> {
-                    fileService.deleteFile(
-                        activityReportDtos.get(index).getId(),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-
-                    fileService.uploadFile(
-                        activityReportDtos.get(index).getId(),
-                        Collections.singletonList(images.get(index)),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-                }
-            );
+        List<UpdateActivityReportCommand> commands = requests.stream()
+            .map(UpdateActivityReportRequest::toCommand)
+            .toList();
+        facadeActivityReportService.update(user, term, commands);
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
+            user, term);
+        facadeActivityReportService.updateImages(activityReportInfos, firstImage, secondImage);
     }
 
+    @Override
     public void deleteActivityReport(
         PrincipalDetails principalDetails,
         String term
     ) {
         User user = principalDetails.getUser();
-
-        activityReportService.delete(user, term)
-            .forEach(it -> fileService.deleteFile(it.getId(), IMAGE, ACTIVITY_REPORT));
+        List<ActivityReportInfo> activityReportInfos = facadeActivityReportService.getActivityReportInfos(
+            user, term);
+        facadeActivityReportService.deleteImages(activityReportInfos);
+        facadeActivityReportService.delete(user, term);
     }
 
     @Override
     public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
-        return activityReportTermInfoService.getAll();
+        List<ActivityReportTermInfoQuery> queries = facadeActivityReportService.getActivityReportTermInfos();
+        return queries.stream()
+            .map(ActivityReportTermInfoResponse::from)
+            .toList();
     }
-
 }
