@@ -55,7 +55,7 @@ public interface AdminDocumentApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/{documentId}")
-    AdminDocumentResponse getAdminDocument(@PathVariable Long documentId);
+    AdminDocumentResponse getAdminDocument(@PathVariable(name = "documentId") Long documentId);
 
     @Operation(summary = "어드민 자료실 수정 API")
     @ApiResponse(responseCode = "200", description = "어드민 자료실 수정 성공")
@@ -71,5 +71,5 @@ public interface AdminDocumentApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/{documentId}")
-    void deleteDocument(@PathVariable Long documentId);
+    void deleteDocument(@PathVariable(name = "documentId") Long documentId);
 }

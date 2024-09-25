@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.documents.controller;
 
 import static org.hamcrest.Matchers.hasSize;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -9,11 +8,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
-import java.time.LocalDateTime;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,17 +26,17 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getAllDocuments() throws Exception {
         //given
-        List<Document> foundDocuments = List.of(
-                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
-                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getDocuments()).thenReturn(foundDocuments);
+        List<DocumentListQuery> queries = List.of(
+            DocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
+            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
+        when(facadeDocumentService.getDocuments()).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/documents")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(foundDocuments.size())))
+                .andExpect(jsonPath("$", hasSize(queries.size())))
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].title").value("A"))
                 .andExpect(jsonPath("$[1].id").value(2L))
@@ -48,14 +48,14 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getDocument() throws Exception {
         //given
-        Document document = Document.builder()
-                .title("title")
-                .createdAt(LocalDateTime.now()).build();
-        when(documentService.getById(1L)).thenReturn(document);
-
         List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
                 FileResponse.builder().name("fileB").fileUrl("fileBUrl").build());
-        when(fileInformationService.getFileUrls(any())).thenReturn(fileResponses);
+        DocumentQuery query = DocumentQuery.builder()
+            .title("title")
+            .fileUrls(fileResponses)
+            .createdAt(LocalDate.now()).build();
+        Long documentId = 1L;
+        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
 
         //when //then
         mockMvc.perform(get("/server/documents/{documentId}", 1L)
