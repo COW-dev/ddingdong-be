@@ -5,10 +5,10 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.documents.api.AdminDocumentApi;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDetailDocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.CreateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
@@ -32,32 +32,32 @@ public class AdminDocumentController implements AdminDocumentApi {
     private final FileService fileService;
     private final FileInformationService fileInformationService;
 
-    public void generateDocument(
+    public void createDocument(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
+            @ModelAttribute CreateDocumentRequest createDocumentRequest,
             @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles) {
         User admin = principalDetails.getUser();
-        Long createdDocumentId = documentService.create(generateDocumentRequest.toEntity(admin));
+        Long createdDocumentId = documentService.create(createDocumentRequest.toEntity(admin));
         fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
     }
 
-    public List<AdminDocumentResponse> getAllDocuments() {
-        return documentService.getAll().stream()
-                .map(AdminDocumentResponse::from)
+    public List<AdminDocumentListResponse> getAdminDocuments() {
+        return documentService.getDocuments().stream()
+                .map(AdminDocumentListResponse::from)
                 .toList();
     }
 
-    public AdminDetailDocumentResponse getDetailDocument(@PathVariable Long documentId) {
+    public AdminDocumentResponse getAdminDocument(@PathVariable Long documentId) {
         Document document = documentService.getById(documentId);
         List<FileResponse> fileResponse = fileInformationService.getFileUrls(
                 FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
-        return AdminDetailDocumentResponse.of(document, fileResponse);
+        return AdminDocumentResponse.of(document, fileResponse);
     }
 
-    public void modifyDocument(@PathVariable Long documentId,
-                               @ModelAttribute ModifyDocumentRequest modifyDocumentRequest,
+    public void updateDocument(@PathVariable Long documentId,
+                               @ModelAttribute UpdateDocumentRequest updateDocumentRequest,
                                @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles) {
-        Long updateDocumentId = documentService.update(documentId, modifyDocumentRequest.toEntity());
+        Long updateDocumentId = documentService.update(documentId, updateDocumentRequest.toEntity());
         fileService.deleteFile(updateDocumentId, FILE, DOCUMENT);
         fileService.uploadDownloadableFile(updateDocumentId, uploadFiles, FILE, DOCUMENT);
     }

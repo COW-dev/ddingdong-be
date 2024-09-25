@@ -29,7 +29,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         List<Document> foundDocuments = List.of(
                 Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
                 Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getAll()).thenReturn(foundDocuments);
+        when(documentService.getDocuments()).thenReturn(foundDocuments);
 
         //when //then
         mockMvc.perform(get("/server/documents")

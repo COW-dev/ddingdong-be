@@ -14,8 +14,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.CreateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
@@ -32,9 +32,9 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")
     @Test
-    void generateDocument() throws Exception {
+    void createDocument() throws Exception {
         // given
-        GenerateDocumentRequest request = GenerateDocumentRequest.builder()
+        CreateDocumentRequest request = CreateDocumentRequest.builder()
                 .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFiles", "test.txt", "text/plain",
                 "test content".getBytes());
@@ -56,12 +56,12 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
-    void getAllDocumentsDocuments() throws Exception {
+    void getAdminDocumentsAdminDocuments() throws Exception {
         //given
         List<Document> foundDocuments = List.of(
                 Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
                 Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getAll()).thenReturn(foundDocuments);
+        when(documentService.getDocuments()).thenReturn(foundDocuments);
 
         //when //then
         mockMvc.perform(get("/server/admin/documents")
@@ -78,7 +78,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 상세조회 요청을 수행한다.")
     @Test
-    void getDocument() throws Exception {
+    void getAdminDocument() throws Exception {
         //given
         Document document = Document.builder()
                 .title("title")
@@ -105,7 +105,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void modify() throws Exception {
         // given
-        ModifyDocumentRequest modifyRequest = ModifyDocumentRequest.builder()
+        UpdateDocumentRequest modifyRequest = UpdateDocumentRequest.builder()
                 .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFilessymotion-prefix)", "test.txt", "text/plain",
                 "test content".getBytes());

@@ -23,7 +23,7 @@ public class DocumentService {
     }
 
     @Transactional(readOnly = true)
-    public List<Document> getAll() {
+    public List<Document> getDocuments() {
         return documentRepository.findAll();
     }
 

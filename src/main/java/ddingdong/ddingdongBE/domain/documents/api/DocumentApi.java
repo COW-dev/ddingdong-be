@@ -1,10 +1,9 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
 
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DetailDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
@@ -20,11 +19,11 @@ public interface DocumentApi {
     @Operation(summary = "자료실 목록 조회 API")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<DocumentResponse> getAllDocuments();
+    List<DocumentListResponse> getDocuments();
 
     @Operation(summary = "자료실 상세 조회 API")
     @GetMapping("/{documentId}")
     @ResponseStatus(HttpStatus.OK)
-    DetailDocumentResponse getDetailDocument(@PathVariable Long documentId);
+    DocumentResponse getDocument(@PathVariable Long documentId);
 
 }

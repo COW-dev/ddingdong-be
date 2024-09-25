@@ -10,7 +10,7 @@ import lombok.Builder;
         description = "자료실 자료 생성 요청"
 )
 @Builder
-public record GenerateDocumentRequest(
+public record CreateDocumentRequest(
         @Schema(description = "자료 제목", example = "제목")
         String title
 ) {
