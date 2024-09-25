@@ -7,6 +7,8 @@ import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocum
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -29,15 +31,19 @@ public class AdminDocumentController implements AdminDocumentApi {
         @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
     ) {
         User admin = principalDetails.getUser();
-        facadeAdminDocumentService.create(createDocumentRequest.toEntity(admin), uploadFiles);
+        facadeAdminDocumentService.create(createDocumentRequest.toCommand(admin), uploadFiles);
     }
 
     public List<AdminDocumentListResponse> getAdminDocuments() {
-        return facadeAdminDocumentService.getDocuments();
+        List<AdminDocumentListQuery> queries = facadeAdminDocumentService.getDocuments();
+        return queries.stream()
+            .map(AdminDocumentListResponse::from)
+            .toList();
     }
 
     public AdminDocumentResponse getAdminDocument(@PathVariable Long documentId) {
-        return facadeAdminDocumentService.getDocument(documentId);
+        AdminDocumentQuery query = facadeAdminDocumentService.getDocument(documentId);
+        return AdminDocumentResponse.from(query);
     }
 
     public void updateDocument(
@@ -45,7 +51,7 @@ public class AdminDocumentController implements AdminDocumentApi {
         @ModelAttribute UpdateDocumentRequest updateDocumentRequest,
         @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles
     ) {
-        facadeAdminDocumentService.update(documentId, updateDocumentRequest, uploadFiles);
+        facadeAdminDocumentService.update(documentId, updateDocumentRequest.toCommand(), uploadFiles);
     }
 
     public void deleteDocument(@PathVariable Long documentId) {

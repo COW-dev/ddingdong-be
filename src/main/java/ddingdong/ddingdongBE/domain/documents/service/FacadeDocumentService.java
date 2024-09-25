@@ -3,9 +3,9 @@ package ddingdong.ddingdongBE.domain.documents.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.DOCUMENT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.util.List;
@@ -22,16 +22,16 @@ public class FacadeDocumentService {
     private final FileInformationService fileInformationService;
 
 
-    public List<DocumentListResponse> getDocuments() {
+    public List<DocumentListQuery> getDocuments() {
         return documentService.getDocuments().stream()
-            .map(DocumentListResponse::from)
+            .map(DocumentListQuery::from)
             .toList();
     }
 
-    public DocumentResponse getDocument(Long documentId) {
+    public DocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
         List<FileResponse> fileResponse = fileInformationService.getFileUrls(
             FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
-        return DocumentResponse.of(document, fileResponse);
+        return DocumentQuery.of(document, fileResponse);
     }
 }

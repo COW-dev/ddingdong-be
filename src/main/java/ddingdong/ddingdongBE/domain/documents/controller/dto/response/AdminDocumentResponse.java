@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -26,12 +26,11 @@ public record AdminDocumentResponse(
         List<FileResponse> fileUrls
 ) {
 
-    public static AdminDocumentResponse of(Document document,
-                                                 List<FileResponse> fileResponses) {
+    public static AdminDocumentResponse from(AdminDocumentQuery query) {
         return AdminDocumentResponse.builder()
-                .title(document.getTitle())
-                .createdAt(document.getCreatedAt().toLocalDate())
-                .fileUrls(fileResponses)
-                .build();
+            .title(query.title())
+            .createdAt(query.createdAt())
+            .fileUrls(query.fileUrls())
+            .build();
     }
 }

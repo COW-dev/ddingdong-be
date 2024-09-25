@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.documents.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -15,10 +15,10 @@ public record CreateDocumentRequest(
     String title
 ) {
 
-    public Document toEntity(User user) {
-        return Document.builder()
-            .user(user)
+    public CreateDocumentCommand toCommand(User admin) {
+        return CreateDocumentCommand.builder()
             .title(title)
+            .user(admin)
             .build();
     }
 }

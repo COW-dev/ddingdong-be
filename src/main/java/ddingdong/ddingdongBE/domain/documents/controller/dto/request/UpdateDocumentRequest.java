@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.documents.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -14,8 +14,8 @@ public record UpdateDocumentRequest(
     String title
 ) {
 
-    public Document toEntity() {
-        return Document.builder()
+    public UpdateDocumentCommand toCommand() {
+        return UpdateDocumentCommand.builder()
             .title(title)
             .build();
     }

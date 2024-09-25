@@ -3,10 +3,11 @@ package ddingdong.ddingdongBE.domain.documents.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.DOCUMENT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
 
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentListResponse;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.file.service.FileService;
@@ -27,15 +28,15 @@ public class FacadeAdminDocumentService {
 
 
     @Transactional
-    public void create(Document document, List<MultipartFile> uploadFiles) {
-        Long createdDocumentId = documentService.create(document);
+    public void create(CreateDocumentCommand command, List<MultipartFile> uploadFiles) {
+        Long createdDocumentId = documentService.create(command.toEntity());
         fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
     }
 
     @Transactional
-    public void update(Long documentId, UpdateDocumentRequest updateDocumentRequest,
+    public void update(Long documentId, UpdateDocumentCommand command,
         List<MultipartFile> uploadFiles) {
-        documentService.update(documentId, updateDocumentRequest.toEntity());
+        documentService.update(documentId, command.toEntity());
         fileService.deleteFile(documentId, FILE, DOCUMENT);
         fileService.uploadDownloadableFile(documentId, uploadFiles, FILE, DOCUMENT);
     }
@@ -46,17 +47,17 @@ public class FacadeAdminDocumentService {
         documentService.delete(documentId);
     }
 
-    public List<AdminDocumentListResponse> getDocuments() {
+    public List<AdminDocumentListQuery> getDocuments() {
         List<Document> documents = documentService.getDocuments();
         return documents.stream()
-            .map(AdminDocumentListResponse::from)
+            .map(AdminDocumentListQuery::from)
             .toList();
     }
 
-    public AdminDocumentResponse getDocument(Long documentId) {
+    public AdminDocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
         List<FileResponse> fileResponses = fileInformationService.getFileUrls(
             FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
-        return AdminDocumentResponse.of(document, fileResponses);
+        return AdminDocumentQuery.of(document, fileResponses);
     }
 }

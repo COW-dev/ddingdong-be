@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -23,11 +23,11 @@ public record AdminDocumentListResponse(
         LocalDate createdAt
 ) {
 
-    public static AdminDocumentListResponse from(Document document) {
+    public static AdminDocumentListResponse from(AdminDocumentListQuery query) {
         return AdminDocumentListResponse.builder()
-                .id(document.getId())
-                .title(document.getTitle())
-                .createdAt(document.getCreatedAt().toLocalDate())
+                .id(query.id())
+                .title(query.title())
+                .createdAt(query.createdAt())
                 .build();
     }
 }

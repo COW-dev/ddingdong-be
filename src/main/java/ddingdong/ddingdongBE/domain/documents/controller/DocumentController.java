@@ -4,6 +4,8 @@ import ddingdong.ddingdongBE.domain.documents.api.DocumentApi;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,10 +18,14 @@ public class DocumentController implements DocumentApi {
     private final FacadeDocumentService facadeDocumentService;
 
     public List<DocumentListResponse> getDocuments() {
-        return facadeDocumentService.getDocuments();
+        List<DocumentListQuery> quries = facadeDocumentService.getDocuments();
+        return quries.stream()
+            .map(DocumentListResponse::from)
+            .toList();
     }
 
     public DocumentResponse getDocument(@PathVariable Long documentId) {
-        return facadeDocumentService.getDocument(documentId);
+        DocumentQuery query = facadeDocumentService.getDocument(documentId);
+        return DocumentResponse.from(query);
     }
 }

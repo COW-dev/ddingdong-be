@@ -1,7 +1,7 @@
-package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
+package ddingdong.ddingdongBE.domain.documents.service.dto.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
+import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -9,12 +9,8 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
-@Schema(
-    name = "DocumentResponse",
-    description = "자료실 자료 상세 조회 응답"
-)
 @Builder
-public record DocumentResponse(
+public record DocumentQuery(
     @Schema(description = "자료 제목", example = "자료 제목")
     String title,
 
@@ -26,11 +22,11 @@ public record DocumentResponse(
     List<FileResponse> fileUrls
 ) {
 
-    public static DocumentResponse from(DocumentQuery query) {
-        return DocumentResponse.builder()
-            .title(query.title())
-            .createdAt(query.createdAt())
-            .fileUrls(query.fileUrls())
+    public static DocumentQuery of(Document document, List<FileResponse> fileUrls) {
+        return DocumentQuery.builder()
+            .title(document.getTitle())
+            .createdAt(document.getCreatedAt().toLocalDate())
+            .fileUrls(fileUrls)
             .build();
     }
 }
