@@ -20,7 +20,7 @@ public class PromtailDockerComposeRunner implements ApplicationRunner {
 
         // Docker Compose 명령어를 실행할 ProcessBuilder 설정
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("docker-compose", "-f", "/var/app/current/promtail-docker-compose.yml", "up", "-d");
+        processBuilder.command("docker-compose", "-f", "/var/app/current/promtail/promtail-docker-compose.yml", "up", "-d");
 
         // ProcessBuilder로 프로세스 실행
         Process process = processBuilder.start();
