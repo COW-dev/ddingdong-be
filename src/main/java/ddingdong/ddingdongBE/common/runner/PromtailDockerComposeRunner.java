@@ -3,12 +3,14 @@ package ddingdong.ddingdongBE.common.runner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
 @Component
+@Profile("prod")
 @Slf4j
 public class PromtailDockerComposeRunner implements ApplicationRunner {
 
