@@ -7,8 +7,8 @@ import java.time.LocalDate;
 import lombok.Builder;
 
 @Schema(
-        name = "AdminDocumentResponse",
-        description = "어드민 자료실 자료 목록 조회 응답"
+        name = "AdminDocumentListResponse",
+        description = "어드민 자료실 자료 전체 조회 응답"
 )
 @Builder
 public record AdminDocumentListResponse(

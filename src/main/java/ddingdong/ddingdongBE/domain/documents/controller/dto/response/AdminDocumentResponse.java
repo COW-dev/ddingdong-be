@@ -10,7 +10,7 @@ import java.util.List;
 import lombok.Builder;
 
 @Schema(
-        name = "AdminDetailDocumentResponse",
+        name = "AdminDocumentResponse",
         description = "어드민 자료실 자료 상세 조회 응답"
 )
 @Builder

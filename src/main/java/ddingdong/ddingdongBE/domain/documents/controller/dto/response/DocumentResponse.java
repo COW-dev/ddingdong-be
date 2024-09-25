@@ -10,28 +10,27 @@ import java.util.List;
 import lombok.Builder;
 
 @Schema(
-        name = "DetailDocumentResponse",
-        description = "자료실 자료 상세 조회 응답"
+    name = "DocumentResponse",
+    description = "자료실 자료 상세 조회 응답"
 )
 @Builder
 public record DocumentResponse(
-        @Schema(description = "자료 제목", example = "자료 제목")
-        String title,
+    @Schema(description = "자료 제목", example = "자료 제목")
+    String title,
 
-        @Schema(description = "작성일", example = "2024-01-01")
-        @JsonFormat(pattern = "yyyy-MM-dd")
-        LocalDate createdAt,
+    @Schema(description = "작성일", example = "2024-01-01")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    LocalDate createdAt,
 
-        @ArraySchema(schema = @Schema(description = "첨부파일 목록", implementation = FileResponse.class))
-        List<FileResponse> fileUrls
+    @ArraySchema(schema = @Schema(description = "첨부파일 목록", implementation = FileResponse.class))
+    List<FileResponse> fileUrls
 ) {
 
-    public static DocumentResponse of(Document document,
-                                            List<FileResponse> fileResponses) {
+    public static DocumentResponse of(Document document, List<FileResponse> fileResponses) {
         return DocumentResponse.builder()
-                .title(document.getTitle())
-                .createdAt(document.getCreatedAt().toLocalDate())
-                .fileUrls(fileResponses)
-                .build();
+            .title(document.getTitle())
+            .createdAt(document.getCreatedAt().toLocalDate())
+            .fileUrls(fileResponses)
+            .build();
     }
 }
