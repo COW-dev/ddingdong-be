@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
@@ -32,7 +31,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FacadeActivityReportService {
+public class FacadeClubActivityReportService {
 
     private final ActivityReportService activityReportService;
     private final ActivityReportTermInfoService activityReportTermInfoService;
@@ -51,11 +50,6 @@ public class FacadeActivityReportService {
             .toList();
     }
 
-    public List<ActivityReportListQuery> getActivityReports() {
-        List<ActivityReport> activityReports = activityReportService.getActivityReports();
-        return parseToListQuery(activityReports);
-    }
-
     public List<ActivityReportListQuery> getMyActivityReports(User user) {
         Club club = clubService.getByUserId(user.getId());
         List<ActivityReport> activityReports = activityReportService.getActivityReportsByClub(club);
@@ -71,11 +65,6 @@ public class FacadeActivityReportService {
 
     public String getCurrentTerm() {
         return activityReportTermInfoService.getCurrentTerm();
-    }
-
-    @Transactional
-    public void createActivityTermInfo(CreateActivityTermInfoCommand command) {
-        activityReportTermInfoService.create(command.startDate(), command.totalTermCount());
     }
 
     @Transactional
