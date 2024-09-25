@@ -1,7 +1,7 @@
 <configuration>
     <!-- 전체 로그를 기록할 Appender (INFO 이상 모든 로그) -->
     <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/sys/all/logFile.log</file>
+        <file>/tmp/logs/sys/all/logFile.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/all/logFile.%d{yyyy-MM-dd_HH-mm}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -14,7 +14,7 @@
 
     <!-- WARN 로그를 기록할 Appender -->
     <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/sys/warn/logFile.log</file>
+        <file>/tmp/logs/sys/warn/logFile.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/warn/logFile.%d{yyyy-MM-dd_HH-mm}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
@@ -31,7 +31,7 @@
 
     <!-- ERROR 로그를 기록할 Appender -->
     <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>/var/log/sys/error/logFile.log</file>
+        <file>/tmp/logs/sys/error/logFile.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>logs/error/logFile.%d{yyyy-MM-dd_HH-mm}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
