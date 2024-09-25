@@ -11,11 +11,11 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Curre
 import ddingdong.ddingdongBE.domain.activityreport.service.FacadeClubActivityReportService;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -66,11 +66,7 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         List<CreateActivityReportCommand> commands = requests.stream()
             .map(CreateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.create(user, commands);
-
-        String term = facadeClubActivityReportService.getRequestTerm(commands);
-        List<ActivityReportInfo> activityReportInfos = facadeClubActivityReportService.getActivityReportInfos(user, term);
-        facadeClubActivityReportService.uploadImages(activityReportInfos, firstImage, secondImage);
+        facadeClubActivityReportService.create(user, commands, Arrays.asList(firstImage, secondImage));
     }
 
     @Override
@@ -85,10 +81,7 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         List<UpdateActivityReportCommand> commands = requests.stream()
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.update(user, term, commands);
-        List<ActivityReportInfo> activityReportInfos = facadeClubActivityReportService.getActivityReportInfos(
-            user, term);
-        facadeClubActivityReportService.updateImages(activityReportInfos, firstImage, secondImage);
+        facadeClubActivityReportService.update(user, term, commands, Arrays.asList(firstImage, secondImage));
     }
 
     @Override
@@ -97,9 +90,6 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
         String term
     ) {
         User user = principalDetails.getUser();
-        List<ActivityReportInfo> activityReportInfos = facadeClubActivityReportService.getActivityReportInfos(
-            user, term);
-        facadeClubActivityReportService.deleteImages(activityReportInfos);
         facadeClubActivityReportService.delete(user, term);
     }
 
