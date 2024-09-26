@@ -3,7 +3,7 @@ name: prod-server-deployer
 on:
   push:
     branches:
-      - main
+      - chore/DEV-5
 jobs:
   build:
     runs-on: ubuntu-latest
