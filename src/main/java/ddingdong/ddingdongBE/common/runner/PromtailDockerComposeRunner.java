@@ -40,8 +40,11 @@ public class PromtailDockerComposeRunner implements ApplicationRunner {
         int exitCode = process.waitFor();
         if (exitCode == 0) {
             log.info("Promtail started successfully using Docker Compose.");
+            log.info("promtial is tracking info level log");
+            log.warn("promtial is tracking warn level log");
+            log.error("promtial is tracking error level log");
         } else {
-            log.error("Failed to start Promtail. Exit code: " + exitCode);
+            log.error("Failed to start Promtail. Exit code: {}", exitCode);
         }
     }
 }
