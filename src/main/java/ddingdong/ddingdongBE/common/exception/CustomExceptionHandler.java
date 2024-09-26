@@ -68,7 +68,7 @@ public class CustomExceptionHandler {
                                                         HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        loggingApplicationError(connectionInfo
+        loggingApplicationWarn(connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
@@ -81,7 +81,7 @@ public class CustomExceptionHandler {
     public ErrorResponse handlePersistenceException(CustomException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        loggingApplicationError(connectionInfo
+        loggingApplicationWarn(connectionInfo
                 + "\n"
                 + exception.getErrorCode() + " : " + exception.getMessage());
 
@@ -94,7 +94,7 @@ public class CustomExceptionHandler {
     public ErrorResponse handleAuthenticationException(AuthenticationException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
-        loggingApplicationError(connectionInfo
+        loggingApplicationWarn(connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + exception.getMessage());
 
@@ -113,7 +113,7 @@ public class CustomExceptionHandler {
                 .map(FieldError::getDefaultMessage)
                 .orElse("입력된 값이 올바르지 않습니다.");
 
-        loggingApplicationError(connectionInfo
+        loggingApplicationWarn(connectionInfo
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + message);
 
@@ -146,8 +146,12 @@ public class CustomExceptionHandler {
         return requestMethod + requestUrl + "?" + queryString + " from ip: " + clientIp;
     }
 
-    private void loggingApplicationError(String applicationLog) {
+    private void loggingApplicationWarn(String applicationLog) {
         log.warn("errorLog = {}", applicationLog);
+    }
+
+    private void loggingApplicationError(String applicationLog) {
+        log.error("errorLog = {}", applicationLog);
     }
 
     private String getRequestBody(HttpServletRequest request) {
