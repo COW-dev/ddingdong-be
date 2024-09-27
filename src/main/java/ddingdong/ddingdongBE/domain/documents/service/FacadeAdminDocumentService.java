@@ -26,7 +26,6 @@ public class FacadeAdminDocumentService {
     private final FileService fileService;
     private final FileInformationService fileInformationService;
 
-
     @Transactional
     public void create(CreateDocumentCommand command, List<MultipartFile> uploadFiles) {
         Long createdDocumentId = documentService.create(command.toEntity());

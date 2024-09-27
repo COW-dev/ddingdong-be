@@ -21,7 +21,6 @@ public class FacadeDocumentService {
     private final DocumentService documentService;
     private final FileInformationService fileInformationService;
 
-
     public List<DocumentListQuery> getDocuments() {
         return documentService.getDocuments().stream()
             .map(DocumentListQuery::from)
