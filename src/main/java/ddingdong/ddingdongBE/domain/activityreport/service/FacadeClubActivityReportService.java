@@ -3,11 +3,9 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
@@ -18,7 +16,6 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -32,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FacadeActivityReportService {
+public class FacadeClubActivityReportService {
 
     private final ActivityReportService activityReportService;
     private final ActivityReportTermInfoService activityReportTermInfoService;
@@ -49,11 +46,6 @@ public class FacadeActivityReportService {
         return activityReports.stream()
             .map(this::parseToQuery)
             .toList();
-    }
-
-    public List<ActivityReportListQuery> getActivityReports() {
-        List<ActivityReport> activityReports = activityReportService.getActivityReports();
-        return parseToListQuery(activityReports);
     }
 
     public List<ActivityReportListQuery> getMyActivityReports(User user) {
@@ -74,16 +66,16 @@ public class FacadeActivityReportService {
     }
 
     @Transactional
-    public void createActivityTermInfo(CreateActivityTermInfoCommand command) {
-        activityReportTermInfoService.create(command.startDate(), command.totalTermCount());
-    }
-
-    @Transactional
     public void create(
         User user,
-        List<CreateActivityReportCommand> commands
+        List<CreateActivityReportCommand> commands,
+        List<MultipartFile> images
     ) {
         Club club = clubService.getByUserId(user.getId());
+
+        String term = getRequestTerm(commands);
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
+        uploadImages(activityReports, images);
 
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
@@ -95,9 +87,14 @@ public class FacadeActivityReportService {
     public void update(
         User user,
         String term,
-        List<UpdateActivityReportCommand> commands
+        List<UpdateActivityReportCommand> commands,
+        List<MultipartFile> images
     ) {
         Club club = clubService.getByUserId(user.getId());
+
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
+        updateImages(activityReports, images);
+
         List<ActivityReport> updateActivityReports = commands.stream()
             .map(UpdateActivityReportCommand::toEntity)
             .toList();
@@ -110,37 +107,16 @@ public class FacadeActivityReportService {
         List<ActivityReport> activityReports = activityReportService.getActivityReport(
             club.getName(),
             term);
+        deleteImages(activityReports);
         activityReportService.deleteAll(activityReports);
     }
 
-    public List<ActivityReportInfo> getActivityReportInfos(
-        User user,
-        String term
-    ) {
-        Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(
-            club.getName(),
-            term);
-
-        if (activityReports.isEmpty()) {
-            throw new ResourceNotFound("동아리 이름 : " + club.getName() + ", term :" + term
-                + "\nActivityReport를 찾을 수 없습니다.");
-        }
-
-        return activityReports.stream()
-            .map(ActivityReportInfo::from)
-            .toList();
-    }
-
-    @Transactional
-    public void uploadImages(List<ActivityReportInfo> activityReportInfos, MultipartFile firstImage,
-        MultipartFile secondImage) {
-        List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
-        IntStream.range(0, activityReportInfos.size())
+    private void uploadImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
+        IntStream.range(0, activityReports.size())
             .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
             .forEach(index -> {
                 fileService.uploadFile(
-                    activityReportInfos.get(index).id(),
+                    activityReports.get(index).getId(),
                     Collections.singletonList(images.get(index)),
                     IMAGE,
                     ACTIVITY_REPORT
@@ -148,22 +124,18 @@ public class FacadeActivityReportService {
             });
     }
 
-    @Transactional
-    public void updateImages(List<ActivityReportInfo> activityReportInfos, MultipartFile firstImage,
-        MultipartFile secondImage) {
-        List<MultipartFile> images = Arrays.asList(firstImage, secondImage);
-
-        IntStream.range(0, activityReportInfos.size())
+    private void updateImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
+        IntStream.range(0, activityReports.size())
             .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
             .forEach(index -> {
                     fileService.deleteFile(
-                        activityReportInfos.get(index).id(),
+                        activityReports.get(index).getId(),
                         IMAGE,
                         ACTIVITY_REPORT
                     );
 
                     fileService.uploadFile(
-                        activityReportInfos.get(index).id(),
+                        activityReports.get(index).getId(),
                         Collections.singletonList(images.get(index)),
                         IMAGE,
                         ACTIVITY_REPORT
@@ -172,14 +144,13 @@ public class FacadeActivityReportService {
             );
     }
 
-    @Transactional
-    public void deleteImages(List<ActivityReportInfo> activityReportInfos) {
-        activityReportInfos.forEach(query -> {
-            fileService.deleteFile(query.id(), IMAGE, ACTIVITY_REPORT);
+    private void deleteImages(List<ActivityReport> activityReports) {
+        activityReports.forEach(report -> {
+            fileService.deleteFile(report.getId(), IMAGE, ACTIVITY_REPORT);
         });
     }
 
-    public String getRequestTerm(List<CreateActivityReportCommand> commands) {
+    private String getRequestTerm(List<CreateActivityReportCommand> commands) {
         return commands.stream()
             .findFirst()
             .map(CreateActivityReportCommand::term)
