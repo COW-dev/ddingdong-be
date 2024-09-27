@@ -1,11 +1,14 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDetailDocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.CreateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.AdminDocumentResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -28,38 +31,45 @@ import org.springframework.web.multipart.MultipartFile;
 public interface AdminDocumentApi {
 
     @Operation(summary = "어드민 자료실 업로드 API")
-    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ApiResponse(responseCode = "201", description = "어드민 자료실 업로드 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void generateDocument(
-            @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @ModelAttribute GenerateDocumentRequest generateDocumentRequest,
-            @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    void createDocument(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @ModelAttribute CreateDocumentRequest createDocumentRequest,
+        @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
     );
 
-    @Operation(summary = "어드민 자료실 목록 조회 API")
-    @GetMapping
+    @Operation(summary = "어드민 자료실 전체 조회 API")
+    @ApiResponse(responseCode = "200", description = "어드민 자료실 전체 조회 성공",
+        content = @Content(schema = @Schema(implementation = AdminDocumentListResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<AdminDocumentResponse> getAllDocuments();
+    @GetMapping
+    List<AdminDocumentListResponse> getAdminDocuments();
 
     @Operation(summary = "어드민 자료실 상세 조회 API")
-    @GetMapping("/{documentId}")
+    @ApiResponse(responseCode = "200", description = "어드민 자료실 상세 조회 성공",
+        content = @Content(schema = @Schema(implementation = AdminDocumentResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    AdminDetailDocumentResponse getDetailDocument(@PathVariable Long documentId);
+    @GetMapping("/{documentId}")
+    AdminDocumentResponse getAdminDocument(@PathVariable(name = "documentId") Long documentId);
 
     @Operation(summary = "어드민 자료실 수정 API")
-    @PatchMapping(value = "/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "200", description = "어드민 자료실 수정 성공")
+    @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    void modifyDocument(@PathVariable Long documentId,
-                        @ModelAttribute ModifyDocumentRequest modifyDocumentRequest,
-                        @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles);
+    @PatchMapping(value = "/{documentId}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    void updateDocument(@PathVariable Long documentId,
+        @ModelAttribute UpdateDocumentRequest updateDocumentRequest,
+        @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles);
 
     @Operation(summary = "어드민 자료실 삭제 API")
-    @DeleteMapping("/{documentId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "200", description = "어드민 자료실 삭제 성공")
+    @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    void deleteDocument(@PathVariable Long documentId);
+    @DeleteMapping("/{documentId}")
+    void deleteDocument(@PathVariable(name = "documentId") Long documentId);
 }

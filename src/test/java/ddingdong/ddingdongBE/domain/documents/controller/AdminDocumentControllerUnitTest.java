@@ -2,8 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -14,13 +13,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GenerateDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.request.ModifyDocumentRequest;
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
-import java.time.LocalDateTime;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -32,43 +32,41 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")
     @Test
-    void generateDocument() throws Exception {
+    void createDocument() throws Exception {
         // given
-        GenerateDocumentRequest request = GenerateDocumentRequest.builder()
+        CreateDocumentCommand command = CreateDocumentCommand.builder()
                 .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFiles", "test.txt", "text/plain",
                 "test content".getBytes());
-        when(documentService.create(any()))
-                .thenReturn(1L);
 
         // when // then
         mockMvc.perform(multipart("/server/admin/documents")
                         .file(file)
-                        .param("title", request.title())
+                        .param("title", command.title())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        verify(fileService).uploadDownloadableFile(anyLong(), anyList(), any(), any());
+        verify(facadeAdminDocumentService).create(any(), any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 조회 요청을 수행한다.")
     @Test
-    void getAllDocumentsDocuments() throws Exception {
+    void getAdminDocuments() throws Exception {
         //given
-        List<Document> foundDocuments = List.of(
-                Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
-                Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build());
-        when(documentService.getAll()).thenReturn(foundDocuments);
+        List<AdminDocumentListQuery> queries = List.of(
+            AdminDocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
+            AdminDocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
+        when(facadeAdminDocumentService.getDocuments()).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/admin/documents")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(foundDocuments.size())))
+                .andExpect(jsonPath("$", hasSize(queries.size())))
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].title").value("A"))
                 .andExpect(jsonPath("$[1].id").value(2L))
@@ -78,19 +76,25 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("documents 상세조회 요청을 수행한다.")
     @Test
-    void getDocument() throws Exception {
+    void getAdminDocument() throws Exception {
         //given
-        Document document = Document.builder()
-                .title("title")
-                .createdAt(LocalDateTime.now()).build();
-        when(documentService.getById(1L)).thenReturn(document);
+        Long documentId = 1L;
 
-        List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
-                FileResponse.builder().name("fileB").fileUrl("fileBUrl").build());
-        when(fileInformationService.getFileUrls(any())).thenReturn(fileResponses);
+        List<FileResponse> fileResponses = List.of(
+            FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
+            FileResponse.builder().name("fileB").fileUrl("fileBUrl").build()
+        );
+
+        AdminDocumentQuery query = AdminDocumentQuery.builder()
+            .title("title")
+            .createdAt(LocalDate.now())
+            .fileUrls(fileResponses)
+            .build();
+
+        when(facadeAdminDocumentService.getDocument(documentId)).thenReturn(query);
 
         //when //then
-        mockMvc.perform(get("/server/admin/documents/{documentId}", 1L)
+        mockMvc.perform(get("/server/admin/documents/{documentId}", documentId)
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -105,16 +109,15 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void modify() throws Exception {
         // given
-        ModifyDocumentRequest modifyRequest = ModifyDocumentRequest.builder()
+        UpdateDocumentCommand updateCommand = UpdateDocumentCommand.builder()
                 .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFilessymotion-prefix)", "test.txt", "text/plain",
                 "test content".getBytes());
-        when(documentService.update(1L, modifyRequest.toEntity())).thenReturn(1L);
-
+        Long updateId = 1L;
         // when // then
-        mockMvc.perform(multipart("/server/admin/documents/{documentId}", 1L)
+        mockMvc.perform(multipart("/server/admin/documents/{documentId}", updateId)
                         .file(file)
-                        .param("title", modifyRequest.title())
+                        .param("title", updateCommand.title())
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                         .with(csrf())
                         .with(request -> {
@@ -122,10 +125,9 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                             return request;
                         }))
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        verify(fileService).deleteFile(anyLong(), any(), any());
-        verify(fileService).uploadDownloadableFile(anyLong(), any(), any(), any());
+        verify(facadeAdminDocumentService).update(eq(updateId), eq(updateCommand), any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -133,14 +135,13 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void deleteDocument() throws Exception {
         //given
-
+        Long deletedId = 1L;
         //when //then
-        mockMvc.perform(delete("/server/admin/documents/{documentId}", 1L)
+        mockMvc.perform(delete("/server/admin/documents/{documentId}", deletedId)
                         .with(csrf()))
                 .andDo(print())
-                .andExpect(status().isNoContent());
+                .andExpect(status().isOk());
 
-        verify(documentService).delete(1L);
-        verify(fileService).deleteFile(anyLong(), any(), any());
+        verify(facadeAdminDocumentService).delete(deletedId);
     }
 }

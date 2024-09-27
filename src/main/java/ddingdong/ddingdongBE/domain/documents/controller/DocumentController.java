@@ -1,15 +1,11 @@
 package ddingdong.ddingdongBE.domain.documents.controller;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.DOCUMENT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
-
 import ddingdong.ddingdongBE.domain.documents.api.DocumentApi;
-import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DetailDocumentResponse;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
-import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,19 +15,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class DocumentController implements DocumentApi {
 
-    private final DocumentService documentService;
-    private final FileInformationService fileInformationService;
+    private final FacadeDocumentService facadeDocumentService;
 
-    public List<DocumentResponse> getAllDocuments() {
-        return documentService.getAll().stream()
-                .map(DocumentResponse::from)
-                .toList();
+    public List<DocumentListResponse> getDocuments() {
+        List<DocumentListQuery> quries = facadeDocumentService.getDocuments();
+        return quries.stream()
+            .map(DocumentListResponse::from)
+            .toList();
     }
 
-    public DetailDocumentResponse getDetailDocument(@PathVariable Long documentId) {
-        Document document = documentService.getById(documentId);
-        List<FileResponse> fileResponse = fileInformationService.getFileUrls(
-                FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
-        return DetailDocumentResponse.of(document, fileResponse);
+    public DocumentResponse getDocument(@PathVariable Long documentId) {
+        DocumentQuery query = facadeDocumentService.getDocument(documentId);
+        return DocumentResponse.from(query);
     }
 }
