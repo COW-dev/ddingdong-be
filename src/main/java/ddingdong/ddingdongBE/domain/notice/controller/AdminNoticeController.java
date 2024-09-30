@@ -1,39 +1,34 @@
 package ddingdong.ddingdongBE.domain.notice.controller;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
+import ddingdong.ddingdongBE.domain.notice.api.AdminNoticeApi;
+import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/server/admin/notices")
 @RequiredArgsConstructor
-public class AdminNoticeApiController {
+public class AdminNoticeController implements AdminNoticeApi {
 
     private final NoticeService noticeService;
     private final FileService fileService;
 
-    @PostMapping
-    public void registerNotice(@ModelAttribute RegisterNoticeRequest request,
+    @Override
+    public void createNotice(@ModelAttribute CreateNoticeRequest request,
                                @AuthenticationPrincipal PrincipalDetails principalDetails,
                                @RequestPart(name = "thumbnailImages", required = false) List<MultipartFile> images,
                                @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> files) {
@@ -44,7 +39,7 @@ public class AdminNoticeApiController {
         fileService.uploadDownloadableFile(registeredNoticeId, files, FILE, NOTICE);
     }
 
-    @PatchMapping("/{noticeId}")
+    @Override
     public void updateNotice(@PathVariable Long noticeId,
                              @ModelAttribute UpdateNoticeRequest request,
                              @RequestPart(name = "thumbnailImages", required = false) List<MultipartFile> images,
@@ -62,7 +57,7 @@ public class AdminNoticeApiController {
         }
     }
 
-    @DeleteMapping("/{noticeId}")
+    @Override
     public void deleteNotice(@PathVariable Long noticeId) {
         noticeService.delete(noticeId);
 
