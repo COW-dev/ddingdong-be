@@ -1,34 +1,29 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.*;
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_NOTICE;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
+import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
-import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeListResponse;
+import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
-import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.FileStore;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
-
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.stream.Collectors;
-
 import lombok.RequiredArgsConstructor;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
@@ -36,11 +31,20 @@ public class NoticeService {
     private final FileInformationRepository fileInformationRepository;
     private final FileStore fileStore;
 
-    public Long register(User user, CreateNoticeRequest request) {
-        Notice notice = request.toEntity(user);
-        Notice savedNotice = noticeRepository.save(notice);
+    @Transactional
+    public Notice save(Notice notice) {
+        return noticeRepository.save(notice);
+    }
 
-        return savedNotice.getId();
+    @Transactional
+    public void update(Long noticeId, Notice updateNotice) {
+        Notice notice = getById(noticeId);
+        notice.update(updateNotice);
+    }
+
+    public Notice getById(Long noticeId) {
+        return noticeRepository.findById(noticeId)
+            .orElseThrow(() -> new ResourceNotFound("해당 Document(ID: " + noticeId + ")" + "를 찾을 수 없습니다."));
     }
 
     @Transactional(readOnly = true)
@@ -61,46 +65,10 @@ public class NoticeService {
         return NoticeResponse.of(notice, imageUrls, fileUrls);
     }
 
-    public void update(Long noticeId, UpdateNoticeRequest request) {
-        Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
-
-        List<FileInformation> imageInformation = fileInformationService.getFileInformation(
-            IMAGE.getFileType() + NOTICE.getFileDomain() + notice.getId());
-        if (!request.getImgUrls().isEmpty()) {
-            List<FileInformation> deleteInformation = imageInformation.stream()
-                .filter(information -> !request.getImgUrls()
-                    .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                        .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
-                .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(imageInformation);
-        }
-
-        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-            FILE.getFileType() + NOTICE.getFileDomain() + notice.getId());
-        if (!request.getFileUrls().isEmpty()) {
-            List<FileInformation> deleteInformation = fileInformation.stream()
-                .filter(information -> !request.getFileUrls()
-                    .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                        .getFileType() + information.getFileDomainCategory().getFileDomain() + information.getStoredName()))
-                .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(fileInformation);
-        }
-
-        notice.update(request);
-    }
-
     public void delete(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         noticeRepository.delete(notice);
     }
-
 }

@@ -64,4 +64,7 @@ public class FileInformationService {
         fileInformationRepository.delete(clubFileInformation);
     }
 
+    public void deleteAll(List<FileInformation> fileInformations) {
+        fileInformationRepository.deleteAll(fileInformations);
+    }
 }

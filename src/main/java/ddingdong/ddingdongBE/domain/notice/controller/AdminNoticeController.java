@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.notice.api.AdminNoticeApi;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
+import ddingdong.ddingdongBE.domain.notice.service.FacadeAdminNoticeService;
 import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
@@ -24,6 +25,8 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AdminNoticeController implements AdminNoticeApi {
 
+    private final FacadeAdminNoticeService facadeAdminNoticeService;
+
     private final NoticeService noticeService;
     private final FileService fileService;
 
@@ -33,10 +36,7 @@ public class AdminNoticeController implements AdminNoticeApi {
                                @RequestPart(name = "thumbnailImages", required = false) List<MultipartFile> images,
                                @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> files) {
         User adminUser = principalDetails.getUser();
-        Long registeredNoticeId = noticeService.register(adminUser, request);
-
-        fileService.uploadFile(registeredNoticeId, images, IMAGE, NOTICE);
-        fileService.uploadDownloadableFile(registeredNoticeId, files, FILE, NOTICE);
+        facadeAdminNoticeService.create(request.toCommand(adminUser, images, files));
     }
 
     @Override
@@ -45,16 +45,7 @@ public class AdminNoticeController implements AdminNoticeApi {
                              @RequestPart(name = "thumbnailImages", required = false) List<MultipartFile> images,
                              @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> files
     ) {
-        noticeService.update(noticeId, request);
-
-        if (images != null) {
-            fileService.deleteFile(noticeId, IMAGE, NOTICE);
-            fileService.uploadFile(noticeId, images, IMAGE, NOTICE);
-        }
-
-        if (files != null) {
-            fileService.uploadDownloadableFile(noticeId, files, FILE, NOTICE);
-        }
+        facadeAdminNoticeService.update(request.toCommand(noticeId, images, files));
     }
 
     @Override
