@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.notice.entity.Notice;
+import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,13 +15,13 @@ public record NoticeResponse(
     List<FileResponse> fileUrls
 ) {
 
-    public static NoticeResponse of(Notice notice, List<String> imageUrls, List<FileResponse> fileUrls) {
+    public static NoticeResponse from(NoticeQuery query) {
         return NoticeResponse.builder()
-            .title(notice.getTitle())
-            .content(notice.getContent())
-            .createdAt(notice.getCreatedAt())
-            .imageUrls(imageUrls)
-            .fileUrls(fileUrls)
+            .title(query.title())
+            .content(query.content())
+            .createdAt(query.createdAt())
+            .imageUrls(query.imageUrls())
+            .fileUrls(query.fileUrls())
             .build();
     }
 }

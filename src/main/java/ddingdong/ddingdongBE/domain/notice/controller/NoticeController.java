@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeRespons
 import ddingdong.ddingdongBE.domain.notice.service.FacadeNoticeService;
 import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListQuery;
+import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,7 +29,7 @@ public class NoticeController implements NoticeApi {
 
     @Override
     public NoticeResponse getNotice(@PathVariable Long noticeId) {
-        return noticeService.getNotice(noticeId);
+        NoticeQuery query = facadeNoticeService.getNotice(noticeId);
+        return NoticeResponse.from(query);
     }
-
 }
