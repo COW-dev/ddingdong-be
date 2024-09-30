@@ -9,6 +9,8 @@ import ddingdong.ddingdongBE.common.handler.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -29,6 +31,26 @@ public class SecurityConfig {
     @Value("security.actuator.base-path")
     private String actuatorPath;
 
+    @Value("${MONITORING_USERNAME}")
+    private String username;
+
+    @Value("${MONITORING_USER_PASSWORD}")
+    private String password;
+
+    @Bean
+    public AuthenticationManager authManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder authenticationManagerBuilder =
+            http.getSharedObject(AuthenticationManagerBuilder.class);
+
+        authenticationManagerBuilder
+            .inMemoryAuthentication()
+            .withUser(username)
+            .password(passwordEncoder().encode(password)) // 인코딩된 비밀번호 사용
+            .roles("ADMIN"); // 역할 설정
+
+        return authenticationManagerBuilder.build();
+    }
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
             throws Exception {
@@ -39,7 +61,10 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
-                .requestMatchers(actuatorPath).hasRole("ADMIN")
+                .requestMatchers(actuatorPath)
+                .hasRole("ADMIN")
+                .requestMatchers("/metrics")
+                .hasRole("ADMIN")
                 .requestMatchers(GET,
                     API_PREFIX + "/clubs/**",
                     API_PREFIX + "/notices/**",
