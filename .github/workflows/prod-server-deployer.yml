@@ -3,7 +3,7 @@ name: prod-server-deployer
 on:
   push:
     branches:
-      - main
+      - chore/DEV-77
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -53,6 +53,7 @@ jobs:
           cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
           cp -r promtail deploy/promtail
+          cp -r nodeexporter deploy/nodeexporter
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
@@ -72,9 +73,3 @@ jobs:
 
       - name: Test with Gradle
         run: ./gradlew test --no-daemon
-
-      - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
-        env:
-          CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
-          file: ./build/reports/jacoco/test/jacocoTestReport.xml

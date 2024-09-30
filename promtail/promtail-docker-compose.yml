@@ -1,7 +1,6 @@
 version: '3'
 
 services:
-
   promtail:
     image: grafana/promtail:2.9.1
     container_name: promtail
