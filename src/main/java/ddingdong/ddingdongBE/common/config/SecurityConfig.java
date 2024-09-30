@@ -9,11 +9,16 @@ import ddingdong.ddingdongBE.common.handler.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
@@ -29,59 +34,44 @@ public class SecurityConfig {
     @Value("security.actuator.base-path")
     private String actuatorPath;
 
+    private final ActuatorProperties actuatorProperties;
+
+    public SecurityConfig(ActuatorProperties actuatorProperties) {
+        this.actuatorProperties = actuatorProperties;
+    }
+
     @Bean
+    @Order(0)
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
-            throws Exception {
+        throws Exception {
         http
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers(API_PREFIX + "/auth/**",
-                    API_PREFIX + "/events/**")
-                .permitAll()
+                .requestMatchers(API_PREFIX + "/auth/**").permitAll()
                 .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
-                .requestMatchers(actuatorPath + "/**")
-                .permitAll()
-                .requestMatchers("/metrics")
-                .permitAll()
                 .requestMatchers(GET,
                     API_PREFIX + "/clubs/**",
                     API_PREFIX + "/notices/**",
                     API_PREFIX + "/banners/**",
                     API_PREFIX + "/documents/**",
                     API_PREFIX + "/questions/**",
-                    API_PREFIX + "/feeds/**")
-                .permitAll()
+                    API_PREFIX + "/feeds/**").permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
                 .permitAll()
-                .anyRequest()
-                .authenticated()
+                .anyRequest().authenticated()
             )
-            .cors(cors -> cors
-                .configurationSource(corsConfigurationSource())
-            )
-            /*
-            csrf, headers, http-basic, rememberMe, formLogin 비활성화
-            */
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
             .csrf(AbstractHttpConfigurer::disable)
             .headers(AbstractHttpConfigurer::disable)
             .httpBasic(AbstractHttpConfigurer::disable)
             .rememberMe(AbstractHttpConfigurer::disable)
             .formLogin(AbstractHttpConfigurer::disable)
             .logout(AbstractHttpConfigurer::disable)
-            /*
-            Session 설정
-             */
             .sessionManagement(session -> session
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             )
-            /*
-            Jwt 필터
-             */
             .addFilterBefore(authenticationFilter(authService, config),
                 UsernamePasswordAuthenticationFilter.class)
-            /*
-            exceptionHandling
-             */
             .exceptionHandling(exceptions -> exceptions
                 .authenticationEntryPoint(restAuthenticationEntryPoint())
                 .accessDeniedHandler(accessDeniedHandler())
@@ -90,9 +80,36 @@ public class SecurityConfig {
         return http.build();
     }
 
+    @Bean
+    @Order(1)
+    public SecurityFilterChain actuatorSecurity(HttpSecurity http, PasswordEncoder passwordEncoder)
+        throws Exception {
+        http
+            .authorizeHttpRequests(auth -> auth
+                .requestMatchers(actuatorPath + "/**").hasRole("ACTUATOR")
+                .anyRequest().denyAll()
+            )
+            .httpBasic(AbstractHttpConfigurer::disable)
+            .userDetailsService(userDetailsService(passwordEncoder))
+            .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            .csrf(AbstractHttpConfigurer::disable)
+            .sessionManagement(session -> session
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            );
+
+        return http.build();
+    }
+
+    public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
+        User user = (User) User.withUsername(actuatorProperties.getUser())
+            .password(passwordEncoder.encode(actuatorProperties.getPassword()))
+            .roles(actuatorProperties.getRoleName())
+            .build();
+        return new InMemoryUserDetailsManager(user);
+    }
+
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-
         configuration.addAllowedOriginPattern("*");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
@@ -100,7 +117,6 @@ public class SecurityConfig {
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
-
         return source;
     }
 
@@ -123,5 +139,4 @@ public class SecurityConfig {
     public CustomAccessDeniedHandler accessDeniedHandler() {
         return new CustomAccessDeniedHandler();
     }
-
 }

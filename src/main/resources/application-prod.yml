@@ -21,11 +21,6 @@ spring:
     init:
       mode: never
 
-  security:
-    user:
-      name: ${MONITORING_USERNAME}
-      password: ${MONITORING_USER_PASSWORD}
-
 jwt:
   header: "Authorization"
   prefix: "Bearer"
@@ -58,3 +53,8 @@ management:
       enabled: true
   server:
     port: 9090
+
+actuator:
+  user: ${MONITORING_USERNAME}
+  password: ${MONITORING_USER_PASSWORD}
+  role-name: ACTUATOR
