@@ -42,6 +42,11 @@ public class NoticeService {
         notice.update(updateNotice);
     }
 
+    @Transactional
+    public void delete(Notice notice) {
+        noticeRepository.delete(notice);
+    }
+
     public Notice getById(Long noticeId) {
         return noticeRepository.findById(noticeId)
             .orElseThrow(() -> new ResourceNotFound("해당 Document(ID: " + noticeId + ")" + "를 찾을 수 없습니다."));
@@ -63,12 +68,5 @@ public class NoticeService {
         List<FileResponse> fileUrls = fileInformationService.getFileUrls(FILE.getFileType() + NOTICE.getFileDomain() + noticeId);
 
         return NoticeResponse.of(notice, imageUrls, fileUrls);
-    }
-
-    public void delete(Long noticeId) {
-        Notice notice = noticeRepository.findById(noticeId)
-                .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
-
-        noticeRepository.delete(notice);
     }
 }

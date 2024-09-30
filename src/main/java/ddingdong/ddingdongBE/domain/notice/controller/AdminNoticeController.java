@@ -1,9 +1,5 @@
 package ddingdong.ddingdongBE.domain.notice.controller;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.NOTICE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.notice.api.AdminNoticeApi;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
@@ -50,10 +46,6 @@ public class AdminNoticeController implements AdminNoticeApi {
 
     @Override
     public void deleteNotice(@PathVariable Long noticeId) {
-        noticeService.delete(noticeId);
-
-        fileService.deleteFile(noticeId, IMAGE, NOTICE);
-        fileService.deleteFile(noticeId, FILE, NOTICE);
+        facadeAdminNoticeService.delete(noticeId);
     }
-
 }

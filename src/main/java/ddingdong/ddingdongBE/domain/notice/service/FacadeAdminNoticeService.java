@@ -44,6 +44,13 @@ public class FacadeAdminNoticeService {
         noticeService.update(command.noticeId(), command.toEntity());
     }
 
+    public void delete(Long noticeId) {
+        Notice notice = noticeService.getById(noticeId);
+        noticeService.delete(notice);
+        fileService.deleteFile(noticeId, IMAGE, NOTICE);
+        fileService.deleteFile(noticeId, FILE, NOTICE);
+    }
+
     private void deleteImageInformation(Long noticeId, List<String> imgUrls) {
         List<FileInformation> imageInformation = fileInformationService.getFileInformation(
             IMAGE.getFileType() + NOTICE.getFileDomain() + noticeId);
