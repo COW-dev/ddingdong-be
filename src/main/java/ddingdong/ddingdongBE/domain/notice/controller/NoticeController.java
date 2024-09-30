@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.domain.notice.api.NoticeApi;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeListResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.service.FacadeNoticeService;
-import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListQuery;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class NoticeController implements NoticeApi {
 
     private final FacadeNoticeService facadeNoticeService;
-    private final NoticeService noticeService;
 
     @Override
     public List<NoticeListResponse> getNotices() {

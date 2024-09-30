@@ -5,9 +5,7 @@ import ddingdong.ddingdongBE.domain.notice.api.AdminNoticeApi;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.service.FacadeAdminNoticeService;
-import ddingdong.ddingdongBE.domain.notice.service.NoticeService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,9 +20,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class AdminNoticeController implements AdminNoticeApi {
 
     private final FacadeAdminNoticeService facadeAdminNoticeService;
-
-    private final NoticeService noticeService;
-    private final FileService fileService;
 
     @Override
     public void createNotice(@ModelAttribute CreateNoticeRequest request,
