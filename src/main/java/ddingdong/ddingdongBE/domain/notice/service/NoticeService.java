@@ -6,13 +6,11 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeListResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
-import ddingdong.ddingdongBE.file.FileStore;
 import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -27,9 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class NoticeService {
 
     private final NoticeRepository noticeRepository;
-    private final FileInformationService fileInformationService;
-    private final FileInformationRepository fileInformationRepository;
-    private final FileStore fileStore;
 
     @Transactional
     public Notice save(Notice notice) {
@@ -53,10 +48,8 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeListResponse> getAllNotices() {
-        return noticeRepository.findAll().stream()
-                .map(NoticeListResponse::from)
-                .collect(Collectors.toList());
+    public List<Notice> getNotices() {
+        return noticeRepository.findAll();
     }
 
     @Transactional(readOnly = true)

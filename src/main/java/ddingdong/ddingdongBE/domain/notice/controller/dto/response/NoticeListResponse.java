@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.notice.entity.Notice;
+import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListQuery;
 import java.time.LocalDateTime;
 import lombok.Builder;
 
@@ -11,11 +11,11 @@ public record NoticeListResponse(
     LocalDateTime createdAt
 ) {
 
-    public static NoticeListResponse from(Notice notice) {
+    public static NoticeListResponse from(NoticeListQuery query) {
         return NoticeListResponse.builder()
-            .id(notice.getId())
-            .title(notice.getTitle())
-            .createdAt(notice.getCreatedAt())
+            .id(query.id())
+            .title(query.title())
+            .createdAt(query.createdAt())
             .build();
     }
 }
