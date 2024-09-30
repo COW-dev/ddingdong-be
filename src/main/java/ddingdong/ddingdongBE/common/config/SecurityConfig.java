@@ -29,7 +29,6 @@ public class SecurityConfig {
     @Value("security.actuator.base-path")
     private String actuatorPath;
 
-
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
             throws Exception {
@@ -40,7 +39,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
-                .requestMatchers(actuatorPath)
+                .requestMatchers(actuatorPath + "/**")
                 .authenticated()
                 .requestMatchers("/metrics")
                 .authenticated()
