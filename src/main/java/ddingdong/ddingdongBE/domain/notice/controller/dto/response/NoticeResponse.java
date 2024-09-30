@@ -1,29 +1,27 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
+import ddingdong.ddingdongBE.file.dto.FileResponse;
 import java.time.LocalDateTime;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import lombok.Builder;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class NoticeResponse {
+@Builder
+public record NoticeResponse(
+    String title,
+    String content,
+    LocalDateTime createdAt,
+    List<String> imageUrls,
+    List<FileResponse> fileUrls
+) {
 
-    private Long id;
-
-    private String title;
-
-    private LocalDateTime createdAt;
-
-    private NoticeResponse(Long id, String title, LocalDateTime createdAt) {
-        this.id = id;
-        this.title = title;
-        this.createdAt = createdAt;
+    public static NoticeResponse of(Notice notice, List<String> imageUrls, List<FileResponse> fileUrls) {
+        return NoticeResponse.builder()
+            .title(notice.getTitle())
+            .content(notice.getContent())
+            .createdAt(notice.getCreatedAt())
+            .imageUrls(imageUrls)
+            .fileUrls(fileUrls)
+            .build();
     }
-
-    public static NoticeResponse from(Notice notice) {
-        return new NoticeResponse(notice.getId(), notice.getTitle(), notice.getCreatedAt());
-    }
-
 }

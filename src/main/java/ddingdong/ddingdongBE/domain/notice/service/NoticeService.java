@@ -7,10 +7,10 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.request.RegisterNoticeRequest;
+import ddingdong.ddingdongBE.domain.notice.controller.dto.request.CreateNoticeRequest;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.response.DetailNoticeResponse;
 import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeResponse;
+import ddingdong.ddingdongBE.domain.notice.controller.dto.response.NoticeListResponse;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -36,7 +36,7 @@ public class NoticeService {
     private final FileInformationRepository fileInformationRepository;
     private final FileStore fileStore;
 
-    public Long register(User user, RegisterNoticeRequest request) {
+    public Long register(User user, CreateNoticeRequest request) {
         Notice notice = request.toEntity(user);
         Notice savedNotice = noticeRepository.save(notice);
 
@@ -44,21 +44,21 @@ public class NoticeService {
     }
 
     @Transactional(readOnly = true)
-    public List<NoticeResponse> getAllNotices() {
+    public List<NoticeListResponse> getAllNotices() {
         return noticeRepository.findAll().stream()
-                .map(NoticeResponse::from)
+                .map(NoticeListResponse::from)
                 .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
-    public DetailNoticeResponse getNotice(Long noticeId) {
+    public NoticeResponse getNotice(Long noticeId) {
         Notice notice = noticeRepository.findById(noticeId)
                 .orElseThrow(() -> new NoSuchElementException(NO_SUCH_NOTICE.getText()));
 
         List<String> imageUrls = fileInformationService.getImageUrls(IMAGE.getFileType() + NOTICE.getFileDomain() + noticeId);
         List<FileResponse> fileUrls = fileInformationService.getFileUrls(FILE.getFileType() + NOTICE.getFileDomain() + noticeId);
 
-        return DetailNoticeResponse.of(notice, imageUrls, fileUrls);
+        return NoticeResponse.of(notice, imageUrls, fileUrls);
     }
 
     public void update(Long noticeId, UpdateNoticeRequest request) {
