@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
 import ddingdong.ddingdongBE.common.handler.CustomAccessDeniedHandler;
 import ddingdong.ddingdongBE.common.handler.RestAuthenticationEntryPoint;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
@@ -27,18 +28,22 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableWebSecurity
+@EnableConfigurationProperties
 public class SecurityConfig {
 
     private static final String API_PREFIX = "/server";
 
-    @Value("security.actuator.base-path")
+    @Value("management.endpoints.web.base-path")
     private String actuatorPath;
 
-    private final ActuatorProperties actuatorProperties;
+    @Value("actuator")
+    private String userName;
 
-    public SecurityConfig(ActuatorProperties actuatorProperties) {
-        this.actuatorProperties = actuatorProperties;
-    }
+    @Value("actuator")
+    private String password;
+
+    @Value("actuator")
+    private String roleName;
 
     @Bean
     @Order(0)
@@ -101,9 +106,9 @@ public class SecurityConfig {
     }
 
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
-        User user = (User) User.withUsername(actuatorProperties.getUser())
-            .password(passwordEncoder.encode(actuatorProperties.getPassword()))
-            .roles(actuatorProperties.getRoleName())
+        User user = (User) User.withUsername(userName)
+            .password(passwordEncoder.encode(password))
+            .roles(roleName)
             .build();
         return new InMemoryUserDetailsManager(user);
     }

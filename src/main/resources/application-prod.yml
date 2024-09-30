@@ -55,6 +55,6 @@ management:
     port: 9090
 
 actuator:
-  user: ${MONITORING_USERNAME}
+  user-name: ${MONITORING_USERNAME}
   password: ${MONITORING_USER_PASSWORD}
   role-name: ACTUATOR
