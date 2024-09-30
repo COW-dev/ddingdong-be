@@ -49,7 +49,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health
+        include: info, health, prometheus
       base-path: ${ACTUATOR_BASE_PATH}
     jmx:
       exposure:
