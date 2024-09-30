@@ -54,6 +54,7 @@ public class SecurityConfig {
                 .requestMatchers(API_PREFIX + "/auth/**").permitAll()
                 .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
+                .requestMatchers(API_PREFIX + "/actuator/**").permitAll()
                 .requestMatchers(GET,
                     API_PREFIX + "/clubs/**",
                     API_PREFIX + "/notices/**",
