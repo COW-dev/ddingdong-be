@@ -37,10 +37,10 @@ public record ActivityReportResponse(
     @Schema(description = "활동 이미지 URL 목록",
         example = """
             [
-            "https://example.com/image1.jpg", 
+            "https://example.com/image1.jpg",
             "https://example.com/image2.jpg"]
             """)
-    List<String> ImageUrls,
+    List<String> imageUrls,
 
     @Schema(description = "활동 참여자 목록",
         example = """
@@ -62,7 +62,7 @@ public record ActivityReportResponse(
             .place(query.place())
             .startDate(query.startDate())
             .endDate(query.endDate())
-            .ImageUrls(query.ImageUrls())
+            .imageUrls(query.imageUrls())
             .participants(query.participants())
             .build();
     }
