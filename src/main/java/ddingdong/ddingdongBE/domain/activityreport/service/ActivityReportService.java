@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -25,8 +26,8 @@ public class ActivityReportService {
     }
 
     public List<ActivityReport> getActivityReport(
-        final String term,
-        final String clubName
+        final String clubName,
+        final String term
     ) {
         return activityReportRepository.findByClubNameAndTerm(clubName, term);
     }
@@ -39,12 +40,9 @@ public class ActivityReportService {
 
     @Transactional
     public void update(
-        final String clubName,
-        final String term,
+        final List<ActivityReport> activityReports,
         final List<ActivityReport> updateActivityReports
     ) {
-        List<ActivityReport> activityReports = getActivityReport(term, clubName);
-
         IntStream.range(0, updateActivityReports.size())
             .forEach(index -> {
                 ActivityReport activityReport = activityReports.get(index);
@@ -56,5 +54,14 @@ public class ActivityReportService {
     @Transactional
     public void deleteAll(List<ActivityReport> activityReports) {
         activityReportRepository.deleteAll(activityReports);
+    }
+
+    public List<ActivityReport> getActivityReportOrThrow(String clubName, String term) {
+        List<ActivityReport> activityReports = getActivityReport(clubName, term);
+        if (activityReports.isEmpty()) {
+            throw new ResourceNotFound("해당 ActivityReports(clubName: " + clubName + ", term: " + term + ")"
+                + "를 찾을 수 없습니다.");
+        }
+        return activityReports;
     }
 }

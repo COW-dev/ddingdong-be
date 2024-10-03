@@ -41,8 +41,9 @@ public class FacadeClubActivityReportService {
         String term,
         String clubName
     ) {
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(term,
-            clubName);
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(
+            clubName,
+            term);
         return activityReports.stream()
             .map(this::parseToQuery)
             .toList();
@@ -72,15 +73,14 @@ public class FacadeClubActivityReportService {
         List<MultipartFile> images
     ) {
         Club club = clubService.getByUserId(user.getId());
-
         String term = getRequestTerm(commands);
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
-        uploadImages(activityReports, images);
-
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
         });
+
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
+        uploadImages(activityReports, images);
     }
 
     @Transactional
@@ -92,21 +92,23 @@ public class FacadeClubActivityReportService {
     ) {
         Club club = clubService.getByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
+            club.getName(),
+            term);
         updateImages(activityReports, images);
 
         List<ActivityReport> updateActivityReports = commands.stream()
             .map(UpdateActivityReportCommand::toEntity)
             .toList();
-        activityReportService.update(club.getName(), term, updateActivityReports);
+        activityReportService.update(activityReports, updateActivityReports);
     }
 
     @Transactional
     public void delete(User user, String term) {
         Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(
-            term,
-            club.getName());
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
+            club.getName(),
+            term);
         deleteImages(activityReports);
         activityReportService.deleteAll(activityReports);
     }
