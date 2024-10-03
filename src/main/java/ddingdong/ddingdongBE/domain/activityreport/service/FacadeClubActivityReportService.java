@@ -105,8 +105,8 @@ public class FacadeClubActivityReportService {
     public void delete(User user, String term) {
         Club club = clubService.getByUserId(user.getId());
         List<ActivityReport> activityReports = activityReportService.getActivityReport(
-            club.getName(),
-            term);
+            term,
+            club.getName());
         deleteImages(activityReports);
         activityReportService.deleteAll(activityReports);
     }
