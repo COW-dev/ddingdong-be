@@ -33,9 +33,8 @@ public class ActivityReportService {
     }
 
     @Transactional
-    public Long create(final ActivityReport activityReport) {
-        ActivityReport savedActivityReport = activityReportRepository.save(activityReport);
-        return savedActivityReport.getId();
+    public void create(final ActivityReport activityReport) {
+        activityReportRepository.save(activityReport);
     }
 
     @Transactional
