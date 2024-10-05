@@ -18,8 +18,8 @@ public class DocumentController implements DocumentApi {
     private final FacadeDocumentService facadeDocumentService;
 
     public List<DocumentListResponse> getDocuments() {
-        List<DocumentListQuery> quries = facadeDocumentService.getDocuments();
-        return quries.stream()
+        List<DocumentListQuery> queries = facadeDocumentService.getDocuments();
+        return queries.stream()
             .map(DocumentListResponse::from)
             .toList();
     }
