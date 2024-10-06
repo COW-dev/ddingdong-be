@@ -1,25 +1,31 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
-import lombok.Getter;
 
-@Getter
-public class ActivityReportListResponse {
-    private String name;
+@Builder
+public record ActivityReportListResponse(
+    @Schema(description = "동아리 이름", example = "카우")
+    String name,
 
-    private String term;
+    @Schema(description = "회차", example = "1")
+    String term,
 
-    private List<ActivityReportDto> activityReports;
+    @Schema(description = "활동보고서 정보")
+    List<ActivityReportDto> activityReports
+) {
 
-    @Builder
-    public ActivityReportListResponse(String name, String term, List<ActivityReportDto> activityReportDtos) {
-        this.name = name;
-        this.term = term;
-        this.activityReports = activityReportDtos;
-    }
+    public static ActivityReportListResponse from(ActivityReportListQuery query) {
+        List<ActivityReportDto> activityReports = query.activityReports().stream()
+            .map(ActivityReportDto::from)
+            .toList();
 
-    public static ActivityReportListResponse of(String name, String term, List<ActivityReportDto> activityReportDtos) {
-        return new ActivityReportListResponse(name, term, activityReportDtos);
+        return ActivityReportListResponse.builder()
+            .name(query.name())
+            .term(query.term())
+            .activityReports(activityReports)
+            .build();
     }
 }

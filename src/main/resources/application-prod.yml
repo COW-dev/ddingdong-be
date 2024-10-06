@@ -33,6 +33,9 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 36000
 
+logging:
+  config: classpath:logback-${spring.profiles.active}.xml
+
 sentry:
   dsn: ${SENTRY_DSN}
   environment: prod

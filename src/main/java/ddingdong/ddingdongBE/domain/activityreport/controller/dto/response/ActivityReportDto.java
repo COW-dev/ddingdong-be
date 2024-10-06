@@ -1,17 +1,18 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
-import lombok.Getter;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 
-@Getter
-public class ActivityReportDto {
-    private Long id;
+@Builder
+public record ActivityReportDto(
+    @Schema(description = "활동보고서 ID", example = "1")
+    Long id
+) {
 
-    public ActivityReportDto (Long id) {
-        this.id = id;
-    }
-
-    public static ActivityReportDto from(ActivityReport activityReport) {
-        return new ActivityReportDto(activityReport.getId());
+    public static ActivityReportDto from(ActivityReportInfo activityReportInfo) {
+        return ActivityReportDto.builder()
+            .id(activityReportInfo.id())
+            .build();
     }
 }

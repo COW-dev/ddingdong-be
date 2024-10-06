@@ -52,6 +52,7 @@ jobs:
           mkdir -p deploy
           cp build/libs/*.jar deploy/application.jar
           cp Procfile deploy/Procfile
+          cp -r promtail deploy/promtail
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
           cd deploy && zip -r deploy.zip .
@@ -67,7 +68,7 @@ jobs:
           version_label: Github Action-${{steps.current-time.outputs.formattedTime}} # 배포 버전은 타임스탬프를 이용하여 구분
           region: ap-northeast-2
           deployment_package: deploy/deploy.zip
-          wait_for_environment_recovery: 180
+          wait_for_environment_recovery: 300
 
       - name: Test with Gradle
         run: ./gradlew test --no-daemon

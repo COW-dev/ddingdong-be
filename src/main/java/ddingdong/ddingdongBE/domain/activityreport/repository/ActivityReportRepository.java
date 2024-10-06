@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface ActivityReportRepository extends JpaRepository<ActivityReport, Long> {
+
     List<ActivityReport> findByClubNameAndTerm(String clubName, String term);
 
     List<ActivityReport> findByClubName(String clubName);

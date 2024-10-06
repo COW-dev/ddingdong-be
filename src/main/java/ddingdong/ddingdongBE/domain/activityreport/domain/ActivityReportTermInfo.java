@@ -44,5 +44,4 @@ public class ActivityReportTermInfo {
         this.startDate = startDate;
         this.endDate = endDate;
     }
-
 }

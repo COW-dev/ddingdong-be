@@ -1,53 +1,69 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
+import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Getter;
+import lombok.Builder;
 
-@Getter
-public class ActivityReportResponse {
+@Builder
+public record ActivityReportResponse(
+    @Schema(description = "활동보고서 ID", example = "1")
+    Long id,
 
-	private Long id;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime createdAt;
-	private String name;
-	private String content;
-	private String place;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime startDate;
-	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
-	private LocalDateTime endDate;
-	private List<String> imageUrls;
-	private List<Participant> participants;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(description = "활동보고서 생성 일자", example = "2024-01-02")
+    LocalDateTime createdAt,
 
-	public ActivityReportResponse(Long id, String name, String content, String place, LocalDateTime startDate,
-								  LocalDateTime endDate, List<String> imageUrls, List<Participant> participants,
-								  LocalDateTime createdAt) {
-		this.id = id;
-		this.name = name;
-		this.content = content;
-		this.place = place;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.imageUrls = imageUrls;
-		this.participants = participants;
-		this.createdAt = createdAt;
-	}
+    @Schema(description = "동아리 이름", example = "카우")
+    String name,
 
-	public static ActivityReportResponse of(ActivityReport activityReport, List<String> imageUrls) {
-		return new ActivityReportResponse(
-			activityReport.getId(),
-			activityReport.getClub().getName(),
-			activityReport.getContent(),
-			activityReport.getPlace(),
-			activityReport.getStartDate(),
-			activityReport.getEndDate(),
-			imageUrls,
-			activityReport.getParticipants(),
-			activityReport.getCreatedAt()
-		);
-	}
+    @Schema(description = "활동 보고서 내용", example = "세션을 진행하였습니다")
+    String content,
+
+    @Schema(description = "활동 장소", example = "S1353")
+    String place,
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(description = "활동 시작 일자", example = "2024-01-02")
+    LocalDateTime startDate,
+
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm")
+    @Schema(description = "활동 종료 일자", example = "2024-01-04")
+    LocalDateTime endDate,
+
+    @Schema(description = "활동 이미지 URL 목록",
+        example = """
+            [
+            "https://example.com/image1.jpg",
+            "https://example.com/image2.jpg"]
+            """)
+    List<String> imageUrls,
+
+    @Schema(description = "활동 참여자 목록",
+        example = """
+             [{
+             "name" : "홍길동",
+             "studentId" : "1",
+             "department" : "서부서"
+             }]
+            """)
+    List<Participant> participants
+) {
+
+    public static ActivityReportResponse from(ActivityReportQuery query) {
+        return ActivityReportResponse.builder()
+            .id(query.id())
+            .createdAt(query.createdAt())
+            .name(query.name())
+            .content(query.content())
+            .place(query.place())
+            .startDate(query.startDate())
+            .endDate(query.endDate())
+            .imageUrls(query.imageUrls())
+            .participants(query.participants())
+            .build();
+    }
 }

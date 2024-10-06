@@ -8,6 +8,9 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.Activ
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -29,32 +32,39 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ClubActivityReportApi {
 
     @Operation(summary = "현재 활동보고서 회차 조회")
-    @GetMapping("/activity-reports/current-term")
+    @ApiResponse(responseCode = "200", description = "현재 활동보고서 회차 조회 성공",
+        content = @Content(schema = @Schema(implementation = CurrentTermResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/activity-reports/current-term")
     CurrentTermResponse getCurrentTerm();
 
     @Operation(summary = "본인 동아리 활동보고서 전체 조회")
-    @GetMapping("/my/activity-reports")
+    @ApiResponse(responseCode = "200", description = "본인 동아리 활동보고서 전체 조회 성공",
+        content = @Content(schema = @Schema(implementation = ActivityReportListResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/activity-reports")
     List<ActivityReportListResponse> getMyActivityReports(
         @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
     @Operation(summary = "활동보고서 상세 조회")
-    @GetMapping("/activity-reports")
+    @ApiResponse(responseCode = "200", description = "활동보고서 상세 조회 성공",
+        content = @Content(schema = @Schema(implementation = ActivityReportResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/activity-reports")
     List<ActivityReportResponse> getActivityReport(
         @RequestParam("term") String term,
         @RequestParam("club_name") String clubName
     );
 
     @Operation(summary = "활동보고서 등록")
-    @PostMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "201", description = "활동보고서 등록 성공")
+    @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
+    @PostMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void createActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestPart(value = "reportData") List<CreateActivityReportRequest> requests,
@@ -63,9 +73,10 @@ public interface ClubActivityReportApi {
     );
 
     @Operation(summary = "활동보고서 수정")
-    @PatchMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "200", description = "활동보고서 수정 성공")
+    @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @PatchMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void updateActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term,
@@ -75,18 +86,21 @@ public interface ClubActivityReportApi {
     );
 
     @Operation(summary = "활동보고서 삭제")
-    @DeleteMapping("/my/activity-reports")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "200", description = "활동보고서 삭제 성공")
+    @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/my/activity-reports")
     void deleteActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term
     );
 
     @Operation(summary = "활동 보고서 회차별 기간 조회 API")
-    @GetMapping("/activity-reports/term")
+    @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 조회 성공",
+        content = @Content(schema = @Schema(implementation = ActivityReportTermInfoResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/activity-reports/term")
     List<ActivityReportTermInfoResponse> getActivityTermInfos();
 
 }

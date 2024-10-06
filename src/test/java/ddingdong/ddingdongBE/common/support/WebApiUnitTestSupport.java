@@ -8,6 +8,8 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
+import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
+import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.question.controller.AdminQuestionController;
 import ddingdong.ddingdongBE.domain.question.controller.QuestionController;
@@ -42,6 +44,10 @@ public abstract class WebApiUnitTestSupport {
   protected MockMvc mockMvc;
   @MockBean
   protected DocumentService documentService;
+  @MockBean
+  protected FacadeDocumentService facadeDocumentService;
+  @MockBean
+  protected FacadeAdminDocumentService facadeAdminDocumentService;
   @MockBean
   protected FileService fileService;
   @MockBean

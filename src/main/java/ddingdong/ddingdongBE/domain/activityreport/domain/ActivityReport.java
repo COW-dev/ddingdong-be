@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.domain;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -13,7 +12,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -29,74 +27,55 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 public class ActivityReport extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	private String term;
+    private String term;
 
-	@Column(length = 100)
-	private String content;
+    @Column(length = 100)
+    private String content;
 
-	private String place;
+    private String place;
 
-	private LocalDateTime startDate;
+    private LocalDateTime startDate;
 
-	private LocalDateTime endDate;
+    private LocalDateTime endDate;
 
-	@ElementCollection
-	private List<Participant> participants;
+    @ElementCollection
+    private List<Participant> participants;
 
-	@Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-	private LocalDateTime deletedAt;
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "club_id")
-	private Club club;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
+    private Club club;
 
-	@Builder
-	public ActivityReport(String term, String content, String place, LocalDateTime startDate, LocalDateTime endDate,
-		List<Participant> participants, Club club) {
-		this.term = term;
-		this.content = content;
-		this.place = place;
-		this.startDate = startDate;
-		this.endDate = endDate;
-		this.participants = participants;
-		this.club = club;
-	}
+    @Builder
+    public ActivityReport(
+        String term,
+        String content,
+        String place,
+        LocalDateTime startDate,
+        LocalDateTime endDate,
+        List<Participant> participants,
+        Club club
+    ) {
+        this.term = term;
+        this.content = content;
+        this.place = place;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.participants = participants;
+        this.club = club;
+    }
 
-	public void update(final UpdateActivityReportRequest updateActivityReportRequest) {
-		this.content = updateActivityReportRequest.getContent() != null
-			? updateActivityReportRequest.getContent()
-			: this.content;
-
-		this.place = updateActivityReportRequest.getPlace() != null
-			? updateActivityReportRequest.getPlace()
-			: this.place;
-
-		this.startDate = processDate(updateActivityReportRequest.getStartDate(), this.startDate);
-		this.endDate = processDate(updateActivityReportRequest.getEndDate(), this.endDate);
-
-		this.participants = updateActivityReportRequest.getParticipants() != null
-			? updateActivityReportRequest.getParticipants()
-			: this.participants;
-	}
-
-	private LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
-		if (dateString == null) {
-			return currentDate;
-		}
-
-		if (dateString.isBlank()) {
-			return null;
-		}
-
-		return parseToLocalDateTime(dateString);
-	}
-
-	private LocalDateTime parseToLocalDateTime(String dateString) {
-		return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
-	}
-
+    public void update(final ActivityReport updatedActivityReport) {
+        this.content = updatedActivityReport.getContent();
+        this.place = updatedActivityReport.getPlace();
+        this.startDate = updatedActivityReport.getStartDate();
+        this.endDate = updatedActivityReport.getEndDate();
+        this.participants = updatedActivityReport.getParticipants();
+    }
 }
