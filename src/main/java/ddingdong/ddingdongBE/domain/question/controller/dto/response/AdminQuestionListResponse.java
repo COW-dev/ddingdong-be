@@ -11,7 +11,7 @@ import lombok.Builder;
         description = "어드민 - FAQ 질문 목록 응답"
 )
 @Builder
-public record AdminQuestionResponse(
+public record AdminQuestionListResponse(
 
         @Schema(description = "질문 식별자", example = "1")
         Long id,
@@ -24,8 +24,8 @@ public record AdminQuestionResponse(
         LocalDate createdAt
 ) {
 
-    public static AdminQuestionResponse from(Question question) {
-        return AdminQuestionResponse.builder()
+    public static AdminQuestionListResponse from(Question question) {
+        return AdminQuestionListResponse.builder()
                 .id(question.getId())
                 .question(question.getQuestion())
                 .reply(question.getReply())
