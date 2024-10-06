@@ -36,6 +36,7 @@ public class FacadeAdminNoticeService {
         fileService.uploadDownloadableFile(savedNoticeId, command.files(), FILE, NOTICE);
     }
 
+    @Transactional
     public void update(UpdateNoticeCommand command) {
         deleteImageInformation(command.noticeId(), command.imgUrls());
         deleteFileInformation(command.noticeId(), command.fileUrls());
@@ -44,6 +45,7 @@ public class FacadeAdminNoticeService {
         noticeService.update(command.noticeId(), command.toEntity());
     }
 
+    @Transactional
     public void delete(Long noticeId) {
         Notice notice = noticeService.getById(noticeId);
         noticeService.delete(notice);
