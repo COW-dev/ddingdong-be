@@ -13,6 +13,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
 
     private final FileMetaDataService fileMetaDataService;
 
+    @Override
     public FileMetaData getFileUrlWithMetaData(UUID fileId) {
         return fileMetaDataService.getByFileId(fileId);
     }

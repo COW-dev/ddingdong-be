@@ -16,10 +16,12 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
     private final FileMetaDataRepository fileMetaDataRepository;
 
     @Transactional
+    @Override
     public void crate(FileMetaData fileMetaData) {
         fileMetaDataRepository.save(fileMetaData);
     }
 
+    @Override
     public FileMetaData getByFileId(UUID fileId) {
         return fileMetaDataRepository.findById(fileId)
                 .orElseThrow(() -> new ResourceNotFound("FimeMetaData(fileId=" + fileId + "를 찾을 수 없습니다."));
