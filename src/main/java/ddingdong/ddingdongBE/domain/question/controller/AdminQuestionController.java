@@ -5,7 +5,7 @@ import ddingdong.ddingdongBE.domain.question.api.AdminQuestionApi;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
-import ddingdong.ddingdongBE.domain.question.service.QuestionService;
+import ddingdong.ddingdongBE.domain.question.service.GeneralQuestionService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,28 +15,28 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminQuestionController implements AdminQuestionApi {
 
-    private final QuestionService questionService;
+    private final GeneralQuestionService generalQuestionService;
 
     @Override
     public void generateQuestion(PrincipalDetails principalDetails, GenerateQuestionRequest generateDocumentRequest) {
         User admin = principalDetails.getUser();
-        questionService.create(generateDocumentRequest.toEntity(admin));
+        generalQuestionService.create(generateDocumentRequest.toEntity(admin));
     }
 
     @Override
     public List<AdminQuestionListResponse> getAllQuestions() {
-        return questionService.getAll().stream()
+        return generalQuestionService.getAll().stream()
                 .map(AdminQuestionListResponse::from)
                 .toList();
     }
 
     @Override
     public void modifyQuestion(Long questionId, ModifyQuestionRequest modifyQuestionRequest) {
-        questionService.update(questionId, modifyQuestionRequest.toEntity());
+        generalQuestionService.update(questionId, modifyQuestionRequest.toEntity());
     }
 
     @Override
     public void deleteQuestion(Long questionId) {
-        questionService.delete(questionId);
+        generalQuestionService.delete(questionId);
     }
 }

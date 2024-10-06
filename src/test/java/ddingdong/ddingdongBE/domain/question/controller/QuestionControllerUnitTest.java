@@ -26,7 +26,7 @@ class QuestionControllerUnitTest extends WebApiUnitTestSupport {
         List<Question> foundQuestions = List.of(
                 Question.builder().id(1L).question("A").reply("A").createdAt(LocalDateTime.now()).build(),
                 Question.builder().id(2L).question("B").reply("B").createdAt(LocalDateTime.now()).build());
-        when(questionService.getAll()).thenReturn(foundQuestions);
+        when(generalQuestionService.getAll()).thenReturn(foundQuestions);
 
         //when //then
         mockMvc.perform(get("/server/questions")
