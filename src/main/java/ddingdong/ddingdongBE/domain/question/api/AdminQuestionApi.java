@@ -4,7 +4,7 @@ package ddingdong.ddingdongBE.domain.question.api;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
-import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionResponse;
+import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -37,7 +37,7 @@ public interface AdminQuestionApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<AdminQuestionResponse> getAllQuestions();
+    List<AdminQuestionListResponse> getAllQuestions();
 
     @Operation(summary = "어드민 FAQ 수정 API")
     @PatchMapping(value = "/{questionId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)

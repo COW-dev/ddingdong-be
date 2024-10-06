@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.question.api.AdminQuestionApi;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
-import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionResponse;
+import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
 import ddingdong.ddingdongBE.domain.question.service.QuestionService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
@@ -24,9 +24,9 @@ public class AdminQuestionController implements AdminQuestionApi {
     }
 
     @Override
-    public List<AdminQuestionResponse> getAllQuestions() {
+    public List<AdminQuestionListResponse> getAllQuestions() {
         return questionService.getAll().stream()
-                .map(AdminQuestionResponse::from)
+                .map(AdminQuestionListResponse::from)
                 .toList();
     }
 
