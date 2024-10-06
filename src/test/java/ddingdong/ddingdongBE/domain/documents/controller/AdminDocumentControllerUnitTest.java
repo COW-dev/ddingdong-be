@@ -19,7 +19,7 @@ import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocument
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
