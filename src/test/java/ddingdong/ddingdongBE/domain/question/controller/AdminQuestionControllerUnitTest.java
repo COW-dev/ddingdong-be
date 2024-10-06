@@ -45,7 +45,7 @@ class AdminQuestionControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        verify(questionService).create(any());
+        verify(generalQuestionService).create(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -58,7 +58,7 @@ class AdminQuestionControllerUnitTest extends WebApiUnitTestSupport {
         List<Question> foundQuestions = List.of(
                 Question.builder().id(1L).question("A").reply("A").createdAt(questionACreatedAt).build(),
                 Question.builder().id(2L).question("B").reply("B").createdAt(questionBCreatedAt).build());
-        when(questionService.getAll()).thenReturn(foundQuestions);
+        when(generalQuestionService.getAll()).thenReturn(foundQuestions);
 
         //when //then
         mockMvc.perform(get("/server/admin/questions")
@@ -94,7 +94,7 @@ class AdminQuestionControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(questionService).update(anyLong(), any());
+        verify(generalQuestionService).update(anyLong(), any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -109,7 +109,7 @@ class AdminQuestionControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isNoContent());
 
-        verify(questionService).delete(1L);
+        verify(generalQuestionService).delete(1L);
     }
 
 }
