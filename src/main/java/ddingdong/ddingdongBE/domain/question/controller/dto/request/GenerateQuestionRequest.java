@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.domain.question.service.dto.command.CreateQuestionCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;

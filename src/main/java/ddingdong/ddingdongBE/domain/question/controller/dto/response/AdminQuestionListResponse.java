@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.domain.question.service.dto.query.AdminQuestionListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
