@@ -17,7 +17,7 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
 
     @Transactional
     @Override
-    public void crate(FileMetaData fileMetaData) {
+    public void create(FileMetaData fileMetaData) {
         fileMetaDataRepository.save(fileMetaData);
     }
 
