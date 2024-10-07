@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.question.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
-import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
+import ddingdong.ddingdongBE.domain.question.controller.dto.request.UpdateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -44,7 +44,7 @@ public interface AdminQuestionApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void modifyQuestion(@PathVariable Long questionId,
-                        @ModelAttribute ModifyQuestionRequest modifyQuestionRequest);
+                        @ModelAttribute UpdateQuestionRequest updateQuestionRequest);
 
     @Operation(summary = "어드민 FAQ 삭제 API")
     @DeleteMapping("/{questionId}")

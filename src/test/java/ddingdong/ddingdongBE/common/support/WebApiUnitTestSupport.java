@@ -13,7 +13,10 @@ import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.question.controller.AdminQuestionController;
 import ddingdong.ddingdongBE.domain.question.controller.QuestionController;
+import ddingdong.ddingdongBE.domain.question.service.FacadeAdminQuestionService;
+import ddingdong.ddingdongBE.domain.question.service.FacadeUserQuestionService;
 import ddingdong.ddingdongBE.domain.question.service.GeneralQuestionService;
+import ddingdong.ddingdongBE.domain.question.service.QuestionService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.ClubScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
@@ -31,8 +34,6 @@ import org.springframework.web.context.WebApplicationContext;
 @WebMvcTest(controllers = {
     AdminDocumentController.class,
     DocumentController.class,
-    AdminQuestionController.class,
-    QuestionController.class,
     AdminScoreHistoryController.class,
     ClubScoreHistoryController.class
 })

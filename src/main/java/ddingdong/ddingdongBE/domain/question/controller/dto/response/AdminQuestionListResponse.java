@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.question.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
+import ddingdong.ddingdongBE.domain.question.service.dto.query.AdminQuestionListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -24,12 +25,12 @@ public record AdminQuestionListResponse(
         LocalDate createdAt
 ) {
 
-    public static AdminQuestionListResponse from(Question question) {
+    public static AdminQuestionListResponse from(AdminQuestionListQuery query) {
         return AdminQuestionListResponse.builder()
-                .id(question.getId())
-                .question(question.getQuestion())
-                .reply(question.getReply())
-                .createdAt(question.getCreatedAt().toLocalDate())
+                .id(query.id())
+                .question(query.question())
+                .reply(query.reply())
+                .createdAt(query.createdAt())
                 .build();
     }
 }
