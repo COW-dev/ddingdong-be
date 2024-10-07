@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.question.entity.Question;
+import ddingdong.ddingdongBE.domain.question.service.dto.query.UserQuestionListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
@@ -19,11 +20,11 @@ public record QuestionListResponse(
         String reply
 ) {
 
-    public static QuestionListResponse from(Question question) {
+    public static QuestionListResponse from(UserQuestionListQuery query) {
         return QuestionListResponse.builder()
-                .id(question.getId())
-                .question(question.getQuestion())
-                .reply(question.getReply())
+                .id(query.id())
+                .question(query.question())
+                .reply(query.reply())
                 .build();
     }
 }
