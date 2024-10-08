@@ -16,11 +16,11 @@ public class AdminScoreHistoryController implements AdminScoreHistoryApi {
 
     private final FacadeAdminScoreHistoryService facadeAdminScoreHistoryService;
 
-    public void register(Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
+    public void createScoreHistory(Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
         facadeAdminScoreHistoryService.create(createScoreHistoryRequest.toCommand(clubId));
     }
 
-    public ScoreHistoryListResponse findAllScoreHistories(Long clubId) {
+    public ScoreHistoryListResponse findClubScoreHistories(Long clubId) {
         AdminClubScoreHistoryListQuery query = facadeAdminScoreHistoryService.findAllByClubId(clubId);
         List<ScoreHistoryResponse> scoreHistoryResponses = query.scoreHistories().stream()
                 .map(ScoreHistoryResponse::from)

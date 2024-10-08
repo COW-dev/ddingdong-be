@@ -55,7 +55,7 @@ public interface AdminScoreHistoryApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void register(@PathVariable Long clubId, @Valid @RequestBody CreateScoreHistoryRequest createScoreHistoryRequest);
+    void createScoreHistory(@PathVariable Long clubId, @Valid @RequestBody CreateScoreHistoryRequest createScoreHistoryRequest);
 
     @Operation(summary = "어드민 동아리 점수 내역 목록 조회 API")
     @ApiResponses(value = {
@@ -83,6 +83,6 @@ public interface AdminScoreHistoryApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    ScoreHistoryListResponse findAllScoreHistories(@PathVariable Long clubId);
+    ScoreHistoryListResponse findClubScoreHistories(@PathVariable Long clubId);
 
 }
