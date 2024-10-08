@@ -3,7 +3,9 @@ package ddingdong.ddingdongBE.domain.documents.controller.dto.request;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 @Schema(
     name = "CreateDocumentRequest",
@@ -15,10 +17,11 @@ public record CreateDocumentRequest(
     String title
 ) {
 
-    public CreateDocumentCommand toCommand(User admin) {
+    public CreateDocumentCommand toCommand(User admin, List<MultipartFile> uploadFiles) {
         return CreateDocumentCommand.builder()
             .title(title)
             .user(admin)
+            .uploadFiles(uploadFiles)
             .build();
     }
 }
