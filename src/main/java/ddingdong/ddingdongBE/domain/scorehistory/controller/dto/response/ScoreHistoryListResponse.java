@@ -15,7 +15,7 @@ import lombok.Builder;
         description = "어드민 - 동아리 점수 변동 내역 목록 응답"
 )
 @Builder
-public record ScoreHistoryFilterByClubResponse(
+public record ScoreHistoryListResponse(
 
         @Schema(description = "동아리 총 점수", example = "50")
         BigDecimal totalScore,
@@ -23,8 +23,8 @@ public record ScoreHistoryFilterByClubResponse(
         List<ScoreHistoryResponse> scoreHistories
 ) {
 
-    public static ScoreHistoryFilterByClubResponse of(Club club, List<ScoreHistoryResponse> scoreHistories) {
-        return ScoreHistoryFilterByClubResponse.builder()
+    public static ScoreHistoryListResponse of(Club club, List<ScoreHistoryResponse> scoreHistories) {
+        return ScoreHistoryListResponse.builder()
                 .totalScore(club.getScore().getValue())
                 .scoreHistories(scoreHistories)
                 .build();
