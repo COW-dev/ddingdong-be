@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.question.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.question.api.AdminQuestionApi;
-import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
+import ddingdong.ddingdongBE.domain.question.controller.dto.request.CreateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.request.UpdateQuestionRequest;
 import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
 import ddingdong.ddingdongBE.domain.question.service.FacadeAdminQuestionService;
@@ -18,7 +18,7 @@ public class AdminQuestionController implements AdminQuestionApi {
     private final FacadeAdminQuestionService facadeAdminQuestionService;
 
     @Override
-    public void generateQuestion(PrincipalDetails principalDetails, GenerateQuestionRequest generateDocumentRequest) {
+    public void createQuestion(PrincipalDetails principalDetails, CreateQuestionRequest generateDocumentRequest) {
         User admin = principalDetails.getUser();
         facadeAdminQuestionService.create(generateDocumentRequest.toCommand(admin));
     }
@@ -31,7 +31,7 @@ public class AdminQuestionController implements AdminQuestionApi {
     }
 
     @Override
-    public void modifyQuestion(Long questionId, UpdateQuestionRequest updateQuestionRequest) {
+    public void updateQuestion(Long questionId, UpdateQuestionRequest updateQuestionRequest) {
         facadeAdminQuestionService.update(updateQuestionRequest.toCommand(questionId));
     }
 

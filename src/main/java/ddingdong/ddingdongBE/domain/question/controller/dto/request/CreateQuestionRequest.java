@@ -10,7 +10,7 @@ import lombok.Builder;
         description = "FAQ 질문 생성 요청"
 )
 @Builder
-public record GenerateQuestionRequest(
+public record CreateQuestionRequest(
         @Schema(description = "FAQ 질문", example = "질문")
         String question,
         @Schema(description = "FAQ 답변", example = "답변")
