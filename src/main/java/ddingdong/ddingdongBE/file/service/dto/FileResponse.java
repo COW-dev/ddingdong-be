@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.file.dto;
+package ddingdong.ddingdongBE.file.service.dto;
 
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import io.swagger.v3.oas.annotations.media.Schema;

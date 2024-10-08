@@ -12,7 +12,7 @@ import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

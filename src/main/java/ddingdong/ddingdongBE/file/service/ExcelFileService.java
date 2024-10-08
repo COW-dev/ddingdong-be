@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.ExcelIO;
 import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcelFile;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
-import ddingdong.ddingdongBE.file.dto.ExcelClubMemberDto;
+import ddingdong.ddingdongBE.file.service.dto.ExcelClubMemberDto;
 import java.awt.Color;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

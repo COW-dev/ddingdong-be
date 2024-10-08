@@ -9,7 +9,7 @@ import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocument
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
