@@ -6,7 +6,4 @@ import java.util.List;
 public interface FacadeUserQuestionService {
 
     List<UserQuestionListQuery> getAll();
-
-
-
 }
