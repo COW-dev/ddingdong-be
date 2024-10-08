@@ -1,11 +1,10 @@
 package ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreCategory;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
+import ddingdong.ddingdongBE.domain.scorehistory.service.dto.command.CreateScoreHistoryCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.math.BigDecimal;
 import jakarta.validation.constraints.NotNull;
+import java.math.BigDecimal;
 import lombok.Builder;
 
 @Schema(
@@ -30,9 +29,9 @@ public record CreateScoreHistoryRequest(
         BigDecimal amount
 ) {
 
-    public ScoreHistory toEntity(Club club) {
-        return ScoreHistory.builder()
-                .club(club)
+    public CreateScoreHistoryCommand toCommand(Long clubId) {
+        return CreateScoreHistoryCommand.builder()
+                .clubId(clubId)
                 .amount(amount)
                 .scoreCategory(ScoreCategory.from(scoreCategory))
                 .reason(reason)
