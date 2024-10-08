@@ -2,12 +2,10 @@ package ddingdong.ddingdongBE.domain.question.service;
 
 import static ddingdong.ddingdongBE.common.exception.ErrorMessage.NO_SUCH_QUESTION;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.question.entity.Question;
 import ddingdong.ddingdongBE.domain.question.repository.QuestionRepository;
 import java.util.List;
-import java.util.NoSuchElementException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
