@@ -6,6 +6,4 @@ import java.util.UUID;
 public interface FacadeFileMetaDataService {
 
     FileMetaData getFileUrlWithMetaData(UUID fileId);
-
-
 }
