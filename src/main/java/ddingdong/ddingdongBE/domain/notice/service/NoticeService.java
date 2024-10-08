@@ -36,7 +36,6 @@ public class NoticeService {
             .orElseThrow(() -> new ResourceNotFound("해당 Document(ID: " + noticeId + ")" + "를 찾을 수 없습니다."));
     }
 
-    @Transactional(readOnly = true)
     public List<Notice> getNotices() {
         return noticeRepository.findAll();
     }
