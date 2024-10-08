@@ -47,9 +47,9 @@ public class Notice extends BaseEntity {
         this.content = content;
     }
 
-    public void update(Notice updatedNotice) {
-        this.title = updatedNotice.getTitle();
-        this.content = updatedNotice.getContent();
+    public void update(Notice notice) {
+        this.title = notice.getTitle();
+        this.content = notice.getContent();
     }
 
 }
