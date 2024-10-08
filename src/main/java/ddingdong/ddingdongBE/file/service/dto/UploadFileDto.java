@@ -1,10 +1,11 @@
-package ddingdong.ddingdongBE.file.dto;
+package ddingdong.ddingdongBE.file.service.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+//TODO: 리팩토링 후 제거
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UploadFileDto {

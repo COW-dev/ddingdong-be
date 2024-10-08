@@ -7,7 +7,7 @@ import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

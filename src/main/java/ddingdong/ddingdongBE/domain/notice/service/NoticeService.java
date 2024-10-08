@@ -15,7 +15,7 @@ import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.repository.NoticeRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.FileStore;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 
 import java.util.List;
 import java.util.NoSuchElementException;
