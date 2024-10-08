@@ -4,6 +4,6 @@ create table file_meta_data
         primary key,
     created_at    timestamp    null,
     updated_at    timestamp    null,
-    file_category varchar(255) null,
+    file_category varchar(255) not null,
     file_name     varchar(255) not null
 );

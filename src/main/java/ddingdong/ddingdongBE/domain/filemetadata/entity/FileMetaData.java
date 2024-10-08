@@ -22,6 +22,7 @@ public class FileMetaData extends BaseEntity {
     private UUID fileId;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private FileCategory fileCategory;
 
     @Column(nullable = false)
