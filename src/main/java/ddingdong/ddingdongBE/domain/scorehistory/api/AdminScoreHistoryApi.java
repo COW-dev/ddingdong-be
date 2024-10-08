@@ -75,7 +75,7 @@ public interface AdminScoreHistoryApi {
                                                   "message": "존재하지 않는 동아리입니다.",
                                                       "timestamp": "2024-08-22T00:08:46.990585"
                                                     }
-                                                    """
+                                                  """
                                     )
                             })
             )
