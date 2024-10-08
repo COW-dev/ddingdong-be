@@ -35,8 +35,8 @@ public interface AdminNoticeApi {
         @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> files);
 
     @Operation(summary = "공지사항 수정")
-    @ApiResponse(responseCode = "200", description = "공지사항 수정 성공")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "204", description = "공지사항 수정 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping("/{noticeId}")
     void updateNotice(@PathVariable Long noticeId,
@@ -46,8 +46,8 @@ public interface AdminNoticeApi {
     );
 
     @Operation(summary = "공지사항 삭제")
-    @ApiResponse(responseCode = "200", description = "공지사항 삭제 성공")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "204", description = "공지사항 삭제 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/{noticeId}")
     void deleteNotice(@PathVariable Long noticeId);
