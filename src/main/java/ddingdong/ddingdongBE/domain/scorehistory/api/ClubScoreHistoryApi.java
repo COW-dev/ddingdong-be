@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.scorehistory.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse;
+import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +19,6 @@ public interface ClubScoreHistoryApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    ScoreHistoryFilterByClubResponse findMyScoreHistories(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    ScoreHistoryListResponse findMyScoreHistories(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
 }
