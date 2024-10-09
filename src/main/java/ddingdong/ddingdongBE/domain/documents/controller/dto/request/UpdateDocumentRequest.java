@@ -2,7 +2,9 @@ package ddingdong.ddingdongBE.domain.documents.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.util.List;
 import lombok.Builder;
+import org.springframework.web.multipart.MultipartFile;
 
 @Schema(
     name = "UpdateDocumentRequest",
@@ -14,9 +16,11 @@ public record UpdateDocumentRequest(
     String title
 ) {
 
-    public UpdateDocumentCommand toCommand() {
+    public UpdateDocumentCommand toCommand(Long documentId, List<MultipartFile> uploadFiles) {
         return UpdateDocumentCommand.builder()
             .title(title)
+            .documentId(documentId)
+            .uploadFiles(uploadFiles)
             .build();
     }
 }

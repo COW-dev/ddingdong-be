@@ -31,7 +31,7 @@ public class AdminDocumentController implements AdminDocumentApi {
         @RequestPart(name = "uploadFiles") List<MultipartFile> uploadFiles
     ) {
         User admin = principalDetails.getUser();
-        facadeAdminDocumentService.create(createDocumentRequest.toCommand(admin), uploadFiles);
+        facadeAdminDocumentService.create(createDocumentRequest.toCommand(admin, uploadFiles));
     }
 
     public List<AdminDocumentListResponse> getAdminDocuments() {
@@ -51,7 +51,7 @@ public class AdminDocumentController implements AdminDocumentApi {
         @ModelAttribute UpdateDocumentRequest updateDocumentRequest,
         @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> uploadFiles
     ) {
-        facadeAdminDocumentService.update(documentId, updateDocumentRequest.toCommand(), uploadFiles);
+        facadeAdminDocumentService.update(updateDocumentRequest.toCommand(documentId, uploadFiles));
     }
 
     public void deleteDocument(@PathVariable Long documentId) {

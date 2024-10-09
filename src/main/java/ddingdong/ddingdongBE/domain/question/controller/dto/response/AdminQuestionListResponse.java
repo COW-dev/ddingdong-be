@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.question.entity.Question;
+import ddingdong.ddingdongBE.domain.question.service.dto.query.AdminQuestionListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -11,7 +11,7 @@ import lombok.Builder;
         description = "어드민 - FAQ 질문 목록 응답"
 )
 @Builder
-public record AdminQuestionResponse(
+public record AdminQuestionListResponse(
 
         @Schema(description = "질문 식별자", example = "1")
         Long id,
@@ -24,12 +24,12 @@ public record AdminQuestionResponse(
         LocalDate createdAt
 ) {
 
-    public static AdminQuestionResponse from(Question question) {
-        return AdminQuestionResponse.builder()
-                .id(question.getId())
-                .question(question.getQuestion())
-                .reply(question.getReply())
-                .createdAt(question.getCreatedAt().toLocalDate())
+    public static AdminQuestionListResponse from(AdminQuestionListQuery query) {
+        return AdminQuestionListResponse.builder()
+                .id(query.id())
+                .question(query.question())
+                .reply(query.reply())
+                .createdAt(query.createdAt())
                 .build();
     }
 }

@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.documents.controller;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -19,7 +18,7 @@ import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocument
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +34,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     void createDocument() throws Exception {
         // given
         CreateDocumentCommand command = CreateDocumentCommand.builder()
-                .title("testTitle").build();
+            .title("testTitle").build();
         MockMultipartFile file = new MockMultipartFile("uploadFiles", "test.txt", "text/plain",
                 "test content".getBytes());
 
@@ -48,7 +47,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isCreated());
 
-        verify(facadeAdminDocumentService).create(any(), any());
+        verify(facadeAdminDocumentService).create(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -110,7 +109,9 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     void modify() throws Exception {
         // given
         UpdateDocumentCommand updateCommand = UpdateDocumentCommand.builder()
-                .title("testTitle").build();
+            .documentId(1L)
+            .title("testTitle")
+            .build();
         MockMultipartFile file = new MockMultipartFile("uploadFilessymotion-prefix)", "test.txt", "text/plain",
                 "test content".getBytes());
         Long updateId = 1L;
@@ -127,7 +128,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(facadeAdminDocumentService).update(eq(updateId), eq(updateCommand), any());
+        verify(facadeAdminDocumentService).update(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")

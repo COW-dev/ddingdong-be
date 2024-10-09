@@ -9,13 +9,12 @@ import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocument
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.AdminDocumentQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @RequiredArgsConstructor
@@ -27,17 +26,17 @@ public class FacadeAdminDocumentService {
     private final FileInformationService fileInformationService;
 
     @Transactional
-    public void create(CreateDocumentCommand command, List<MultipartFile> uploadFiles) {
+    public void create(CreateDocumentCommand command) {
         Long createdDocumentId = documentService.create(command.toEntity());
-        fileService.uploadDownloadableFile(createdDocumentId, uploadFiles, FILE, DOCUMENT);
+        fileService.uploadDownloadableFile(createdDocumentId, command.uploadFiles(), FILE, DOCUMENT);
     }
 
     @Transactional
-    public void update(Long documentId, UpdateDocumentCommand command,
-        List<MultipartFile> uploadFiles) {
+    public void update(UpdateDocumentCommand command) {
+        Long documentId = command.documentId();
         documentService.update(documentId, command.toEntity());
         fileService.deleteFile(documentId, FILE, DOCUMENT);
-        fileService.uploadDownloadableFile(documentId, uploadFiles, FILE, DOCUMENT);
+        fileService.uploadDownloadableFile(documentId, command.uploadFiles(), FILE, DOCUMENT);
     }
 
     @Transactional

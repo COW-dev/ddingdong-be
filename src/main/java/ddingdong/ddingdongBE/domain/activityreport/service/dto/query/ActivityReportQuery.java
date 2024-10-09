@@ -15,7 +15,7 @@ public record ActivityReportQuery(
     String place,
     LocalDateTime startDate,
     LocalDateTime endDate,
-    List<String> ImageUrls,
+    List<String> imageUrls,
     List<Participant> participants
 ) {
 
@@ -28,7 +28,7 @@ public record ActivityReportQuery(
         .place(activityReport.getPlace())
         .startDate(activityReport.getStartDate())
         .endDate(activityReport.getEndDate())
-        .ImageUrls(imageUrls)
+        .imageUrls(imageUrls)
         .participants(activityReport.getParticipants())
         .build();
   }

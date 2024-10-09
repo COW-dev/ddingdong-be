@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.service.dto.query;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
