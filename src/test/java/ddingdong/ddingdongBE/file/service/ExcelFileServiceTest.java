@@ -13,7 +13,7 @@ import ddingdong.ddingdongBE.common.exception.ParsingExcelFileException.NonExcel
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

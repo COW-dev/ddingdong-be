@@ -1,7 +1,7 @@
-package ddingdong.ddingdongBE.domain.club.repository;
+package ddingdong.ddingdongBE.domain.clubmember.repository;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 
 
 import java.util.List;

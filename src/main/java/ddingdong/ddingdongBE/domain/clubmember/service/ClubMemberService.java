@@ -1,8 +1,8 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

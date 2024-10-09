@@ -10,7 +10,7 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMember
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.club.service.FacadeClubMemberService;
+import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.net.URLEncoder;

@@ -1,8 +1,9 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;
 import java.util.HashSet;
 import java.util.List;
