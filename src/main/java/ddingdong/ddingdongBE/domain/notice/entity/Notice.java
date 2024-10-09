@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.notice.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.notice.controller.dto.request.UpdateNoticeRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -48,9 +47,9 @@ public class Notice extends BaseEntity {
         this.content = content;
     }
 
-    public void update(UpdateNoticeRequest request) {
-        this.title = request.getTitle() != null ? request.getTitle() : this.title;
-        this.content = request.getContent() != null ? request.getContent() : this.content;
+    public void update(Notice notice) {
+        this.title = notice.getTitle();
+        this.content = notice.getContent();
     }
 
 }
