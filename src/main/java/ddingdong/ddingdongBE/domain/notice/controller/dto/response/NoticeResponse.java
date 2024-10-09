@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
