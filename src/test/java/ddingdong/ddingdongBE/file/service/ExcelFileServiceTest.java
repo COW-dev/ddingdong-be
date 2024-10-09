@@ -35,8 +35,6 @@ class ExcelFileServiceTest extends TestContainerSupport {
     @Autowired
     private ExcelFileService excelFileService;
 
-    private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
-
 
     @Test
     @DisplayName("엑셀 파일을 정상적으로 파싱하는 경우")
@@ -169,52 +167,4 @@ class ExcelFileServiceTest extends TestContainerSupport {
                 .isInstanceOf(InvalidatedEnumValue.class)
                 .hasMessage("동아리원의 역할은 LEADER, EXECUTIVE, MEMBER 중 하나입니다.");
     }
-
-//    @DisplayName("동아리원 명단 엑셀 파일을 생성한다.")
-//    @Test
-//    void generateClubMemberListFile() throws IOException {
-//        //given
-//        List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
-//                .setNotNull("id")
-//                .setNotNull("name")
-//                .setNotNull("studentNumber")
-//                .setNotNull("phoneNumber")
-//                .setNotNull("position")
-//                .setNotNull("department")
-//                .sampleList(5);
-//
-//        //when
-//        byte[] excelFileBytes = excelFileService.generateClubMemberListFile(clubMembers);
-//
-//        //then
-//        try (Workbook workbook = new XSSFWorkbook(new ByteArrayInputStream(excelFileBytes))) {
-//            Sheet sheet = workbook.getSheet("동아리원 명단");
-//            assertThat(sheet).isNotNull();
-//
-//            // header
-//            Row headerRow = sheet.getRow(0);
-//            assertThat(headerRow.getCell(0).getStringCellValue()).isEqualTo("식별자(수정X)");
-//            assertThat(headerRow.getCell(1).getStringCellValue()).isEqualTo("이름");
-//            assertThat(headerRow.getCell(2).getStringCellValue()).isEqualTo("학번");
-//            assertThat(headerRow.getCell(3).getStringCellValue()).isEqualTo("연락처");
-//            assertThat(headerRow.getCell(4).getStringCellValue()).isEqualTo("비교(임원진) - 영어만");
-//            assertThat(headerRow.getCell(5).getStringCellValue()).isEqualTo("학과(부)");
-//
-//            CellStyle headerStyle = headerRow.getCell(0).getCellStyle();
-//            Font font = workbook.getFontAt(headerStyle.getFontIndex());
-//            assertThat(font.getBold()).isTrue();
-//
-//            // data
-//            for (int i = 0; i < clubMembers.size(); i++) {
-//                Row dataRow = sheet.getRow(i + 1);
-//                ClubMember member = clubMembers.get(i);
-//
-//                assertThat(dataRow.getCell(1).getStringCellValue()).isEqualTo(member.getName());
-//                assertThat(dataRow.getCell(2).getStringCellValue()).isEqualTo(member.getStudentNumber());
-//                assertThat(dataRow.getCell(3).getStringCellValue()).isEqualTo(member.getPhoneNumber());
-//                assertThat(dataRow.getCell(4).getStringCellValue()).isEqualTo(member.getPosition().name());
-//                assertThat(dataRow.getCell(5).getStringCellValue()).isEqualTo(member.getDepartment());
-//            }
-//        }
-//    }
 }
