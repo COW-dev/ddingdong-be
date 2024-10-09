@@ -11,9 +11,7 @@ import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.question.controller.AdminQuestionController;
-import ddingdong.ddingdongBE.domain.question.controller.QuestionController;
-import ddingdong.ddingdongBE.domain.question.service.QuestionService;
+import ddingdong.ddingdongBE.domain.question.service.GeneralQuestionService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.ClubScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
@@ -31,8 +29,6 @@ import org.springframework.web.context.WebApplicationContext;
 @WebMvcTest(controllers = {
     AdminDocumentController.class,
     DocumentController.class,
-    AdminQuestionController.class,
-    QuestionController.class,
     AdminScoreHistoryController.class,
     ClubScoreHistoryController.class
 })
@@ -53,7 +49,7 @@ public abstract class WebApiUnitTestSupport {
   @MockBean
   protected FileInformationService fileInformationService;
   @MockBean
-  protected QuestionService questionService;
+  protected GeneralQuestionService generalQuestionService;
   @MockBean
   protected ClubService clubService;
   @MockBean

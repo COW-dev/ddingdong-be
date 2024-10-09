@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.api;
 
 
-import ddingdong.ddingdongBE.domain.question.controller.dto.response.QuestionResponse;
+import ddingdong.ddingdongBE.domain.question.controller.dto.response.QuestionListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -17,6 +17,6 @@ public interface QuestionApi {
     @Operation(summary = "FAQ 목록 조회 API")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    List<QuestionResponse> getAllQuestions();
+    List<QuestionListResponse> getAllQuestions();
 
 }
