@@ -8,7 +8,7 @@ import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationServi
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListQuery;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

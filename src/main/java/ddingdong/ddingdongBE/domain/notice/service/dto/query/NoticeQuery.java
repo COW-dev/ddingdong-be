@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
