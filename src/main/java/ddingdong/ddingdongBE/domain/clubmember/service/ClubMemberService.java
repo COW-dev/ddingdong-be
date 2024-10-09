@@ -1,31 +1,13 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional
-@RequiredArgsConstructor
-public class ClubMemberService {
+public interface ClubMemberService {
 
-    private final ClubMemberRepository clubMemberRepository;
+    ClubMember getById(Long clubMemberId);
 
-    public ClubMember getById(Long clubMemberId) {
-        return clubMemberRepository.findById(clubMemberId)
-                .orElseThrow(() -> new ResourceNotFound("존재하지 않는 동아리원입니다."));
-    }
+    void saveAll(List<ClubMember> clubMembers);
 
-    public void saveAll(List<ClubMember> clubMembers) {
-        clubMemberRepository.saveAll(clubMembers);
-    }
-
-    public void deleteAll(List<ClubMember> clubMembers) {
-        clubMemberRepository.deleteAllInBatch(clubMembers);
-    }
-
+    void deleteAll(List<ClubMember> clubMembers);
 }

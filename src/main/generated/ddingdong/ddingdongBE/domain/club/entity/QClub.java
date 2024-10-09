@@ -5,7 +5,6 @@ import static com.querydsl.core.types.PathMetadataFactory.*;
 import com.querydsl.core.types.dsl.*;
 
 import com.querydsl.core.types.PathMetadata;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
 import com.querydsl.core.types.dsl.PathInits;
@@ -29,7 +28,7 @@ public class QClub extends EntityPathBase<Club> {
 
     public final StringPath category = createString("category");
 
-    public final ListPath<ClubMember, QClubMember> clubMembers = this.<ClubMember, QClubMember>createList("clubMembers", ClubMember.class, QClubMember.class, PathInits.DIRECT2);
+    public final ListPath<ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember> clubMembers = this.<ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember>createList("clubMembers", ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember.class, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember.class, PathInits.DIRECT2);
 
     public final StringPath content = createString("content");
 
@@ -94,3 +93,4 @@ public class QClub extends EntityPathBase<Club> {
     }
 
 }
+

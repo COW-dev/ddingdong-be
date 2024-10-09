@@ -7,11 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
-import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.question.service.GeneralQuestionService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.ClubScoreHistoryController;
 import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
@@ -39,8 +37,6 @@ public abstract class WebApiUnitTestSupport {
   @Autowired
   protected MockMvc mockMvc;
   @MockBean
-  protected DocumentService documentService;
-  @MockBean
   protected FacadeDocumentService facadeDocumentService;
   @MockBean
   protected FacadeAdminDocumentService facadeAdminDocumentService;
@@ -48,8 +44,6 @@ public abstract class WebApiUnitTestSupport {
   protected FileService fileService;
   @MockBean
   protected FileInformationService fileInformationService;
-  @MockBean
-  protected GeneralQuestionService generalQuestionService;
   @MockBean
   protected ClubService clubService;
   @MockBean

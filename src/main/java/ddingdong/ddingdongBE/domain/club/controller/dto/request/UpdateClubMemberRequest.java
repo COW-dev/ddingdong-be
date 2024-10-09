@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.club.entity.Position;
-import ddingdong.ddingdongBE.domain.clubmember.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -37,8 +37,9 @@ public record UpdateClubMemberRequest(
         String department
 ) {
 
-    public UpdateClubMemberCommand toCommand() {
+    public UpdateClubMemberCommand toCommand(Long clubMemberId) {
         return UpdateClubMemberCommand.builder()
+                .clubMemberId(clubMemberId)
                 .name(name)
                 .studentNumber(studentNumber)
                 .phoneNumber(phoneNumber)
