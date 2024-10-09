@@ -1,9 +1,7 @@
 package ddingdong.ddingdongBE.domain.question.controller.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.question.entity.Question;
+import ddingdong.ddingdongBE.domain.question.service.dto.query.UserQuestionListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import lombok.Builder;
 
 @Schema(
@@ -11,7 +9,7 @@ import lombok.Builder;
         description = "유저 - FAQ 질문 목록 응답"
 )
 @Builder
-public record QuestionResponse(
+public record QuestionListResponse(
 
         @Schema(description = "질문 식별자", example = "1")
         Long id,
@@ -21,11 +19,11 @@ public record QuestionResponse(
         String reply
 ) {
 
-    public static QuestionResponse from(Question question) {
-        return QuestionResponse.builder()
-                .id(question.getId())
-                .question(question.getQuestion())
-                .reply(question.getReply())
+    public static QuestionListResponse from(UserQuestionListQuery query) {
+        return QuestionListResponse.builder()
+                .id(query.id())
+                .question(query.question())
+                .reply(query.reply())
                 .build();
     }
 }

@@ -10,12 +10,14 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest
-class QuestionServiceTest extends TestContainerSupport {
+@Transactional
+class GeneralQuestionServiceTest extends TestContainerSupport {
 
     @Autowired
-    private QuestionService questionService;
+    private GeneralQuestionService generalQuestionService;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -31,7 +33,7 @@ class QuestionServiceTest extends TestContainerSupport {
                 .build();
 
         //when
-        Long createdQuestionId = questionService.create(document);
+        Long createdQuestionId = generalQuestionService.create(document);
 
         //then
         Optional<Question> foundDocument = questionRepository.findById(createdQuestionId);
