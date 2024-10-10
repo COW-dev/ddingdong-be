@@ -1,25 +1,30 @@
 package ddingdong.ddingdongBE.common.runner;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-
 @Component
 @Profile("prod")
 @Slf4j
-public class PromtailDockerComposeRunner implements ApplicationRunner {
+public class MonitoringApplicationRunner implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        log.info("Running PromtailDockerComposeRunner");
+        log.info("Running Promtail & Node Exporter");
 
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("docker-compose", "-f", "/var/app/current/promtail/promtail-docker-compose.yml", "up", "-d");
+        processBuilder.command(
+            "docker-compose",
+            "-f", "/var/app/current/promtail/promtail-docker-compose.yml",
+            "-f", "/var/app/current/nodeexporter/node-exporter-compose.yml",
+            "up",
+            "-d"
+        );
 
         Process process = processBuilder.start();
 
@@ -40,9 +45,9 @@ public class PromtailDockerComposeRunner implements ApplicationRunner {
         int exitCode = process.waitFor();
         if (exitCode == 0) {
             log.info("Promtail started successfully using Docker Compose.");
-            log.info("promtial is tracking info level log");
-            log.warn("promtial is tracking warn level log");
-            log.error("promtial is tracking error level log");
+            log.info("promtail is tracking info level log");
+            log.warn("promtail is tracking warn level log");
+            log.error("promtail is tracking error level log");
         } else {
             log.error("Failed to start Promtail. Exit code: {}", exitCode);
         }
