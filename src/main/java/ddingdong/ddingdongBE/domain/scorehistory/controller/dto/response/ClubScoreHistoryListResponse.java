@@ -8,13 +8,11 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
-import lombok.Builder;
 
 @Schema(
         name = "ClubScoreHistoryListResponse",
         description = "동아리 - 동아리 점수 변동 내역 목록 응답"
 )
-@Builder
 public record ClubScoreHistoryListResponse(
 
         @Schema(description = "동아리 총 점수", example = "50")
@@ -24,21 +22,18 @@ public record ClubScoreHistoryListResponse(
 ) {
 
     public static ClubScoreHistoryListResponse from(ClubScoreHistoryListQuery query) {
-        return ClubScoreHistoryListResponse.builder()
-                .totalScore(query.club().getScore().getValue())
-                .scoreHistories(
-                        query.scoreHistories().stream()
-                                .map(ScoreHistoryResponse::from)
-                                .toList()
-                )
-                .build();
+        return new ClubScoreHistoryListResponse(
+                query.club().getScore().getValue(),
+                query.scoreHistories().stream()
+                        .map(ScoreHistoryResponse::from)
+                        .toList()
+        );
     }
 
     @Schema(
             name = "ScoreHistoryResponse",
             description = "점수 변동 내역 응답"
     )
-    @Builder
     public record ScoreHistoryResponse(
 
             @Schema(description = "점수 내역 카테고리", example = "활동보고서")
@@ -53,13 +48,12 @@ public record ClubScoreHistoryListResponse(
     ) {
 
         public static ScoreHistoryResponse from(ScoreHistory scoreHistory) {
-            return ScoreHistoryResponse.builder()
-                    .scoreCategory(scoreHistory.getScoreCategory().getCategory())
-                    .reason(scoreHistory.getReason())
-                    .amount(scoreHistory.getAmount())
-                    .createdAt(scoreHistory.getCreatedAt())
-                    .build();
+            return new ScoreHistoryResponse(
+                    scoreHistory.getScoreCategory().getCategory(),
+                    scoreHistory.getReason(),
+                    scoreHistory.getAmount(),
+                    scoreHistory.getCreatedAt()
+            );
         }
-
     }
 }

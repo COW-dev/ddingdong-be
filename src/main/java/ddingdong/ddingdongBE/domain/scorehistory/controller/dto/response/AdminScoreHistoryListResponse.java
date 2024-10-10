@@ -14,7 +14,6 @@ import lombok.Builder;
         name = "AdminScoreHistoryListResponse",
         description = "어드민 - 동아리 점수 변동 내역 목록 응답"
 )
-@Builder
 public record AdminScoreHistoryListResponse(
 
         @Schema(description = "동아리 총 점수", example = "50")
@@ -24,14 +23,12 @@ public record AdminScoreHistoryListResponse(
 ) {
 
     public static AdminScoreHistoryListResponse from(AdminClubScoreHistoryListQuery query) {
-        return AdminScoreHistoryListResponse.builder()
-                .totalScore(query.club().getScore().getValue())
-                .scoreHistories(
-                        query.scoreHistories().stream()
-                                .map(ScoreHistoryResponse::from)
-                                .toList()
-                )
-                .build();
+        return new AdminScoreHistoryListResponse(
+                query.club().getScore().getValue(),
+                query.scoreHistories().stream()
+                        .map(ScoreHistoryResponse::from)
+                        .toList()
+        );
     }
 
     @Schema(
@@ -53,13 +50,12 @@ public record AdminScoreHistoryListResponse(
     ) {
 
         public static ScoreHistoryResponse from(ScoreHistory scoreHistory) {
-            return ScoreHistoryResponse.builder()
-                    .scoreCategory(scoreHistory.getScoreCategory().getCategory())
-                    .reason(scoreHistory.getReason())
-                    .amount(scoreHistory.getAmount())
-                    .createdAt(scoreHistory.getCreatedAt())
-                    .build();
+            return new ScoreHistoryResponse(
+                    scoreHistory.getScoreCategory().getCategory(),
+                    scoreHistory.getReason(),
+                    scoreHistory.getAmount(),
+                    scoreHistory.getCreatedAt()
+            );
         }
-
     }
 }
