@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -95,24 +94,22 @@ public class Club extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
-    public void updateClubInfo(UpdateClubRequest request) {
-        this.name = request.getName() != null ? request.getName() : this.name;
-        this.category = request.getCategory() != null ? request.getCategory() : this.category;
-        this.tag = request.getTag() != null ? request.getTag() : this.tag;
-        this.content = request.getContent() != null ? request.getContent() : this.content;
-        this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
-        this.phoneNumber =
-                request.getPhoneNumber() != null ? PhoneNumber.from(request.getPhoneNumber()) : this.phoneNumber;
-        this.location = request.getLocation() != null ? Location.from(request.getLocation()) : this.location;
-        this.startRecruitPeriod =
-                request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
-        this.endRecruitPeriod =
-                request.getEndRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getEndRecruitPeriod());
-        this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
-        this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
-        this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
-        this.ideal = request.getIdeal() != null ? request.getIdeal() : this.ideal;
-        this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
+    public void updateClub(Club club) {
+        this.name = club.getName();
+        this.category = club.getCategory();
+        this.tag = club.getTag();
+        this.content = club.getContent();
+        this.leader = club.getLeader();
+        this.phoneNumber =club.getPhoneNumber();
+        this.location = club.getLocation();
+        this.startRecruitPeriod = club.getStartRecruitPeriod();
+        this.endRecruitPeriod = club.getEndRecruitPeriod();
+        this.regularMeeting = club.getRegularMeeting();
+        this.introduction = club.getIntroduction();
+        this.activity = club.getActivity();
+        this.ideal = club.getIdeal();
+        this.formUrl = club.getFormUrl();
+        this.score = club.getScore();
     }
 
     public BigDecimal editScore(Score score) {

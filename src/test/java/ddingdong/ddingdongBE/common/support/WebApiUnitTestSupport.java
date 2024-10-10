@@ -4,7 +4,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.club.service.GeneralClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
@@ -45,7 +45,7 @@ public abstract class WebApiUnitTestSupport {
   @MockBean
   protected FileInformationService fileInformationService;
   @MockBean
-  protected ClubService clubService;
+  protected GeneralClubService generalClubService;
   @MockBean
   protected ScoreHistoryService scoreHistoryService;
 

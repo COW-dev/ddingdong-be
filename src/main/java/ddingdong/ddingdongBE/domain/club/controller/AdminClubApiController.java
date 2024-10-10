@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.controller;
 
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.RegisterClubRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubResponse;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.CreateClubRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubListResponse;
+import ddingdong.ddingdongBE.domain.club.service.FacadeAdminClubService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,20 +18,22 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/server/admin/clubs")
 public class AdminClubApiController {
 
-    private final ClubService clubService;
+    private final FacadeAdminClubService facadeAdminClubService;
 
     @PostMapping
-    public void register(@RequestBody RegisterClubRequest registerClubRequest) {
-        clubService.create(registerClubRequest);
+    public void register(@RequestBody CreateClubRequest request) {
+        facadeAdminClubService.create(request.toCommand());
     }
 
     @GetMapping
-    public List<AdminClubResponse> getClubs() {
-        return clubService.findAllForAdmin();
+    public List<AdminClubListResponse> getClubs() {
+        return facadeAdminClubService.findAll().stream()
+                .map(AdminClubListResponse::from)
+                .toList();
     }
 
     @DeleteMapping("/{clubId}")
     public void deleteClub(@PathVariable Long clubId) {
-        clubService.delete(clubId);
+        facadeAdminClubService.deleteClub(clubId);
     }
 }
