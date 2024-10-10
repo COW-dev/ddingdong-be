@@ -33,14 +33,16 @@ public class S3FileService {
     public UploadUrlResponse generatePreSignedUrl(String fileName) {
         UUID uploadFileName = UuidCreator.getTimeOrderedEpoch();
         String s3FilePath = createFilePath(fileName, uploadFileName);
+        String fileExtension = extractFileExtension(fileName);
+        ContentType contentType = ContentType.fromExtension(fileExtension);
 
         Date expiration = setExpirationTime();
         try {
-            GeneratePresignedUrlRequest generatePresignedUrlRequest = new GeneratePresignedUrlRequest(bucketName,
-                    s3FilePath)
+            GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                    new GeneratePresignedUrlRequest(bucketName, s3FilePath)
                     .withMethod(HttpMethod.PUT)
-                    .withExpiration(expiration);
-
+                    .withExpiration(expiration)
+                    .withContentType(contentType.getMimeType());
             URL uploadUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
             return UploadUrlResponse.of(uploadUrl.toString(), uploadFileName.toString());
         } catch (AmazonServiceException e) {
@@ -50,7 +52,6 @@ public class S3FileService {
             log.warn("AWS Client Error : {}", e.getMessage());
             throw new AwsClient();
         }
-
     }
 
     public String getUploadedFileUrl(String fileName, String uploadFileName) {
