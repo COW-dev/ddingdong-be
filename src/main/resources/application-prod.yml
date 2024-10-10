@@ -49,7 +49,7 @@ management:
   endpoints:
     web:
       exposure:
-        include: info, health
+        include: info, health, prometheus
       base-path: ${ACTUATOR_BASE_PATH}
     jmx:
       exposure:
@@ -58,3 +58,8 @@ management:
       enabled: true
   server:
     port: 9090
+
+actuator:
+  user-name: ${MONITORING_USERNAME}
+  password: ${MONITORING_USER_PASSWORD}
+  role-name: ACTUATOR
