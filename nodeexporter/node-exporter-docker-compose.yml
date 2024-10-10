@@ -5,8 +5,8 @@ services:
     image: quay.io/prometheus/node-exporter:latest
     container_name: node-exporter
     restart: always
-    network_mode: "host"
-    pid: "host"
+    ports:
+      - "9100:9100"
     volumes:
       - "/:/host:ro,rslave"
     command:
