@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.api;
 
 import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.request.CreateScoreHistoryRequest;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse;
+import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -55,14 +55,14 @@ public interface AdminScoreHistoryApi {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void register(@PathVariable Long clubId, @Valid @RequestBody CreateScoreHistoryRequest createScoreHistoryRequest);
+    void createScoreHistory(@PathVariable Long clubId, @Valid @RequestBody CreateScoreHistoryRequest createScoreHistoryRequest);
 
     @Operation(summary = "어드민 동아리 점수 내역 목록 조회 API")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200",
                     description = "점수 변동 내역 목록 조회 성공",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
-                            schema = @Schema(implementation = ScoreHistoryFilterByClubResponse.class))),
+                            schema = @Schema(implementation = ScoreHistoryListResponse.class))),
             @ApiResponse(responseCode = "400",
                     description = "잘못된 요청",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
@@ -75,7 +75,7 @@ public interface AdminScoreHistoryApi {
                                                   "message": "존재하지 않는 동아리입니다.",
                                                       "timestamp": "2024-08-22T00:08:46.990585"
                                                     }
-                                                    """
+                                                  """
                                     )
                             })
             )
@@ -83,6 +83,6 @@ public interface AdminScoreHistoryApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    ScoreHistoryFilterByClubResponse findAllScoreHistories(@PathVariable Long clubId);
+    ScoreHistoryListResponse findClubScoreHistories(@PathVariable Long clubId);
 
 }
