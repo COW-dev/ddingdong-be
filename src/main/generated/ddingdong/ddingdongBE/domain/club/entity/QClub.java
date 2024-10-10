@@ -28,7 +28,7 @@ public class QClub extends EntityPathBase<Club> {
 
     public final StringPath category = createString("category");
 
-    public final ListPath<ClubMember, QClubMember> clubMembers = this.<ClubMember, QClubMember>createList("clubMembers", ClubMember.class, QClubMember.class, PathInits.DIRECT2);
+    public final ListPath<ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember> clubMembers = this.<ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember>createList("clubMembers", ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember.class, ddingdong.ddingdongBE.domain.clubmember.entity.QClubMember.class, PathInits.DIRECT2);
 
     public final StringPath content = createString("content");
 

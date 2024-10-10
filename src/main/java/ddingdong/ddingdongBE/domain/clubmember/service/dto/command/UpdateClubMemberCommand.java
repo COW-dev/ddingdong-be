@@ -1,11 +1,12 @@
-package ddingdong.ddingdongBE.domain.club.service.dto;
+package ddingdong.ddingdongBE.domain.clubmember.service.dto.command;
 
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
 import lombok.Builder;
 
 @Builder
 public record UpdateClubMemberCommand(
+        Long clubMemberId,
         String name,
         String studentNumber,
         String phoneNumber,
