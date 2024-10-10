@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.file.service.dto;
 
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
 import java.util.Arrays;
 import java.util.Iterator;

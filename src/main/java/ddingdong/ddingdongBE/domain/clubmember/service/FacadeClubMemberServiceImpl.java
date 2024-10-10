@@ -1,8 +1,10 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;
 import java.util.HashSet;
 import java.util.List;
@@ -11,26 +13,28 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FacadeClubMemberService {
+public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
 
     private final ClubService clubService;
-    private final ClubMemberService clubMemberService;
+    private final GeneralClubMemberService generalClubMemberService;
     private final ExcelFileService excelFileService;
 
-    @Transactional(readOnly = true)
+    @Override
     public byte[] getClubMemberListFile(Long userId) {
         Club club = clubService.getByUserId(userId);
         return excelFileService.generateClubMemberListFile(club.getClubMembers());
     }
 
-    public void updateMemberList(Long userId, MultipartFile clubMemberListFile) {
-        Club club = clubService.getByUserId(userId);
-        List<ClubMember> updatedClubMembers = excelFileService.extractClubMembersInformation(club, clubMemberListFile);
+    @Override
+    @Transactional
+    public void updateMemberList(UpdateClubMemberListCommand command) {
+        Club club = clubService.getByUserId(command.userId());
+        List<ClubMember> updatedClubMembers =
+                excelFileService.extractClubMembersInformation(club, command.clubMemberListFile());
         List<ClubMember> clubMembers = club.getClubMembers();
         Set<Long> updatedMemberIds = updatedClubMembers.stream()
                 .map(ClubMember::getId)
@@ -39,13 +43,15 @@ public class FacadeClubMemberService {
                 .map(ClubMember::getId)
                 .collect(Collectors.toSet());
 
-        clubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
-        clubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
+        generalClubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
+        generalClubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
     }
 
-    public void update(Long clubMemberId, UpdateClubMemberCommand updateClubMemberCommand) {
-        ClubMember clubMember = clubMemberService.getById(clubMemberId);
-        clubMember.updateInformation(updateClubMemberCommand.toEntity());
+    @Override
+    @Transactional
+    public void update(UpdateClubMemberCommand command) {
+        ClubMember clubMember = generalClubMemberService.getById(command.clubMemberId());
+        clubMember.updateInformation(command.toEntity());
     }
 
 
