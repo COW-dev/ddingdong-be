@@ -10,7 +10,8 @@ import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMember
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.club.service.FacadeClubMemberService;
+import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberService;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.net.URLEncoder;
@@ -78,12 +79,15 @@ public class CentralClubApiController implements CentralClubApi {
     @Override
     public void updateClubMemberList(PrincipalDetails principalDetails, MultipartFile clubMemberListFile) {
         User user = principalDetails.getUser();
-        facadeClubMemberService.updateMemberList(user.getId(), clubMemberListFile);
+        UpdateClubMemberListCommand command = UpdateClubMemberListCommand.builder()
+                .userId(user.getId())
+                .clubMemberListFile(clubMemberListFile)
+                .build();
+        facadeClubMemberService.updateMemberList(command);
     }
 
     @Override
-    public void updateClubMembers(Long clubMemberId,
-                                  UpdateClubMemberRequest request) {
-        facadeClubMemberService.update(clubMemberId, request.toCommand());
+    public void updateClubMembers(Long clubMemberId, UpdateClubMemberRequest request) {
+        facadeClubMemberService.update(request.toCommand(clubMemberId));
     }
 }

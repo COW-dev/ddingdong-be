@@ -1,6 +1,8 @@
-package ddingdong.ddingdongBE.domain.club.entity;
+package ddingdong.ddingdongBE.domain.clubmember.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.entity.Position;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

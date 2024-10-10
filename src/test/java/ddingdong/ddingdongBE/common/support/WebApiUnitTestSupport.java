@@ -7,14 +7,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
-import ddingdong.ddingdongBE.domain.documents.service.DocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.question.service.GeneralQuestionService;
 import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.ClubScoreHistoryController;
-import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +26,6 @@ import org.springframework.web.context.WebApplicationContext;
     AdminDocumentController.class,
     DocumentController.class,
     AdminScoreHistoryController.class,
-    ClubScoreHistoryController.class
 })
 public abstract class WebApiUnitTestSupport {
 
@@ -38,8 +33,6 @@ public abstract class WebApiUnitTestSupport {
   private WebApplicationContext context;
   @Autowired
   protected MockMvc mockMvc;
-  @MockBean
-  protected DocumentService documentService;
   @MockBean
   protected FacadeDocumentService facadeDocumentService;
   @MockBean
@@ -49,11 +42,7 @@ public abstract class WebApiUnitTestSupport {
   @MockBean
   protected FileInformationService fileInformationService;
   @MockBean
-  protected GeneralQuestionService generalQuestionService;
-  @MockBean
   protected ClubService clubService;
-  @MockBean
-  protected ScoreHistoryService scoreHistoryService;
 
   @Autowired
   protected ObjectMapper objectMapper;

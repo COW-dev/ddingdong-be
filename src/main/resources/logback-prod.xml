@@ -3,7 +3,7 @@
     <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/all/logFile.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/all/logFile.%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+            <fileNamePattern>logs/all/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
             <totalSizeCap>100MB</totalSizeCap>
         </rollingPolicy>

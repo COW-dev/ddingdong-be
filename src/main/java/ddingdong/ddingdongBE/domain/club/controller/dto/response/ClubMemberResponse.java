@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

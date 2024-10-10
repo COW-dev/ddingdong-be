@@ -6,11 +6,14 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
-import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
+import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
-import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.GeneralClubMemberService;
+import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberServiceImpl;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -31,10 +34,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class FacadeClubMemberServiceTest extends TestContainerSupport {
+class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
 
     @Autowired
-    private FacadeClubMemberService facadeClubMemberService;
+    private FacadeClubMemberServiceImpl facadeClubMemberServiceImpl;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -42,7 +45,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
     @Autowired
     private ClubMemberRepository clubMemberRepository;
     @Autowired
-    private ClubMemberService clubMemberService;
+    private GeneralClubMemberService generalClubMemberService;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
 
@@ -97,8 +100,13 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .sampleList(5);
         clubMemberRepository.saveAll(clubMembers);
 
+        UpdateClubMemberListCommand command = UpdateClubMemberListCommand.builder()
+                .userId(savedClub.getId())
+                .clubMemberListFile(validExcelFile)
+                .build();
+
         //when
-        facadeClubMemberService.updateMemberList(savedUser.getId(), validExcelFile);
+        facadeClubMemberServiceImpl.updateMemberList(command);
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
@@ -120,7 +128,8 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         ClubMember savedClubMember = clubMemberRepository.save(
                 fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
 
-        UpdateClubMemberCommand updateClubMemberCommand = UpdateClubMemberCommand.builder()
+        UpdateClubMemberCommand command = UpdateClubMemberCommand.builder()
+                .clubMemberId(savedClubMember.getId())
                 .name("test")
                 .phoneNumber("010-1234-5678")
                 .studentNumber("60001234")
@@ -128,10 +137,10 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .department("test").build();
 
         //when
-        facadeClubMemberService.update(savedClubMember.getId(), updateClubMemberCommand);
+        facadeClubMemberServiceImpl.update(command);
 
         //then
-        ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
+        ClubMember updatedClubMember = generalClubMemberService.getById(savedClubMember.getId());
         assertThat(updatedClubMember.getName()).isEqualTo("test");
         assertThat(updatedClubMember.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(updatedClubMember.getStudentNumber()).isEqualTo("60001234");
