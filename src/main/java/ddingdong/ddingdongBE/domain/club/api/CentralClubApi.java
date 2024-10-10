@@ -3,8 +3,8 @@ package ddingdong.ddingdongBE.domain.club.api;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.MyClubInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -46,14 +46,14 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping
-    DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    MyClubInfoResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                    @ModelAttribute UpdateClubRequest param,
+                    @ModelAttribute UpdateClubInfoRequest param,
                     @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
                     @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images);
 
