@@ -21,7 +21,7 @@ public class MonitoringApplicationRunner implements ApplicationRunner {
         processBuilder.command(
             "docker-compose",
             "-f", "/var/app/current/promtail/promtail-docker-compose.yml",
-            "-f", "/var/app/current/nodeexporter/node-exporter-compose.yml",
+            "-f", "/var/app/current/nodeexporter/node-exporter-docker-compose.yml",
             "up",
             "-d"
         );
