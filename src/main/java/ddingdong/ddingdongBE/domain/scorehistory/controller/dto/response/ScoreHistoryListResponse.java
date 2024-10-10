@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.ScoreHistory;
+import ddingdong.ddingdongBE.domain.scorehistory.service.dto.query.AdminClubScoreHistoryListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
@@ -23,10 +24,14 @@ public record ScoreHistoryListResponse(
         List<ScoreHistoryResponse> scoreHistories
 ) {
 
-    public static ScoreHistoryListResponse of(Club club, List<ScoreHistoryResponse> scoreHistories) {
+    public static ScoreHistoryListResponse of(AdminClubScoreHistoryListQuery query) {
         return ScoreHistoryListResponse.builder()
-                .totalScore(club.getScore().getValue())
-                .scoreHistories(scoreHistories)
+                .totalScore(query.club().getScore().getValue())
+                .scoreHistories(
+                        query.scoreHistories().stream()
+                                .map(ScoreHistoryResponse::from)
+                                .toList()
+                )
                 .build();
     }
 

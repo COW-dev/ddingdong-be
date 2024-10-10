@@ -22,9 +22,6 @@ public class AdminScoreHistoryController implements AdminScoreHistoryApi {
 
     public ScoreHistoryListResponse findClubScoreHistories(Long clubId) {
         AdminClubScoreHistoryListQuery query = facadeAdminScoreHistoryService.findAllByClubId(clubId);
-        List<ScoreHistoryResponse> scoreHistoryResponses = query.scoreHistories().stream()
-                .map(ScoreHistoryResponse::from)
-                .toList();
-        return ScoreHistoryListResponse.of(query.club(), scoreHistoryResponses);
+        return ScoreHistoryListResponse.of(query);
     }
 }

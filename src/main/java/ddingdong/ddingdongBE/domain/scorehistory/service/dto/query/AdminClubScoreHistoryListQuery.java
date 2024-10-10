@@ -11,9 +11,7 @@ public record AdminClubScoreHistoryListQuery(
         List<ScoreHistory> scoreHistories
 ) {
 
-    public static AdminClubScoreHistoryListQuery of(
-            Club club,
-            List<ScoreHistory> scoreHistories) {
+    public static AdminClubScoreHistoryListQuery of(Club club, List<ScoreHistory> scoreHistories) {
         return AdminClubScoreHistoryListQuery.builder()
                 .club(club)
                 .scoreHistories(scoreHistories)
