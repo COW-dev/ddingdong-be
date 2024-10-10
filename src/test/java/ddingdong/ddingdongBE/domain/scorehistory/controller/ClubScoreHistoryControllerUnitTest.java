@@ -41,7 +41,7 @@ class ClubScoreHistoryControllerUnitTest extends WebApiUnitTestSupport {
                         .scoreCategory(ACTIVITY_REPORT)
                         .amount(new BigDecimal(5))
                         .reason("reasonB").build());
-        when(clubService.getByUserId(anyLong())).thenReturn(club);
+        when(generalClubService.getByUserId(anyLong())).thenReturn(club);
         when(scoreHistoryService.findAllByClubId(club.getId())).thenReturn(scoreHistories);
 
         //when //then

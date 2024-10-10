@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;

@@ -34,7 +34,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
+class FacadeClubMemberServiceImplTest extends TestContainerSupport {
 
     @Autowired
     private FacadeClubMemberServiceImpl facadeClubMemberServiceImpl;
@@ -51,7 +51,7 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
-    void updateClubList() throws IOException {
+    void updateClubMemberList() throws IOException {
         //given
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();

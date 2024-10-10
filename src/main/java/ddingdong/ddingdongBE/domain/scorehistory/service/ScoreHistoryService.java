@@ -21,7 +21,7 @@ public class ScoreHistoryService {
     private final ClubService clubService;
 
     public void create(final Long clubId, CreateScoreHistoryRequest createScoreHistoryRequest) {
-        Club club = clubService.getByClubId(clubId);
+        Club club = clubService.getById(clubId);
 
         BigDecimal score = roundToThirdPoint(createScoreHistoryRequest.amount());
         clubService.updateClubScore(clubId, score);

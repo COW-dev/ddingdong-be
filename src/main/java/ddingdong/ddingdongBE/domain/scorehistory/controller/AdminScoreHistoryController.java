@@ -23,7 +23,7 @@ public class AdminScoreHistoryController implements AdminScoreHistoryApi {
     }
 
     public ScoreHistoryFilterByClubResponse findAllScoreHistories(Long clubId) {
-        Club club = clubService.getByClubId(clubId);
+        Club club = clubService.getById(clubId);
         List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.findAllByClubId(clubId).stream()
                 .map(ScoreHistoryResponse::from)
                 .toList();
