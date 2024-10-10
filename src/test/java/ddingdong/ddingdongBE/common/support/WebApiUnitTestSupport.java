@@ -10,7 +10,6 @@ import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
 import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 @WebMvcTest(controllers = {
     AdminDocumentController.class,
     DocumentController.class,
-    AdminScoreHistoryController.class,
 })
 public abstract class WebApiUnitTestSupport {
 
