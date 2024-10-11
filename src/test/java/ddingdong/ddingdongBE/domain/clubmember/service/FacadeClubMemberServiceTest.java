@@ -92,6 +92,8 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
                 .sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
                 .set("club", savedClub)
@@ -122,6 +124,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
                 .sample());
         ClubMember savedClubMember = clubMemberRepository.save(
                 fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
