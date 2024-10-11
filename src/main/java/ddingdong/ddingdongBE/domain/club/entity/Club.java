@@ -49,8 +49,6 @@ public class Club extends BaseEntity {
 
     private String tag;
 
-    private String content;
-
     private String leader;
 
     @Embedded
@@ -81,17 +79,15 @@ public class Club extends BaseEntity {
 
     @Builder
     private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category, String tag,
-                String content, String leader, PhoneNumber phoneNumber, Location location,
-                LocalDateTime startRecruitPeriod, LocalDateTime endRecruitPeriod, String regularMeeting,
-                String introduction, String activity, String ideal, String formUrl, Score score,
-                LocalDateTime deletedAt) {
+                 String leader, PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
+                 LocalDateTime endRecruitPeriod, String regularMeeting, String introduction, String activity,
+                 String ideal, String formUrl, Score score, LocalDateTime deletedAt) {
         this.id = id;
         this.user = user;
         this.clubMembers = clubMembers;
         this.name = name;
         this.category = category;
         this.tag = tag;
-        this.content = content;
         this.leader = leader;
         this.phoneNumber = phoneNumber;
         this.location = location;
@@ -110,7 +106,6 @@ public class Club extends BaseEntity {
         this.name = club.getName();
         this.category = club.getCategory();
         this.tag = club.getTag();
-        this.content = club.getContent();
         this.leader = club.getLeader();
         this.phoneNumber = club.getPhoneNumber();
         this.location = club.getLocation();
