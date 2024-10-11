@@ -36,11 +36,11 @@ public class JwtAuthService implements AuthService {
     private final JwtConfig jwtConfig;
 
     @Override
-    public User registerClubUser(String userId, String password, String name) {
-        checkExistUserId(userId);
+    public User registerClubUser(String authId, String password, String name) {
+        checkExistUserId(authId);
 
         User clubUser = User.builder()
-                .userId(userId)
+                .authId(authId)
                 .password(passwordEncoder.encode(Password.of(password).getValue()))
                 .name(name)
                 .role(Role.CLUB)
@@ -50,7 +50,7 @@ public class JwtAuthService implements AuthService {
 
     @Override
     public String signIn(SignInRequest request) {
-        User user = userRepository.findByUserId(request.getUserId())
+        User user = userRepository.findByAuthId(request.getUserId())
                 .orElseThrow(UnRegisteredId::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
@@ -114,7 +114,7 @@ public class JwtAuthService implements AuthService {
 
 
     private void checkExistUserId(String userId) {
-        if (userRepository.existsByUserId(userId)) {
+        if (userRepository.existsByAuthId(userId)) {
             throw new AlreadyExistClubId();
         }
     }

@@ -17,7 +17,7 @@ public class WithMockAuthenticatedUserSecurityContextFactory implements
 
         User user = User.builder()
                 .id(withMockPrincipalDetails.id())
-                .userId(withMockPrincipalDetails.userId())
+                .authId(withMockPrincipalDetails.userId())
                 .password(withMockPrincipalDetails.password())
                 .role(Role.valueOf(withMockPrincipalDetails.role())).build();
 

@@ -8,8 +8,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    boolean existsByUserId(String userId);
+    boolean existsByAuthId(String authId);
 
-    Optional<User> findByUserId(String userId);
+    Optional<User> findByAuthId(String authId);
 
 }

@@ -1,9 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.club.service.dto.command.CreateClubCommand;
-import lombok.Getter;
 
-@Getter
 public record CreateClubRequest(
         String clubName,
         String category,
