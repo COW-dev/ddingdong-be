@@ -49,14 +49,6 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
         return club.getId();
     }
 
-    //TODO: ScoreHistory로 이동
-    @Transactional
-    public BigDecimal updateClubScore(Long clubId, BigDecimal score) {
-        Club club = clubService.getById(clubId);
-
-        return club.editScore(generateNewScore(club.getScore(), score));
-    }
-
     private void updateIntroduceImageInformation(List<String> introduceImageUrls, Club club) {
         List<FileInformation> fileInformation = fileInformationService.getFileInformation(
                 IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
@@ -91,8 +83,6 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
         }
     }
 
-    private Score generateNewScore(Score beforeUpdateScore, BigDecimal value) {
-        return Score.from(beforeUpdateScore.getValue().add(value));
-    }
+
 
 }
