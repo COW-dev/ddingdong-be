@@ -42,6 +42,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
     }
 
     @Override
+    @Transactional
     public void deleteClub(Long clubId) {
         clubService.delete(clubId);
     }

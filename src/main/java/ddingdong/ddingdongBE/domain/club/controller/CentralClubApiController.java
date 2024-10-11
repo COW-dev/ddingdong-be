@@ -34,7 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Slf4j
 public class CentralClubApiController implements CentralClubApi {
 
-    private final ClubService clubService;
+    private final FacadeCentralClubService facadeCentralClubService;
     private final FacadeClubMemberService facadeClubMemberService;
     private final FileService fileService;
 

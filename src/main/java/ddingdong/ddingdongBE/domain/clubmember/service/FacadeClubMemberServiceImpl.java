@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -13,7 +13,6 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -51,7 +50,7 @@ public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
     @Override
     @Transactional
     public void update(UpdateClubMemberCommand command) {
-        ClubMember clubMember = generalClubMemberService.getById(command.clubMemberId());
+        ClubMember clubMember = clubMemberService.getById(command.clubMemberId());
         clubMember.updateInformation(command.toEntity());
     }
 

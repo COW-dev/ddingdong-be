@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,11 +6,12 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
-import ddingdong.ddingdongBE.domain.club.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
-import ddingdong.ddingdongBE.domain.club.service.dto.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -103,7 +104,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .build();
 
         //when
-        facadeClubMemberService.updateMemberList(savedUser.getId(), validExcelFile);
+        facadeClubMemberService.updateMemberList(command);
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
@@ -134,7 +135,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .department("test").build();
 
         //when
-        facadeClubMemberService.update(savedClubMember.getId(), updateClubMemberCommand);
+        facadeClubMemberService.update(command);
 
         //then
         ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
