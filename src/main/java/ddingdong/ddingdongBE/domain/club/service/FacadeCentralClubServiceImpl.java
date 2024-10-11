@@ -10,9 +10,7 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.file.FileStore;
-import java.math.BigDecimal;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -82,7 +80,5 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
             fileInformationRepository.deleteAll(fileInformation);
         }
     }
-
-
 
 }
