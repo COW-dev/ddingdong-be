@@ -6,9 +6,18 @@ import lombok.Getter;
 
 @Getter
 public enum ContentType {
-    JPEG("image/jpeg", "jpg", "jpeg"),
+    JPEG("image/jpeg", "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
     PNG("image/png", "png"),
     GIF("image/gif", "gif"),
+    WEBP("image/webp", "webp"),
+    TIFF("image/tiff", "tiff", "tif"),
+    BMP("image/bmp", "bmp"),
+    SVG("image/svg+xml", "svg", "svgz"),
+    ICO("image/x-icon", "ico"),
+    HEIC("image/heic", "heic"),
+    HEIF("image/heif", "heif"),
+    RAW("image/x-raw", "raw", "arw", "cr2", "nrw", "k25"),
+    PSD("image/vnd.adobe.photoshop", "psd"),
     PDF("application/pdf", "pdf"),
     MSWORD("application/msword", "doc"),
     DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"),
