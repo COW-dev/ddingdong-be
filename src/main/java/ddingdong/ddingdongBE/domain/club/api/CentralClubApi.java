@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "Club - Club", description = "Club CentralClub API")
+@Tag(name = "Club - CentralClub", description = "Club CentralClub API")
 @RequestMapping("/server/club/my")
 public interface CentralClubApi {
 
@@ -44,12 +44,15 @@ public interface CentralClubApi {
 
     @Operation(summary = "내 동아리 정보 조회 API")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "200", description = "내 동아리 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = MyClubInfoResponse.class)))
     @SecurityRequirement(name = "AccessToken")
     @GetMapping
     MyClubInfoResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "204", description = "내 동아리 정보 수정 성공")
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
@@ -120,6 +123,6 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping("/club-members/{clubMemberId}")
-    void updateClubMembers(@PathVariable Long clubMemberId,
+    void updateClubMembers(@PathVariable("clubMemberId") Long clubMemberId,
                            @RequestBody @Valid UpdateClubMemberRequest request);
 }
