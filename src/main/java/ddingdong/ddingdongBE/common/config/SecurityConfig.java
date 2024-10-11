@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .permitAll()
                 .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                 .requestMatchers(API_PREFIX + "/club/**").hasRole("CLUB")
-                .requestMatchers(actuatorPath + "/**").hasRole("ADMIN")
+                .requestMatchers(actuatorPath + "/**").permitAll()
                 .requestMatchers(GET,
                     API_PREFIX + "/clubs/**",
                     API_PREFIX + "/notices/**",

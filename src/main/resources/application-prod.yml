@@ -47,9 +47,10 @@ server:
 
 management:
   endpoints:
+    enabled-by-default: false
     web:
       exposure:
-        include: info, health, prometheus
+        include: info, health
       base-path: ${ACTUATOR_BASE_PATH}
     jmx:
       exposure:
