@@ -1,13 +1,11 @@
 package ddingdong.ddingdongBE.domain.scorehistory.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.scorehistory.api.ClubScoreHistoryApi;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ScoreHistoryFilterByClubResponse.ScoreHistoryResponse;
-import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
-import java.util.List;
+import ddingdong.ddingdongBE.domain.scorehistory.controller.dto.response.ClubScoreHistoryListResponse;
+import ddingdong.ddingdongBE.domain.scorehistory.service.FacadeClubScoreHistoryService;
+import ddingdong.ddingdongBE.domain.scorehistory.service.dto.query.ClubScoreHistoryListQuery;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,15 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ClubScoreHistoryController implements ClubScoreHistoryApi {
 
-    private final ClubService clubService;
-    private final ScoreHistoryService scoreHistoryService;
+    private final FacadeClubScoreHistoryService facadeClubScoreHistoryService;
 
-    public ScoreHistoryFilterByClubResponse findMyScoreHistories(PrincipalDetails principalDetails) {
-        Club club = clubService.getByUserId(principalDetails.getUser().getId());
-        List<ScoreHistoryResponse> scoreHistoryResponses = scoreHistoryService.findAllByClubId(club.getId())
-                .stream()
-                .map(ScoreHistoryResponse::from)
-                .toList();
-        return ScoreHistoryFilterByClubResponse.of(club, scoreHistoryResponses);
+    public ClubScoreHistoryListResponse findMyScoreHistories(PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        ClubScoreHistoryListQuery query = facadeClubScoreHistoryService.findMyScoreHistories(user.getId());
+        return ClubScoreHistoryListResponse.from(query);
     }
 }

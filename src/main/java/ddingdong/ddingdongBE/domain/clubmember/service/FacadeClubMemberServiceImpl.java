@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.clubmember.service;
+package ddingdong.ddingdongBE.domain.club.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -20,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
 
     private final ClubService clubService;
-    private final GeneralClubMemberService generalClubMemberService;
+    private final ClubMemberService clubMemberService;
     private final ExcelFileService excelFileService;
 
     @Override
@@ -43,8 +44,8 @@ public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
                 .map(ClubMember::getId)
                 .collect(Collectors.toSet());
 
-        generalClubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
-        generalClubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
+        clubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
+        clubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
     }
 
     @Override

@@ -4,15 +4,12 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ddingdong.ddingdongBE.domain.club.service.GeneralClubService;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.documents.controller.AdminDocumentController;
 import ddingdong.ddingdongBE.domain.documents.controller.DocumentController;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.AdminScoreHistoryController;
-import ddingdong.ddingdongBE.domain.scorehistory.controller.ClubScoreHistoryController;
-import ddingdong.ddingdongBE.domain.scorehistory.service.ScoreHistoryService;
 import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +24,6 @@ import org.springframework.web.context.WebApplicationContext;
 @WebMvcTest(controllers = {
     AdminDocumentController.class,
     DocumentController.class,
-    AdminScoreHistoryController.class,
-    ClubScoreHistoryController.class
 })
 public abstract class WebApiUnitTestSupport {
 
@@ -45,9 +40,7 @@ public abstract class WebApiUnitTestSupport {
   @MockBean
   protected FileInformationService fileInformationService;
   @MockBean
-  protected GeneralClubService generalClubService;
-  @MockBean
-  protected ScoreHistoryService scoreHistoryService;
+  protected ClubService clubService;
 
   @Autowired
   protected ObjectMapper objectMapper;
