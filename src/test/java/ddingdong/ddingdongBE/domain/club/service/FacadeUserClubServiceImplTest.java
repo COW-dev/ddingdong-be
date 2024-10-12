@@ -59,7 +59,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
                 .allMatch((query -> query.recruitStatus().equals(RECRUITING.getText())))).isTrue();
     }
 
-    @DisplayName("유저: 동아리 목록 조회 - 모집 마갑")
+    @DisplayName("유저: 동아리 목록 조회 - 모집 마")
     @Test
     void findAllWithEND_RECRUIT() {
         //given

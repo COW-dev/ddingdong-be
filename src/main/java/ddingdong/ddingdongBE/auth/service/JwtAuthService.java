@@ -50,7 +50,7 @@ public class JwtAuthService implements AuthService {
 
     @Override
     public String signIn(SignInRequest request) {
-        User user = userRepository.findByAuthId(request.getUserId())
+        User user = userRepository.findByAuthId(request.getAuthId())
                 .orElseThrow(UnRegisteredId::new);
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {

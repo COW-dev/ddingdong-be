@@ -72,7 +72,7 @@ public record MyClubInfoResponse(
     }
 
     @Schema(
-            name = "MyClubInfoResponse",
+            name = "ClubMemberResponse",
             description = "중앙동아리 - 동아리원 조회 응답"
     )
     public record ClubMemberResponse(

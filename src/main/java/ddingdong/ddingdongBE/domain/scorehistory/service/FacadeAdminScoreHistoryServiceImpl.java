@@ -42,7 +42,8 @@ public class FacadeAdminScoreHistoryServiceImpl implements FacadeAdminScoreHisto
     }
 
     private Score generateNewScore(Score beforeUpdateScore, BigDecimal value) {
-        return Score.from(beforeUpdateScore.getValue().add(value));
+        BigDecimal newValue = beforeUpdateScore.getValue().add(value).setScale(3, RoundingMode.DOWN);
+        return Score.from(newValue);
     }
 
 }

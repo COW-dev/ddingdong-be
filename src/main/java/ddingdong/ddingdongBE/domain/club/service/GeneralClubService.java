@@ -25,13 +25,13 @@ public class GeneralClubService implements ClubService {
     @Override
     public Club getById(Long clubId) {
         return clubRepository.findById(clubId)
-                .orElseThrow(() -> new ResourceNotFound("존재하지 않는 동아리입니다."));
+                .orElseThrow(() -> new ResourceNotFound("Club(clubId=" + clubId + ")를 찾을 수 없습니다."));
     }
 
     @Override
     public Club getByUserId(Long userId) {
         return clubRepository.findByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + "를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + ")를 찾을 수 없습니다."));
     }
 
     @Override

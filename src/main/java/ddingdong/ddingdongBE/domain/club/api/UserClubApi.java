@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.club.api;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.UserClubListResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.UserClubResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +22,7 @@ public interface UserClubApi {
     @Operation(summary = "동아리 목록 조회 API")
     @ResponseStatus(HttpStatus.OK)
     @ApiResponse(responseCode = "200", description = "동아리 목록 조회 성공",
-            content = @Content(schema = @Schema(implementation = UserClubListResponse.class)))
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserClubListResponse.class))))
     @GetMapping
     List<UserClubListResponse> getClubs();
 

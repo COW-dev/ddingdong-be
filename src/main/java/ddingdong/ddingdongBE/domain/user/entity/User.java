@@ -29,7 +29,6 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    //TODO: migration script 작성
     private String authId;
 
     private String password;

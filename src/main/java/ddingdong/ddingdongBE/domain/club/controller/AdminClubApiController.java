@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.controller;
 
-import ddingdong.ddingdongBE.domain.club.api.AdminClubAip;
+import ddingdong.ddingdongBE.domain.club.api.AdminClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.CreateClubRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.AdminClubListResponse;
 import ddingdong.ddingdongBE.domain.club.service.FacadeAdminClubService;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminClubApiController implements AdminClubAip {
+public class AdminClubApiController implements AdminClubApi {
 
     private final FacadeAdminClubService facadeAdminClubService;
 
