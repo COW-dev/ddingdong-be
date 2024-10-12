@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.controller;
 
+import ddingdong.ddingdongBE.domain.club.api.UserClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.UserClubResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.UserClubListResponse;
 import ddingdong.ddingdongBE.domain.club.service.FacadeUserClubService;
@@ -13,20 +14,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/server/clubs")
 @RequiredArgsConstructor
-public class UserClubApiController {
+public class UserClubApiController implements UserClubApi {
 
     private final FacadeUserClubService facadeUserClubService;
 
-    @GetMapping
+
+    @Override
     public List<UserClubListResponse> getClubs() {
         return facadeUserClubService.findAllWithRecruitTimeCheckPoint(LocalDateTime.now()).stream()
                 .map(UserClubListResponse::from)
                 .toList();
     }
 
-    @GetMapping("/{clubId}")
+    @Override
     public UserClubResponse getDetailClub(@PathVariable("clubId") Long clubId) {
         UserClubQuery query = facadeUserClubService.getClub(clubId);
         return UserClubResponse.from(query);
