@@ -8,8 +8,10 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
-import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
+import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
+import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
 import java.net.URL;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -30,21 +32,24 @@ public class S3FileService {
 
     private final AmazonS3Client amazonS3Client;
 
-    public UploadUrlResponse generatePreSignedUrl(String fileName) {
-        UUID uploadFileName = UuidCreator.getTimeOrderedEpoch();
-        String s3FilePath = createFilePath(fileName, uploadFileName);
-        String fileExtension = extractFileExtension(fileName);
+    public GeneratePreSignedUrlRequestQuery generatePreSignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
+        UUID fileId = UuidCreator.getTimeOrderedEpoch();
+        String s3FilePath = createFilePath(command.generatedAt(), command.authId(), fileId);
+        String fileExtension = extractFileExtension(command.fileName());
         ContentType contentType = ContentType.fromExtension(fileExtension);
-
         Date expiration = setExpirationTime();
+
+        GeneratePresignedUrlRequest generatePresignedUrlRequest =
+                new GeneratePresignedUrlRequest(bucketName, s3FilePath)
+                        .withMethod(HttpMethod.PUT)
+                        .withExpiration(expiration)
+                        .withContentType(contentType.getMimeType());
+        return new GeneratePreSignedUrlRequestQuery(generatePresignedUrlRequest, fileId);
+    }
+
+    public URL getPresingedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
         try {
-            GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                    new GeneratePresignedUrlRequest(bucketName, s3FilePath)
-                    .withMethod(HttpMethod.PUT)
-                    .withExpiration(expiration)
-                    .withContentType(contentType.getMimeType());
-            URL uploadUrl = amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
-            return UploadUrlResponse.of(uploadUrl.toString(), uploadFileName.toString());
+            return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
         } catch (AmazonServiceException e) {
             log.warn("AWS Service Error : {}", e.getMessage());
             throw new AwsService();
@@ -74,9 +79,16 @@ public class S3FileService {
         return expiration;
     }
 
-    private String createFilePath(String fileName, UUID uploadFileName) {
-        String fileExtension = extractFileExtension(fileName);
-        return String.format("%s/%s/%s", serverProfile, fileExtension, uploadFileName.toString());
+    private String createFilePath(LocalDateTime generatedAt, String authId, UUID uploadFileName) {
+        return String.format("%s/%s/%s/%s",
+                serverProfile,
+                createS3DirectoryTimeFormat(generatedAt),
+                authId,
+                uploadFileName.toString());
+    }
+
+    private String createS3DirectoryTimeFormat(LocalDateTime generatedAt) {
+        return generatedAt.getYear() + "-" + generatedAt.getMonth() + "-" + generatedAt.getDayOfMonth();
     }
 
     private String extractFileExtension(String fileName) {

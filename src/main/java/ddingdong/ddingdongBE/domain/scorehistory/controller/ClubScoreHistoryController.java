@@ -23,6 +23,6 @@ public class ClubScoreHistoryController implements ClubScoreHistoryApi {
         List<ScoreHistoryResponse> scoreHistoryResponses = query.scoreHistories().stream()
                 .map(ScoreHistoryResponse::from)
                 .toList();
-        return ScoreHistoryListResponse.of(query.club(), scoreHistoryResponses);
+        return ScoreHistoryListResponse.of();
     }
 }
