@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@Tag(name = "Club - Admin", description = "Club Adimin API")
+@Tag(name = "Club - Admin", description = "Club Admin API")
 @RequestMapping("/server/admin/clubs")
 public interface AdminClubApi {
 
