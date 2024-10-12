@@ -55,17 +55,17 @@ public class CentralClubApiController implements CentralClubApi {
     }
 
     @Override
-    public MyClubInfoResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    public MyClubInfoResponse getMyClub(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
         MyClubInfoQuery query = facadeCentralClubService.getMyClubInfo(user.getId());
         return MyClubInfoResponse.from(query);
     }
 
     @Override
-    public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                           @ModelAttribute UpdateClubInfoRequest request,
-                           @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                           @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images) {
+    public void updateClub(PrincipalDetails principalDetails,
+                           UpdateClubInfoRequest request,
+                           List<MultipartFile> profileImage,
+                           List<MultipartFile> images) {
         User user = principalDetails.getUser();
         Long updatedClubId = facadeCentralClubService.updateClubInfo(request.toCommand(user.getId()));
 

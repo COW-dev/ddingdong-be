@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 
 @Schema(
         name = "CreateClubRequest",
-        description = "동아리 생성 요청"
+        description = "어드민 - 동아리 생성 요청"
 )
 public record CreateClubRequest(
         @Schema(description = "동아리명", example = "cow")

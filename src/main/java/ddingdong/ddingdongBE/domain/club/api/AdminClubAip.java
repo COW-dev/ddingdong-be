@@ -33,7 +33,7 @@ public interface AdminClubAip {
     void createClub(@Valid @RequestBody CreateClubRequest request);
 
     @Operation(summary = "동아리 목록 조회 API")
-    @ApiResponse(responseCode = "200", description = "동아리 목록 성공",
+    @ApiResponse(responseCode = "200", description = "동아리 목록 조회 성공",
             content = @Content(schema = @Schema(implementation = AdminClubListResponse.class)))
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")

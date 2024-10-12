@@ -56,7 +56,7 @@ public interface CentralClubApi {
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                    @ModelAttribute UpdateClubInfoRequest param,
+                    @Valid @ModelAttribute UpdateClubInfoRequest request,
                     @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
                     @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images);
 
