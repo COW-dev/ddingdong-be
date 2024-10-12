@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.filemetadata.service.dto.command;
+package ddingdong.ddingdongBE.domain.filemetadata.service.dto;
 
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -18,5 +18,4 @@ public record FileMetaDataCommand(
             .fileName(fileName)
             .build();
     }
-
 }
