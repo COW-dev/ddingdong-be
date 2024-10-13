@@ -1,0 +1,1 @@
+ALTER TABLE club DROP COLUMN content;

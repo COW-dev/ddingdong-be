@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
 
     private final ClubService clubService;
-    private final GeneralClubMemberService generalClubMemberService;
+    private final ClubMemberService clubMemberService;
     private final ExcelFileService excelFileService;
 
     @Override
@@ -43,14 +43,14 @@ public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
                 .map(ClubMember::getId)
                 .collect(Collectors.toSet());
 
-        generalClubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
-        generalClubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
+        clubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
+        clubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
     }
 
     @Override
     @Transactional
     public void update(UpdateClubMemberCommand command) {
-        ClubMember clubMember = generalClubMemberService.getById(command.clubMemberId());
+        ClubMember clubMember = clubMemberService.getById(command.clubMemberId());
         clubMember.updateInformation(command.toEntity());
     }
 

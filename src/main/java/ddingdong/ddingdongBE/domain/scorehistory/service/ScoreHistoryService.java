@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface ScoreHistoryService {
 
-    Long create(ScoreHistory scoreHistory);
+    Long save(ScoreHistory scoreHistory);
 
     List<ScoreHistory> findAllByClubId(Long clubId);
 

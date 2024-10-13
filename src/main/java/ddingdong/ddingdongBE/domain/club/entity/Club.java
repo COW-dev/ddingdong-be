@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -17,7 +16,6 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -51,8 +49,6 @@ public class Club extends BaseEntity {
 
     private String tag;
 
-    private String content;
-
     private String leader;
 
     @Embedded
@@ -82,46 +78,48 @@ public class Club extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    public Club(Long id, User user, String name, String category, String tag, String leader, Location location,
-                PhoneNumber phoneNumber, Score score) {
+    private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category, String tag,
+                 String leader, PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
+                 LocalDateTime endRecruitPeriod, String regularMeeting, String introduction, String activity,
+                 String ideal, String formUrl, Score score, LocalDateTime deletedAt) {
         this.id = id;
         this.user = user;
+        this.clubMembers = clubMembers;
         this.name = name;
         this.category = category;
         this.tag = tag;
         this.leader = leader;
-        this.location = location;
-        this.score = score;
         this.phoneNumber = phoneNumber;
+        this.location = location;
+        this.startRecruitPeriod = startRecruitPeriod;
+        this.endRecruitPeriod = endRecruitPeriod;
+        this.regularMeeting = regularMeeting;
+        this.introduction = introduction;
+        this.activity = activity;
+        this.ideal = ideal;
+        this.formUrl = formUrl;
+        this.score = score;
+        this.deletedAt = deletedAt;
     }
 
-    public void updateClubInfo(UpdateClubRequest request) {
-        this.name = request.getName() != null ? request.getName() : this.name;
-        this.category = request.getCategory() != null ? request.getCategory() : this.category;
-        this.tag = request.getTag() != null ? request.getTag() : this.tag;
-        this.content = request.getContent() != null ? request.getContent() : this.content;
-        this.leader = request.getClubLeader() != null ? request.getClubLeader() : this.leader;
-        this.phoneNumber =
-                request.getPhoneNumber() != null ? PhoneNumber.from(request.getPhoneNumber()) : this.phoneNumber;
-        this.location = request.getLocation() != null ? Location.from(request.getLocation()) : this.location;
-        this.startRecruitPeriod =
-                request.getStartRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getStartRecruitPeriod());
-        this.endRecruitPeriod =
-                request.getEndRecruitPeriod().isBlank() ? null : parseLocalDateTime(request.getEndRecruitPeriod());
-        this.regularMeeting = request.getRegularMeeting() != null ? request.getRegularMeeting() : this.regularMeeting;
-        this.introduction = request.getIntroduction() != null ? request.getIntroduction() : this.introduction;
-        this.activity = request.getActivity() != null ? request.getActivity() : this.activity;
-        this.ideal = request.getIdeal() != null ? request.getIdeal() : this.ideal;
-        this.formUrl = request.getFormUrl() != null ? request.getFormUrl() : this.formUrl;
+    public void updateClubInfo(Club club) {
+        this.name = club.getName();
+        this.category = club.getCategory();
+        this.tag = club.getTag();
+        this.leader = club.getLeader();
+        this.phoneNumber = club.getPhoneNumber();
+        this.location = club.getLocation();
+        this.startRecruitPeriod = club.getStartRecruitPeriod();
+        this.endRecruitPeriod = club.getEndRecruitPeriod();
+        this.regularMeeting = club.getRegularMeeting();
+        this.introduction = club.getIntroduction();
+        this.activity = club.getActivity();
+        this.ideal = club.getIdeal();
+        this.formUrl = club.getFormUrl();
     }
 
     public BigDecimal editScore(Score score) {
         this.score = score;
         return this.score.getValue();
-    }
-
-    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }

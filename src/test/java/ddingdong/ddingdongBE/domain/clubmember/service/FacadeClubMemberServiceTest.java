@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.club.service;
+package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,13 +6,11 @@ import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
-import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
-import ddingdong.ddingdongBE.domain.clubmember.service.GeneralClubMemberService;
-import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberServiceImpl;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -34,10 +32,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
+class FacadeClubMemberServiceTest extends TestContainerSupport {
 
     @Autowired
-    private FacadeClubMemberServiceImpl facadeClubMemberServiceImpl;
+    private FacadeClubMemberService facadeClubMemberService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -45,13 +43,13 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
     @Autowired
     private ClubMemberRepository clubMemberRepository;
     @Autowired
-    private GeneralClubMemberService generalClubMemberService;
+    private ClubMemberService clubMemberService;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
-    void updateClubList() throws IOException {
+    void updateClubMemberList() throws IOException {
         //given
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();
@@ -94,6 +92,8 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
                 .sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
                 .set("club", savedClub)
@@ -106,7 +106,7 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
                 .build();
 
         //when
-        facadeClubMemberServiceImpl.updateMemberList(command);
+        facadeClubMemberService.updateMemberList(command);
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
@@ -124,6 +124,7 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
                 .sample());
         ClubMember savedClubMember = clubMemberRepository.save(
                 fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
@@ -137,10 +138,10 @@ class FacadeGeneralClubMemberServiceTest extends TestContainerSupport {
                 .department("test").build();
 
         //when
-        facadeClubMemberServiceImpl.update(command);
+        facadeClubMemberService.update(command);
 
         //then
-        ClubMember updatedClubMember = generalClubMemberService.getById(savedClubMember.getId());
+        ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
         assertThat(updatedClubMember.getName()).isEqualTo("test");
         assertThat(updatedClubMember.getPhoneNumber()).isEqualTo("010-1234-5678");
         assertThat(updatedClubMember.getStudentNumber()).isEqualTo("60001234");
