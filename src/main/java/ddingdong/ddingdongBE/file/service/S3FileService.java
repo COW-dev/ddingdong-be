@@ -34,9 +34,9 @@ public class S3FileService {
 
     public GeneratePreSignedUrlRequestQuery generatePreSignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
         UUID fileId = UuidCreator.getTimeOrderedEpoch();
-        String s3FilePath = createFilePath(command.generatedAt(), command.authId(), fileId);
         String fileExtension = extractFileExtension(command.fileName());
         ContentType contentType = ContentType.fromExtension(fileExtension);
+        String s3FilePath = createFilePath(contentType, command, fileId);
         Date expiration = setExpirationTime();
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
@@ -79,11 +79,15 @@ public class S3FileService {
         return expiration;
     }
 
-    private String createFilePath(LocalDateTime generatedAt, String authId, UUID uploadFileName) {
-        return String.format("%s/%s/%s/%s",
+    private String createFilePath(
+            ContentType contentType,
+            GeneratePreSignedUrlRequestCommand command,
+            UUID uploadFileName) {
+        return String.format("%s/%s/%s/%s/%s",
                 serverProfile,
-                createS3DirectoryTimeFormat(generatedAt),
-                authId,
+                contentType.isVideo() ? "video" : "file",
+                createS3DirectoryTimeFormat(command.generatedAt()),
+                command.authId(),
                 uploadFileName.toString());
     }
 

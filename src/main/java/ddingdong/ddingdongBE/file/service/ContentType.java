@@ -25,6 +25,9 @@ public enum ContentType {
     XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
     TEXT("text/plain", "txt"),
     HTML("text/html", "html"),
+    MP4("video/mp4", "mp4"),
+    WEBM("video/webm", "webm"),
+    MOV("video/quicktime", "mov"),
     OCTET_STREAM("application/octet-stream");
 
     private final String mimeType;
@@ -43,5 +46,9 @@ public enum ContentType {
             }
         }
         return OCTET_STREAM;
+    }
+
+    public boolean isVideo() {
+        return this == MP4 || this == MOV || this == WEBM;
     }
 }

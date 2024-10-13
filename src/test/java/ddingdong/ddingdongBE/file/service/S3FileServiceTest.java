@@ -14,6 +14,8 @@ import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -30,9 +32,9 @@ class S3FileServiceTest {
     @InjectMocks
     private S3FileService s3FileService;
 
-    @DisplayName("GeneratePreSignedUrlRequest를 생성한다.")
+    @DisplayName("GeneratePreSignedUrlRequest(FILE)를 생성한다.")
     @Test
-    void generatePreSignedUrlRequest() {
+    void generateFILEPreSignedUrlRequest() {
         //given
         LocalDateTime now = LocalDateTime.now();
         String authId = "test";
@@ -55,10 +57,38 @@ class S3FileServiceTest {
 
                     assertThat(request.getKey())
                             .as("Key should contain correct date, authId, and fileId")
-                            .contains(String.format("%d-%d-%d/%s/",
-                                    now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                            .contains(String.format("%s/%d-%d-%d/%s/",
+                                    "file", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
                             .contains(query.fileId().toString());
                 });
+
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), query.fileId().toString())).isTrue();
+    }
+
+    @DisplayName("GeneratePreSignedUrlRequest(VIDEO"
+            + ")를 생성한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"video.mp4", "video.webm", "video.mov"})
+    void generateVIDEOPreSignedUrlRequest(String fileName) {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+        String authId = "test";
+        GeneratePreSignedUrlRequestCommand command =
+                new GeneratePreSignedUrlRequestCommand(now, authId, fileName);
+
+        //when
+        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePreSignedUrlRequest(command);
+
+        //then
+        Pattern UUID7_PATTERN = Pattern.compile(
+                "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+        );
+        assertThat(query.generatePresignedUrlRequest())
+                .satisfies(request -> assertThat(request.getKey())
+                        .as("Key should contain correct date, authId, and fileId")
+                        .contains(String.format("%s/%d-%d-%d/%s/",
+                                "video", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                        .contains(query.fileId().toString()));
 
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), query.fileId().toString())).isTrue();
     }
