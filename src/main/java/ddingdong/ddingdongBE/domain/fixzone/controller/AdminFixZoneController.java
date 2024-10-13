@@ -38,7 +38,7 @@ public class AdminFixZoneController implements AdminFixZoneApi {
         Long fixZoneId
     ) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
+        Club club = clubService.getByUserId(principalDetails.getUser().getId());
 
         fixZoneCommentService.create(fixZone, club, request);
     }
@@ -50,7 +50,7 @@ public class AdminFixZoneController implements AdminFixZoneApi {
         Long fixZoneId,
         Long commentId
     ) {
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
+        Club club = clubService.getByUserId(principalDetails.getUser().getId());
 
         fixZoneCommentService.update(club.getId(), commentId, request);
     }
@@ -61,8 +61,6 @@ public class AdminFixZoneController implements AdminFixZoneApi {
         Long fixZoneId,
         Long commentId
     ) {
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
-
         fixZoneCommentService.delete(commentId);
     }
 

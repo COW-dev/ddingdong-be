@@ -6,10 +6,11 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCatego
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.api.CentralClubApi;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.MyClubInfoResponse;
+import ddingdong.ddingdongBE.domain.club.service.FacadeCentralClubService;
+import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberService;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -22,18 +23,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class CentralClubApiController implements CentralClubApi {
+public class CentralClubController implements CentralClubApi {
 
-    private final ClubService clubService;
+    private final FacadeCentralClubService facadeCentralClubService;
     private final FacadeClubMemberService facadeClubMemberService;
     private final FileService fileService;
 
@@ -53,17 +51,20 @@ public class CentralClubApiController implements CentralClubApi {
                 .body(clubMemberListFileData);
     }
 
-    public DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails) {
+    @Override
+    public MyClubInfoResponse getMyClub(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        return clubService.getMyClub(user.getId());
+        MyClubInfoQuery query = facadeCentralClubService.getMyClubInfo(user.getId());
+        return MyClubInfoResponse.from(query);
     }
 
-    public void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                           @ModelAttribute UpdateClubRequest param,
-                           @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                           @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images) {
+    @Override
+    public void updateClub(PrincipalDetails principalDetails,
+                           UpdateClubInfoRequest request,
+                           List<MultipartFile> profileImage,
+                           List<MultipartFile> images) {
         User user = principalDetails.getUser();
-        Long updatedClubId = clubService.update(user.getId(), param);
+        Long updatedClubId = facadeCentralClubService.updateClubInfo(request.toCommand(user.getId()));
 
         if (profileImage != null) {
             fileService.deleteFile(updatedClubId, IMAGE, CLUB_PROFILE);

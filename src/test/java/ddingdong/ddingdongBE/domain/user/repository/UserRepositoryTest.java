@@ -9,8 +9,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.test.context.ActiveProfiles;
 
 class UserRepositoryTest extends DataJpaTestSupport {
 
@@ -19,16 +17,16 @@ class UserRepositoryTest extends DataJpaTestSupport {
 
     @DisplayName("회원 아이디가 존재할 경우 true를 반환한다.")
     @Test
-    void existsByUserId() {
+    void existsByAuthId() {
         //given
-        String userId = "test1";
+        String authId = "test1";
 
         User user1 = createUser("test1");
         User user2 = createUser("test2");
         userRepository.saveAll(List.of(user1, user2));
 
         //when
-        boolean result = userRepository.existsByUserId(userId);
+        boolean result = userRepository.existsByAuthId(authId);
 
         //then
         assertThat(result).isTrue();
@@ -36,24 +34,24 @@ class UserRepositoryTest extends DataJpaTestSupport {
 
     @DisplayName("회원 아이디가 존재하지 않을 경우 false를 반환한다.")
     @Test
-    void existsByUserIdWithNoneExistUserId() {
+    void existsByUserIdWithNoneExistAuthId() {
         //given
-        String userId = "test3";
+        String authId = "test3";
 
         User user1 = createUser("test1");
         User user2 = createUser("test2");
         userRepository.saveAll(List.of(user1, user2));
 
         //when
-        boolean result = userRepository.existsByUserId(userId);
+        boolean result = userRepository.existsByAuthId(authId);
 
         //then
         assertThat(result).isFalse();
     }
 
-    private User createUser(String userId) {
+    private User createUser(String authId) {
         return User.builder()
-                .userId(userId)
+                .authId(authId)
                 .role(CLUB)
                 .name("동아리")
                 .password("1234").build();
