@@ -42,6 +42,8 @@ class FacadeClubScoreHistoryServiceImplTest extends TestContainerSupport {
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
                 .sample();
         Club savedClub = clubRepository.save(club);
         List<ScoreHistory> questions = fixtureMonkey.giveMeBuilder(ScoreHistory.class)

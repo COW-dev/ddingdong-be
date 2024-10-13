@@ -16,7 +16,7 @@ public class GeneralScoreHistoryService implements ScoreHistoryService {
 
     @Override
     @Transactional
-    public Long create(ScoreHistory scoreHistory) {
+    public Long save(ScoreHistory scoreHistory) {
         ScoreHistory savedScoreHistory = scoreHistoryRepository.save(scoreHistory);
         return savedScoreHistory.getId();
     }

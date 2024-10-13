@@ -1,0 +1,1 @@
+ALTER TABLE users CHANGE COLUMN userid auth_id VARCHAR(255);
