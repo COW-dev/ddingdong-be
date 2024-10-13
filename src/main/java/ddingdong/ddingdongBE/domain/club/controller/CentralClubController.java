@@ -29,7 +29,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RestController
 @RequiredArgsConstructor
 @Slf4j
-public class CentralClubApiController implements CentralClubApi {
+public class CentralClubController implements CentralClubApi {
 
     private final FacadeCentralClubService facadeCentralClubService;
     private final FacadeClubMemberService facadeClubMemberService;

@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class AdminClubApiController implements AdminClubApi {
+public class AdminClubController implements AdminClubApi {
 
     private final FacadeAdminClubService facadeAdminClubService;
 
