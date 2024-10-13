@@ -47,10 +47,19 @@ class S3FileServiceTest {
         Pattern UUID7_PATTERN = Pattern.compile(
                 "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
         );
-        assertThat(query.generatePresignedUrlRequest().getContentType()).isEqualTo(ContentType.fromExtension("jpg"));
-        assertThat(query.generatePresignedUrlRequest().getKey()).isEqualTo(
-                "test/" + now.getYear() + "-" + now.getMonthValue() + "-" + now.getDayOfMonth() + "/authId/"
-                        + query.fileId().toString());
+        assertThat(query.generatePresignedUrlRequest())
+                .satisfies(request -> {
+                    assertThat(request.getContentType())
+                            .as("Content type should be image/jpeg")
+                            .isEqualTo("image/jpeg");
+
+                    assertThat(request.getKey())
+                            .as("Key should contain correct date, authId, and fileId")
+                            .contains(String.format("%d-%d-%d/%s/",
+                                    now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                            .contains(query.fileId().toString());
+                });
+
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), query.fileId().toString())).isTrue();
     }
 

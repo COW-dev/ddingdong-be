@@ -88,7 +88,7 @@ public class S3FileService {
     }
 
     private String createS3DirectoryTimeFormat(LocalDateTime generatedAt) {
-        return generatedAt.getYear() + "-" + generatedAt.getMonth() + "-" + generatedAt.getDayOfMonth();
+        return generatedAt.getYear() + "-" + generatedAt.getMonthValue() + "-" + generatedAt.getDayOfMonth();
     }
 
     private String extractFileExtension(String fileName) {
