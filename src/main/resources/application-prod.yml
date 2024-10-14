@@ -59,8 +59,5 @@ management:
       enabled: true
   server:
     port: 9090
-
-actuator:
-  user-name: ${MONITORING_USERNAME}
-  password: ${MONITORING_USER_PASSWORD}
-  role-name: ACTUATOR
+  security:
+    enabled: false
