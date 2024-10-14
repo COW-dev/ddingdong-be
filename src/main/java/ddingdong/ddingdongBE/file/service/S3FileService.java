@@ -75,9 +75,9 @@ public class S3FileService {
         String region = amazonS3Client.getRegionName();
 
         String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnail", fileId, ".jpg");
-        String thumbnailCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "thumbnail", fileId, ".jpg");
+        String thumbnailCdnUrl = generateCdnUrl("thumbnail", fileId, ".jpg");
         String videoOriginUrl = generateS3Url(outputBucket, region, "hls", fileId, "_720.m3u8");
-        String videoCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "hls", fileId, "_720.m3u8");
+        String videoCdnUrl = generateCdnUrl("hls", fileId, "_720.m3u8");
 
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
     }
@@ -123,7 +123,7 @@ public class S3FileService {
         return String.format(S3_URL_FORMAT + "%s", bucket, region, prefix) + filename + suffix;
     }
 
-    private String generateCdnUrl(String cdnUrl, String prefix, String filename, String suffix) {
-        return cdnUrl + "/" + prefix + filename + suffix;
+    private String generateCdnUrl(String prefix, String filename, String suffix) {
+        return S3FileService.VIDEO_CDN_URL + "/" + prefix + filename + suffix;
     }
 }
