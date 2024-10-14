@@ -6,26 +6,37 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
+import ddingdong.ddingdongBE.common.exception.AwsException;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
-import java.net.URL;
-import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.UUID;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.net.URL;
+import java.time.LocalDateTime;
+import java.util.Date;
+import java.util.UUID;
 
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class S3FileService {
 
-    @Value("${spring.s3.bucket}")
-    private String bucketName;
+    private static final String S3_URL_FORMAT = "https://%s.s3.%s.amazonaws.com/";
+    private static final String FILE_CDN_URL = "https://ddn4vjj3ws13w.cloudfront.net";
+    private static final String VIDEO_CDN_URL = "https://d2syrtcctrfiup.cloudfront.net";
+    private static final long PRE_SIGNED_URL_EXPIRATION_TIME = 1000 * 60 * 5; // 5 minutes
+
+    @Value("${spring.s3.input-bucket}")
+    private String inputBucket;
+    @Value("${spring.s3.output-bucket}")
+    private String outputBucket;
     @Value("${spring.config.activate.on-profile}")
     private String serverProfile;
 
@@ -33,17 +44,12 @@ public class S3FileService {
 
     public GeneratePreSignedUrlRequestQuery generatePreSignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
         UUID fileId = UuidCreator.getTimeOrderedEpoch();
-        String fileExtension = extractFileExtension(command.fileName());
-        ContentType contentType = ContentType.fromExtension(fileExtension);
-        String key = key(contentType, command, fileId);
-        Date expiration = setExpirationTime();
+        ContentType contentType = ContentType.fromExtension(extractFileExtension(command.fileName()));
+        String key = generateKey(contentType, command, fileId);
+        Date expiration = getExpirationTime();
 
-        GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, key)
-                        .withMethod(HttpMethod.PUT)
-                        .withExpiration(expiration)
-                        .withContentType(contentType.getMimeType());
-        return new GeneratePreSignedUrlRequestQuery(generatePresignedUrlRequest, key, contentType.getMimeType());
+        GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
+        return new GeneratePreSignedUrlRequestQuery(request, key, contentType.getMimeType());
     }
 
     public URL getPresingedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
@@ -58,44 +64,67 @@ public class S3FileService {
         }
     }
 
-    public String getUploadedFileUrl(String fileName, String uploadFileName) {
+    public UploadedFileUrlQuery getUploadedFileUrl(String key) {
         String region = amazonS3Client.getRegionName();
-        String fileExtension = extractFileExtension(fileName);
-
-        return String.format("https://%s.s3.%s.amazonaws.com/%s/%s/%s",
-                bucketName,
-                region,
-                serverProfile,
-                fileExtension,
-                uploadFileName);
+        String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
+        String cdnUrl = FILE_CDN_URL + key;
+        return new UploadedFileUrlQuery(originUrl, cdnUrl);
     }
 
-    private Date setExpirationTime() {
+    public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
+        String filename = extractFilename(key);
+        String region = amazonS3Client.getRegionName();
+
+        String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnail", filename, ".jpg");
+        String thumbnailCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "thumbnail", filename, ".jpg");
+        String videoOriginUrl = generateS3Url(outputBucket, region, "hls", filename, "_720.m3u8");
+        String videoCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "hls", filename, "_720.m3u8");
+
+        return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
+    }
+
+    private GeneratePresignedUrlRequest createPresignedUrlRequest(String key, ContentType contentType,
+                                                                  Date expiration) {
+        return new GeneratePresignedUrlRequest(inputBucket, key)
+                .withMethod(HttpMethod.PUT)
+                .withExpiration(expiration)
+                .withContentType(contentType.getMimeType());
+    }
+
+    private Date getExpirationTime() {
         Date expiration = new Date();
-        long expTimeMillis = expiration.getTime();
-        expTimeMillis += 1000 * 60 * 5;
-        expiration.setTime(expTimeMillis);
+        expiration.setTime(expiration.getTime() + PRE_SIGNED_URL_EXPIRATION_TIME);
         return expiration;
     }
 
-    private String key(
-            ContentType contentType,
-            GeneratePreSignedUrlRequestCommand command,
-            UUID uploadFileName) {
+    private String generateKey(ContentType contentType, GeneratePreSignedUrlRequestCommand command,
+                               UUID uploadFileName) {
         return String.format("%s/%s/%s/%s/%s",
                 serverProfile,
                 contentType.isVideo() ? "video" : "file",
-                createS3DirectoryTimeFormat(command.generatedAt()),
+                formatDate(command.generatedAt()),
                 command.authId(),
                 uploadFileName.toString());
     }
 
-    private String createS3DirectoryTimeFormat(LocalDateTime generatedAt) {
-        return generatedAt.getYear() + "-" + generatedAt.getMonthValue() + "-" + generatedAt.getDayOfMonth();
+    private String formatDate(LocalDateTime dateTime) {
+        return String.format("%d-%d-%d", dateTime.getYear(), dateTime.getMonthValue(), dateTime.getDayOfMonth());
     }
 
     private String extractFileExtension(String fileName) {
         return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
+    private String extractFilename(String key) {
+        String[] splitKey = key.split("/");
+        return splitKey[splitKey.length - 1];
+    }
+
+    private String generateS3Url(String bucket, String region, String prefix, String filename, String suffix) {
+        return String.format(S3_URL_FORMAT + "%s", bucket, region, prefix) + filename + suffix;
+    }
+
+    private String generateCdnUrl(String cdnUrl, String prefix, String filename, String suffix) {
+        return cdnUrl + "/" + prefix + filename + suffix;
+    }
 }
