@@ -6,7 +6,6 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
-import ddingdong.ddingdongBE.common.exception.AwsException;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
@@ -72,13 +71,13 @@ public class S3FileService {
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
-        String filename = extractFilename(key);
+        String fileId = extractFileId(key);
         String region = amazonS3Client.getRegionName();
 
-        String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnail", filename, ".jpg");
-        String thumbnailCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "thumbnail", filename, ".jpg");
-        String videoOriginUrl = generateS3Url(outputBucket, region, "hls", filename, "_720.m3u8");
-        String videoCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "hls", filename, "_720.m3u8");
+        String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnail", fileId, ".jpg");
+        String thumbnailCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "thumbnail", fileId, ".jpg");
+        String videoOriginUrl = generateS3Url(outputBucket, region, "hls", fileId, "_720.m3u8");
+        String videoCdnUrl = generateCdnUrl(VIDEO_CDN_URL, "hls", fileId, "_720.m3u8");
 
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
     }
@@ -115,7 +114,7 @@ public class S3FileService {
         return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 
-    private String extractFilename(String key) {
+    private String extractFileId(String key) {
         String[] splitKey = key.split("/");
         return splitKey[splitKey.length - 1];
     }
