@@ -26,6 +26,6 @@ public class S3FileController implements S3FileAPi {
                 s3FileService.generatePreSignedUrlRequest(
                         new GeneratePreSignedUrlRequestCommand(now, user.getAuthId(), fileName));
         URL presingedUrl = s3FileService.getPresingedUrl(query.generatePresignedUrlRequest());
-        return UploadUrlResponse.of(presingedUrl.toString(), query.fileId().toString());
+        return UploadUrlResponse.of(query, presingedUrl);
     }
 }

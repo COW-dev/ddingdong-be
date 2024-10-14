@@ -26,7 +26,6 @@ public class S3FileService {
 
     @Value("${spring.s3.bucket}")
     private String bucketName;
-
     @Value("${spring.config.activate.on-profile}")
     private String serverProfile;
 
@@ -36,15 +35,15 @@ public class S3FileService {
         UUID fileId = UuidCreator.getTimeOrderedEpoch();
         String fileExtension = extractFileExtension(command.fileName());
         ContentType contentType = ContentType.fromExtension(fileExtension);
-        String s3FilePath = createFilePath(contentType, command, fileId);
+        String key = key(contentType, command, fileId);
         Date expiration = setExpirationTime();
 
         GeneratePresignedUrlRequest generatePresignedUrlRequest =
-                new GeneratePresignedUrlRequest(bucketName, s3FilePath)
+                new GeneratePresignedUrlRequest(bucketName, key)
                         .withMethod(HttpMethod.PUT)
                         .withExpiration(expiration)
                         .withContentType(contentType.getMimeType());
-        return new GeneratePreSignedUrlRequestQuery(generatePresignedUrlRequest, fileId);
+        return new GeneratePreSignedUrlRequestQuery(generatePresignedUrlRequest, key, contentType.getMimeType());
     }
 
     public URL getPresingedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
@@ -79,7 +78,7 @@ public class S3FileService {
         return expiration;
     }
 
-    private String createFilePath(
+    private String key(
             ContentType contentType,
             GeneratePreSignedUrlRequestCommand command,
             UUID uploadFileName) {

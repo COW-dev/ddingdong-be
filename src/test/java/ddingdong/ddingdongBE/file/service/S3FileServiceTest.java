@@ -32,6 +32,10 @@ class S3FileServiceTest {
     @InjectMocks
     private S3FileService s3FileService;
 
+    private static final Pattern UUID7_PATTERN = Pattern.compile(
+            "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+    );
+
     @DisplayName("GeneratePreSignedUrlRequest(FILE)를 생성한다.")
     @Test
     void generateFILEPreSignedUrlRequest() {
@@ -46,9 +50,9 @@ class S3FileServiceTest {
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePreSignedUrlRequest(command);
 
         //then
-        Pattern UUID7_PATTERN = Pattern.compile(
-                "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
-        );
+
+        String[] split = query.key().split("/");
+        String uploadName = split[split.length - 1];
         assertThat(query.generatePresignedUrlRequest())
                 .satisfies(request -> {
                     assertThat(request.getContentType())
@@ -59,14 +63,13 @@ class S3FileServiceTest {
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
                                     "file", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                            .contains(query.fileId().toString());
+                            .contains(uploadName);
                 });
-
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), query.fileId().toString())).isTrue();
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
+        assertThat(query.contentType()).isEqualTo("image/jpeg");
     }
 
-    @DisplayName("GeneratePreSignedUrlRequest(VIDEO"
-            + ")를 생성한다.")
+    @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
     @ParameterizedTest
     @ValueSource(strings = {"video.mp4", "video.webm", "video.mov"})
     void generateVIDEOPreSignedUrlRequest(String fileName) {
@@ -80,17 +83,16 @@ class S3FileServiceTest {
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePreSignedUrlRequest(command);
 
         //then
-        Pattern UUID7_PATTERN = Pattern.compile(
-                "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
-        );
+        String[] split = query.key().split("/");
+        String uploadName = split[split.length - 1];
         assertThat(query.generatePresignedUrlRequest())
                 .satisfies(request -> assertThat(request.getKey())
                         .as("Key should contain correct date, authId, and fileId")
                         .contains(String.format("%s/%d-%d-%d/%s/",
                                 "video", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                        .contains(query.fileId().toString()));
+                        .contains(uploadName));
 
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), query.fileId().toString())).isTrue();
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
     }
 
     @DisplayName("s3 uploadedFileUrl을 조회한다.")
