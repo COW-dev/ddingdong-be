@@ -33,27 +33,25 @@ public class Banner extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
+    //TODO: migration script 작성
+    private String webImageKey;
 
-    private String title;
-
-    private String subTitle;
-
-    private String colorCode;
+    private String mobileImageKey;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    public Banner(User user, String title, String subTitle, String colorCode) {
+    private Banner(Long id, User user, String webImageKey, String mobileImageKey, LocalDateTime deletedAt) {
+        this.id = id;
         this.user = user;
-        this.title = title;
-        this.subTitle = subTitle;
-        this.colorCode = colorCode;
+        this.webImageKey = webImageKey;
+        this.mobileImageKey = mobileImageKey;
+        this.deletedAt = deletedAt;
     }
 
-    public void update(UpdateBannerRequest request) {
-        this.title = request.getTitle();
-        this.subTitle = request.getSubTitle();
-        this.colorCode = request.getColorCode();
+    public void update(Banner banner) {
+        this.webImageKey = banner.getWebImageKey();
+        this.mobileImageKey = banner.getMobileImageKey();
     }
 }
