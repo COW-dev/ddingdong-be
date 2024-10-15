@@ -6,35 +6,37 @@ import lombok.Getter;
 
 @Getter
 public enum ContentType {
-    JPEG("image/jpeg", "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
-    PNG("image/png", "png"),
-    GIF("image/gif", "gif"),
-    WEBP("image/webp", "webp"),
-    TIFF("image/tiff", "tiff", "tif"),
-    BMP("image/bmp", "bmp"),
-    SVG("image/svg+xml", "svg", "svgz"),
-    ICO("image/x-icon", "ico"),
-    HEIC("image/heic", "heic"),
-    HEIF("image/heif", "heif"),
-    RAW("image/x-raw", "raw", "arw", "cr2", "nrw", "k25"),
-    PSD("image/vnd.adobe.photoshop", "psd"),
-    PDF("application/pdf", "pdf"),
-    MSWORD("application/msword", "doc"),
-    DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "docx"),
-    EXCEL("application/vnd.ms-excel", "xls"),
-    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "xlsx"),
-    TEXT("text/plain", "txt"),
-    HTML("text/html", "html"),
-    MP4("video/mp4", "mp4"),
-    WEBM("video/webm", "webm"),
-    MOV("video/quicktime", "mov"),
-    OCTET_STREAM("application/octet-stream");
+    JPEG("image/jpeg", false, "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
+    PNG("image/png", false, "png"),
+    GIF("image/gif", false, "gif"),
+    WEBP("image/webp", false, "webp"),
+    TIFF("image/tiff", false, "tiff", "tif"),
+    BMP("image/bmp", false, "bmp"),
+    SVG("image/svg+xml", false, "svg", "svgz"),
+    ICO("image/x-icon", false, "ico"),
+    HEIC("image/heic", false, "heic"),
+    HEIF("image/heif", false, "heif"),
+    RAW("image/x-raw", false, "raw", "arw", "cr2", "nrw", "k25"),
+    PSD("image/vnd.adobe.photoshop", false, "psd"),
+    PDF("application/pdf", false, "pdf"),
+    MSWORD("application/msword", false, "doc"),
+    DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", false, "docx"),
+    EXCEL("application/vnd.ms-excel", false, "xls"),
+    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", false, "xlsx"),
+    TEXT("text/plain", false, "txt"),
+    HTML("text/html", false, "html"),
+    MP4("video/mp4", true, "mp4"),
+    WEBM("video/webm", true, "webm"),
+    MOV("video/quicktime", true, "mov"),
+    OCTET_STREAM("application/octet-stream", false);
 
     private final String mimeType;
+    private final boolean isVideo;
     private final List<String> extensions;
 
-    ContentType(String mimeType, String... extensions) {
+    ContentType(String mimeType, boolean isVideo, String... extensions) {
         this.mimeType = mimeType;
+        this.isVideo = isVideo;
         this.extensions = Arrays.asList(extensions);
     }
 
@@ -49,6 +51,6 @@ public enum ContentType {
     }
 
     public boolean isVideo() {
-        return this == MP4 || this == MOV || this == WEBM;
+        return this.isVideo;
     }
 }
