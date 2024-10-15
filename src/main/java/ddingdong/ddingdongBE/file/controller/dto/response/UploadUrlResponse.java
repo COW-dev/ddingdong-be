@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.file.controller.dto.response;
 
+import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.net.URL;
 import lombok.Builder;
 
 @Schema(
@@ -12,14 +14,18 @@ public record UploadUrlResponse(
 
         @Schema(description = "presignedUrl", example = "https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg")
         String uploadUrl,
-        @Schema(description = "업로드 파일 식별자(UUID)", example = "9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d")
-        String fileId
+        @Schema(description = "업로드 key(경로)", example = "local/file/2024-01-01/cow/UUID")
+        String key,
+        @Schema(description = "contentType(presignedUrl 업로드 요청 시 사용)", example = "image/png")
+        String contentType
+
 ) {
 
-    public static UploadUrlResponse of(String uploadUrl, String fileId) {
+    public static UploadUrlResponse of(GeneratePreSignedUrlRequestQuery query, URL uploadUrl) {
         return UploadUrlResponse.builder()
-                .uploadUrl(uploadUrl)
-                .fileId(fileId)
+                .uploadUrl(uploadUrl.toString())
+                .key(query.key())
+                .contentType(query.contentType())
                 .build();
     }
 

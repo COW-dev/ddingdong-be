@@ -1,9 +1,9 @@
 package ddingdong.ddingdongBE.domain.filemetadata.service;
 
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import java.util.UUID;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.CreateFileMetaDataCommand;
 
 public interface FacadeFileMetaDataService {
 
-    FileMetaData getFileUrlWithMetaData(UUID fileId);
+    void create(CreateFileMetaDataCommand command);
+
 }

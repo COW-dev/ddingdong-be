@@ -15,8 +15,8 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
 
-    @Transactional
     @Override
+    @Transactional
     public void create(FileMetaData fileMetaData) {
         fileMetaDataRepository.save(fileMetaData);
     }
