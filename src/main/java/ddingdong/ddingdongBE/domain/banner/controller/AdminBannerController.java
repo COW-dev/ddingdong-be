@@ -6,7 +6,7 @@ import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCate
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
-import ddingdong.ddingdongBE.domain.banner.service.BannerService;
+import ddingdong.ddingdongBE.domain.banner.service.GeneralBannerService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.List;
@@ -27,7 +27,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AdminBannerController {
 
-    private final BannerService bannerService;
+    private final GeneralBannerService generalBannerService;
     private final FileService fileService;
 
     @PostMapping
@@ -35,7 +35,7 @@ public class AdminBannerController {
                              @ModelAttribute CreateBannerRequest request,
                              @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
         User adminUser = principalDetails.getUser();
-        Long createdBannerId = bannerService.createBanner(adminUser, request);
+        Long createdBannerId = generalBannerService.createBanner(adminUser, request);
 
         fileService.uploadFile(createdBannerId, bannerImages, IMAGE, BANNER);
     }
@@ -45,7 +45,7 @@ public class AdminBannerController {
                              @ModelAttribute UpdateBannerRequest request,
                              @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
 
-        bannerService.updateBanner(bannerId, request);
+        generalBannerService.updateBanner(bannerId, request);
 
         if (bannerImages != null) {
             fileService.deleteFile(bannerId, IMAGE, BANNER);
@@ -55,7 +55,7 @@ public class AdminBannerController {
 
     @DeleteMapping("/{bannerId}")
     public void deleteBanner(@PathVariable Long bannerId) {
-        bannerService.deleteBanner(bannerId);
+        generalBannerService.deleteBanner(bannerId);
 
         fileService.deleteFile(bannerId, IMAGE, BANNER);
     }
