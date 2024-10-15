@@ -73,14 +73,32 @@ class S3FileServiceTest extends TestContainerSupport {
         //then
         String[] split = query.key().split("/");
         String uploadName = split[split.length - 1];
-        assertThat(query.generatePresignedUrlRequest())
-                .satisfies(request -> assertThat(request.getKey())
-                        .as("Key should contain correct date, authId, and fileId")
-                        .contains(String.format("%s/%d-%d-%d/%s/",
-                                "video", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                        .contains(uploadName));
 
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
+        assertThat(query.generatePresignedUrlRequest())
+                .satisfies(request -> {
+                    assertThat(request.getContentType())
+                            .as("Content type should match the video's MIME type")
+                            .isEqualTo(expectedContentType(fileName));
+                    assertThat(request.getKey())
+                            .as("Key should contain correct date, authId, and fileId")
+                            .contains(String.format("%s/%d-%d-%d/%s/",
+                                    "video", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                            .contains(uploadName);
+
+                    assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
+                });
+
     }
 
+    private String expectedContentType(String fileName) {
+        if (fileName.endsWith(".mp4")) {
+            return "video/mp4";
+        } else if (fileName.endsWith(".webm")) {
+            return "video/webm";
+        } else if (fileName.endsWith(".mov")) {
+            return "video/quicktime";
+        } else {
+            throw new IllegalArgumentException("Unsupported video format");
+        }
+    }
 }
