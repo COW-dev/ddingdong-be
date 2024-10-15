@@ -35,7 +35,7 @@ class S3FileServiceTest extends TestContainerSupport {
                 new GeneratePreSignedUrlRequestCommand(now, authId, fileName);
 
         //when
-        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePreSignedUrlRequest(command);
+        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
 
@@ -68,7 +68,7 @@ class S3FileServiceTest extends TestContainerSupport {
                 new GeneratePreSignedUrlRequestCommand(now, authId, fileName);
 
         //when
-        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePreSignedUrlRequest(command);
+        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
         String[] split = query.key().split("/");

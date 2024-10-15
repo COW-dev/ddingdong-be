@@ -41,7 +41,7 @@ public class S3FileService {
 
     private final AmazonS3Client amazonS3Client;
 
-    public GeneratePreSignedUrlRequestQuery generatePreSignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
+    public GeneratePreSignedUrlRequestQuery generatePresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
         UUID fileId = UuidCreator.getTimeOrderedEpoch();
         ContentType contentType = ContentType.fromExtension(extractFileExtension(command.fileName()));
         String key = generateKey(contentType, command, fileId);
@@ -51,7 +51,7 @@ public class S3FileService {
         return new GeneratePreSignedUrlRequestQuery(request, key, contentType.getMimeType());
     }
 
-    public URL getPresingedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
+    public URL getPresignedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
         try {
             return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
         } catch (AmazonServiceException e) {
