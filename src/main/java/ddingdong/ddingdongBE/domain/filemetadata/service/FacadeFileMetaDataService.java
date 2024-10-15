@@ -4,6 +4,6 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.dto.CreateFileMetaDataC
 
 public interface FacadeFileMetaDataService {
 
-    void create(CreateFileMetaDataCommand command);
+    void create(CreateFileMetaDataCommand... commands);
 
 }

@@ -14,9 +14,11 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
     private final FileMetaDataService fileMetaDataService;
 
     @Override
-    public void create(CreateFileMetaDataCommand command) {
-        String fileId = extractFilename(command.key());
-        fileMetaDataService.create(command.toEntity(UUID.fromString(fileId)));
+    public void create(CreateFileMetaDataCommand... commands) {
+        for (CreateFileMetaDataCommand command : commands) {
+            String fileId = extractFilename(command.key());
+            fileMetaDataService.create(command.toEntity(UUID.fromString(fileId)));
+        }
     }
 
     private String extractFilename(String key) {

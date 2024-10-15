@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
-import ddingdong.ddingdongBE.domain.banner.controller.dto.response.BannerResponse;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import java.util.List;
 

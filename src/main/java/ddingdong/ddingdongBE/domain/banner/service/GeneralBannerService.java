@@ -1,18 +1,8 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.*;
-
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
-import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
-import ddingdong.ddingdongBE.domain.banner.controller.dto.response.BannerResponse;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
-import ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory;
-import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.user.entity.User;
-import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,7 +19,7 @@ public class GeneralBannerService implements BannerService {
     @Transactional
     public Long save(Banner banner) {
         Banner savedBanner = bannerRepository.save(banner);
-        return banner.getId();
+        return savedBanner.getId();
     }
 
     @Override
