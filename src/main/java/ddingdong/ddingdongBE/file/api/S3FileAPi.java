@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.file.api;
 
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.common.exception.ErrorResponse;
 import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -12,6 +13,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -53,6 +55,7 @@ public interface S3FileAPi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/upload-url")
-    UploadUrlResponse getUploadUrl(@RequestParam("fileName") String fileName);
+    UploadUrlResponse getPreSignedUrl(@AuthenticationPrincipal PrincipalDetails principalDetails,
+                                      @RequestParam("fileName") String fileName);
 
 }

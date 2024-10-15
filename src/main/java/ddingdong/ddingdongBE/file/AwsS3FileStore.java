@@ -29,7 +29,7 @@ public class AwsS3FileStore implements FileStore {
 	@Value("${cloud.aws.region.static}")
 	private String region;
 
-	@Value("${spring.s3.bucket}")
+	@Value("${spring.s3.input-bucket}")
 	private String bucketName;
 
 	@Override

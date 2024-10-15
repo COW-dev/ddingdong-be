@@ -20,7 +20,8 @@ spring:
       mode: never
 
   s3:
-    bucket: "test"
+    input-bucket: "test"
+    output-bucket: "test"
     access-key: "test"
     secret-key: "test"
 
