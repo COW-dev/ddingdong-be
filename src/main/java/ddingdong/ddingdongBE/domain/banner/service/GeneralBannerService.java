@@ -24,7 +24,7 @@ public class GeneralBannerService implements BannerService {
 
     @Override
     public List<Banner> findAll() {
-        return bannerRepository.findAll();
+        return bannerRepository.findAllByOrderByIdDesc();
     }
 
     @Override

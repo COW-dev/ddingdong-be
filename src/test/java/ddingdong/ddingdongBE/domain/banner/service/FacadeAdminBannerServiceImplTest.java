@@ -8,11 +8,13 @@ import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
+import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -60,6 +62,26 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                         mobileImageKey
                 );
         assertThat(fileMetaDataList).hasSize(2);
+    }
+
+    @DisplayName("어드민: Banner 목록 조회")
+    @Test
+    void findAll() {
+        //given
+        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        List<Banner> banners = fixtureMonkey.giveMeBuilder(Banner.class)
+                .set("user", savedUser)
+                .set("deletedAt", null)
+                .sampleList(5);
+        bannerRepository.saveAll(banners);
+
+        //when
+        List<AdminBannerListQuery> result = facadeAdminBannerService.findAll();
+
+        //then
+        assertThat(result)
+                .hasSize(5)
+                .isSortedAccordingTo(Comparator.comparing(AdminBannerListQuery::id).reversed());
     }
 
     @DisplayName("어드민: Banner 삭제")
