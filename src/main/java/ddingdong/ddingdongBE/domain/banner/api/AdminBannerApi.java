@@ -41,7 +41,7 @@ public interface AdminBannerApi {
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = AdminBannerListResponse.class))))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping()
+    @GetMapping
     List<AdminBannerListResponse> findAllBanners();
 
     @Operation(summary = "Banner 삭제 API")

@@ -21,7 +21,7 @@ public interface UserBannerApi {
     @ApiResponse(responseCode = "200", description = "배너 목록 조회 성공",
             content = @Content(array = @ArraySchema(schema = @Schema(implementation = UserBannerListResponse.class))))
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping()
+    @GetMapping
     List<UserBannerListResponse> findAllBanners();
 
 }

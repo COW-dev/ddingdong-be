@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/server/banners")
 @RequiredArgsConstructor
 public class UserBannerController implements UserBannerApi {
 

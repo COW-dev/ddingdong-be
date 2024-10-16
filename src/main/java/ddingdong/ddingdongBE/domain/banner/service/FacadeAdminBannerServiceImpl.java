@@ -4,8 +4,8 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANN
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANNER_WEB_IMAGE;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
-import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
+import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.CreateFileMetaDataCommand;
 import ddingdong.ddingdongBE.file.service.S3FileService;
@@ -23,17 +23,13 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
     private final FacadeFileMetaDataService facadeFileMetaDataService;
     private final S3FileService s3FileService;
 
-
     @Override
     @Transactional
     public Long create(CreateBannerCommand command) {
-        CreateFileMetaDataCommand createBannerWebImageFileMetaDataCommand =
-                new CreateFileMetaDataCommand(command.webImageKey(), BANNER_WEB_IMAGE);
-        CreateFileMetaDataCommand createBannerMobileImageFileMetaDataCommand =
-                new CreateFileMetaDataCommand(command.mobileImageKey(), BANNER_MOBILE_IMAGE);
-        facadeFileMetaDataService.create(createBannerWebImageFileMetaDataCommand,
-                createBannerMobileImageFileMetaDataCommand);
-
+        facadeFileMetaDataService.create(
+                new CreateFileMetaDataCommand(command.webImageKey(), BANNER_WEB_IMAGE),
+                new CreateFileMetaDataCommand(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
+        );
         return bannerService.save(command.toEntity());
     }
 
@@ -55,4 +51,5 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
     public void delete(Long bannerId) {
         bannerService.delete(bannerId);
     }
+
 }
