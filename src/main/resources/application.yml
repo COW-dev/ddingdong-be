@@ -41,6 +41,11 @@ swagger:
   server:
     url: ${SERVER_URL:http://localhost:8080}
 
+spring-doc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter : method
+    doc-expansion : none
 
 security:
   actuator:
