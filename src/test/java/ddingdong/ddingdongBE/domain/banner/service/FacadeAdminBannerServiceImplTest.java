@@ -61,4 +61,23 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                 );
         assertThat(fileMetaDataList).hasSize(2);
     }
+
+    @DisplayName("어드민: Banner 삭제")
+    @Test
+    void delete() {
+        //given
+        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        Banner banner = fixtureMonkey.giveMeBuilder(Banner.class)
+                .set("user", savedUser)
+                .set("deletedAt", null)
+                .sample();
+        Banner savedBanner = bannerRepository.save(banner);
+
+        //when
+        facadeAdminBannerService.delete(savedBanner.getId());
+
+        //then
+        List<Banner> result = bannerRepository.findAll();
+        assertThat(result).isEmpty();
+    }
 }

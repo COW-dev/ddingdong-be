@@ -6,4 +6,6 @@ public interface FacadeAdminBannerService {
 
     Long create(CreateBannerCommand command);
 
+    void delete(Long bannerId);
+
 }

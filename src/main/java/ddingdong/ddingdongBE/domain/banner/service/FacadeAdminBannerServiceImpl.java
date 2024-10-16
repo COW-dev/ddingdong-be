@@ -30,4 +30,10 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
 
         return bannerService.save(command.toEntity());
     }
+
+    @Override
+    @Transactional
+    public void delete(Long bannerId) {
+        bannerService.delete(bannerId);
+    }
 }
