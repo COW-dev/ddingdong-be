@@ -28,8 +28,8 @@ import java.util.UUID;
 public class S3FileService {
 
     private static final String S3_URL_FORMAT = "https://%s.s3.%s.amazonaws.com/";
-    private static final String FILE_CDN_URL = "https://ddn4vjj3ws13w.cloudfront.net";
-    private static final String VIDEO_CDN_URL = "https://d2syrtcctrfiup.cloudfront.net";
+    private static final String FILE_CDN_URL = "https://ddn4vjj3ws13w.cloudfront.net/";
+    private static final String VIDEO_CDN_URL = "https://d2syrtcctrfiup.cloudfront.net/";
     private static final long PRE_SIGNED_URL_EXPIRATION_TIME = 1000 * 60 * 5; // 5 minutes
 
     @Value("${spring.s3.input-bucket}")
@@ -65,8 +65,12 @@ public class S3FileService {
 
     public UploadedFileUrlQuery getUploadedFileUrl(String key) {
         String region = amazonS3Client.getRegionName();
+        String[] splitKey = key.split("/");
         String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
-        String cdnUrl = FILE_CDN_URL + key;
+        String cdnUrl = FILE_CDN_URL +
+                splitKey[splitKey.length - 3] + "/" +
+                splitKey[splitKey.length - 2] + "/" +
+                splitKey[splitKey.length - 1];
         return new UploadedFileUrlQuery(originUrl, cdnUrl);
     }
 
