@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.banner.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.banner.controller.dto.request.UpdateBannerRequest;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -33,7 +32,7 @@ public class Banner extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
-    //TODO: migration script 작성
+
     private String webImageKey;
 
     private String mobileImageKey;
@@ -42,12 +41,11 @@ public class Banner extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Banner(Long id, User user, String webImageKey, String mobileImageKey, LocalDateTime deletedAt) {
+    private Banner(Long id, User user, String webImageKey, String mobileImageKey) {
         this.id = id;
         this.user = user;
         this.webImageKey = webImageKey;
         this.mobileImageKey = mobileImageKey;
-        this.deletedAt = deletedAt;
     }
 
     public void update(Banner banner) {

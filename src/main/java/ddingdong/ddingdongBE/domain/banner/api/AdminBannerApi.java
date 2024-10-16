@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,7 +33,7 @@ public interface AdminBannerApi {
     @PostMapping
     void createBanner(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody CreateBannerRequest request
+            @Valid @RequestBody CreateBannerRequest request
     );
 
     @Operation(summary = "Banner 목록 조회 API")
