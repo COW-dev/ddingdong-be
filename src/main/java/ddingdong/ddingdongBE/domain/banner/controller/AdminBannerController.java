@@ -1,46 +1,37 @@
 package ddingdong.ddingdongBE.domain.banner.controller;
 
-import ddingdong.ddingdongBE.domain.banner.service.GeneralBannerService;
-import ddingdong.ddingdongBE.file.service.FileService;
+import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.banner.api.AdminBannerApi;
+import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
+import ddingdong.ddingdongBE.domain.banner.controller.dto.response.AdminBannerListResponse;
+import ddingdong.ddingdongBE.domain.banner.service.FacadeAdminBannerService;
+import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/server/admin/banners")
 @RequiredArgsConstructor
-public class AdminBannerController {
+public class AdminBannerController implements AdminBannerApi {
 
-    private final GeneralBannerService generalBannerService;
-    private final FileService fileService;
+    private final FacadeAdminBannerService facadeAdminBannerService;
 
-//    @PostMapping
-//    public void createBanner(@AuthenticationPrincipal PrincipalDetails principalDetails,
-//                             @ModelAttribute CreateBannerRequest request,
-//                             @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
-//        User adminUser = principalDetails.getUser();
-//        Long createdBannerId = generalBannerService.createBanner(adminUser, request);
-//
-//        fileService.uploadFile(createdBannerId, bannerImages, IMAGE, BANNER);
-//    }
-//
-//    @PatchMapping("/{bannerId}")
-//    public void updateBanner(@PathVariable Long bannerId,
-//                             @ModelAttribute UpdateBannerRequest request,
-//                             @RequestPart(name = "uploadFiles", required = false) List<MultipartFile> bannerImages) {
-//
-//        generalBannerService.updateBanner(bannerId, request);
-//
-//        if (bannerImages != null) {
-//            fileService.deleteFile(bannerId, IMAGE, BANNER);
-//            fileService.uploadFile(bannerId, bannerImages, IMAGE, BANNER);
-//        }
-//    }
-//
-//    @DeleteMapping("/{bannerId}")
-//    public void deleteBanner(@PathVariable Long bannerId) {
-//        generalBannerService.deleteBanner(bannerId);
-//
-//        fileService.deleteFile(bannerId, IMAGE, BANNER);
-//    }
+    @Override
+    public void createBanner(PrincipalDetails principalDetails, CreateBannerRequest request) {
+        User user = principalDetails.getUser();
+        facadeAdminBannerService.create(request.toCommand(user));
+    }
+
+    @Override
+    public List<AdminBannerListResponse> findAllBanners() {
+        return facadeAdminBannerService.findAll().stream()
+                .map(AdminBannerListResponse::from)
+                .toList();
+    }
+
+    @Override
+    public void deleteBanner(Long bannerId) {
+        facadeAdminBannerService.delete(bannerId);
+    }
+
 }

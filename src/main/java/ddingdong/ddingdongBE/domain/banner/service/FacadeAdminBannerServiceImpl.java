@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANNER_MOBILE_IMAGE;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANNER_WEB_IMAGE;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
@@ -29,7 +30,7 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
         CreateFileMetaDataCommand createBannerWebImageFileMetaDataCommand =
                 new CreateFileMetaDataCommand(command.webImageKey(), BANNER_WEB_IMAGE);
         CreateFileMetaDataCommand createBannerMobileImageFileMetaDataCommand =
-                new CreateFileMetaDataCommand(command.mobileImageKey(), BANNER_WEB_IMAGE);
+                new CreateFileMetaDataCommand(command.mobileImageKey(), BANNER_MOBILE_IMAGE);
         facadeFileMetaDataService.create(createBannerWebImageFileMetaDataCommand,
                 createBannerMobileImageFileMetaDataCommand);
 
