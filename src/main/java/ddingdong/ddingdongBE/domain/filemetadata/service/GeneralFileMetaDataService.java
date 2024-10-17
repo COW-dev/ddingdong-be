@@ -20,7 +20,13 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
     @Override
     @Transactional
     public void create(FileMetaData... fileMetaData) {
-        fileMetaDataRepository.saveAll(List.of(fileMetaData));
+        List<FileMetaData> newFileMetaData = Arrays.stream(fileMetaData)
+                .filter(fmd -> !fileMetaDataRepository.existsById(fmd.getFileId()))
+                .toList();
+
+        if (!newFileMetaData.isEmpty()) {
+            fileMetaDataRepository.saveAll(newFileMetaData);
+        }
     }
 
     @Override
