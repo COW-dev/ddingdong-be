@@ -26,7 +26,7 @@ public class UserClubController implements UserClubApi {
     }
 
     @Override
-    public UserClubResponse getDetailClub(@PathVariable("clubId") Long clubId) {
+    public UserClubResponse getDetailClub(Long clubId) {
         UserClubQuery query = facadeUserClubService.getClub(clubId);
         return UserClubResponse.from(query);
     }

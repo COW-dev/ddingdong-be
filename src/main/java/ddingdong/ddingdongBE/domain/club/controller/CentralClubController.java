@@ -1,9 +1,5 @@
 package ddingdong.ddingdongBE.domain.club.controller;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_INTRODUCE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.api.CentralClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
@@ -14,7 +10,6 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberService;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.file.service.FileService;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -33,7 +28,6 @@ public class CentralClubController implements CentralClubApi {
 
     private final FacadeCentralClubService facadeCentralClubService;
     private final FacadeClubMemberService facadeClubMemberService;
-    private final FileService fileService;
 
     @Override
     public ResponseEntity<byte[]> getMyClubMemberListFile(PrincipalDetails principalDetails) {
@@ -59,22 +53,9 @@ public class CentralClubController implements CentralClubApi {
     }
 
     @Override
-    public void updateClub(PrincipalDetails principalDetails,
-                           UpdateClubInfoRequest request,
-                           List<MultipartFile> profileImage,
-                           List<MultipartFile> images) {
+    public void updateClub(PrincipalDetails principalDetails, UpdateClubInfoRequest request) {
         User user = principalDetails.getUser();
-        Long updatedClubId = facadeCentralClubService.updateClubInfo(request.toCommand(user.getId()));
-
-        if (profileImage != null) {
-            fileService.deleteFile(updatedClubId, IMAGE, CLUB_PROFILE);
-            fileService.uploadFile(updatedClubId, profileImage, IMAGE, CLUB_PROFILE);
-        }
-
-        if (images != null) {
-            fileService.deleteFile(updatedClubId, IMAGE, CLUB_INTRODUCE);
-            fileService.uploadFile(updatedClubId, images, IMAGE, CLUB_INTRODUCE);
-        }
+        facadeCentralClubService.updateClubInfo(request.toCommand(user.getId()));
     }
 
     @Override

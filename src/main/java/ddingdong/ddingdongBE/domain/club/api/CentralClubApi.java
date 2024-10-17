@@ -56,9 +56,7 @@ public interface CentralClubApi {
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                    @Valid @ModelAttribute UpdateClubInfoRequest request,
-                    @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                    @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images);
+                    @Valid @RequestBody UpdateClubInfoRequest request);
 
     @Operation(summary = "동아리원 명단 등록 API")
     @ApiResponses(value = {

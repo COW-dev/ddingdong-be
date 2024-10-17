@@ -45,10 +45,10 @@ public record UpdateClubInfoRequest(
         String ideal,
         @Schema(description = "모집 Url", example = "Url")
         String formUrl,
-        @Schema(description = "동아리 프로필 이미지url", example = "url")
-        List<String> profileImageUrls,
-        @Schema(description = "동아리 소개 이미지 url", example = "url")
-        List<String> introduceImageUrls
+        @Schema(description = "동아리 프로필 이미지 key", example = "local/file/2024-01-01/abc/uuid")
+        String profileImageKey,
+        @Schema(description = "동아리 소개 이미지 key", example = "local/file/2024-01-01/abc/uuid")
+        String introductionImageKey
 
 ) {
 
@@ -68,8 +68,8 @@ public record UpdateClubInfoRequest(
                 activity,
                 ideal,
                 formUrl,
-                profileImageUrls,
-                introduceImageUrls
+                profileImageKey,
+                introductionImageKey
         );
     }
 }

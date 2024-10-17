@@ -2,9 +2,9 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Schema(
         name = "UserClubResponse",
@@ -39,10 +39,8 @@ public record UserClubResponse(
         String ideal,
         @Schema(description = "모집Url", example = "url")
         String formUrl,
-        @Schema(description = "동아리 프로필 이미지 Url", example = "url")
-        List<String> profileImageUrls,
-        @Schema(description = "동아리 소개 이미지 Url ", example = "url")
-        List<String> introduceImageUrls
+        UserClubImageUrlResponse profileImageUrl,
+        UserClubImageUrlResponse introductionImageUrl
 ) {
 
     public static UserClubResponse from(UserClubQuery query) {
@@ -60,8 +58,25 @@ public record UserClubResponse(
                 query.activity(),
                 query.ideal(),
                 query.formUrl(),
-                query.profileImageUrls(),
-                query.introduceImageUrls()
+                UserClubImageUrlResponse.from(query.profileImageUrlQuery()),
+                UserClubImageUrlResponse.from(query.introductionImageUrlQuery())
         );
+    }
+
+    @Schema(
+            name = "UserClubImageUrlResponse",
+            description = "유저 - 동아리 정보 이미지 URL 조회 응답"
+    )
+    record UserClubImageUrlResponse(
+            @Schema(description = "원본 url", example = "url")
+            String originUrl,
+            @Schema(description = "cdn url", example = "url")
+            String cdnUrl
+    ) {
+
+        public static UserClubImageUrlResponse from(UploadedFileUrlQuery query) {
+            return new UserClubImageUrlResponse(query.originUrl(), query.cdnUrl());
+        }
+
     }
 }
