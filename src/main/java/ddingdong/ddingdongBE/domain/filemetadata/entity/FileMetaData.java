@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.filemetadata.entity;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,6 +41,6 @@ public class FileMetaData extends BaseEntity {
 
     private static UUID extractFilename(String key) {
         String[] splitKey = key.split("/");
-        return UUID.fromString(splitKey[splitKey.length - 1]);
+        return UuidCreator.fromString(splitKey[splitKey.length - 1]);
     }
 }
