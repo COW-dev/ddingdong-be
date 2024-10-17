@@ -5,7 +5,7 @@ import java.util.UUID;
 
 public interface FileMetaDataService {
 
-    void create(FileMetaData fileMetaData);
+    void create(FileMetaData... fileMetaData);
 
     FileMetaData getByFileId(UUID fileId);
 

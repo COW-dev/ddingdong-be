@@ -51,6 +51,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
                 .setNull("user")
                 .setNotNull("question")
                 .setNotNull("reply")
+                .set("deletedAt", null)
                 .sampleList(5);
         questionRepository.saveAll(questions);
 
@@ -62,7 +63,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
     }
 
     @Test
-    @DisplayName("어드민: FAQ 삭제")
+    @DisplayName("어드민: FAQ 수정")
     void updateQuestion() {
         // Given
         Question beforeQuestion = fixtureMonkey.giveMeBuilder(Question.class)
@@ -86,7 +87,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
     }
 
     @Test
-    @DisplayName("어드민: FAQ 생성")
+    @DisplayName("어드민: FAQ 삭제")
     void deleteQuestion() {
         // Given
         Question question = fixtureMonkey.giveMeBuilder(Question.class)

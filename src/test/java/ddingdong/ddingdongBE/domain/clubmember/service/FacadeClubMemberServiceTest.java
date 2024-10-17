@@ -15,6 +15,7 @@ import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMem
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
@@ -44,6 +46,8 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
     private ClubMemberRepository clubMemberRepository;
     @Autowired
     private ClubMemberService clubMemberService;
+    @Autowired
+    private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
 
@@ -92,16 +96,19 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
+                .set("clubMembers", List.of())
                 .set("deletedAt", null)
                 .sample());
         List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
                 .set("club", savedClub)
+                .set("deletedAt", null)
                 .sampleList(5);
         clubMemberRepository.saveAll(clubMembers);
+        entityManager.flush();
+        entityManager.clear();
 
         UpdateClubMemberListCommand command = UpdateClubMemberListCommand.builder()
-                .userId(savedClub.getId())
+                .userId(savedUser.getId())
                 .clubMemberListFile(validExcelFile)
                 .build();
 
