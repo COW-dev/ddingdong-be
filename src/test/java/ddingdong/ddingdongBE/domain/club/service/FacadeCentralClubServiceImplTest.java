@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
+import static org.assertj.core.api.Assertions.*;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -52,7 +54,7 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
         MyClubInfoQuery result = facadeCentralClubService.getMyClubInfo(savedUser.getId());
 
         //then
-        Assertions.assertThat(result).isNotNull();
+        assertThat(result).isNotNull();
     }
 
     @DisplayName("중앙동아리: 동아리 정보 수정")
@@ -85,8 +87,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testactivity",
                 "testideal",
                 "testformUrl",
-                List.of(),
-                List.of()
+                "testKey",
+                "testKey"
         );
 
         //when
@@ -94,7 +96,7 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
 
         //then
         Club result = clubRepository.findById(savedClub.getId()).orElseThrow();
-        Assertions.assertThat(result.getName()).isEqualTo("testname");
+        assertThat(result.getName()).isEqualTo("testname");
     }
 
 }

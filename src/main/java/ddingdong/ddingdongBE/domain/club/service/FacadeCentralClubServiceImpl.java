@@ -23,8 +23,6 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
 
     private final ClubService clubService;
     private final FileInformationService fileInformationService;
-    private final FileStore fileStore;
-    private final FileInformationRepository fileInformationRepository;
 
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
@@ -41,44 +39,8 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     @Transactional
     public Long updateClubInfo(UpdateClubInfoCommand command) {
         Club club = clubService.getByUserId(command.userId());
-        updateIntroduceImageInformation(command.introduceImageUrls(), club);
-        updateProfileImageInformation(command.profileImageUrls(), club);
-        clubService.update(club.getId(), command.toEntity());
+        clubService.update(club, command.toEntity());
         return club.getId();
-    }
-
-    private void updateIntroduceImageInformation(List<String> introduceImageUrls, Club club) {
-        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
-        if (!introduceImageUrls.isEmpty()) {
-            List<FileInformation> deleteInformation = fileInformation.stream()
-                    .filter(information -> !introduceImageUrls
-                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
-                                    + information.getStoredName()))
-                    .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(fileInformation);
-        }
-    }
-
-    private void updateProfileImageInformation(List<String> profileImageUrls, Club club) {
-        List<FileInformation> fileInformation = fileInformationService.getFileInformation(
-                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
-        if (!profileImageUrls.isEmpty()) {
-            List<FileInformation> deleteInformation = fileInformation.stream()
-                    .filter(information -> !profileImageUrls
-                            .contains(fileStore.getImageUrlPrefix() + information.getFileTypeCategory()
-                                    .getFileType() + information.getFileDomainCategory().getFileDomain()
-                                    + information.getStoredName()))
-                    .toList();
-
-            fileInformationRepository.deleteAll(deleteInformation);
-        } else {
-            fileInformationRepository.deleteAll(fileInformation);
-        }
     }
 
 }
