@@ -1,7 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -15,8 +16,6 @@ import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.math.BigDecimal;
-import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -89,8 +88,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testactivity",
                 "testideal",
                 "testformUrl",
-                "testKey",
-                "testKey"
+                "test/file/2024-01-01/test/" + UuidCreator.getTimeBased(),
+                "test/file/2024-01-01/test/" + UuidCreator.getTimeBased()
         );
 
         //when
