@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.filemetadata.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -19,13 +18,13 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
 
     @Override
     @Transactional
-    public void create(FileMetaData... fileMetaData) {
-        List<FileMetaData> newFileMetaData = Arrays.stream(fileMetaData)
+    public void create(List<FileMetaData> fileMetaDataList) {
+        List<FileMetaData> newFileMetaDataList = fileMetaDataList.stream()
                 .filter(fmd -> !fileMetaDataRepository.existsById(fmd.getFileId()))
                 .toList();
 
-        if (!newFileMetaData.isEmpty()) {
-            fileMetaDataRepository.saveAll(newFileMetaData);
+        if (!newFileMetaDataList.isEmpty()) {
+            fileMetaDataRepository.saveAll(newFileMetaDataList);
         }
     }
 

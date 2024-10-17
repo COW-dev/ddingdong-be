@@ -22,7 +22,7 @@ public record UpdateClubInfoCommand(
         String ideal,
         String formUrl,
         String profileImageKey,
-        String introduceImageKey
+        String introductionImageKey
 ) {
 
     public Club toEntity() {
@@ -41,7 +41,7 @@ public record UpdateClubInfoCommand(
                 .ideal(ideal)
                 .formUrl(formUrl)
                 .profileImageKey(profileImageKey)
-                .introductionImageKey(introduceImageKey)
+                .introductionImageKey(introductionImageKey)
                 .build();
     }
 

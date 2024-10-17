@@ -10,6 +10,8 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import java.util.ArrayList;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,11 +39,21 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     public Long updateClubInfo(UpdateClubInfoCommand command) {
         Club club = clubService.getByUserId(command.userId());
         clubService.update(club, command.toEntity());
-        fileMetaDataService.create(
-                FileMetaData.of(command.profileImageKey(), CLUB_PROFILE_IMAGE),
-                FileMetaData.of(command.introduceImageKey(), CLUB_INTRODUCTION_IMAGE)
-        );
+        createFileMetaData(command);
         return club.getId();
+    }
+
+    private void createFileMetaData(UpdateClubInfoCommand command) {
+        List<FileMetaData> metaDataList = new ArrayList<>();
+        if (command.profileImageKey() != null) {
+            metaDataList.add(FileMetaData.of(command.profileImageKey(), CLUB_PROFILE_IMAGE));
+        }
+        if (command.introductionImageKey() != null) {
+            metaDataList.add(FileMetaData.of(command.introductionImageKey(), CLUB_INTRODUCTION_IMAGE));
+        }
+        if (!metaDataList.isEmpty()) {
+            fileMetaDataService.create(metaDataList);
+        }
     }
 
 }
