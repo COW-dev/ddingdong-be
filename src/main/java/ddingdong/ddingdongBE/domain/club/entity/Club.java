@@ -71,7 +71,6 @@ public class Club extends BaseEntity {
 
     private String formUrl;
 
-    //TODO: migration script 작성
     private String profileImageKey;
 
     private String introductionImageKey;
