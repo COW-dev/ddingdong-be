@@ -30,4 +30,16 @@ public class FileMetaData extends BaseEntity {
         this.fileId = fileId;
         this.fileCategory = fileCategory;
     }
+
+    public static FileMetaData of(String key, FileCategory fileCategory) {
+        return FileMetaData.builder()
+                .fileId(extractFilename(key))
+                .fileCategory(fileCategory)
+                .build();
+    }
+
+    private static UUID extractFilename(String key) {
+        String[] splitKey = key.split("/");
+        return UUID.fromString(splitKey[splitKey.length - 1]);
+    }
 }

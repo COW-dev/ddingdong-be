@@ -1,23 +1,24 @@
 package ddingdong.ddingdongBE.domain.banner.controller;
 
-import ddingdong.ddingdongBE.domain.banner.controller.dto.response.BannerResponse;
-import ddingdong.ddingdongBE.domain.banner.service.BannerService;
+import ddingdong.ddingdongBE.domain.banner.api.UserBannerApi;
+import ddingdong.ddingdongBE.domain.banner.controller.dto.response.UserBannerListResponse;
+import ddingdong.ddingdongBE.domain.banner.service.FacadeUserBannerService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/server/banners")
 @RequiredArgsConstructor
-public class UserBannerController {
+public class UserBannerController implements UserBannerApi {
 
-    private final BannerService bannerService;
+    private final FacadeUserBannerService facadeUserBannerService;
 
-    @GetMapping
-    public List<BannerResponse> getBanners() {
-        return bannerService.getAllBanners();
+    @Override
+    public List<UserBannerListResponse> findAllBanners() {
+        return facadeUserBannerService.findAll().stream()
+                .map(UserBannerListResponse::from)
+                .toList();
     }
 
 }

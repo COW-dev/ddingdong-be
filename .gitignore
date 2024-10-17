@@ -37,4 +37,4 @@ out/
 .vscode/
 
 ### QClass ###
-/src/main/generated/
+src/main/generated/**

@@ -3,6 +3,8 @@ package ddingdong.ddingdongBE.domain.filemetadata.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,8 +19,8 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
 
     @Override
     @Transactional
-    public void create(FileMetaData fileMetaData) {
-        fileMetaDataRepository.save(fileMetaData);
+    public void create(FileMetaData... fileMetaData) {
+        fileMetaDataRepository.saveAll(List.of(fileMetaData));
     }
 
     @Override

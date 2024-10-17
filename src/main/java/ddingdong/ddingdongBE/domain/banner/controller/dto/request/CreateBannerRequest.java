@@ -1,26 +1,25 @@
 package ddingdong.ddingdongBE.domain.banner.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.banner.entity.Banner;
+import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
-@Getter
-@AllArgsConstructor
-public class CreateBannerRequest {
+@Schema(
+        name = "CreateBannerRequest",
+        description = "어드민 - 배너 생성 요청"
+)
+public record CreateBannerRequest(
+        @Schema(description = "웹 이미지 key", example = "local/file/2024-01-01/ddingdong/uuid")
+        @NotNull(message = "webImageKey는 필수입니다.")
+        String webImageKey,
+        @Schema(description = "모바일 이미지 key", example = "local/file/2024-01-01/ddingdong/uuid")
+        @NotNull(message = "mobileImageKey 필수입니다.")
+        String mobileImageKey
+) {
 
-    private String title;
-
-    private String subTitle;
-
-    private String colorCode;
-
-    public Banner toEntity(User user) {
-        return Banner.builder()
-                .user(user)
-                .title(title)
-                .subTitle(subTitle)
-                .colorCode(colorCode)
-                .build();
+    public CreateBannerCommand toCommand(User user) {
+        return new CreateBannerCommand(user, webImageKey, mobileImageKey);
     }
+
 }
