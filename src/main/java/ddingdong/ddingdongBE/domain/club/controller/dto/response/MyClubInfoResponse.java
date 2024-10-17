@@ -43,9 +43,7 @@ public record MyClubInfoResponse(
         String formUrl,
         @Schema(description = "동아리 프로필 이미지 Url", example = "url")
         MyClubInfoImageUrlResponse profileImageUrl,
-        @Schema(description = "동아리 소개 이미지 Url ", example = "url")
         MyClubInfoImageUrlResponse introduceImageUrl,
-        @Schema(description = "동아리원 목록")
         List<ClubMemberResponse> clubMembers
 ) {
 

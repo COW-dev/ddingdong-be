@@ -39,9 +39,7 @@ public record UserClubResponse(
         String ideal,
         @Schema(description = "모집Url", example = "url")
         String formUrl,
-        @Schema(description = "동아리 프로필 이미지 Url", example = "url")
         UserClubImageUrlResponse profileImageUrl,
-        @Schema(description = "동아리 소개 이미지 Url ", example = "url")
         UserClubImageUrlResponse introductionImageUrl
 ) {
 
