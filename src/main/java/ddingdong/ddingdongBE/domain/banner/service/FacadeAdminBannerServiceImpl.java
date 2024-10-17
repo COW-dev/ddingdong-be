@@ -6,8 +6,8 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANN
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.CreateFileMetaDataCommand;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -20,15 +20,15 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
 
     private final BannerService bannerService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
+    private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
     @Transactional
     public Long create(CreateBannerCommand command) {
-        facadeFileMetaDataService.create(
-                new CreateFileMetaDataCommand(command.webImageKey(), BANNER_WEB_IMAGE),
-                new CreateFileMetaDataCommand(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
+        fileMetaDataService.create(
+                FileMetaData.of(command.webImageKey(), BANNER_WEB_IMAGE),
+                FileMetaData.of(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
         );
         return bannerService.save(command.toEntity());
     }
