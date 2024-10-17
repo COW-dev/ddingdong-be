@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -19,12 +20,16 @@ public record MyClubInfoQuery(
         String activity,
         String ideal,
         String formUrl,
-        List<String> profileImageUrls,
-        List<String> introduceImageUrls,
+        UploadedFileUrlQuery profileImageUrlQuery,
+        UploadedFileUrlQuery introductionImageUrlQuery,
         List<ClubMember> clubMembers
 ) {
 
-    public static MyClubInfoQuery of(Club club, List<String> profileImageUrls, List<String> introduceImageUrls) {
+    public static MyClubInfoQuery of(
+            Club club,
+            UploadedFileUrlQuery profileImageUrlQuery,
+            UploadedFileUrlQuery introductionImageUrlQuery
+    ) {
         return new MyClubInfoQuery(
                 club.getName(),
                 club.getCategory(),
@@ -39,8 +44,8 @@ public record MyClubInfoQuery(
                 club.getActivity(),
                 club.getIdeal(),
                 club.getFormUrl(),
-                profileImageUrls,
-                introduceImageUrls,
+                profileImageUrlQuery,
+                introductionImageUrlQuery,
                 club.getClubMembers()
         );
     }

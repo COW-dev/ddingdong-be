@@ -45,6 +45,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("phoneNumber", PhoneNumber.from("010-1234-5678"))
                 .set("location", Location.from("S1111"))
+                .set("profileImageKey", "test/file/2024-01-01/test/uuid")
+                .set("introductionImageKey", "test/file/2024-01-01/test/uuid")
                 .set("clubMembers", null)
                 .set("deletedAt", null)
                 .sample();

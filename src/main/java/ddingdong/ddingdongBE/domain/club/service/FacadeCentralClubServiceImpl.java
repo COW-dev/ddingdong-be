@@ -1,21 +1,15 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_INTRODUCE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.*;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.CLUB_INTRODUCTION_IMAGE;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.CLUB_PROFILE_IMAGE;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
-import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
-import ddingdong.ddingdongBE.file.FileStore;
-import java.util.List;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,17 +21,15 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
 
     private final ClubService clubService;
     private final FileMetaDataService fileMetaDataService;
-    private final FileInformationService fileInformationService;
+    private final S3FileService s3FileService;
 
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-
-        List<String> profileImageUrl = fileInformationService.getImageUrls(
-                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId());
-        List<String> introduceImageUrls = fileInformationService.getImageUrls(
-                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + club.getId());
-        return MyClubInfoQuery.of(club, profileImageUrl, introduceImageUrls);
+        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(club.getProfileImageKey());
+        UploadedFileUrlQuery introductionImageUrlQuery =
+                s3FileService.getUploadedFileUrl(club.getIntroductionImageKey());
+        return MyClubInfoQuery.of(club, profileImageUrlQuery, introductionImageUrlQuery);
     }
 
     @Override
