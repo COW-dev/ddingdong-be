@@ -72,6 +72,8 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         List<Banner> banners = fixtureMonkey.giveMeBuilder(Banner.class)
                 .set("user", savedUser)
                 .set("deletedAt", null)
+                .set("webImageKey", "test/file/2024-01-01/test/uuid" )
+                .set("mobileImageKey", "test/file/2024-01-01/test/uuid" )
                 .sampleList(5);
         bannerRepository.saveAll(banners);
 
