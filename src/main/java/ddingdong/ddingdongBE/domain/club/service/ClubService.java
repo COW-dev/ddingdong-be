@@ -13,7 +13,7 @@ public interface ClubService {
 
     List<Club> findAll();
 
-    void update(Long clubId, Club updatedClub);
+    void update(Club club, Club updatedClub);
 
     void delete(Long clubId);
 

@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.List;
 
 public record UpdateClubInfoCommand(
         Long userId,
@@ -22,8 +21,8 @@ public record UpdateClubInfoCommand(
         String activity,
         String ideal,
         String formUrl,
-        List<String> profileImageUrls,
-        List<String> introduceImageUrls
+        String profileImageKey,
+        String introductionImageKey
 ) {
 
     public Club toEntity() {
@@ -41,6 +40,8 @@ public record UpdateClubInfoCommand(
                 .activity(activity)
                 .ideal(ideal)
                 .formUrl(formUrl)
+                .profileImageKey(profileImageKey)
+                .introductionImageKey(introductionImageKey)
                 .build();
     }
 

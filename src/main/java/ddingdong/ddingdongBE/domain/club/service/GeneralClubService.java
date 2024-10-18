@@ -41,8 +41,7 @@ public class GeneralClubService implements ClubService {
 
     @Override
     @Transactional
-    public void update(Long clubId, Club updatedClub) {
-        Club club = getById(clubId);
+    public void update(Club club, Club updatedClub) {
         club.updateClubInfo(updatedClub);
     }
 

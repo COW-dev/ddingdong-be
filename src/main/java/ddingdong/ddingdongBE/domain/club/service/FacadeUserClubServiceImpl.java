@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeUserClubServiceImpl implements FacadeUserClubService {
 
     private final ClubService clubService;
-    private final FileInformationService fileInformationService;
+    private final S3FileService s3FileService;
 
     @Override
     public List<UserClubListQuery> findAllWithRecruitTimeCheckPoint(LocalDateTime now) {
@@ -36,11 +37,11 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
-        List<String> profileImageUrl = fileInformationService.getImageUrls(
-                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + clubId);
-        List<String> introduceImageUrls = fileInformationService.getImageUrls(
-                IMAGE.getFileType() + CLUB_INTRODUCE.getFileDomain() + clubId);
-        return UserClubQuery.of(club, profileImageUrl, introduceImageUrls);
+        return UserClubQuery.of(
+                club,
+                s3FileService.getUploadedFileUrl(club.getProfileImageKey()),
+                s3FileService.getUploadedFileUrl(club.getIntroductionImageKey())
+        );
     }
 
     private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {

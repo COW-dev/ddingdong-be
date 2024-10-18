@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -41,10 +42,8 @@ public record MyClubInfoResponse(
         @Schema(description = "모집Url", example = "url")
         String formUrl,
         @Schema(description = "동아리 프로필 이미지 Url", example = "url")
-        List<String> profileImageUrls,
-        @Schema(description = "동아리 소개 이미지 Url ", example = "url")
-        List<String> introduceImageUrls,
-        @Schema(description = "동아리원 목록")
+        MyClubInfoImageUrlResponse profileImageUrl,
+        MyClubInfoImageUrlResponse introduceImageUrl,
         List<ClubMemberResponse> clubMembers
 ) {
 
@@ -63,12 +62,29 @@ public record MyClubInfoResponse(
                 query.activity(),
                 query.ideal(),
                 query.formUrl(),
-                query.profileImageUrls(),
-                query.introduceImageUrls(),
+                MyClubInfoImageUrlResponse.from(query.profileImageUrlQuery()),
+                MyClubInfoImageUrlResponse.from(query.introductionImageUrlQuery()),
                 query.clubMembers().stream()
                         .map(ClubMemberResponse::from)
                         .toList()
         );
+    }
+
+    @Schema(
+            name = "MyClubInfoImageUrlResponse",
+            description = "동아리 - 내 동아리 정보 이미지 URL 조회 응답"
+    )
+    record MyClubInfoImageUrlResponse(
+            @Schema(description = "원본 url", example = "url")
+            String originUrl,
+            @Schema(description = "cdn url", example = "url")
+            String cdnUrl
+    ) {
+
+        public static MyClubInfoImageUrlResponse from(UploadedFileUrlQuery query) {
+            return new MyClubInfoImageUrlResponse(query.originUrl(), query.cdnUrl());
+        }
+
     }
 
     @Schema(
