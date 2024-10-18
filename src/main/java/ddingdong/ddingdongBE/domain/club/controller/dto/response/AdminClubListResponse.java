@@ -1,9 +1,9 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.club.service.dto.query.AdminClubListQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
-import java.util.List;
 
 @Schema(
         name = "AdminClubListResponse",
@@ -18,8 +18,7 @@ public record AdminClubListResponse(
         String category,
         @Schema(description = "동아리 점수", example = "0.00")
         BigDecimal score,
-        @Schema(description = "동아리 프로필 이미지 Url", example = "url")
-        List<String> profileImageUrls
+        AdminClubListImageUrlResponse profileImageUrl
 ) {
 
     public static AdminClubListResponse from(AdminClubListQuery query) {
@@ -28,8 +27,25 @@ public record AdminClubListResponse(
                 query.name(),
                 query.category(),
                 query.score(),
-                query.profileImageUrls()
+                AdminClubListImageUrlResponse.from(query.profileImageUrlQuery())
         );
+    }
+
+    @Schema(
+            name = "AdminClubListImageUrlResponse",
+            description = "어드민 - 동아리 목록 이미지 URL 조회 응답"
+    )
+    record AdminClubListImageUrlResponse(
+            @Schema(description = "원본 url", example = "url")
+            String originUrl,
+            @Schema(description = "cdn url", example = "url")
+            String cdnUrl
+    ) {
+
+        public static AdminClubListImageUrlResponse from(UploadedFileUrlQuery query) {
+            return new AdminClubListImageUrlResponse(query.originUrl(), query.cdnUrl());
+        }
+
     }
 
 }

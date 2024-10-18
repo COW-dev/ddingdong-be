@@ -71,6 +71,10 @@ public class Club extends BaseEntity {
 
     private String formUrl;
 
+    private String profileImageKey;
+
+    private String introductionImageKey;
+
     @Embedded
     private Score score;
 
@@ -81,7 +85,8 @@ public class Club extends BaseEntity {
     private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category, String tag,
                  String leader, PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
                  LocalDateTime endRecruitPeriod, String regularMeeting, String introduction, String activity,
-                 String ideal, String formUrl, Score score, LocalDateTime deletedAt) {
+                 String ideal, String formUrl, String profileImageKey, String introductionImageKey, Score score,
+                 LocalDateTime deletedAt) {
         this.id = id;
         this.user = user;
         this.clubMembers = clubMembers;
@@ -98,6 +103,8 @@ public class Club extends BaseEntity {
         this.activity = activity;
         this.ideal = ideal;
         this.formUrl = formUrl;
+        this.profileImageKey = profileImageKey;
+        this.introductionImageKey = introductionImageKey;
         this.score = score;
         this.deletedAt = deletedAt;
     }
