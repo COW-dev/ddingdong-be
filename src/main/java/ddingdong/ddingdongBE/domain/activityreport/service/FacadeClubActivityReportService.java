@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.ACTIVITY_REPORT_IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
@@ -14,11 +12,11 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.file.service.FileService;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -34,9 +32,8 @@ public class FacadeClubActivityReportService {
     private final ActivityReportService activityReportService;
     private final ActivityReportTermInfoService activityReportTermInfoService;
     private final ClubService clubService;
-    private final FileInformationService fileInformationService;
-    private final FileService fileService;
     private final FileMetaDataService fileMetaDataService;
+    private final S3FileService s3FileService;
 
     public List<ActivityReportQuery> getActivityReport(
         String term,
@@ -126,10 +123,8 @@ public class FacadeClubActivityReportService {
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        String imagePath =
-            IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId();
-        List<String> imageUrls = fileInformationService.getImageUrls(imagePath);
-        return ActivityReportQuery.of(activityReport, imageUrls);
+        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getKey());
+        return ActivityReportQuery.of(activityReport, imageUrl);
     }
 
     private List<ActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {
