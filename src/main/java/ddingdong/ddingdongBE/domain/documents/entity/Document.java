@@ -40,6 +40,7 @@ public class Document extends BaseEntity {
     private String title;
 
     @Convert(converter = StringListConverter.class)
+    @Column(name = "document_file_keys")
     private List<String> keys;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
@@ -55,7 +56,10 @@ public class Document extends BaseEntity {
         super.setCreatedAt(createdAt);
     }
 
-    public void updateDocument(Document updatedDocument) {
-        this.title = updatedDocument.getTitle();
+    public void updateDocument(Document document) {
+        if (document.keys != null && !document.keys.isEmpty()) {
+            this.keys = document.keys;
+        }
+        this.title = document.getTitle();
     }
 }
