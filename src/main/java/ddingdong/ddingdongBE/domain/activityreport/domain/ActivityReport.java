@@ -42,6 +42,7 @@ public class ActivityReport extends BaseEntity {
 
     private LocalDateTime endDate;
 
+    @Column(name = "activity_report_image_key")
     private String key;
 
     @ElementCollection
