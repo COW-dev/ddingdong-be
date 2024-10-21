@@ -112,6 +112,9 @@ public class FacadeClubActivityReportService {
     }
 
     private void createFileMetaData(String key) {
+        if (key == null) {
+            return;
+        }
         fileMetaDataService.createOne(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
