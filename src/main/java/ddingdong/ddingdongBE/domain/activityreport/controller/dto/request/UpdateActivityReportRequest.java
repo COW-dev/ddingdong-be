@@ -21,6 +21,9 @@ public record UpdateActivityReportRequest(
     @Schema(description = "활동 종료 일자", example = "2024-01-04 11:11")
     String endDate,
 
+    @Schema(description = "활동보고서 이미지 key", example = "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}")
+    String key,
+
     @Schema(description = "활동 참여자 목록",
         example = """
              [{
@@ -36,6 +39,7 @@ public record UpdateActivityReportRequest(
         return UpdateActivityReportCommand.builder()
             .content(content)
             .place(place)
+            .key(key)
             .startDate(startDate)
             .endDate(endDate)
             .participants(participants)

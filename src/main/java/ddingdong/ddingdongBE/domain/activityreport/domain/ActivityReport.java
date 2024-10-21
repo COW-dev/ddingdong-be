@@ -75,11 +75,14 @@ public class ActivityReport extends BaseEntity {
         this.club = club;
     }
 
-    public void update(final ActivityReport updatedActivityReport) {
-        this.content = updatedActivityReport.getContent();
-        this.place = updatedActivityReport.getPlace();
-        this.startDate = updatedActivityReport.getStartDate();
-        this.endDate = updatedActivityReport.getEndDate();
-        this.participants = updatedActivityReport.getParticipants();
+    public void update(final ActivityReport activityReport) {
+        if (activityReport.getKey() != null) {
+            this.key = key;
+        }
+        this.content = activityReport.getContent();
+        this.place = activityReport.getPlace();
+        this.startDate = activityReport.getStartDate();
+        this.endDate = activityReport.getEndDate();
+        this.participants = activityReport.getParticipants();
     }
 }

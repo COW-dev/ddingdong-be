@@ -19,15 +19,12 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -84,28 +81,22 @@ public class FacadeClubActivityReportService {
         });
     }
 
-    private void createFileMetaData(String key) {
-        fileMetaDataService.createOne(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
-    }
-
     @Transactional
     public void update(
         User user,
         String term,
-        List<UpdateActivityReportCommand> commands,
-        List<MultipartFile> images
+        List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
-            club.getName(),
-            term);
-        updateImages(activityReports, images);
-
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
         List<ActivityReport> updateActivityReports = commands.stream()
             .map(UpdateActivityReportCommand::toEntity)
             .toList();
+
         activityReportService.update(activityReports, updateActivityReports);
+
+        createFileMetaDatas(updateActivityReports);
     }
 
     @Transactional
@@ -114,47 +105,17 @@ public class FacadeClubActivityReportService {
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
             club.getName(),
             term);
-        deleteImages(activityReports);
         activityReportService.deleteAll(activityReports);
     }
 
-    private void uploadImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
-        IntStream.range(0, activityReports.size())
-            .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
-            .forEach(index -> {
-                fileService.uploadFile(
-                    activityReports.get(index).getId(),
-                    Collections.singletonList(images.get(index)),
-                    IMAGE,
-                    ACTIVITY_REPORT
-                );
-            });
-    }
-
-    private void updateImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
-        IntStream.range(0, activityReports.size())
-            .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
-            .forEach(index -> {
-                    fileService.deleteFile(
-                        activityReports.get(index).getId(),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-
-                    fileService.uploadFile(
-                        activityReports.get(index).getId(),
-                        Collections.singletonList(images.get(index)),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-                }
-            );
-    }
-
-    private void deleteImages(List<ActivityReport> activityReports) {
-        activityReports.forEach(report -> {
-            fileService.deleteFile(report.getId(), IMAGE, ACTIVITY_REPORT);
+    private void createFileMetaDatas(List<ActivityReport> activityReports) {
+        activityReports.forEach(activityReport -> {
+            createFileMetaData(activityReport.getKey());
         });
+    }
+
+    private void createFileMetaData(String key) {
+        fileMetaDataService.createOne(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
     private String getRequestTerm(List<CreateActivityReportCommand> commands) {

@@ -15,11 +15,9 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -71,15 +69,13 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     public void updateActivityReport(
         PrincipalDetails principalDetails,
         String term,
-        List<UpdateActivityReportRequest> requests,
-        MultipartFile firstImage,
-        MultipartFile secondImage
+        List<UpdateActivityReportRequest> requests
     ) {
         User user = principalDetails.getUser();
         List<UpdateActivityReportCommand> commands = requests.stream()
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.update(user, term, commands, Arrays.asList(firstImage, secondImage));
+        facadeClubActivityReportService.update(user, term, commands);
     }
 
     @Override
