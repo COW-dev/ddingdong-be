@@ -62,7 +62,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
             ))
             .build();
 
-        UpdateDocumentCommand command = request.toCommand(updateId);
         doNothing().when(facadeAdminDocumentService).update(any(UpdateDocumentCommand.class));
 
         // when // then
