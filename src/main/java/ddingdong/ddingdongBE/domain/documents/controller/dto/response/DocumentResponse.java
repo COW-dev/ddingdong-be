@@ -22,7 +22,7 @@ public record DocumentResponse(
     @JsonFormat(pattern = "yyyy-MM-dd")
     LocalDate createdAt,
 
-    @ArraySchema(schema = @Schema(description = "첨부파일 목록", implementation = DocumentFileUrlsResponse.class))
+    @ArraySchema(arraySchema = @Schema(description = "첨부파일 목록", implementation = DocumentFileUrlsResponse.class))
     List<DocumentFileUrlsResponse> fileUrls
 ) {
 
@@ -38,6 +38,7 @@ public record DocumentResponse(
             .build();
     }
 
+    @Schema(name = "DocumentFileUrlsResponse", description = "자료실 파일 URL 정보")
     record DocumentFileUrlsResponse(
         @Schema(description = "원본 URL", example = "url")
         String originUrl,
@@ -46,6 +47,9 @@ public record DocumentResponse(
     ) {
 
         public static DocumentFileUrlsResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new DocumentFileUrlsResponse(query.originUrl(), query.cdnUrl());
         }
     }

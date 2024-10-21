@@ -38,7 +38,7 @@ public interface AdminDocumentApi {
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping(value = "/{documentId}")
     void updateDocument(
-        @PathVariable Long documentId,
+        @PathVariable("documentId") Long documentId,
         @RequestBody UpdateDocumentRequest updateDocumentRequest
     );
 
