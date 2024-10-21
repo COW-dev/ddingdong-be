@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -36,15 +39,19 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
+    @Convert(converter = StringListConverter.class)
+    private List<String> keys;
+
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
 
     @Builder
-    private Document(Long id, User user, String title, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, List<String> keys, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.title = title;
+        this.keys = keys;
         super.setCreatedAt(createdAt);
     }
 
