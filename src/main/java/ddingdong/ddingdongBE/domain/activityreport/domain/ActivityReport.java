@@ -78,7 +78,7 @@ public class ActivityReport extends BaseEntity {
 
     public void update(final ActivityReport activityReport) {
         if (activityReport.getKey() != null) {
-            this.key = key;
+            this.key = activityReport.key;
         }
         this.content = activityReport.getContent();
         this.place = activityReport.getPlace();
