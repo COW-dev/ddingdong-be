@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
 import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.ACTIVITY_REPORT_IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
@@ -14,6 +15,8 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.FileService;
 import java.util.Collections;
@@ -36,6 +39,7 @@ public class FacadeClubActivityReportService {
     private final ClubService clubService;
     private final FileInformationService fileInformationService;
     private final FileService fileService;
+    private final FileMetaDataService fileMetaDataService;
 
     public List<ActivityReportQuery> getActivityReport(
         String term,
@@ -69,18 +73,19 @@ public class FacadeClubActivityReportService {
     @Transactional
     public void create(
         User user,
-        List<CreateActivityReportCommand> commands,
-        List<MultipartFile> images
+        List<CreateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
         String term = getRequestTerm(commands);
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
+            createFileMetaData(command.key());
         });
+    }
 
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
-        uploadImages(activityReports, images);
+    private void createFileMetaData(String key) {
+        fileMetaDataService.createOne(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
     @Transactional

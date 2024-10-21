@@ -58,15 +58,13 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public void createActivityReport(
         PrincipalDetails principalDetails,
-        List<CreateActivityReportRequest> requests,
-        MultipartFile firstImage,
-        MultipartFile secondImage
+        List<CreateActivityReportRequest> requests
     ) {
         User user = principalDetails.getUser();
         List<CreateActivityReportCommand> commands = requests.stream()
             .map(CreateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.create(user, commands, Arrays.asList(firstImage, secondImage));
+        facadeClubActivityReportService.create(user, commands);
     }
 
     @Override

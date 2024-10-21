@@ -64,12 +64,10 @@ public interface ClubActivityReportApi {
     @ApiResponse(responseCode = "201", description = "활동보고서 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    @PostMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/my/activity-reports")
     void createActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestPart(value = "reportData") List<CreateActivityReportRequest> requests,
-        @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
-        @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
+        @RequestPart(value = "reportData") List<CreateActivityReportRequest> requests
     );
 
     @Operation(summary = "활동보고서 수정")

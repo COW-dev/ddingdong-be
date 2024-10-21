@@ -42,6 +42,8 @@ public class ActivityReport extends BaseEntity {
 
     private LocalDateTime endDate;
 
+    private String key;
+
     @ElementCollection
     private List<Participant> participants;
 
@@ -57,6 +59,7 @@ public class ActivityReport extends BaseEntity {
         String term,
         String content,
         String place,
+        String key,
         LocalDateTime startDate,
         LocalDateTime endDate,
         List<Participant> participants,
@@ -65,6 +68,7 @@ public class ActivityReport extends BaseEntity {
         this.term = term;
         this.content = content;
         this.place = place;
+        this.key = key;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participants = participants;
