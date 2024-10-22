@@ -43,7 +43,7 @@ public class ActivityReport extends BaseEntity {
     private LocalDateTime endDate;
 
     @Column(name = "activity_report_image_key")
-    private String key;
+    private String activityReportImageKey;
 
     @ElementCollection
     private List<Participant> participants;
@@ -60,7 +60,7 @@ public class ActivityReport extends BaseEntity {
         String term,
         String content,
         String place,
-        String key,
+        String activityReportImageKey,
         LocalDateTime startDate,
         LocalDateTime endDate,
         List<Participant> participants,
@@ -69,7 +69,7 @@ public class ActivityReport extends BaseEntity {
         this.term = term;
         this.content = content;
         this.place = place;
-        this.key = key;
+        this.activityReportImageKey = activityReportImageKey;
         this.startDate = startDate;
         this.endDate = endDate;
         this.participants = participants;
@@ -77,8 +77,8 @@ public class ActivityReport extends BaseEntity {
     }
 
     public void update(final ActivityReport activityReport) {
-        if (activityReport.getKey() != null) {
-            this.key = activityReport.key;
+        if (activityReport.getActivityReportImageKey() != null) {
+            this.activityReportImageKey = activityReport.getActivityReportImageKey();
         }
         this.content = activityReport.getContent();
         this.place = activityReport.getPlace();

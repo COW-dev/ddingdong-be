@@ -74,7 +74,7 @@ public class FacadeClubActivityReportService {
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
-            createFileMetaData(command.key());
+            createFileMetaData(command.activityReportImageKey());
         });
     }
 
@@ -107,7 +107,7 @@ public class FacadeClubActivityReportService {
 
     private void createFileMetaDatas(List<ActivityReport> activityReports) {
         activityReports.forEach(activityReport -> {
-            createFileMetaData(activityReport.getKey());
+            createFileMetaData(activityReport.getActivityReportImageKey());
         });
     }
 
