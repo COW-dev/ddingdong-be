@@ -121,7 +121,6 @@ public class CustomExceptionHandler {
         );
     }
 
-
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(BAD_REQUEST)
