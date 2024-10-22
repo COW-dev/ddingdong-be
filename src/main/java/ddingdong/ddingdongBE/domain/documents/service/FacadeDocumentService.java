@@ -1,13 +1,10 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.DOCUMENT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.FILE;
-
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
-import ddingdong.ddingdongBE.file.service.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,7 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeDocumentService {
 
     private final DocumentService documentService;
-    private final FileInformationService fileInformationService;
+    private final S3FileService s3FileService;
 
     public List<DocumentListQuery> getDocuments() {
         return documentService.getDocuments().stream()
@@ -29,8 +26,9 @@ public class FacadeDocumentService {
 
     public DocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
-        List<FileResponse> fileResponse = fileInformationService.getFileUrls(
-            FILE.getFileType() + DOCUMENT.getFileDomain() + document.getId());
-        return DocumentQuery.of(document, fileResponse);
+        List<UploadedFileUrlQuery> fileUrls = document.getFileKeys().stream()
+                .map(s3FileService::getUploadedFileUrl)
+                .toList();
+        return DocumentQuery.of(document, fileUrls);
     }
 }

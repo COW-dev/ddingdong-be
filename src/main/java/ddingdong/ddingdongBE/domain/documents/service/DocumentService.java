@@ -31,8 +31,7 @@ public class DocumentService {
     }
 
     @Transactional
-    public void update(Long documentId, Document updatedDocument) {
-        Document document = getById(documentId);
+    public void update(Document document, Document updatedDocument) {
         document.updateDocument(updatedDocument);
     }
 
