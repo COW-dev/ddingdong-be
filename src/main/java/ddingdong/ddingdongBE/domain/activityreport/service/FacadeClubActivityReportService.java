@@ -74,7 +74,7 @@ public class FacadeClubActivityReportService {
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
-            createFileMetaData(command.activityReportImageKey());
+            createFileMetaData(command.imageKey());
         });
     }
 
@@ -107,7 +107,7 @@ public class FacadeClubActivityReportService {
 
     private void createFileMetaDatas(List<ActivityReport> activityReports) {
         activityReports.forEach(activityReport -> {
-            createFileMetaData(activityReport.getActivityReportImageKey());
+            createFileMetaData(activityReport.getImageKey());
         });
     }
 
@@ -126,7 +126,7 @@ public class FacadeClubActivityReportService {
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getActivityReportImageKey());
+        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
         return ActivityReportQuery.of(activityReport, imageUrl);
     }
 

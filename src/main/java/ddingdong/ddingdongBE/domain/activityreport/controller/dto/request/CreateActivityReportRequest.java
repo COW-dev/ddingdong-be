@@ -25,7 +25,7 @@ public record CreateActivityReportRequest(
     String endDate,
 
     @Schema(description = "활동보고서 이미지 key", example = "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}")
-    String activityReportImageKey,
+    String imageKey,
 
     @Schema(description = "활동 참여자 명단",
         example = """
@@ -43,7 +43,7 @@ public record CreateActivityReportRequest(
             .term(term)
             .content(content)
             .place(place)
-            .activityReportImageKey(activityReportImageKey)
+            .imageKey(imageKey)
             .startDate(startDate)
             .endDate(endDate)
             .participants(participants)
