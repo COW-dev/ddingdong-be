@@ -30,7 +30,7 @@ public class GeneralFileMetaDataService implements FileMetaDataService {
 
     @Override
     @Transactional
-    public void createOne(FileMetaData fileMetaData) {
+    public void create(FileMetaData fileMetaData) {
         if (fileMetaData == null || fileMetaDataRepository.existsById(fileMetaData.getFileId())) {
             return;
         }

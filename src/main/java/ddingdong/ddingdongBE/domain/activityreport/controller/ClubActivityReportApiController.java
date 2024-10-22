@@ -3,7 +3,9 @@ package ddingdong.ddingdongBE.domain.activityreport.controller;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.api.ClubActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
@@ -56,10 +58,10 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public void createActivityReport(
         PrincipalDetails principalDetails,
-        List<CreateActivityReportRequest> requests
+        CreateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
-        List<CreateActivityReportCommand> commands = requests.stream()
+        List<CreateActivityReportCommand> commands = requests.activityReportRequests().stream()
             .map(CreateActivityReportRequest::toCommand)
             .toList();
         facadeClubActivityReportService.create(user, commands);
@@ -69,10 +71,10 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     public void updateActivityReport(
         PrincipalDetails principalDetails,
         String term,
-        List<UpdateActivityReportRequest> requests
+        UpdateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
-        List<UpdateActivityReportCommand> commands = requests.stream()
+        List<UpdateActivityReportCommand> commands = requests.activityReportRequests().stream()
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
         facadeClubActivityReportService.update(user, term, commands);

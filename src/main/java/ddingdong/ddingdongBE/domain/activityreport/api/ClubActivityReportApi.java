@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
@@ -65,7 +65,7 @@ public interface ClubActivityReportApi {
     @PostMapping(value = "/my/activity-reports")
     void createActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestBody List<CreateActivityReportRequest> requests
+        @RequestBody CreateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 수정")
@@ -76,7 +76,7 @@ public interface ClubActivityReportApi {
     void updateActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term,
-        @RequestBody List<UpdateActivityReportRequest> requests
+        @RequestBody UpdateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 삭제")

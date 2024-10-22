@@ -8,7 +8,7 @@ public interface FileMetaDataService {
 
     void create(List<FileMetaData> fileMetaDataList);
 
-    void createOne(FileMetaData fileMetaData);
+    void create(FileMetaData fileMetaData);
 
     FileMetaData getByFileId(UUID fileId);
 
