@@ -3,7 +3,9 @@ package ddingdong.ddingdongBE.domain.activityreport.controller;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.api.ClubActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
@@ -15,11 +17,9 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import java.util.Arrays;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequiredArgsConstructor
@@ -58,30 +58,26 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public void createActivityReport(
         PrincipalDetails principalDetails,
-        List<CreateActivityReportRequest> requests,
-        MultipartFile firstImage,
-        MultipartFile secondImage
+        CreateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
-        List<CreateActivityReportCommand> commands = requests.stream()
+        List<CreateActivityReportCommand> commands = requests.activityReportRequests().stream()
             .map(CreateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.create(user, commands, Arrays.asList(firstImage, secondImage));
+        facadeClubActivityReportService.create(user, commands);
     }
 
     @Override
     public void updateActivityReport(
         PrincipalDetails principalDetails,
         String term,
-        List<UpdateActivityReportRequest> requests,
-        MultipartFile firstImage,
-        MultipartFile secondImage
+        UpdateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
-        List<UpdateActivityReportCommand> commands = requests.stream()
+        List<UpdateActivityReportCommand> commands = requests.activityReportRequests().stream()
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.update(user, term, commands, Arrays.asList(firstImage, secondImage));
+        facadeClubActivityReportService.update(user, term, commands);
     }
 
     @Override
