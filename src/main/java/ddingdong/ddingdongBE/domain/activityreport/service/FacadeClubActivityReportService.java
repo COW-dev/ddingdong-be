@@ -126,7 +126,7 @@ public class FacadeClubActivityReportService {
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getKey());
+        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getActivityReportImageKey());
         return ActivityReportQuery.of(activityReport, imageUrl);
     }
 
