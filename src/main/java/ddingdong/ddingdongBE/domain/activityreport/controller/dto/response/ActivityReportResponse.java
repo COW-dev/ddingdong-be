@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,13 +35,8 @@ public record ActivityReportResponse(
     @Schema(description = "활동 종료 일자", example = "2024-01-04")
     LocalDateTime endDate,
 
-    @Schema(description = "활동 이미지 URL 목록",
-        example = """
-            [
-            "https://example.com/image1.jpg",
-            "https://example.com/image2.jpg"]
-            """)
-    List<String> imageUrls,
+    @Schema(description = "활동보고서 이미지 URL", implementation = ActivityReportImageUrlResponse.class)
+    ActivityReportImageUrlResponse imageUrl,
 
     @Schema(description = "활동 참여자 목록",
         example = """
@@ -62,8 +58,25 @@ public record ActivityReportResponse(
             .place(query.place())
             .startDate(query.startDate())
             .endDate(query.endDate())
-            .imageUrls(query.imageUrls())
+            .imageUrl(ActivityReportImageUrlResponse.from(query.imageUrl()))
             .participants(query.participants())
             .build();
+    }
+
+    @Schema(
+        name = "ActivityReportImageUrlResponse",
+        description = "활동보고서 이미지 URL 조회 응답"
+    )
+    record ActivityReportImageUrlResponse(
+        @Schema(description = "원본 url", example = "url")
+        String originUrl,
+        @Schema(description = "cdn url", example = "url")
+        String cdnUrl
+    ) {
+
+        public static ActivityReportImageUrlResponse from(UploadedFileUrlQuery query) {
+            return new ActivityReportImageUrlResponse(query.originUrl(), query.cdnUrl());
+        }
+
     }
 }

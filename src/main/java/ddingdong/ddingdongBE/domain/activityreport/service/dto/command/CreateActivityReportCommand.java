@@ -14,6 +14,7 @@ public record CreateActivityReportCommand(
     String place,
     String startDate,
     String endDate,
+    String imageKey,
     List<Participant> participants
 ) {
 
@@ -22,6 +23,7 @@ public record CreateActivityReportCommand(
             .term(term)
             .content(content)
             .place(place)
+            .imageKey(imageKey)
             .startDate(TimeParser.parseToLocalDateTime(startDate))
             .endDate(TimeParser.parseToLocalDateTime(endDate))
             .participants(participants)

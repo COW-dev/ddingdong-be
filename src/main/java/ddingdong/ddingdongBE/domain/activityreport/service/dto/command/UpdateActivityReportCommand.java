@@ -13,6 +13,7 @@ public record UpdateActivityReportCommand(
     String place,
     String startDate,
     String endDate,
+    String imageKey,
     List<Participant> participants
 ) {
 
@@ -21,6 +22,7 @@ public record UpdateActivityReportCommand(
         return ActivityReport.builder()
             .content(content)
             .place(place)
+            .imageKey(imageKey)
             .startDate(TimeParser.processDate(startDate, LocalDateTime.now()))
             .endDate(TimeParser.processDate(endDate, LocalDateTime.now()))
             .participants(participants)

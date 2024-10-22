@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.ACTIVITY_REPORT;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.ACTIVITY_REPORT_IMAGE;
 
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
@@ -13,18 +12,17 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.file.service.FileService;
-import java.util.Collections;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional(readOnly = true)
@@ -34,8 +32,8 @@ public class FacadeClubActivityReportService {
     private final ActivityReportService activityReportService;
     private final ActivityReportTermInfoService activityReportTermInfoService;
     private final ClubService clubService;
-    private final FileInformationService fileInformationService;
-    private final FileService fileService;
+    private final FileMetaDataService fileMetaDataService;
+    private final S3FileService s3FileService;
 
     public List<ActivityReportQuery> getActivityReport(
         String term,
@@ -69,38 +67,33 @@ public class FacadeClubActivityReportService {
     @Transactional
     public void create(
         User user,
-        List<CreateActivityReportCommand> commands,
-        List<MultipartFile> images
+        List<CreateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
         String term = getRequestTerm(commands);
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
+            createFileMetaData(command.imageKey());
         });
-
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(club.getName(), term);
-        uploadImages(activityReports, images);
     }
 
     @Transactional
     public void update(
         User user,
         String term,
-        List<UpdateActivityReportCommand> commands,
-        List<MultipartFile> images
+        List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
 
-        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
-            club.getName(),
-            term);
-        updateImages(activityReports, images);
-
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
         List<ActivityReport> updateActivityReports = commands.stream()
             .map(UpdateActivityReportCommand::toEntity)
             .toList();
+
         activityReportService.update(activityReports, updateActivityReports);
+
+        createFileMetaDatas(updateActivityReports);
     }
 
     @Transactional
@@ -109,47 +102,20 @@ public class FacadeClubActivityReportService {
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
             club.getName(),
             term);
-        deleteImages(activityReports);
         activityReportService.deleteAll(activityReports);
     }
 
-    private void uploadImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
-        IntStream.range(0, activityReports.size())
-            .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
-            .forEach(index -> {
-                fileService.uploadFile(
-                    activityReports.get(index).getId(),
-                    Collections.singletonList(images.get(index)),
-                    IMAGE,
-                    ACTIVITY_REPORT
-                );
-            });
-    }
-
-    private void updateImages(List<ActivityReport> activityReports, List<MultipartFile> images) {
-        IntStream.range(0, activityReports.size())
-            .filter(index -> images.get(index) != null && !images.get(index).isEmpty())
-            .forEach(index -> {
-                    fileService.deleteFile(
-                        activityReports.get(index).getId(),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-
-                    fileService.uploadFile(
-                        activityReports.get(index).getId(),
-                        Collections.singletonList(images.get(index)),
-                        IMAGE,
-                        ACTIVITY_REPORT
-                    );
-                }
-            );
-    }
-
-    private void deleteImages(List<ActivityReport> activityReports) {
-        activityReports.forEach(report -> {
-            fileService.deleteFile(report.getId(), IMAGE, ACTIVITY_REPORT);
+    private void createFileMetaDatas(List<ActivityReport> activityReports) {
+        activityReports.forEach(activityReport -> {
+            createFileMetaData(activityReport.getImageKey());
         });
+    }
+
+    private void createFileMetaData(String key) {
+        if (key == null) {
+            return;
+        }
+        fileMetaDataService.create(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
     private String getRequestTerm(List<CreateActivityReportCommand> commands) {
@@ -160,10 +126,8 @@ public class FacadeClubActivityReportService {
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        String imagePath =
-            IMAGE.getFileType() + ACTIVITY_REPORT.getFileDomain() + activityReport.getId();
-        List<String> imageUrls = fileInformationService.getImageUrls(imagePath);
-        return ActivityReportQuery.of(activityReport, imageUrls);
+        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
+        return ActivityReportQuery.of(activityReport, imageUrl);
     }
 
     private List<ActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {

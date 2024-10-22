@@ -12,7 +12,7 @@ import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -48,11 +48,11 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getDocument() throws Exception {
         //given
-        List<FileResponse> fileResponses = List.of(FileResponse.builder().name("fileA").fileUrl("fileAUrl").build(),
-                FileResponse.builder().name("fileB").fileUrl("fileBUrl").build());
+        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
+            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
         DocumentQuery query = DocumentQuery.builder()
             .title("title")
-            .fileUrls(fileResponses)
+            .fileUrls(filurls)
             .createdAt(LocalDate.now()).build();
         Long documentId = 1L;
         when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
@@ -63,8 +63,8 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.fileUrls", hasSize(fileResponses.size())))
-                .andExpect(jsonPath("$.fileUrls[0].name").value("fileA"))
-                .andExpect(jsonPath("$.fileUrls[0].fileUrl").value("fileAUrl"));
+                .andExpect(jsonPath("$.fileUrls", hasSize(filurls.size())))
+                .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
+                .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
     }
 }
