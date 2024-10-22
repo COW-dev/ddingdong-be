@@ -6,7 +6,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
 @Schema(name = "ClubGetFixZoneResponse", description = "Club - 픽스존 조회 응답")
-public record GetFixZoneResponse(
+public record CentralMyFixZoneListResponse(
 
     @Schema(description = "Fix zone ID")
     Long fixZoneId,
@@ -28,8 +28,8 @@ public record GetFixZoneResponse(
     LocalDateTime requestedAt
 ) {
 
-    public static GetFixZoneResponse of(FixZone fixZone) {
-        return new GetFixZoneResponse(
+    public static CentralMyFixZoneListResponse of(FixZone fixZone) {
+        return new CentralMyFixZoneListResponse(
             fixZone.getId(),
             fixZone.getClub().getLocation().getValue(),
             fixZone.getClub().getName(),
@@ -40,4 +40,3 @@ public record GetFixZoneResponse(
     }
 
 }
-

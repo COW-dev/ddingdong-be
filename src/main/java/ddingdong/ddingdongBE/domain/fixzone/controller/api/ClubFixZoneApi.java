@@ -6,7 +6,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetDetailFixZoneResponse;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,7 +33,7 @@ public interface ClubFixZoneApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<GetFixZoneResponse> getMyFixZones(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    List<AdminFixZoneListResponse> getMyFixZones(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "Fix Zone 상세 조회")
     @GetMapping("/{fixZoneId}")

@@ -33,6 +33,11 @@ public class FixZoneServiceImpl implements FixZoneService {
     }
 
     @Override
+    public List<FixZone> findAllByClubId(Long clubId) {
+        return fixZoneRepository.findAllByClubId(clubId);
+    }
+
+    @Override
     public void delete(Long fixZoneId) {
         FixZone fixZone = getById(fixZoneId);
         this.fixZoneRepository.delete(fixZone);
