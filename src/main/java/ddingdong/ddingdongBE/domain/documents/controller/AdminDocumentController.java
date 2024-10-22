@@ -8,7 +8,6 @@ import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -20,7 +19,7 @@ public class AdminDocumentController implements AdminDocumentApi {
 
     public void createDocument(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @ModelAttribute CreateDocumentRequest createDocumentRequest
+        CreateDocumentRequest createDocumentRequest
     ) {
         User admin = principalDetails.getUser();
         facadeAdminDocumentService.create(createDocumentRequest.toCommand(admin));
@@ -28,7 +27,7 @@ public class AdminDocumentController implements AdminDocumentApi {
 
     public void updateDocument(
         @PathVariable Long documentId,
-        @ModelAttribute UpdateDocumentRequest updateDocumentRequest
+        UpdateDocumentRequest updateDocumentRequest
     ) {
         facadeAdminDocumentService.update(updateDocumentRequest.toCommand(documentId));
     }

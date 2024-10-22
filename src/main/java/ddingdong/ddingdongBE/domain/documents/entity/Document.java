@@ -41,24 +41,24 @@ public class Document extends BaseEntity {
 
     @Convert(converter = StringListConverter.class)
     @Column(name = "document_file_keys")
-    private List<String> keys;
+    private List<String> fileKeys;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
 
     @Builder
-    private Document(Long id, User user, String title, List<String> keys, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, List<String> fileKeys, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.title = title;
-        this.keys = keys;
+        this.fileKeys = fileKeys;
         super.setCreatedAt(createdAt);
     }
 
     public void updateDocument(Document document) {
-        if (document.keys != null && !document.keys.isEmpty()) {
-            this.keys = document.keys;
+        if (document.fileKeys != null && !document.fileKeys.isEmpty()) {
+            this.fileKeys = document.fileKeys;
         }
         this.title = document.getTitle();
     }

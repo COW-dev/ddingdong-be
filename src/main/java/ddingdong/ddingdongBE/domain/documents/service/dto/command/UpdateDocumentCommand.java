@@ -8,13 +8,13 @@ import lombok.Builder;
 public record UpdateDocumentCommand(
     String title,
     Long documentId,
-    List<String> keys
+    List<String> fileKeys
 ) {
 
     public Document toEntity() {
         return Document.builder()
             .title(title)
-            .keys(keys)
+            .fileKeys(fileKeys)
             .build();
     }
 }

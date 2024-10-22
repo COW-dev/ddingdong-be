@@ -26,7 +26,7 @@ public class FacadeDocumentService {
 
     public DocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
-        List<UploadedFileUrlQuery> fileUrls = document.getKeys().stream()
+        List<UploadedFileUrlQuery> fileUrls = document.getFileKeys().stream()
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
         return DocumentQuery.of(document, fileUrls);

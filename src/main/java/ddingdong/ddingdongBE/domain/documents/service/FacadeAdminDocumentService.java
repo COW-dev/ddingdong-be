@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.service;
 
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.DOCUMENT_FILE;
 
+import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -22,14 +23,14 @@ public class FacadeAdminDocumentService {
     @Transactional
     public void create(CreateDocumentCommand command) {
         documentService.create(command.toEntity());
-        createFileMetaDatas(command.keys());
+        createFileMetaDatas(command.fileKeys());
     }
 
     @Transactional
     public void update(UpdateDocumentCommand command) {
-        Long documentId = command.documentId();
-        documentService.update(documentId, command.toEntity());
-        createFileMetaDatas(command.keys());
+        Document document = documentService.getById(command.documentId());
+        documentService.update(document, command.toEntity());
+        createFileMetaDatas(command.fileKeys());
     }
 
     @Transactional

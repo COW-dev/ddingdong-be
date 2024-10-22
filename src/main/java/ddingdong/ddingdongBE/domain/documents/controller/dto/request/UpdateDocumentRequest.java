@@ -16,14 +16,14 @@ public record UpdateDocumentRequest(
 
     @Schema(description = "자료 파일 Key", example = "[{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid},"
         + " {serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}]")
-    List<String> keys
+    List<String> fileKeys
 ) {
 
     public UpdateDocumentCommand toCommand(Long documentId) {
         return UpdateDocumentCommand.builder()
             .title(title)
             .documentId(documentId)
-            .keys(keys)
+            .fileKeys(fileKeys)
             .build();
     }
 }

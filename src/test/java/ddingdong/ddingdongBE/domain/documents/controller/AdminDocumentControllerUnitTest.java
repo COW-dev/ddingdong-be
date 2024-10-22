@@ -29,7 +29,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         // given
         CreateDocumentRequest request = CreateDocumentRequest.builder()
             .title("새로운 문서 제목")
-            .keys(List.of(
+            .fileKeys(List.of(
                 "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}",
                 "{serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}"
             ))
@@ -56,7 +56,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
 
         UpdateDocumentRequest request = UpdateDocumentRequest.builder()
             .title("새로운 문서 제목")
-            .keys(List.of(
+            .fileKeys(List.of(
                 "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}",
                 "{serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}"
             ))
