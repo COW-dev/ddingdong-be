@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.notice.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +13,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -37,19 +40,42 @@ public class Notice extends BaseEntity {
 
     private String content;
 
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "notice_image_keys")
+    private List<String> imageKeys;
+
+    @Convert(converter = StringListConverter.class)
+    @Column(name = "notice_file_keys")
+    private List<String> fileKeys;
+
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    public Notice(User user, String title, String content) {
+    public Notice(User user, String title, String content, List<String> imageKeys,
+        List<String> fileKeys) {
         this.user = user;
         this.title = title;
         this.content = content;
+        this.imageKeys = imageKeys;
+        this.fileKeys = fileKeys;
     }
 
     public void update(Notice notice) {
         this.title = notice.getTitle();
         this.content = notice.getContent();
+
+        if (checkKeyExists(notice.imageKeys)) {
+            this.imageKeys = notice.imageKeys;
+        }
+
+        if (checkKeyExists(notice.fileKeys)) {
+            this.fileKeys = notice.fileKeys;
+        }
+    }
+
+    private boolean checkKeyExists(List<String> keys) {
+        return keys != null && !keys.isEmpty();
     }
 
 }
