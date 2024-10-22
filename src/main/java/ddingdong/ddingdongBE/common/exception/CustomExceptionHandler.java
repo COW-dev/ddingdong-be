@@ -121,7 +121,7 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(BAD_REQUEST)
+    @ResponseStatus(INTERNAL_SERVER_ERROR)
     @ExceptionHandler(ConvertException.class)
     public ErrorResponse handleConvertException(ConvertException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
