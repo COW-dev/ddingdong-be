@@ -121,19 +121,6 @@ public class CustomExceptionHandler {
         );
     }
 
-    @ResponseStatus(INTERNAL_SERVER_ERROR)
-    @ExceptionHandler(ConvertException.class)
-    public ErrorResponse handleConvertException(ConvertException exception, HttpServletRequest request) {
-        String connectionInfo = createLogConnectionInfo(request);
-
-        loggingApplicationWarn(connectionInfo
-                + "\n"
-                + exception.getErrorCode() + " : " + exception.getMessage());
-
-        return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
-        );
-    }
-
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
     @ExceptionHandler(NoSuchElementException.class)
     @ResponseStatus(BAD_REQUEST)
