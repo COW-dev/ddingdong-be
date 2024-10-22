@@ -18,6 +18,7 @@ public class AdminClubController implements AdminClubApi {
     public void createClub(CreateClubRequest request) {
         facadeAdminClubService.create(request.toCommand());
     }
+
     @Override
     public List<AdminClubListResponse> getClubs() {
         return facadeAdminClubService.findAll().stream()
