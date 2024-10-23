@@ -1,9 +1,11 @@
 package ddingdong.ddingdongBE.domain.fixzone.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -46,16 +48,21 @@ public class FixZone extends BaseEntity {
 
     private boolean isCompleted;
 
+    // TODO: migration script
+    @Convert(converter = StringListConverter.class)
+    private List<String> imageKeys;
+
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    private FixZone(Long id, Club club, String title, String content, boolean isCompleted) {
+    private FixZone(Long id, Club club, String title, String content, boolean isCompleted, List<String> imageKeys) {
         this.id = id;
         this.club = club;
         this.title = title;
         this.content = content;
         this.isCompleted = isCompleted;
+        this.imageKeys = imageKeys;
     }
 
     public void update(FixZone fixZone) {

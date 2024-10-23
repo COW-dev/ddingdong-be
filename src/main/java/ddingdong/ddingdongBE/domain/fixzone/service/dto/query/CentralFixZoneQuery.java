@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.domain.fixzone.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
+import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -12,10 +14,14 @@ public record CentralFixZoneQuery(
         String content,
         boolean isCompleted,
         LocalDateTime requestedAt,
-        List<String> imageUrls
+        List<UploadedFileUrlQuery> imageUrlQueries,
+        List<FixZoneCommentQuery> fixZoneCommentQueries
 ) {
 
-    public static CentralFixZoneQuery of(FixZone fixZone, List<String> imageUrls) {
+    public static CentralFixZoneQuery of(
+            FixZone fixZone,
+            List<UploadedFileUrlQuery> fixZoneImageUrlQueries,
+            UploadedFileUrlQuery commenterProfileImageUrlQuery) {
         return new CentralFixZoneQuery(
                 fixZone.getId(),
                 fixZone.getClub().getLocation().getValue(),
@@ -24,8 +30,32 @@ public record CentralFixZoneQuery(
                 fixZone.getContent(),
                 fixZone.isCompleted(),
                 fixZone.getCreatedAt(),
-                imageUrls
+                fixZoneImageUrlQueries,
+                fixZone.getFixZoneComments().stream()
+                        .map(fixZoneComment -> FixZoneCommentQuery.of(fixZoneComment, commenterProfileImageUrlQuery))
+                        .toList()
         );
+    }
+
+    public record FixZoneCommentQuery(
+            Long id,
+            String commenter,
+            String content,
+            UploadedFileUrlQuery profileImageQuery,
+            LocalDateTime createdAt
+    ) {
+
+        public static FixZoneCommentQuery of(
+                FixZoneComment fixZoneComment,
+                UploadedFileUrlQuery commenterProfileImageUrlQuery) {
+            return new FixZoneCommentQuery(
+                    fixZoneComment.getId(),
+                    fixZoneComment.getClub().getName(),
+                    fixZoneComment.getContent(),
+                    commenterProfileImageUrlQuery,
+                    fixZoneComment.getCreatedAt()
+            );
+        }
     }
 
 }

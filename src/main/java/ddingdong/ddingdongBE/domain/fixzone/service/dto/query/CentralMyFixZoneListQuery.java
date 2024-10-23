@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import java.time.LocalDateTime;
 
 public record CentralMyFixZoneListQuery(
-        Long fixZoneId,
+        Long id,
         String clubLocation,
         String clubName,
         String title,

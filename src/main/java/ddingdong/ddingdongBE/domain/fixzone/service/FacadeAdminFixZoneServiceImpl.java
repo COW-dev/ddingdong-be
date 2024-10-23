@@ -14,18 +14,21 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
 
     private final FixZoneService fixZoneService;
 
+    @Override
     public List<AdminFixZoneListQuery> getAll() {
         return fixZoneService.findAll().stream()
             .map(AdminFixZoneListQuery::from)
             .toList();
     }
 
+    @Override
     @Transactional
     public void updateToComplete(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
         fixZone.updateToComplete();
     }
 
+    @Override
     @Transactional
     public void delete(Long fixZoneId) {
         fixZoneService.delete(fixZoneId);

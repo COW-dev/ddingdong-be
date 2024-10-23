@@ -92,6 +92,4 @@ class FacadeAdminFixZoneServiceImplTest extends TestContainerSupport {
         assertThat(result.isPresent()).isFalse();
     }
 
-
-
 }
