@@ -105,7 +105,7 @@ public record AdminFixZoneResponse(
 
             @Schema(
                     name = "FixZoneCommentCommenterProfileImageResponse",
-                    description = "동아리 - 픽스존 이미지 URL 조회 응답"
+                    description = "댓글 프로필 이미지 URL 조회 응답"
             )
             record FixZoneCommentCommenterProfileImageResponse(
                     @Schema(description = "원본 url", example = "url")

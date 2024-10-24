@@ -32,7 +32,6 @@ public class FixZoneCommentServiceImpl implements FixZoneCommentService {
     @Transactional
     public void delete(Long fixZoneCommentId) {
         FixZoneComment fixZoneComment = getById(fixZoneCommentId);
-
         fixZoneCommentRepository.delete(fixZoneComment);
     }
 }

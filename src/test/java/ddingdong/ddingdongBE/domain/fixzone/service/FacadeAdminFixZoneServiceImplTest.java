@@ -33,7 +33,7 @@ class FacadeAdminFixZoneServiceImplTest extends TestContainerSupport {
 
     @DisplayName("어드민 - 픽스존 리스트 조회")
     @Test
-    void findAl() {
+    void findAll() {
         //given
         Club club = fixture.giveMeBuilder(Club.class)
                 .set("user", null)
