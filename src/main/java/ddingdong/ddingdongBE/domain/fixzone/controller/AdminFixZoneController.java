@@ -5,8 +5,10 @@ import ddingdong.ddingdongBE.domain.fixzone.controller.api.AdminFixZoneApi;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneCommentRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneCommentRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneListResponse;
-import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneCommentServiceImpl;
-import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneServiceImpl;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneCommentService;
+import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneService;
+import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -16,19 +18,25 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminFixZoneController implements AdminFixZoneApi {
 
-    private final FacadeAdminFixZoneServiceImpl facadeAdminFixZoneServiceImpl;
-    private final FacadeAdminFixZoneCommentServiceImpl facadeAdminFixZoneCommentService;
+    private final FacadeAdminFixZoneService facadeAdminFixZoneService;
+    private final FacadeAdminFixZoneCommentService facadeAdminFixZoneCommentService;
 
     @Override
     public List<AdminFixZoneListResponse> getFixZones() {
-        return facadeAdminFixZoneServiceImpl.getAll().stream()
+        return facadeAdminFixZoneService.getAll().stream()
                 .map(AdminFixZoneListResponse::from)
                 .toList();
     }
 
     @Override
+    public AdminFixZoneResponse getFixZoneDetail(Long fixZoneId) {
+        AdminFixZoneQuery query = facadeAdminFixZoneService.getFixZone(fixZoneId);
+        return AdminFixZoneResponse.from(query);
+    }
+
+    @Override
     public void updateFixZoneToComplete(Long fixZoneId) {
-        facadeAdminFixZoneServiceImpl.updateToComplete(fixZoneId);
+        facadeAdminFixZoneService.updateToComplete(fixZoneId);
     }
 
     @Override

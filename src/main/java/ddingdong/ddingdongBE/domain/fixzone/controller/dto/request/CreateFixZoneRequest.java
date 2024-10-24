@@ -6,23 +6,23 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record CreateFixZoneRequest(
-		@NotNull
-		@Schema(description = "제목")
-		String title,
-		@NotNull
-		@Schema(description = "내용")
-		String content,
-		@Schema(description = "픽스존 내용 이미지 키", example = "prod/file/2024-01-01/uuid")
-		List<String> fixZoneImageKeys
+        @NotNull
+        @Schema(description = "제목")
+        String title,
+        @NotNull
+        @Schema(description = "내용")
+        String content,
+        @Schema(description = "픽스존 내용 이미지 키", example = "[\"prod/file/2024-01-01/uuid1\", \"prod/file/2024-01-01/uuid2\"]")
+        List<String> fixZoneImageKeys
 ) {
 
-	public CreateFixZoneCommand toCommand(Long userId) {
-		return new CreateFixZoneCommand(
-				userId,
-				title,
-				content,
-				fixZoneImageKeys
-		);
-	}
+    public CreateFixZoneCommand toCommand(Long userId) {
+        return new CreateFixZoneCommand(
+                userId,
+                title,
+                content,
+                fixZoneImageKeys
+        );
+    }
 
 }

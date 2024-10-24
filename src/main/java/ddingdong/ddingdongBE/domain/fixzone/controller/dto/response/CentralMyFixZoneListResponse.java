@@ -19,7 +19,7 @@ public record CentralMyFixZoneListResponse(
     @Schema(description = "처리 완료 여부")
     boolean isCompleted,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
-    @Schema(description = "요청 시각", example = "2023-07-23 14:55:00")
+    @Schema(description = "요청 시각", pattern = "yyyy-MM-dd HH:mm:ss", example = "2023-07-23 14:55:00")
     LocalDateTime requestedAt
 ) {
 

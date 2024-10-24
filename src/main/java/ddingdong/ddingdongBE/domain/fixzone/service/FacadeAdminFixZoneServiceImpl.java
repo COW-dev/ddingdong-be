@@ -2,6 +2,9 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneListQuery;
+import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -13,12 +16,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService {
 
     private final FixZoneService fixZoneService;
+    private final S3FileService s3FileService;
 
     @Override
     public List<AdminFixZoneListQuery> getAll() {
         return fixZoneService.findAll().stream()
             .map(AdminFixZoneListQuery::from)
             .toList();
+    }
+
+    @Override
+    public AdminFixZoneQuery getFixZone(Long fixZoneId) {
+        FixZone fixZone = fixZoneService.getById(fixZoneId);
+        List<UploadedFileUrlQuery> imageUrlQueries = fixZone.getImageKeys().stream()
+                .map(s3FileService::getUploadedFileUrl)
+                .toList();
+        UploadedFileUrlQuery clubProfileImageUrlQuery =
+                s3FileService.getUploadedFileUrl(fixZone.getClub().getProfileImageKey());
+        return AdminFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageUrlQuery);
     }
 
     @Override
