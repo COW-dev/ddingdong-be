@@ -3,23 +3,33 @@ package ddingdong.ddingdongBE.domain.notice.controller.dto.request;
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.CreateNoticeCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 import java.util.List;
-import org.springframework.web.multipart.MultipartFile;
 
 public record CreateNoticeRequest(
-    @Schema(description = "공지사항 제목", example = "공지사항 제목입니다")
+    @NotNull(message = "공지사항 제목은 필수 입력 사항입니다.")
+    @Schema(description = "공지사항 제목", example = "공지사항 제목")
     String title,
-    @Schema(description = "공지사항 내용", example = "카우 공지사항 내용입니다")
-    String content
+
+    @NotNull(message = "공지사항 내용은 필수 입력 사항입니다.")
+    @Schema(description = "공지사항 내용", example = "공지사항 내용")
+    String content,
+
+    @Schema(description = "공지사항 이미지 key 목록")
+    List<String> imageKeys,
+
+    @Schema(description = "공지사항 파일 key 목록")
+    List<String> fileKeys
 ) {
 
-    public CreateNoticeCommand toCommand(User user, List<MultipartFile> images, List<MultipartFile> files) {
+    public CreateNoticeCommand toCommand(User user) {
         return CreateNoticeCommand.builder()
             .user(user)
             .title(title)
             .content(content)
-            .images(images)
-            .files(files)
+            .imageKeys(imageKeys)
+            .fileKeys(fileKeys)
             .build();
     }
+
 }
