@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "ScoreHistory - Club", description = "ScoreHistory Club API")
-@RequestMapping("/server/club/my/score")
+@RequestMapping("/server/central/my/score")
 public interface ClubScoreHistoryApi {
 
     @Operation(summary = "동아리 내 점수 내역 목록 조회 API")

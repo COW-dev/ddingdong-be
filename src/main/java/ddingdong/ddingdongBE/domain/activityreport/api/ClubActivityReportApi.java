@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Activity Report - Club", description = "Activity Report Club API")
-@RequestMapping("/server/club")
+@RequestMapping("/server/central")
 public interface ClubActivityReportApi {
 
     @Operation(summary = "현재 활동보고서 회차 조회")
