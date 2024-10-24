@@ -32,7 +32,11 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
         UploadedFileUrlQuery clubProfileImageUrlQuery =
-                s3FileService.getUploadedFileUrl(fixZone.getClub().getProfileImageKey());
+                fixZone.getFixZoneComments().stream()
+                        .map(fixZoneComment -> s3FileService.getUploadedFileUrl(
+                                fixZoneComment.getClub().getProfileImageKey()))
+                        .findFirst()
+                        .orElse(null);
         return AdminFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageUrlQuery);
     }
 

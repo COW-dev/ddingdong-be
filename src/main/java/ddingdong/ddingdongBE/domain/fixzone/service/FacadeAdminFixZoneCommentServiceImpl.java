@@ -20,6 +20,7 @@ public class FacadeAdminFixZoneCommentServiceImpl implements FacadeAdminFixZoneC
     private final ClubService clubService;
 
     @Override
+    @Transactional
     public Long create(CreateFixZoneCommentCommand command) {
         Club adminClub = clubService.getByUserId(command.userId());
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
@@ -27,6 +28,7 @@ public class FacadeAdminFixZoneCommentServiceImpl implements FacadeAdminFixZoneC
     }
 
     @Override
+    @Transactional
     public Long update(UpdateFixZoneCommentCommand command) {
         FixZoneComment fixZoneComment = fixZoneCommentService.getById(command.fixZoneCommentId());
         fixZoneComment.update(command.toEntity());
@@ -34,7 +36,8 @@ public class FacadeAdminFixZoneCommentServiceImpl implements FacadeAdminFixZoneC
     }
 
     @Override
-    public void delete(Long fixZoneId) {
-        fixZoneCommentService.delete(fixZoneId);
+    @Transactional
+    public void delete(Long fixZoneCommentId) {
+        fixZoneCommentService.delete(fixZoneCommentId);
     }
 }

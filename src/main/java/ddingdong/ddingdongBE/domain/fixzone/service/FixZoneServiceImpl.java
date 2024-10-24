@@ -16,6 +16,7 @@ public class FixZoneServiceImpl implements FixZoneService {
     private final FixZoneRepository fixZoneRepository;
 
     @Override
+    @Transactional
     public Long save(FixZone fixZone) {
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
         return savedFixZone.getId();
@@ -38,6 +39,7 @@ public class FixZoneServiceImpl implements FixZoneService {
     }
 
     @Override
+    @Transactional
     public void delete(Long fixZoneId) {
         FixZone fixZone = getById(fixZoneId);
         this.fixZoneRepository.delete(fixZone);

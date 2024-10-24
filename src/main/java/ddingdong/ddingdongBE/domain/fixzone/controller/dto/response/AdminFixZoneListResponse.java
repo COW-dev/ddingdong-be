@@ -5,7 +5,7 @@ import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneListQu
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
-@Schema(name = "ClubGetFixZoneResponse", description = "어드민 - 픽스존 목록 조회 응답")
+@Schema(name = "AdminFixZoneListResponse", description = "어드민 - 픽스존 목록 조회 응답")
 public record AdminFixZoneListResponse(
         @Schema(description = "Fix zone ID")
         Long id,

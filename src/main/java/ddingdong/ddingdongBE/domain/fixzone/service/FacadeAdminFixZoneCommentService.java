@@ -9,6 +9,6 @@ public interface FacadeAdminFixZoneCommentService {
 
     Long update(UpdateFixZoneCommentCommand command);
 
-    void delete(Long fixZoneId);
+    void delete(Long fixZoneCommentId);
 
 }
