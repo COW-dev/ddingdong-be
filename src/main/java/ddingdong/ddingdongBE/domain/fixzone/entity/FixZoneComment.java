@@ -51,10 +51,8 @@ public class FixZoneComment extends BaseEntity {
         this.content = content;
     }
 
-    public void update(Long clubId, String content) {
-        if (Objects.equals(clubId, this.club.getId())) {
-            this.content = content;
-        }
+    public void update(FixZoneComment fixZoneComment) {
+        this.content = fixZoneComment.getContent();
     }
 
 }

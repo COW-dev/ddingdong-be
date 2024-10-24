@@ -4,6 +4,7 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneCommentRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneCommentRequest;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneListResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,35 +37,33 @@ public interface AdminFixZoneApi {
     @SecurityRequirement(name = "AccessToken")
     void updateFixZoneToComplete(@PathVariable("fixZoneId") Long fixZoneId);
 
-//    @Operation(summary = "Fix Zone 댓글 등록 API")
-//    @PostMapping("/{fixZoneId}/comments")
-//    @ResponseStatus(HttpStatus.CREATED)
-//    @SecurityRequirement(name = "AccessToken")
-//    void createFixZoneComment(
-//        @AuthenticationPrincipal PrincipalDetails principalDetails,
-//        @RequestBody CreateFixZoneCommentRequest request,
-//        @PathVariable("fixZoneId") Long fixZoneId
-//    );
-//
-//    @Operation(summary = "Fix Zone 댓글 수정 API")
-//    @PatchMapping("/{fixZoneId}/comments/{commentId}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @SecurityRequirement(name = "AccessToken")
-//    void updateFixZoneComment(
-//        @AuthenticationPrincipal PrincipalDetails principalDetails,
-//        @RequestBody CreateFixZoneCommentRequest request,
-//        @PathVariable("fixZoneId") Long fixZoneId,
-//        @PathVariable("commentId") Long commentId
-//    );
-//
-//    @Operation(summary = "Fix Zone 댓글 삭제 API")
-//    @DeleteMapping("/{fixZoneId}/comments/{commentId}")
-//    @ResponseStatus(HttpStatus.NO_CONTENT)
-//    @SecurityRequirement(name = "AccessToken")
-//    void deleteFixZoneComment(
-//        @AuthenticationPrincipal PrincipalDetails principalDetails,
-//        @PathVariable("fixZoneId") Long fixZoneId,
-//        @PathVariable("commentId") Long commentId
-//    );
+    @Operation(summary = "Fix Zone 댓글 등록 API")
+    @PostMapping("/{fixZoneId}/comments")
+    @ResponseStatus(HttpStatus.CREATED)
+    @SecurityRequirement(name = "AccessToken")
+    void createFixZoneComment(
+        @AuthenticationPrincipal PrincipalDetails principalDetails,
+        @RequestBody CreateFixZoneCommentRequest request,
+        @PathVariable("fixZoneId") Long fixZoneId
+    );
+
+    @Operation(summary = "Fix Zone 댓글 수정 API")
+    @PatchMapping("/{fixZoneId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    void updateFixZoneComment(
+        @RequestBody UpdateFixZoneCommentRequest request,
+        @PathVariable("fixZoneId") Long fixZoneId,
+        @PathVariable("commentId") Long commentId
+    );
+
+    @Operation(summary = "Fix Zone 댓글 삭제 API")
+    @DeleteMapping("/{fixZoneId}/comments/{commentId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    void deleteFixZoneComment(
+        @PathVariable("fixZoneId") Long fixZoneId,
+        @PathVariable("commentId") Long commentId
+    );
 
 }
