@@ -1,18 +1,18 @@
 package ddingdong.ddingdongBE.domain.banner.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 
 public record UserBannerListQuery(
         Long id,
-        UploadedFileUrlQuery webImageUrlQuery,
-        UploadedFileUrlQuery mobileImageUrlQuery
+        UploadedImageUrlQuery webImageUrlQuery,
+        UploadedImageUrlQuery mobileImageUrlQuery
 ) {
 
     public static UserBannerListQuery of(
             Banner banner,
-            UploadedFileUrlQuery webImageUrlQuery,
-            UploadedFileUrlQuery mobileImageUrlQuery
+        UploadedImageUrlQuery webImageUrlQuery,
+        UploadedImageUrlQuery mobileImageUrlQuery
     ) {
         return new UserBannerListQuery(banner.getId(), webImageUrlQuery, mobileImageUrlQuery);
     }

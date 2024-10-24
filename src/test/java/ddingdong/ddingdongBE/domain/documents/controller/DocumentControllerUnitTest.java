@@ -12,7 +12,7 @@ import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -48,8 +48,9 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getDocument() throws Exception {
         //given
-        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
-            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
+        List<UploadedImageUrlQuery> filurls = List.of(
+            new UploadedImageUrlQuery("originUrl1", "cdnUrl1"),
+            new UploadedImageUrlQuery("originUrl2", "cdnUrl2"));
         DocumentQuery query = DocumentQuery.builder()
             .title("title")
             .fileUrls(filurls)

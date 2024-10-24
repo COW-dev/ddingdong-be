@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.notice.service.dto.command.GetNoticeListComm
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListPagingQuery;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListPagingQuery.NoticeInfo;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
+import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeNoticeServiceImpl implements FacadeNoticeService {
 
     private final NoticeServiceImpl noticeService;
+    private final S3FileService s3FileService;
 
     @Override
     public NoticeListPagingQuery getNoticeList(GetNoticeListCommand command) {
@@ -33,7 +35,11 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
     public NoticeQuery getNotice(Long noticeId) {
         Notice notice = noticeService.getById(noticeId);
 
+        List<UploadedFileUrlQuery> fileUrls = notice.getFileKeys().stream()
+            .map(s3FileService::getUploadedFileUrl)
+            .toList();
 
+        return NoticeQuery.of(notice, fileUrls);
     }
 
 }

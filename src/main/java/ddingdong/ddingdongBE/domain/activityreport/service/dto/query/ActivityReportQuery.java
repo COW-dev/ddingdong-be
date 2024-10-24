@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;
@@ -16,11 +16,12 @@ public record ActivityReportQuery(
     String place,
     LocalDateTime startDate,
     LocalDateTime endDate,
-    UploadedFileUrlQuery imageUrl,
+    UploadedImageUrlQuery imageUrl,
     List<Participant> participants
 ) {
 
-  public static ActivityReportQuery of(ActivityReport activityReport, UploadedFileUrlQuery imageUrl) {
+  public static ActivityReportQuery of(ActivityReport activityReport,
+      UploadedImageUrlQuery imageUrl) {
     return ActivityReportQuery.builder()
         .id(activityReport.getId())
         .createdAt(activityReport.getCreatedAt())
