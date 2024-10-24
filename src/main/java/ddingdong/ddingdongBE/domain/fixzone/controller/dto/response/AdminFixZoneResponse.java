@@ -61,6 +61,9 @@ public record AdminFixZoneResponse(
     ) {
 
         public static FixZoneImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new FixZoneImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 
@@ -112,6 +115,9 @@ public record AdminFixZoneResponse(
             ) {
 
                 public static FixZoneCommentCommenterProfileImageResponse from(UploadedFileUrlQuery query) {
+                    if (query == null) {
+                        return null;
+                    }
                     return new FixZoneCommentCommenterProfileImageResponse(query.originUrl(), query.cdnUrl());
                 }
 
