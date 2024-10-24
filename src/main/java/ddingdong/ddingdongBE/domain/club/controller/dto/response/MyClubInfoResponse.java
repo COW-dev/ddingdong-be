@@ -82,6 +82,9 @@ public record MyClubInfoResponse(
     ) {
 
         public static MyClubInfoImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new MyClubInfoImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 

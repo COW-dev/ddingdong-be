@@ -75,6 +75,9 @@ public record UserClubResponse(
     ) {
 
         public static UserClubImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new UserClubImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 

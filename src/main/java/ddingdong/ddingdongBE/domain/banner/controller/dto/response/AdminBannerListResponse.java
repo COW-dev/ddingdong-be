@@ -35,6 +35,9 @@ public record AdminBannerListResponse(
     ) {
 
         public static AdminBannerListImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new AdminBannerListImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 
