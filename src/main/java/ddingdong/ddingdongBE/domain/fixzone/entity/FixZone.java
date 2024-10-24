@@ -48,8 +48,8 @@ public class FixZone extends BaseEntity {
 
     private boolean isCompleted;
 
-    // TODO: migration script
     @Convert(converter = StringListConverter.class)
+    @Column(length = 1000)
     private List<String> imageKeys;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
