@@ -47,6 +47,9 @@ public record DocumentResponse(
     ) {
 
         public static DocumentFileUrlsResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new DocumentFileUrlsResponse(query.originUrl(), query.cdnUrl());
         }
     }
