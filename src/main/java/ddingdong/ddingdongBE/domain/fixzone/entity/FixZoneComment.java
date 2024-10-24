@@ -11,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.util.Objects;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,10 +50,8 @@ public class FixZoneComment extends BaseEntity {
         this.content = content;
     }
 
-    public void update(Long clubId, String content) {
-        if (Objects.equals(clubId, this.club.getId())) {
-            this.content = content;
-        }
+    public void update(FixZoneComment fixZoneComment) {
+        this.content = fixZoneComment.getContent();
     }
 
 }

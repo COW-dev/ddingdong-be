@@ -4,7 +4,9 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneCommentRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneCommentRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneListResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,7 +30,13 @@ public interface AdminFixZoneApi {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<GetFixZoneResponse> getFixZones();
+    List<AdminFixZoneListResponse> getFixZones();
+
+    @Operation(summary = "Fix Zone 상세 조회")
+    @GetMapping("/{fixZoneId}")
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    AdminFixZoneResponse getFixZoneDetail(@PathVariable("fixZoneId") Long fixZoneId);
 
     @Operation(summary = "Fix Zone 요청 처리 완료 API")
     @PatchMapping("/{fixZoneId}")
@@ -51,8 +59,7 @@ public interface AdminFixZoneApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void updateFixZoneComment(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestBody CreateFixZoneCommentRequest request,
+        @RequestBody UpdateFixZoneCommentRequest request,
         @PathVariable("fixZoneId") Long fixZoneId,
         @PathVariable("commentId") Long commentId
     );
@@ -62,7 +69,6 @@ public interface AdminFixZoneApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     void deleteFixZoneComment(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
         @PathVariable("fixZoneId") Long fixZoneId,
         @PathVariable("commentId") Long commentId
     );

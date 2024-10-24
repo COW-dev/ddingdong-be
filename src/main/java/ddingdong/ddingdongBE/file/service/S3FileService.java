@@ -64,6 +64,9 @@ public class S3FileService {
     }
 
     public UploadedFileUrlQuery getUploadedFileUrl(String key) {
+        if (key == null) {
+            return null;
+        }
         String region = amazonS3Client.getRegionName();
         String[] splitKey = key.split("/");
         String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;

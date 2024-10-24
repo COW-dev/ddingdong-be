@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.common.exception.ConvertException.StringToListConve
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;
 import java.util.List;
+import java.util.Objects;
 
 @Converter
 public class StringListConverter implements AttributeConverter<List<String>, String> {
@@ -16,7 +17,7 @@ public class StringListConverter implements AttributeConverter<List<String>, Str
     @Override
     public String convertToDatabaseColumn(List<String> dataList) {
         try {
-            return mapper.writeValueAsString(dataList);
+            return mapper.writeValueAsString(Objects.requireNonNullElseGet(dataList, List::of));
         } catch (JsonProcessingException e) {
             throw new ListToStringConvertException();
         }
