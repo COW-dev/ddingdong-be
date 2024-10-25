@@ -33,10 +33,10 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
-class FacadeClubMemberServiceTest extends TestContainerSupport {
+class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
 
     @Autowired
-    private FacadeClubMemberService facadeClubMemberService;
+    private FacadeCentralClubMemberService facadeCentralClubMemberService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -112,7 +112,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .build();
 
         //when
-        facadeClubMemberService.updateMemberList(command);
+        facadeCentralClubMemberService.updateMemberList(command);
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
@@ -144,7 +144,7 @@ class FacadeClubMemberServiceTest extends TestContainerSupport {
                 .department("test").build();
 
         //when
-        facadeClubMemberService.update(command);
+        facadeCentralClubMemberService.update(command);
 
         //then
         ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
