@@ -4,10 +4,11 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.api.CentralClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.CentralClubMemberListResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.MyClubInfoResponse;
 import ddingdong.ddingdongBE.domain.club.service.FacadeCentralClubService;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.clubmember.service.FacadeClubMemberService;
+import ddingdong.ddingdongBE.domain.clubmember.service.FacadeCentralClubMemberService;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.net.URLEncoder;
@@ -27,12 +28,12 @@ import org.springframework.web.multipart.MultipartFile;
 public class CentralClubController implements CentralClubApi {
 
     private final FacadeCentralClubService facadeCentralClubService;
-    private final FacadeClubMemberService facadeClubMemberService;
+    private final FacadeCentralClubMemberService facadeCentralClubMemberService;
 
     @Override
     public ResponseEntity<byte[]> getMyClubMemberListFile(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        byte[] clubMemberListFileData = facadeClubMemberService.getClubMemberListFile(user.getId());
+        byte[] clubMemberListFileData = facadeCentralClubMemberService.getClubMemberListFile(user.getId());
         String filename = "동아리원명단.xlsx";
         String encodedFilename = URLEncoder.encode(filename, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
 
@@ -53,6 +54,14 @@ public class CentralClubController implements CentralClubApi {
     }
 
     @Override
+    public List<CentralClubMemberListResponse> getMyClubMembers(PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        return facadeCentralClubMemberService.getAllMyClubMember(user.getId()).stream()
+                .map(CentralClubMemberListResponse::from)
+                .toList();
+    }
+
+    @Override
     public void updateClub(PrincipalDetails principalDetails, UpdateClubInfoRequest request) {
         User user = principalDetails.getUser();
         facadeCentralClubService.updateClubInfo(request.toCommand(user.getId()));
@@ -65,11 +74,11 @@ public class CentralClubController implements CentralClubApi {
                 .userId(user.getId())
                 .clubMemberListFile(clubMemberListFile)
                 .build();
-        facadeClubMemberService.updateMemberList(command);
+        facadeCentralClubMemberService.updateMemberList(command);
     }
 
     @Override
     public void updateClubMembers(Long clubMemberId, UpdateClubMemberRequest request) {
-        facadeClubMemberService.update(request.toCommand(clubMemberId));
+        facadeCentralClubMemberService.update(request.toCommand(clubMemberId));
     }
 }
