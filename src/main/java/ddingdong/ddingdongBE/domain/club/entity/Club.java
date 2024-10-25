@@ -123,6 +123,8 @@ public class Club extends BaseEntity {
         this.activity = club.getActivity();
         this.ideal = club.getIdeal();
         this.formUrl = club.getFormUrl();
+        this.profileImageKey = club.getProfileImageKey();
+        this.introductionImageKey = club.getIntroductionImageKey();
     }
 
     public BigDecimal editScore(Score score) {

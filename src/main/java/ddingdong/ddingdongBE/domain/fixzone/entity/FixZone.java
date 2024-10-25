@@ -68,6 +68,7 @@ public class FixZone extends BaseEntity {
     public void update(FixZone fixZone) {
         this.title = fixZone.getTitle();
         this.content = fixZone.getContent();
+        this.imageKeys = fixZone.getImageKeys();
     }
 
     public void updateToComplete() {
