@@ -1,25 +1,26 @@
 package ddingdong.ddingdongBE.domain.notice.service.dto.command;
 
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import java.util.List;
 import lombok.Builder;
-import org.springframework.web.multipart.MultipartFile;
 
 @Builder
 public record UpdateNoticeCommand(
+    Long noticeId,
     String title,
     String content,
-    List<String> imgUrls,
-    List<String> fileUrls,
-    Long noticeId,
-    List<MultipartFile> images,
-    List<MultipartFile> files
+    List<String> imageKeys,
+    List<FileInfo> fileInfos
 ) {
 
-    public Notice toEntity() {
+    public Notice toEntity(String fileInfos) {
         return Notice.builder()
             .title(title)
             .content(content)
+            .imageKeys(imageKeys)
+            .fileInfos(fileInfos)
             .build();
     }
+
 }
