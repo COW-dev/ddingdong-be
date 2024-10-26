@@ -21,6 +21,6 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
     )
     List<Notice> findAllByPage(int limit, int offsetValue);
 
-    int countAll();
+    long count();
 
 }

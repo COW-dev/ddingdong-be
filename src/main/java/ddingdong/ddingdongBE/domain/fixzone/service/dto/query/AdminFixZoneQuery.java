@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.fixzone.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -14,14 +14,14 @@ public record AdminFixZoneQuery(
         String content,
         boolean isCompleted,
         LocalDateTime requestedAt,
-        List<UploadedFileUrlQuery> imageUrlQueries,
+        List<UploadedImageUrlQuery> imageUrlQueries,
         List<FixZoneCommentQuery> fixZoneCommentQueries
 ) {
 
     public static AdminFixZoneQuery of(
             FixZone fixZone,
-            List<UploadedFileUrlQuery> fixZoneImageUrlQueries,
-            UploadedFileUrlQuery commenterProfileImageUrlQuery) {
+        List<UploadedImageUrlQuery> fixZoneImageUrlQueries,
+        UploadedImageUrlQuery commenterProfileImageUrlQuery) {
         return new AdminFixZoneQuery(
                 fixZone.getId(),
                 fixZone.getClub().getLocation().getValue(),
@@ -41,13 +41,13 @@ public record AdminFixZoneQuery(
             Long id,
             String commenter,
             String content,
-            UploadedFileUrlQuery profileImageQuery,
+            UploadedImageUrlQuery profileImageQuery,
             LocalDateTime createdAt
     ) {
 
         public static FixZoneCommentQuery of(
                 FixZoneComment fixZoneComment,
-                UploadedFileUrlQuery commenterProfileImageUrlQuery) {
+            UploadedImageUrlQuery commenterProfileImageUrlQuery) {
             return new FixZoneCommentQuery(
                     fixZoneComment.getId(),
                     fixZoneComment.getClub().getName(),

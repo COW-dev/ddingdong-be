@@ -8,7 +8,7 @@ import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCom
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralMyFixZoneListQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -43,10 +43,10 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Override
     public CentralFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
-        List<UploadedFileUrlQuery> imageUrlQueries = fixZone.getImageKeys().stream()
+        List<UploadedImageUrlQuery> imageUrlQueries = fixZone.getImageKeys().stream()
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
-        UploadedFileUrlQuery clubProfileImageUrlQuery =
+        UploadedImageUrlQuery clubProfileImageUrlQuery =
                 fixZone.getFixZoneComments().stream()
                         .map(fixZoneComment -> s3FileService.getUploadedFileUrl(
                                 fixZoneComment.getClub().getProfileImageKey()))

@@ -16,7 +16,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -126,7 +126,8 @@ public class FacadeClubActivityReportService {
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
+        UploadedImageUrlQuery imageUrl = s3FileService.getUploadedFileUrl(
+            activityReport.getImageKey());
         return ActivityReportQuery.of(activityReport, imageUrl);
     }
 

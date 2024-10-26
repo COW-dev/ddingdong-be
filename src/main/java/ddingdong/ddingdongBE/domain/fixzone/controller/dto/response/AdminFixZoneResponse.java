@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.fixzone.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery.FixZoneCommentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,7 +60,7 @@ public record AdminFixZoneResponse(
             String cdnUrl
     ) {
 
-        public static FixZoneImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static FixZoneImageUrlResponse from(UploadedImageUrlQuery query) {
             if (query == null) {
                 return null;
             }
@@ -114,7 +114,8 @@ public record AdminFixZoneResponse(
                     String cdnUrl
             ) {
 
-                public static FixZoneCommentCommenterProfileImageResponse from(UploadedFileUrlQuery query) {
+                public static FixZoneCommentCommenterProfileImageResponse from(
+                    UploadedImageUrlQuery query) {
                     if (query == null) {
                         return null;
                     }

@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 
@@ -74,7 +74,7 @@ public record UserClubResponse(
             String cdnUrl
     ) {
 
-        public static UserClubImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static UserClubImageUrlResponse from(UploadedImageUrlQuery query) {
             if (query == null) {
                 return null;
             }

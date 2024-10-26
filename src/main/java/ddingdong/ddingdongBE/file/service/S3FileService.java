@@ -10,17 +10,16 @@ import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -63,7 +62,7 @@ public class S3FileService {
         }
     }
 
-    public UploadedFileUrlQuery getUploadedFileUrl(String key) {
+    public UploadedImageUrlQuery getUploadedFileUrl(String key) {
         if (key == null) {
             return null;
         }
@@ -74,7 +73,7 @@ public class S3FileService {
                 splitKey[splitKey.length - 3] + "/" +
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
-        return new UploadedFileUrlQuery(originUrl, cdnUrl);
+        return new UploadedImageUrlQuery(originUrl, cdnUrl);
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

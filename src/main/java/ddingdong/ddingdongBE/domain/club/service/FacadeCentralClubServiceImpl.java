@@ -9,7 +9,7 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +28,9 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(club.getProfileImageKey());
-        UploadedFileUrlQuery introductionImageUrlQuery =
+        UploadedImageUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(
+            club.getProfileImageKey());
+        UploadedImageUrlQuery introductionImageUrlQuery =
                 s3FileService.getUploadedFileUrl(club.getIntroductionImageKey());
         return MyClubInfoQuery.of(club, profileImageUrlQuery, introductionImageUrlQuery);
     }

@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedImageUrlQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -46,7 +46,7 @@ public record DocumentResponse(
         String cdnUrl
     ) {
 
-        public static DocumentFileUrlsResponse from(UploadedFileUrlQuery query) {
+        public static DocumentFileUrlsResponse from(UploadedImageUrlQuery query) {
             if (query == null) {
                 return null;
             }
