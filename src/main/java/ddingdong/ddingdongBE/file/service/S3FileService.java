@@ -8,19 +8,20 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -75,6 +76,11 @@ public class S3FileService {
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
         return new UploadedFileUrlQuery(originUrl, cdnUrl);
+    }
+
+    public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(FileInfo fileInfo) {
+        UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(fileInfo.fileKey());
+        return new UploadedFileUrlAndNameQuery(fileUrlQuery.originUrl(), fileUrlQuery.cdnUrl(), fileInfo.fileName());
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

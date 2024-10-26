@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.service;
 
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.DOCUMENT_FILE;
 
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
@@ -23,14 +24,14 @@ public class FacadeAdminDocumentService {
     @Transactional
     public void create(CreateDocumentCommand command) {
         documentService.create(command.toEntity());
-        createFileMetaDatas(command.fileKeys());
+        createFileMetaDatas(command.fileInfos());
     }
 
     @Transactional
     public void update(UpdateDocumentCommand command) {
         Document document = documentService.getById(command.documentId());
         documentService.update(document, command.toEntity());
-        createFileMetaDatas(command.fileKeys());
+        createFileMetaDatas(command.fileInfos());
     }
 
     @Transactional
@@ -38,12 +39,12 @@ public class FacadeAdminDocumentService {
         documentService.delete(documentId);
     }
 
-    private void createFileMetaDatas(List<String> keys) {
-        if(keys.isEmpty()) {
+    private void createFileMetaDatas(List<FileInfo> fileInfos) {
+        if(fileInfos.isEmpty()) {
             return;
         }
-        List<FileMetaData> fileMetaDatas = keys.stream()
-            .map(key -> FileMetaData.of(key, DOCUMENT_FILE))
+        List<FileMetaData> fileMetaDatas = fileInfos.stream()
+            .map(fileInfo -> FileMetaData.of(fileInfo.fileKey(), DOCUMENT_FILE))
             .toList();
         fileMetaDataService.create(fileMetaDatas);
     }

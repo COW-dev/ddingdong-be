@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,9 +26,9 @@ public class FacadeDocumentService {
 
     public DocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
-        List<UploadedFileUrlQuery> fileUrls = document.getFileKeys().stream()
-                .map(s3FileService::getUploadedFileUrl)
+        List<UploadedFileUrlAndNameQuery> fileInfoQueries = document.getFileInfos().stream()
+                .map(s3FileService::getUploadedFileUrlAndName)
                 .toList();
-        return DocumentQuery.of(document, fileUrls);
+        return DocumentQuery.of(document, fileInfoQueries);
     }
 }

@@ -1,7 +1,8 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.common.converter.StringListConverter;
+import ddingdong.ddingdongBE.common.converter.ObjectJsonConverter;
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -39,27 +40,25 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "document_file_keys")
-    private List<String> fileKeys;
+    @Convert(converter = ObjectJsonConverter.class)
+    @Column(name = "document_file_infos")
+    private List<FileInfo> fileInfos;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
 
     @Builder
-    private Document(Long id, User user, String title, List<String> fileKeys, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, List<FileInfo> fileInfos, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.title = title;
-        this.fileKeys = fileKeys;
+        this.fileInfos = fileInfos;
         super.setCreatedAt(createdAt);
     }
 
     public void updateDocument(Document document) {
-        if (document.fileKeys != null && !document.fileKeys.isEmpty()) {
-            this.fileKeys = document.fileKeys;
-        }
+        this.fileInfos = document.getFileInfos();
         this.title = document.getTitle();
     }
 }

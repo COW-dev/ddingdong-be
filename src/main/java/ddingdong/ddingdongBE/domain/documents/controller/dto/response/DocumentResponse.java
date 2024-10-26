@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -27,7 +27,7 @@ public record DocumentResponse(
 ) {
 
     public static DocumentResponse from(DocumentQuery query) {
-        List<DocumentFileUrlsResponse> fileUrls = query.fileUrls().stream()
+        List<DocumentFileUrlsResponse> fileUrls = query.fileInfoQueries().stream()
             .map(DocumentFileUrlsResponse::from)
             .toList();
 
@@ -40,17 +40,19 @@ public record DocumentResponse(
 
     @Schema(name = "DocumentFileUrlsResponse", description = "자료실 파일 URL 정보")
     record DocumentFileUrlsResponse(
+        @Schema(description = "파일 이름", example = "파일이름.pdf")
+        String fileName,
         @Schema(description = "원본 URL", example = "url")
         String originUrl,
         @Schema(description = "CDN URL", example = "url")
         String cdnUrl
     ) {
 
-        public static DocumentFileUrlsResponse from(UploadedFileUrlQuery query) {
+        public static DocumentFileUrlsResponse from(UploadedFileUrlAndNameQuery query) {
             if (query == null) {
                 return null;
             }
-            return new DocumentFileUrlsResponse(query.originUrl(), query.cdnUrl());
+            return new DocumentFileUrlsResponse(query.fileName(), query.originUrl(), query.cdnUrl());
         }
     }
 }
