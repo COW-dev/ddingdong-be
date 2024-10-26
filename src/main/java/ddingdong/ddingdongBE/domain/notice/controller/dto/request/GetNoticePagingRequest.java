@@ -9,7 +9,7 @@ public record GetNoticePagingRequest(
     @Parameter(description = "현재 페이지 번호")
     int page,
 
-    @Parameter(description = "현재 페이지 번호")
+    @Parameter(description = "페이지당 항목 수")
     Integer limit
 ) {
 

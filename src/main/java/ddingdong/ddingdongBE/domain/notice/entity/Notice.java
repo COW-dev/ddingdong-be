@@ -44,21 +44,20 @@ public class Notice extends BaseEntity {
     @Column(name = "notice_image_keys")
     private List<String> imageKeys;
 
-    @Convert(converter = StringListConverter.class)
-    @Column(name = "notice_file_keys")
-    private List<String> fileKeys;
+    @Column(columnDefinition = "json")
+    private String fileInfos;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
     public Notice(User user, String title, String content, List<String> imageKeys,
-        List<String> fileKeys) {
+        String fileInfos) {
         this.user = user;
         this.title = title;
         this.content = content;
         this.imageKeys = imageKeys;
-        this.fileKeys = fileKeys;
+        this.fileInfos = fileInfos;
     }
 
     public void update(Notice notice) {
@@ -69,13 +68,17 @@ public class Notice extends BaseEntity {
             this.imageKeys = notice.imageKeys;
         }
 
-        if (checkKeyExists(notice.fileKeys)) {
-            this.fileKeys = notice.fileKeys;
+        if (checkFileInfoExists(notice.fileInfos)) {
+            this.fileInfos = notice.fileInfos;
         }
     }
 
     private boolean checkKeyExists(List<String> keys) {
         return keys != null && !keys.isEmpty();
+    }
+
+    private boolean checkFileInfoExists(String fileInfos) {
+        return fileInfos != null && !fileInfos.isEmpty();
     }
 
 }

@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.service;
 
+import ddingdong.ddingdongBE.common.converter.FileInfoConverter;
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
@@ -18,21 +20,35 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
 
     private final NoticeServiceImpl noticeService;
     private final FileMetaDataService fileMetaDataService;
+    private final FileInfoConverter fileInfoConverter;
 
     @Transactional
     public void create(CreateNoticeCommand command) {
-        Notice notice = command.toEntity();
+        String fileInfoJsonString = fileInfoConverter.convertToString(command.fileInfos());
+        Notice notice = command.toEntity(fileInfoJsonString);
         noticeService.save(notice);
+
         createFileMetaData(command.imageKeys());
-        createFileMetaData(command.fileKeys());
+
+        List<String> fileKeys = command.fileInfos().stream()
+            .map(FileInfo::fileKey)
+            .toList();
+        createFileMetaData(fileKeys);
     }
 
     @Transactional
-    public void update(UpdateNoticeCommand command, Long noticeId) {
-        Notice notice = noticeService.getById(noticeId);
-        notice.update(command.toEntity());
+    public void update(UpdateNoticeCommand command) {
+        Notice notice = noticeService.getById(command.noticeId());
+
+        String fileInfoJsonString = fileInfoConverter.convertToString(command.fileInfos());
+        notice.update(command.toEntity(fileInfoJsonString));
+
         createFileMetaData(command.imageKeys());
-        createFileMetaData(command.fileKeys());
+
+        List<String> fileKeys = command.fileInfos().stream()
+            .map(FileInfo::fileKey)
+            .toList();
+        createFileMetaData(fileKeys);
     }
 
     @Transactional

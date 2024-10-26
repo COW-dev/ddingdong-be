@@ -33,7 +33,7 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
     public NoticeQuery getNotice(Long noticeId) {
         Notice notice = noticeService.getById(noticeId);
 
-
+        return null;
     }
 
 }
