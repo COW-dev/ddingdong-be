@@ -12,7 +12,7 @@ import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -48,11 +48,11 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getDocument() throws Exception {
         //given
-        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
-            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
+        List<UploadedFileUrlAndNameQuery> fileInfoQueries = List.of(new UploadedFileUrlAndNameQuery("originUrl1","cdnUrl1", "제목1"),
+            new UploadedFileUrlAndNameQuery("originUrl2","cdnUrl2", "제목2"));
         DocumentQuery query = DocumentQuery.builder()
             .title("title")
-            .fileUrls(filurls)
+            .fileInfoQueries(fileInfoQueries)
             .createdAt(LocalDate.now()).build();
         Long documentId = 1L;
         when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
@@ -63,7 +63,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.fileUrls", hasSize(filurls.size())))
+                .andExpect(jsonPath("$.fileUrls", hasSize(fileInfoQueries.size())))
                 .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
                 .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
     }

@@ -10,6 +10,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
+import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.CreateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
@@ -29,9 +30,9 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         // given
         CreateDocumentRequest request = CreateDocumentRequest.builder()
             .title("새로운 문서 제목")
-            .fileKeys(List.of(
-                "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}",
-                "{serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}"
+            .fileInfos(List.of(
+                new FileInfo("filekey1", "제목1"),
+                new FileInfo("filekey2", "제목2")
             ))
             .build();
         doNothing().when(facadeAdminDocumentService).create(any(CreateDocumentCommand.class));
@@ -56,9 +57,9 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
 
         UpdateDocumentRequest request = UpdateDocumentRequest.builder()
             .title("새로운 문서 제목")
-            .fileKeys(List.of(
-                "{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid}",
-                "{serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}"
+            .fileInfos(List.of(
+                new FileInfo("filekey1", "제목1"),
+                new FileInfo("filekey2", "제목2")
             ))
             .build();
 
