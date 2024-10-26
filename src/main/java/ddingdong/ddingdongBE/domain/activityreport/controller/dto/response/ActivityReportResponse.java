@@ -75,6 +75,9 @@ public record ActivityReportResponse(
     ) {
 
         public static ActivityReportImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new ActivityReportImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 

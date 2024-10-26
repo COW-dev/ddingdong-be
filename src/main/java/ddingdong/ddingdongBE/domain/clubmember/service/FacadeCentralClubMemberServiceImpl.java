@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.CentralClubMemberListQuery;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;
 import java.util.HashSet;
 import java.util.List;
@@ -17,7 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
+public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemberService {
 
     private final ClubService clubService;
     private final ClubMemberService clubMemberService;
@@ -27,6 +28,14 @@ public class FacadeClubMemberServiceImpl implements FacadeClubMemberService {
     public byte[] getClubMemberListFile(Long userId) {
         Club club = clubService.getByUserId(userId);
         return excelFileService.generateClubMemberListFile(club.getClubMembers());
+    }
+
+    @Override
+    public List<CentralClubMemberListQuery> getAllMyClubMember(Long userId) {
+        Club club = clubService.getByUserId(userId);
+        return club.getClubMembers().stream()
+                .map(CentralClubMemberListQuery::from)
+                .toList();
     }
 
     @Override

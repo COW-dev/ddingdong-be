@@ -2,11 +2,9 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Schema(
         name = "MyClubInfoResponse",
@@ -43,8 +41,7 @@ public record MyClubInfoResponse(
         String formUrl,
         @Schema(description = "동아리 프로필 이미지 Url", example = "url")
         MyClubInfoImageUrlResponse profileImageUrl,
-        MyClubInfoImageUrlResponse introduceImageUrl,
-        List<ClubMemberResponse> clubMembers
+        MyClubInfoImageUrlResponse introductionImageUrl
 ) {
 
     public static MyClubInfoResponse from(MyClubInfoQuery query) {
@@ -63,10 +60,7 @@ public record MyClubInfoResponse(
                 query.ideal(),
                 query.formUrl(),
                 MyClubInfoImageUrlResponse.from(query.profileImageUrlQuery()),
-                MyClubInfoImageUrlResponse.from(query.introductionImageUrlQuery()),
-                query.clubMembers().stream()
-                        .map(ClubMemberResponse::from)
-                        .toList()
+                MyClubInfoImageUrlResponse.from(query.introductionImageUrlQuery())
         );
     }
 
@@ -82,43 +76,12 @@ public record MyClubInfoResponse(
     ) {
 
         public static MyClubInfoImageUrlResponse from(UploadedFileUrlQuery query) {
+            if (query == null) {
+                return null;
+            }
             return new MyClubInfoImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 
-    }
-
-    @Schema(
-            name = "ClubMemberResponse",
-            description = "중앙동아리 - 동아리원 조회 응답"
-    )
-    public record ClubMemberResponse(
-            @Schema(description = "식별자", example = "1")
-            Long id,
-            @Schema(description = "이름", example = "홍길동")
-            String name,
-            @Schema(description = "학번", example = "60001111")
-            String studentNumber,
-            @Schema(description = "전화번호", example = "010-1234-5678")
-            String phoneNumber,
-            @Schema(description = "동아리원 역할",
-                    example = "LEADER",
-                    allowableValues = {"LEADER", "EXECUTION", "MEMBER"}
-            )
-            String position,
-            @Schema(description = "학과", example = "학과")
-            String department
-    ) {
-
-        public static ClubMemberResponse from(ClubMember clubMember) {
-            return new ClubMemberResponse(
-                    clubMember.getId(),
-                    clubMember.getName(),
-                    clubMember.getStudentNumber(),
-                    clubMember.getPhoneNumber(),
-                    clubMember.getPosition().getName(),
-                    clubMember.getDepartment()
-            );
-        }
     }
 
 }

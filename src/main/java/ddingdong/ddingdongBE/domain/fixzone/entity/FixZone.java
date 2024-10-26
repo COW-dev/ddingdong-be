@@ -1,9 +1,11 @@
 package ddingdong.ddingdongBE.domain.fixzone.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -29,42 +31,48 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 public class FixZone extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "club_id")
-	private Club club;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "club_id")
+    private Club club;
 
-	@OneToMany(mappedBy = "fixZone", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<FixZoneComment> fixZoneComments = new ArrayList<>();
+    @OneToMany(mappedBy = "fixZone", cascade = CascadeType.ALL, orphanRemoval = true)
+    private final List<FixZoneComment> fixZoneComments = new ArrayList<>();
 
-	private String title;
+    private String title;
 
-	private String content;
+    private String content;
 
-	private boolean isCompleted;
+    private boolean isCompleted;
 
-	@Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-	private LocalDateTime deletedAt;
+    @Convert(converter = StringListConverter.class)
+    @Column(length = 1000)
+    private List<String> imageKeys;
 
-	@Builder
-	private FixZone(Long id, Club club, String title, String content, boolean isCompleted) {
-		this.id = id;
-		this.club = club;
-		this.title = title;
-		this.content = content;
-		this.isCompleted = isCompleted;
-	}
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
-	public void update(String title, String content) {
-		this.title = title;
-		this.content = content;
-	}
+    @Builder
+    private FixZone(Long id, Club club, String title, String content, boolean isCompleted, List<String> imageKeys) {
+        this.id = id;
+        this.club = club;
+        this.title = title;
+        this.content = content;
+        this.isCompleted = isCompleted;
+        this.imageKeys = imageKeys;
+    }
 
-	public void updateToComplete() {
-		this.isCompleted = true;
-	}
+    public void update(FixZone fixZone) {
+        this.title = fixZone.getTitle();
+        this.content = fixZone.getContent();
+        this.imageKeys = fixZone.getImageKeys();
+    }
+
+    public void updateToComplete() {
+        this.isCompleted = true;
+    }
 
 }
