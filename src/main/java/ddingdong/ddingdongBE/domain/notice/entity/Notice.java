@@ -63,22 +63,8 @@ public class Notice extends BaseEntity {
     public void update(Notice notice) {
         this.title = notice.getTitle();
         this.content = notice.getContent();
-
-        if (checkKeyExists(notice.imageKeys)) {
-            this.imageKeys = notice.imageKeys;
-        }
-
-        if (checkFileInfoExists(notice.fileInfos)) {
-            this.fileInfos = notice.fileInfos;
-        }
-    }
-
-    private boolean checkKeyExists(List<String> keys) {
-        return keys != null && !keys.isEmpty();
-    }
-
-    private boolean checkFileInfoExists(String fileInfos) {
-        return fileInfos != null && !fileInfos.isEmpty();
+        this.imageKeys = notice.imageKeys;
+        this.fileInfos = notice.fileInfos;
     }
 
 }
