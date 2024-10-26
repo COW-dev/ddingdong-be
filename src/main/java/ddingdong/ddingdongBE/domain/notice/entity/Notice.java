@@ -44,7 +44,7 @@ public class Notice extends BaseEntity {
     @Column(name = "notice_image_keys")
     private List<String> imageKeys;
 
-    @Column(columnDefinition = "json")
+    @Column(columnDefinition = "json", name = "notice_file_infos")
     private String fileInfos;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
