@@ -7,7 +7,7 @@ public interface FacadeAdminNoticeService {
 
     void create(CreateNoticeCommand command);
 
-    void update(UpdateNoticeCommand command, Long noticeId);
+    void update(UpdateNoticeCommand command);
 
     void delete(Long noticeId);
 
