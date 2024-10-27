@@ -21,8 +21,9 @@ public class DocumentService {
         return createdDocument.getId();
     }
 
-    public List<Document> getDocuments() {
-        return documentRepository.findAll();
+    public List<Document> getDocumentListByPage(int page, int limit) {
+        int offset = (page - 1) * limit;
+        return documentRepository.findAllByPage(limit, offset);
     }
 
     public Document getById(Long documentId) {

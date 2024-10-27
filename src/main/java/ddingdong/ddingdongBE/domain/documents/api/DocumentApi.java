@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.api;
 
 
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GetDocumentPagingRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -24,7 +25,7 @@ public interface DocumentApi {
         content = @Content(schema = @Schema(implementation = DocumentListResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @GetMapping
-    List<DocumentListResponse> getDocuments();
+    List<DocumentListResponse> getDocumentList(GetDocumentPagingRequest request);
 
     @Operation(summary = "자료실 상세 조회 API")
     @ApiResponse(responseCode = "200", description = "자료실 상세 조회 성공",

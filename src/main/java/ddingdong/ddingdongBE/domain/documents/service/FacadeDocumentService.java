@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.command.GetDocumentListCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
@@ -18,8 +19,9 @@ public class FacadeDocumentService {
     private final DocumentService documentService;
     private final S3FileService s3FileService;
 
-    public List<DocumentListQuery> getDocuments() {
-        return documentService.getDocuments().stream()
+    public List<DocumentListQuery> getDocumentList(GetDocumentListCommand command) {
+        List<Document> documents = documentService.getDocumentListByPage(command.page(), command.limit());
+        return documents.stream()
             .map(DocumentListQuery::from)
             .toList();
     }

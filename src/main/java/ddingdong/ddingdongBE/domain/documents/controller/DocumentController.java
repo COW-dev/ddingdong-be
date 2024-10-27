@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.controller;
 
 import ddingdong.ddingdongBE.domain.documents.api.DocumentApi;
+import ddingdong.ddingdongBE.domain.documents.controller.dto.request.GetDocumentPagingRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentListResponse;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.response.DocumentResponse;
 import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
@@ -17,13 +18,15 @@ public class DocumentController implements DocumentApi {
 
     private final FacadeDocumentService facadeDocumentService;
 
-    public List<DocumentListResponse> getDocuments() {
-        List<DocumentListQuery> queries = facadeDocumentService.getDocuments();
+    @Override
+    public List<DocumentListResponse> getDocumentList(GetDocumentPagingRequest request) {
+        List<DocumentListQuery> queries = facadeDocumentService.getDocumentList(request.toCommand());
         return queries.stream()
             .map(DocumentListResponse::from)
             .toList();
     }
 
+    @Override
     public DocumentResponse getDocument(@PathVariable Long documentId) {
         DocumentQuery query = facadeDocumentService.getDocument(documentId);
         return DocumentResponse.from(query);

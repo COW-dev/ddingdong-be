@@ -29,7 +29,6 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         List<DocumentListQuery> queries = List.of(
             DocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
             DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
-        when(facadeDocumentService.getDocuments()).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/documents")
