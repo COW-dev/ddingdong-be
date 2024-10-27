@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.controller;
 
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 class DocumentControllerUnitTest extends WebApiUnitTestSupport {
 
@@ -28,10 +30,14 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         //given
         List<DocumentListQuery> queries = List.of(
             DocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
-            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
+            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build()
+        );
+
+        Mockito.when(facadeDocumentService.getDocumentList(any()))
+                .thenReturn(queries);
 
         //when //then
-        mockMvc.perform(get("/server/documents")
+        mockMvc.perform(get("/server/documents?page=1&limit=10")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
