@@ -43,7 +43,7 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public int getNoticePageCount() {
-        return noticeRepository.countAll();
+        return (int) noticeRepository.countAll();
     }
 
 }
