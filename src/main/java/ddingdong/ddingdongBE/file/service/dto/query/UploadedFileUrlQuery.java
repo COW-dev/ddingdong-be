@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.file.service.dto.query;
 
 public record UploadedFileUrlQuery(
-        String originUrl,
-        String cdnUrl
+    String originUrl,
+    String cdnUrl
 ) {
 
 }
