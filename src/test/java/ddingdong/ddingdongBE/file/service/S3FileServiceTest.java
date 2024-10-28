@@ -1,11 +1,16 @@
 package ddingdong.ddingdongBE.file.service;
 
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +24,8 @@ class S3FileServiceTest extends TestContainerSupport {
 
     @Autowired
     private S3FileService s3FileService;
+    @Autowired
+    private FileMetaDataRepository fileMetaDataRepository;
 
     private static final Pattern UUID7_PATTERN = Pattern.compile(
             "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
@@ -26,7 +33,7 @@ class S3FileServiceTest extends TestContainerSupport {
 
     @DisplayName("GeneratePreSignedUrlRequest(FILE)를 생성한다.")
     @Test
-    void generateFILEPreSignedUrlRequest() {
+    void generatePreSignedUrlRequest() {
         //given
         LocalDateTime now = LocalDateTime.now();
         String authId = "test";
@@ -38,9 +45,11 @@ class S3FileServiceTest extends TestContainerSupport {
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
-
         String[] split = query.key().split("/");
-        String uploadName = split[split.length - 1];
+        String fileId = split[split.length - 1];
+        Optional<FileMetaData> createdFileMetaData =
+                fileMetaDataRepository.findById(UUID.fromString(fileId));
+
         assertThat(query.generatePresignedUrlRequest())
                 .satisfies(request -> {
                     assertThat(request.getContentType())
@@ -51,10 +60,14 @@ class S3FileServiceTest extends TestContainerSupport {
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
                                     "file", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                            .contains(uploadName);
+                            .contains(fileId);
                 });
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId)).isTrue();
         assertThat(query.contentType()).isEqualTo("image/jpeg");
+        assertThat(createdFileMetaData).isPresent();
+        assertThat(createdFileMetaData.get())
+                .extracting("key", "fileName", "fileStatus")
+                .containsExactly(query.key(), fileName, PENDING);
     }
 
     @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
