@@ -112,7 +112,7 @@ public class S3FileService {
                                UUID uploadFileName) {
         return String.format("%s/%s/%s/%s/%s",
                 serverProfile,
-                contentType.isVideo() ? "video" : "file",
+                contentType.getKeyMediaType(),
                 formatDate(command.generatedAt()),
                 command.authId(),
                 uploadFileName.toString());

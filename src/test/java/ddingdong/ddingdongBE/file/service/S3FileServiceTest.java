@@ -59,7 +59,7 @@ class S3FileServiceTest extends TestContainerSupport {
                     assertThat(request.getKey())
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "file", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                                    "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
                             .contains(fileId);
                 });
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId)).isTrue();
@@ -95,7 +95,7 @@ class S3FileServiceTest extends TestContainerSupport {
                     assertThat(request.getKey())
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "video", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                                    "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
                             .contains(uploadName);
 
                     assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
