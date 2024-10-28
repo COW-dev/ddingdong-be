@@ -45,15 +45,15 @@ public class S3FileService {
     private final FacadeFileMetaDataService facadeFileMetaDataService;
 
     public GeneratePreSignedUrlRequestQuery generatePresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
-        UUID fileId = UuidCreator.getTimeOrderedEpoch();
+        UUID id = UuidCreator.getTimeOrderedEpoch();
         ContentType contentType = ContentType.fromExtension(extractFileExtension(command.fileName()));
-        String key = generateKey(contentType, command, fileId);
+        String key = generateKey(contentType, command, id);
         Date expiration = getExpirationTime();
 
-        facadeFileMetaDataService.create(new CreateFileMetaDataCommand(fileId, key, command.fileName()));
+        facadeFileMetaDataService.create(new CreateFileMetaDataCommand(id, key, command.fileName()));
         
         GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
-        return new GeneratePreSignedUrlRequestQuery(request, key, contentType.getMimeType());
+        return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
     }
 
     public URL getPresignedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
@@ -79,7 +79,7 @@ public class S3FileService {
                 splitKey[splitKey.length - 3] + "/" +
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
-        return new UploadedFileUrlQuery(originUrl, cdnUrl);
+        return new UploadedFileUrlQuery(splitKey[splitKey.length -1], originUrl, cdnUrl);
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

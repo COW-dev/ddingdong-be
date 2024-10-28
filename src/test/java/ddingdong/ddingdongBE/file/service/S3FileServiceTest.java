@@ -45,10 +45,9 @@ class S3FileServiceTest extends TestContainerSupport {
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
-        String[] split = query.key().split("/");
-        String fileId = split[split.length - 1];
+        UUID fileId = query.id();
         Optional<FileMetaData> createdFileMetaData =
-                fileMetaDataRepository.findById(UUID.fromString(fileId));
+                fileMetaDataRepository.findById(fileId);
 
         assertThat(query.generatePresignedUrlRequest())
                 .satisfies(request -> {
@@ -60,14 +59,14 @@ class S3FileServiceTest extends TestContainerSupport {
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
                                     "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                            .contains(fileId);
+                            .contains(fileId.toString());
                 });
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId)).isTrue();
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId.toString())).isTrue();
         assertThat(query.contentType()).isEqualTo("image/jpeg");
         assertThat(createdFileMetaData).isPresent();
         assertThat(createdFileMetaData.get())
-                .extracting("key", "fileName", "fileStatus")
-                .containsExactly(query.key(), fileName, PENDING);
+                .extracting("fileKey", "fileName", "fileStatus")
+                .containsExactly(query.generatePresignedUrlRequest().getKey(), fileName, PENDING);
     }
 
     @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
@@ -84,8 +83,7 @@ class S3FileServiceTest extends TestContainerSupport {
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
-        String[] split = query.key().split("/");
-        String uploadName = split[split.length - 1];
+        UUID id = query.id();
 
         assertThat(query.generatePresignedUrlRequest())
                 .satisfies(request -> {
@@ -96,9 +94,9 @@ class S3FileServiceTest extends TestContainerSupport {
                             .as("Key should contain correct date, authId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
                                     "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
-                            .contains(uploadName);
+                            .contains(id.toString());
 
-                    assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadName)).isTrue();
+                    assertThat(Pattern.matches(UUID7_PATTERN.pattern(), id.toString())).isTrue();
                 });
 
     }
