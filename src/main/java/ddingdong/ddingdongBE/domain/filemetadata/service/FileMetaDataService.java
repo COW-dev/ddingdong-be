@@ -1,15 +1,21 @@
 package ddingdong.ddingdongBE.domain.filemetadata.service;
 
+import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import java.util.List;
 import java.util.UUID;
 
 public interface FileMetaDataService {
 
-    void create(List<FileMetaData> fileMetaDataList);
+    void save(List<FileMetaData> fileMetaDataList);
 
-    void create(FileMetaData fileMetaData);
+    UUID save(FileMetaData fileMetaData);
 
-    FileMetaData getByFileId(UUID fileId);
+    FileMetaData getById(UUID fileId);
 
+    List<FileMetaData> findActivatedAllByEntityTypeAndEntityId(EntityType entityType, Long entityId);
+
+    List<FileMetaData> findAllByEntityTypeAndEntityId(EntityType entityType, Long entityId);
+
+    List<FileMetaData> getByIds(List<UUID> ids);
 }

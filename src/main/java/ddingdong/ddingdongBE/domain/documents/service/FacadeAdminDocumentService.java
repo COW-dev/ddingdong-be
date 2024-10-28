@@ -45,6 +45,6 @@ public class FacadeAdminDocumentService {
         List<FileMetaData> fileMetaDatas = keys.stream()
             .map(key -> FileMetaData.of(key, DOCUMENT_FILE))
             .toList();
-        fileMetaDataService.create(fileMetaDatas);
+        fileMetaDataService.save(fileMetaDatas);
     }
 }

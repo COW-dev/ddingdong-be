@@ -52,7 +52,7 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
             metaDataList.add(FileMetaData.of(command.introductionImageKey(), CLUB_INTRODUCTION_IMAGE));
         }
         if (!metaDataList.isEmpty()) {
-            fileMetaDataService.create(metaDataList);
+            fileMetaDataService.save(metaDataList);
         }
     }
 
