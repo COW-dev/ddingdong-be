@@ -11,8 +11,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
-import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;

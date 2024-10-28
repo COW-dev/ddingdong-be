@@ -1,12 +1,8 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANNER_MOBILE_IMAGE;
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.BANNER_WEB_IMAGE;
-
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.util.List;

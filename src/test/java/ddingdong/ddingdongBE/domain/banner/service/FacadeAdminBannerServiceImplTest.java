@@ -52,7 +52,6 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
 
         //then
         Banner createdBanner = bannerRepository.findById(createdBannerId).orElseThrow();
-        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findAll();
         assertThat(createdBanner)
                 .extracting("id", "user.id", "webImageKey", "mobileImageKey")
                 .contains(
