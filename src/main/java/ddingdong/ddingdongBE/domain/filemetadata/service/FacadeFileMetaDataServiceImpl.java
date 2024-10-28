@@ -31,7 +31,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
     }
 
     @Override
-    public List<FileMetaDataListQuery> getByEntityTypeAndEntityId(EntityType entityType, Long entityId) {
+    public List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(EntityType entityType, Long entityId) {
         return fileMetaDataService.findActivatedAllByEntityTypeAndEntityId(entityType, entityId).stream()
                 .map(FileMetaDataListQuery::from)
                 .toList();

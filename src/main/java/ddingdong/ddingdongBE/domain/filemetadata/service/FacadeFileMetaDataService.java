@@ -11,7 +11,7 @@ public interface FacadeFileMetaDataService {
 
     UUID create(CreateFileMetaDataCommand command);
 
-    List<FileMetaDataListQuery> getByEntityTypeAndEntityId(EntityType entityType, Long entityId);
+    List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(EntityType entityType, Long entityId);
 
     void updateAll(UpdateAllFileMetaDataCommand command);
 

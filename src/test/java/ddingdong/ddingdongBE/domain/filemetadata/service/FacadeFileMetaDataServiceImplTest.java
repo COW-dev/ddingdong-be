@@ -50,9 +50,9 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
 
     @DisplayName("FileMetaData 조회")
     @Test
-    void getByEntityTypeAndEntityId() {
+    void getAllByEntityTypeAndEntityId() {
         //given
-        EntityType entityType = EntityType.CLUB;
+        EntityType entityType = EntityType.CLUB_PROFILE;
         Long entityId = 1L;
         fileMetaDataRepository.saveAll(fixture.giveMeBuilder(FileMetaData.class)
                 .set("entityType", entityType)
@@ -62,7 +62,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
 
         //when
         List<FileMetaDataListQuery> result =
-                facadeFileMetaDataService.getByEntityTypeAndEntityId(entityType, entityId);
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(entityType, entityId);
 
         //then
         assertThat(result).hasSize(3);
@@ -72,7 +72,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToActivated() {
         //given
-        EntityType entityType = EntityType.CLUB;
+        EntityType entityType = EntityType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
@@ -108,7 +108,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToActivatedAndAttached() {
         //given
-        EntityType entityType = EntityType.CLUB;
+        EntityType entityType = EntityType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
@@ -146,7 +146,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToAttached() {
         //given
-        EntityType entityType = EntityType.CLUB;
+        EntityType entityType = EntityType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
