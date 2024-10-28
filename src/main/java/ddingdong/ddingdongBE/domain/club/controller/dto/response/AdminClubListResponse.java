@@ -18,7 +18,7 @@ public record AdminClubListResponse(
         String category,
         @Schema(description = "동아리 점수", example = "0.00")
         BigDecimal score,
-        AdminClubListImageUrlResponse profileImageUrl
+        AdminClubListImageUrlResponse profileImage
 ) {
 
     public static AdminClubListResponse from(AdminClubListQuery query) {

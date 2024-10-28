@@ -40,8 +40,8 @@ public record MyClubInfoResponse(
         @Schema(description = "모집Url", example = "url")
         String formUrl,
         @Schema(description = "동아리 프로필 이미지 Url", example = "url")
-        MyClubInfoImageUrlResponse profileImageUrl,
-        MyClubInfoImageUrlResponse introductionImageUrl
+        MyClubInfoImageUrlResponse profileImage,
+        MyClubInfoImageUrlResponse introductionImage
 ) {
 
     public static MyClubInfoResponse from(MyClubInfoQuery query) {
