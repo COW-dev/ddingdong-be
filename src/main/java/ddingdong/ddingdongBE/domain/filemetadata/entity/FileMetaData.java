@@ -26,7 +26,7 @@ public class FileMetaData extends BaseEntity {
     private UUID id;
 
     @Column(nullable = false)
-    private String key;
+    private String fileKey;
 
     @Column(nullable = false)
     private String fileName;
@@ -44,11 +44,11 @@ public class FileMetaData extends BaseEntity {
     private FileCategory fileCategory;
 
     @Builder
-    private FileMetaData(UUID id, String key, String fileName, EntityType entityType, Long entityId,
+    private FileMetaData(UUID id, String fileKey, String fileName, EntityType entityType, Long entityId,
                          FileStatus fileStatus,
                          FileCategory fileCategory) {
         this.id = id;
-        this.key = key;
+        this.fileKey = fileKey;
         this.fileName = fileName;
         this.entityType = entityType;
         this.entityId = entityId;

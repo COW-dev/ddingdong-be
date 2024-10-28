@@ -10,7 +10,7 @@ public record FileMetaDataListQuery(
 ) {
 
     public static FileMetaDataListQuery from(FileMetaData fileMetaData) {
-        return new FileMetaDataListQuery(fileMetaData.getId(), fileMetaData.getKey(), fileMetaData.getFileName());
+        return new FileMetaDataListQuery(fileMetaData.getId(), fileMetaData.getFileKey(), fileMetaData.getFileName());
     }
 
 }
