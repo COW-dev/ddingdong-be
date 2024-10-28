@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public record CreateFileMetaDataCommand(
         UUID id,
-        String key,
+        String fileKey,
         String fileName
 ) {
 
     public FileMetaData toEntity() {
         return FileMetaData.builder()
                 .id(id)
-                .key(key)
+                .fileKey(fileKey)
                 .fileName(fileName)
                 .fileStatus(PENDING)
                 .build();

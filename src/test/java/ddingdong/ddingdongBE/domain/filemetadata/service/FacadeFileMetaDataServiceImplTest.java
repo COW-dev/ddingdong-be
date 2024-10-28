@@ -91,7 +91,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                         .sample()
         ));
 
-        UpdateAllFileMetaDataCommand command = new UpdateAllFileMetaDataCommand(List.of(id1, id2),
+        UpdateAllFileMetaDataCommand command = new UpdateAllFileMetaDataCommand(List.of(id1.toString(), id2.toString()),
                 entityType, entityId);
         //when
         facadeFileMetaDataService.updateAll(command);
@@ -128,7 +128,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         ));
 
         UpdateAllFileMetaDataCommand command =
-                new UpdateAllFileMetaDataCommand(List.of(id1), entityType, entityId);
+                new UpdateAllFileMetaDataCommand(List.of(id1.toString()), entityType, entityId);
         //when
         facadeFileMetaDataService.updateAll(command);
 

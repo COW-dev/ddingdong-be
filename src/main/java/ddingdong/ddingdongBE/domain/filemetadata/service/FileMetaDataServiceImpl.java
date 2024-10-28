@@ -5,7 +5,6 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.*;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import java.util.List;
 import java.util.UUID;
@@ -35,9 +34,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Override
     @Transactional
     public UUID save(FileMetaData fileMetaData) {
-        if (fileMetaData == null || fileMetaDataRepository.existsById(fileMetaData.getId())) {
-            return null;
-        }
         FileMetaData savedFileMetaData = fileMetaDataRepository.save(fileMetaData);
         return savedFileMetaData.getId();
     }

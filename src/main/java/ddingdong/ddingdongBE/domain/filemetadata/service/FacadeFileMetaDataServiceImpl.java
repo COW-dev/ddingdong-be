@@ -3,12 +3,12 @@ package ddingdong.ddingdongBE.domain.filemetadata.service;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ACTIVATED;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ATTACHED;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -45,7 +45,9 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
         Set<UUID> existingIds = fileMetaDataList.stream()
                 .map(FileMetaData::getId)
                 .collect(Collectors.toSet());
-        Set<UUID> newIds = new HashSet<>(command.ids());
+        Set<UUID> newIds = command.ids().stream()
+                .map(UuidCreator::fromString)
+                .collect(Collectors.toSet());
 
         // attach files
         fileMetaDataList.stream()
