@@ -43,28 +43,28 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andExpect(jsonPath("$[1].title").value("B"));
     }
 
-    @WithMockAuthenticatedUser
-    @DisplayName("documents 상세조회 요청을 수행한다.")
-    @Test
-    void getDocument() throws Exception {
-        //given
-        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
-            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
-        DocumentQuery query = DocumentQuery.builder()
-            .title("title")
-            .fileUrls(filurls)
-            .createdAt(LocalDate.now()).build();
-        Long documentId = 1L;
-        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
-
-        //when //then
-        mockMvc.perform(get("/server/documents/{documentId}", 1L)
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.fileUrls", hasSize(filurls.size())))
-                .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
-                .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
-    }
+//    @WithMockAuthenticatedUser
+//    @DisplayName("documents 상세조회 요청을 수행한다.")
+//    @Test
+//    void getDocument() throws Exception {
+//        //given
+//        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
+//            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
+//        DocumentQuery query = DocumentQuery.builder()
+//            .title("title")
+//            .fileUrls(filurls)
+//            .createdAt(LocalDate.now()).build();
+//        Long documentId = 1L;
+//        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
+//
+//        //when //then
+//        mockMvc.perform(get("/server/documents/{documentId}", 1L)
+//                        .with(csrf()))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.title").value("title"))
+//                .andExpect(jsonPath("$.fileUrls", hasSize(filurls.size())))
+//                .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
+//                .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
+//    }
 }

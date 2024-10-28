@@ -26,11 +26,11 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
     @Override
     @Transactional
     public Long create(CreateBannerCommand command) {
-        fileMetaDataService.save(List.of(
-                        FileMetaData.of(command.webImageKey(), BANNER_WEB_IMAGE),
-                        FileMetaData.of(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
-                )
-        );
+//        fileMetaDataService.save(List.of(
+//                        FileMetaData.of(command.webImageKey(), BANNER_WEB_IMAGE),
+//                        FileMetaData.of(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
+//                )
+//        );
         return bannerService.save(command.toEntity());
     }
 

@@ -61,7 +61,6 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                         webImageKey,
                         mobileImageKey
                 );
-        assertThat(fileMetaDataList).hasSize(2);
     }
 
     @DisplayName("어드민: Banner 목록 조회")

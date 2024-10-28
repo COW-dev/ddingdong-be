@@ -113,8 +113,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testactivity",
                 "testideal",
                 "testformUrl",
-                "test/file/2024-01-01/test/" + UuidCreator.getTimeBased(),
-                "test/file/2024-01-01/test/" + UuidCreator.getTimeBased()
+                UuidCreator.getTimeBased().toString(),
+                UuidCreator.getTimeBased().toString()
         );
 
         //when
