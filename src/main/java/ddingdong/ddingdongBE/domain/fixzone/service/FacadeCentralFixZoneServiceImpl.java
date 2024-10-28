@@ -2,6 +2,9 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommand;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCommand;
@@ -21,6 +24,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
 
     private final FixZoneService fixZoneService;
     private final ClubService clubService;
+    private final FacadeFileMetaDataService facadeFileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
@@ -43,16 +47,17 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Override
     public CentralFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
+        Club club = fixZone.getClub();
         List<UploadedFileUrlQuery> imageUrlQueries = fixZone.getImageKeys().stream()
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
-        UploadedFileUrlQuery clubProfileImageUrlQuery =
-                fixZone.getFixZoneComments().stream()
-                        .map(fixZoneComment -> s3FileService.getUploadedFileUrl(
-                                fixZoneComment.getClub().getProfileImageKey()))
+        String clubProfileImageKey =
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_PROFILE, club.getId())
+                        .stream()
                         .findFirst()
+                        .map(FileMetaDataListQuery::key)
                         .orElse(null);
-        return CentralFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageUrlQuery);
+        return CentralFixZoneQuery.of(fixZone, imageUrlQueries, s3FileService.getUploadedFileUrl(clubProfileImageKey));
     }
 
     @Override

@@ -1,17 +1,16 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.CLUB_INTRODUCTION_IMAGE;
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.CLUB_PROFILE_IMAGE;
-
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Objects;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,15 +21,27 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
 
     private final ClubService clubService;
-    private final FileMetaDataService fileMetaDataService;
+    private final FacadeFileMetaDataService facadeFileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(club.getProfileImageKey());
-        UploadedFileUrlQuery introductionImageUrlQuery =
-                s3FileService.getUploadedFileUrl(club.getIntroductionImageKey());
+        String clubProfileImageKey =
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_PROFILE, club.getId())
+                        .stream()
+                        .findFirst()
+                        .map(FileMetaDataListQuery::key)
+                        .orElse(null);
+        String clubIntroductionImageKey =
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_INTRODUCTION, club.getId())
+                        .stream()
+                        .findFirst()
+                        .map(FileMetaDataListQuery::key)
+                        .orElse(null);
+
+        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(clubProfileImageKey);
+        UploadedFileUrlQuery introductionImageUrlQuery = s3FileService.getUploadedFileUrl(clubIntroductionImageKey);
         return MyClubInfoQuery.of(club, profileImageUrlQuery, introductionImageUrlQuery);
     }
 
@@ -39,21 +50,23 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     public Long updateClubInfo(UpdateClubInfoCommand command) {
         Club club = clubService.getByUserId(command.userId());
         clubService.update(club, command.toEntity());
-        createFileMetaData(command);
+        facadeFileMetaDataService.updateAll(
+                new UpdateAllFileMetaDataCommand(
+                        Stream.of(command.introductionImageId())
+                                .filter(Objects::nonNull)
+                                .toList(),
+                        EntityType.CLUB_PROFILE,
+                        club.getId())
+        );
+        facadeFileMetaDataService.updateAll(
+                new UpdateAllFileMetaDataCommand(
+                        Stream.of(command.introductionImageId())
+                                .filter(Objects::nonNull)
+                                .toList(),
+                        EntityType.CLUB_INTRODUCTION,
+                        club.getId())
+        );
         return club.getId();
-    }
-
-    private void createFileMetaData(UpdateClubInfoCommand command) {
-        List<FileMetaData> metaDataList = new ArrayList<>();
-        if (command.profileImageKey() != null) {
-            metaDataList.add(FileMetaData.of(command.profileImageKey(), CLUB_PROFILE_IMAGE));
-        }
-        if (command.introductionImageKey() != null) {
-            metaDataList.add(FileMetaData.of(command.introductionImageKey(), CLUB_INTRODUCTION_IMAGE));
-        }
-        if (!metaDataList.isEmpty()) {
-            fileMetaDataService.save(metaDataList);
-        }
     }
 
 }

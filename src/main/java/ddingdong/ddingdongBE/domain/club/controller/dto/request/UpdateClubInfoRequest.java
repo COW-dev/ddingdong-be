@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.club.controller.dto.request;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
-import java.util.List;
 
 @Schema(
         name = "UpdateClubInfoRequest",
@@ -45,10 +44,10 @@ public record UpdateClubInfoRequest(
         String ideal,
         @Schema(description = "모집 Url", example = "Url")
         String formUrl,
-        @Schema(description = "동아리 프로필 이미지 key", example = "local/file/2024-01-01/abc/uuid")
-        String profileImageKey,
-        @Schema(description = "동아리 소개 이미지 key", example = "local/file/2024-01-01/abc/uuid")
-        String introductionImageKey
+        @Schema(description = "동아리 프로필 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        String profileImageId,
+        @Schema(description = "동아리 소개 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        String introductionImageId
 
 ) {
 
@@ -68,8 +67,8 @@ public record UpdateClubInfoRequest(
                 activity,
                 ideal,
                 formUrl,
-                profileImageKey,
-                introductionImageKey
+                profileImageId,
+                introductionImageId
         );
     }
 }
