@@ -97,7 +97,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         facadeFileMetaDataService.updateAll(command);
 
         //then
-        List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
+        List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
                 domainType, entityId, FileStatus.COUPLED);
         assertThat(result).hasSize(2)
                 .extracting("fileStatus")
@@ -133,7 +133,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         facadeFileMetaDataService.updateAll(command);
 
         //then
-        List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
+        List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
                 domainType, entityId, FileStatus.COUPLED);
         FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElseThrow();
         assertThat(result).hasSize(1)

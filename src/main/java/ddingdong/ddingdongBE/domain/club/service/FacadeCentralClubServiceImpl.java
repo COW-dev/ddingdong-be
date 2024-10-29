@@ -40,22 +40,8 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     public Long updateClubInfo(UpdateClubInfoCommand command) {
         Club club = clubService.getByUserId(command.userId());
         clubService.update(club, command.toEntity());
-        facadeFileMetaDataService.updateAll(
-                new UpdateAllFileMetaDataCommand(
-                        Stream.of(command.profileImageId())
-                                .filter(Objects::nonNull)
-                                .toList(),
-                        DomainType.CLUB_PROFILE,
-                        club.getId())
-        );
-        facadeFileMetaDataService.updateAll(
-                new UpdateAllFileMetaDataCommand(
-                        Stream.of(command.introductionImageId())
-                                .filter(Objects::nonNull)
-                                .toList(),
-                        DomainType.CLUB_INTRODUCTION,
-                        club.getId())
-        );
+        updateFileMetaData(command.profileImageId(), DomainType.CLUB_PROFILE, club.getId());
+        updateFileMetaData(command.introductionImageId(), DomainType.CLUB_INTRODUCTION, club.getId());
         return club.getId();
     }
 
@@ -65,6 +51,17 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
                 .map(FileMetaDataListQuery::key)
                 .findFirst()
                 .orElse(null);
+    }
+
+    private void updateFileMetaData(String command, DomainType clubProfile, Long entityId) {
+        facadeFileMetaDataService.updateAll(
+                new UpdateAllFileMetaDataCommand(
+                        Stream.of(command)
+                                .filter(Objects::nonNull)
+                                .toList(),
+                        clubProfile,
+                        entityId)
+        );
     }
 
 }
