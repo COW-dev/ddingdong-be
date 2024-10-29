@@ -55,9 +55,9 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
         fileMetaDataRepository.saveAll(fixture.giveMeBuilder(FileMetaData.class)
-                .set("entityType", domainType)
+                .set("domainType", domainType)
                 .set("entityId", entityId)
-                .set("fileStatus", FileStatus.ACTIVATED)
+                .set("fileStatus", FileStatus.COUPLED)
                 .sampleList(3));
 
         //when
@@ -68,7 +68,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         assertThat(result).hasSize(3);
     }
 
-    @DisplayName("FileMetaData 수정 - Activated")
+    @DisplayName("FileMetaData 수정 - COUPLED")
     @Test
     void updateAllToActivated() {
         //given
@@ -79,13 +79,13 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id1)
-                        .set("entityType", null)
+                        .set("domainType", null)
                         .set("entityId", null)
                         .set("fileStatus", FileStatus.PENDING)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id2)
-                        .set("entityType", null)
+                        .set("domainType", null)
                         .set("entityId", null)
                         .set("fileStatus", FileStatus.PENDING)
                         .sample()
@@ -98,13 +98,13 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
-                domainType, entityId, FileStatus.ACTIVATED);
+                domainType, entityId, FileStatus.COUPLED);
         assertThat(result).hasSize(2)
                 .extracting("fileStatus")
-                .contains(FileStatus.ACTIVATED);
+                .contains(FileStatus.COUPLED);
     }
 
-    @DisplayName("FileMetaData 수정 - Activated & Attached")
+    @DisplayName("FileMetaData 수정 - COUPLED & DELETED")
     @Test
     void updateAllToActivatedAndAttached() {
         //given
@@ -115,15 +115,15 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id1)
-                        .set("entityType", null)
+                        .set("domainType", null)
                         .set("entityId", null)
                         .set("fileStatus", FileStatus.PENDING)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id2)
-                        .set("entityType", domainType)
+                        .set("domainType", domainType)
                         .set("entityId", entityId)
-                        .set("fileStatus", FileStatus.ACTIVATED)
+                        .set("fileStatus", FileStatus.COUPLED)
                         .sample()
         ));
 
@@ -134,15 +134,15 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
-                domainType, entityId, FileStatus.ACTIVATED);
+                domainType, entityId, FileStatus.COUPLED);
         FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElseThrow();
         assertThat(result).hasSize(1)
                 .extracting("id", "fileStatus")
-                .contains(tuple(id1, FileStatus.ACTIVATED));
-        assertThat(attachedFileMetaData.getFileStatus()).isEqualTo(FileStatus.ATTACHED);
+                .contains(tuple(id1, FileStatus.COUPLED));
+        assertThat(attachedFileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
     }
 
-    @DisplayName("FileMetaData 수정 - Attached")
+    @DisplayName("FileMetaData 수정 - DELETED")
     @Test
     void updateAllToAttached() {
         //given
@@ -153,15 +153,15 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id1)
-                        .set("entityType", domainType)
+                        .set("domainType", domainType)
                         .set("entityId", entityId)
-                        .set("fileStatus", FileStatus.ACTIVATED)
+                        .set("fileStatus", FileStatus.COUPLED)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id2)
-                        .set("entityType", domainType)
+                        .set("domainType", domainType)
                         .set("entityId", entityId)
-                        .set("fileStatus", FileStatus.ACTIVATED)
+                        .set("fileStatus", FileStatus.COUPLED)
                         .sample()
         ));
 
@@ -173,8 +173,11 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         //then
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
         assertThat(result).hasSize(2)
-                .extracting("fileStatus")
-                .contains(FileStatus.ATTACHED);
+                .allSatisfy(fileMetaData -> {
+                    assertThat(fileMetaData.getDomainType()).isEqualTo(domainType);
+                    assertThat(fileMetaData.getEntityId()).isEqualTo(entityId);
+                    assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
+                });
     }
 
 

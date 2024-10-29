@@ -51,12 +51,12 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         List<UploadedFileUrlQuery> imageUrlQueries = fixZone.getImageKeys().stream()
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
-        String clubProfileImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
-                        .stream()
-                        .findFirst()
-                        .map(FileMetaDataListQuery::key)
-                        .orElse(null);
+        String clubProfileImageKey = facadeFileMetaDataService
+                .getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
+                .stream()
+                .map(FileMetaDataListQuery::key)
+                .findFirst()
+                .orElse(null);
         return CentralFixZoneQuery.of(fixZone, imageUrlQueries, s3FileService.getUploadedFileUrl(clubProfileImageKey));
     }
 

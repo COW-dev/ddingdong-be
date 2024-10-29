@@ -13,7 +13,7 @@ public interface FileMetaDataService {
 
     FileMetaData getById(UUID fileId);
 
-    List<FileMetaData> findActivatedAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
+    List<FileMetaData> findActivatedAll(DomainType domainType, Long entityId);
 
     List<FileMetaData> findAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
 

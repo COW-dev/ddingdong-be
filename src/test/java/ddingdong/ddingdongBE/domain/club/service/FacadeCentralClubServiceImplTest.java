@@ -52,8 +52,6 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("phoneNumber", PhoneNumber.from("010-1234-5678"))
                 .set("location", Location.from("S1111"))
-                .set("profileImageKey", "test/file/2024-01-01/test/uuid")
-                .set("introductionImageKey", "test/file/2024-01-01/test/uuid")
                 .set("clubMembers", null)
                 .set("deletedAt", null)
                 .sample();
@@ -65,14 +63,14 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 .set("fileKey", "test/IMAGE/2024-01-01/" + id1)
                 .set("entityType", DomainType.CLUB_PROFILE)
                 .set("entityId", savedClub.getId())
-                .set("fileStatus", FileStatus.ACTIVATED)
+                .set("fileStatus", FileStatus.COUPLED)
                 .sample();
         FileMetaData clubIntroductionImageFileMetaData = fixture.giveMeBuilder(FileMetaData.class)
                 .set("id", id2)
                 .set("fileKey", "test/IMAGE/2024-01-01/" + id2)
                 .set("entityType", DomainType.CLUB_INTRODUCTION)
                 .set("entityId", savedClub.getId())
-                .set("fileStatus", FileStatus.ACTIVATED)
+                .set("fileStatus", FileStatus.COUPLED)
                 .sample();
         fileMetaDataRepository.saveAll(List.of(clubProfileImageFileMetaData, clubIntroductionImageFileMetaData));
 

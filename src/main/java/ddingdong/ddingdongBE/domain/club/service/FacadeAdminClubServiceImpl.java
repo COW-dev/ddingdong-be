@@ -39,9 +39,10 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
         return clubService.findAll().stream()
                 .map(club -> {
                     String clubProfileImageKey = facadeFileMetaDataService.getAllByEntityTypeAndEntityId(
-                                    DomainType.CLUB_PROFILE, club.getId()).stream()
-                            .findFirst()
+                                    DomainType.CLUB_PROFILE, club.getId())
+                            .stream()
                             .map(FileMetaDataListQuery::key)
+                            .findFirst()
                             .orElse(null);
                     return AdminClubListQuery.of(club, s3FileService.getUploadedFileUrl(clubProfileImageKey));
                 })

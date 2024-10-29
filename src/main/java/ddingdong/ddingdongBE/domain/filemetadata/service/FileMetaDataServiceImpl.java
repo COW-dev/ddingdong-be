@@ -41,12 +41,12 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Override
     public FileMetaData getById(UUID id) {
         return fileMetaDataRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("FimeMetaData(id=" + id + "를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFound("FileMetaData(id=" + id + ")를 찾을 수 없습니다."));
     }
 
     @Override
-    public List<FileMetaData> findActivatedAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
-        return fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(domainType, entityId, ACTIVATED);
+    public List<FileMetaData> findActivatedAll(DomainType domainType, Long entityId) {
+        return fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 
     @Override

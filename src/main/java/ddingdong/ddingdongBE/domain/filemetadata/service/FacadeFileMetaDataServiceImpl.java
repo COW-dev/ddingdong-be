@@ -1,14 +1,13 @@
 package ddingdong.ddingdongBE.domain.filemetadata.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ACTIVATED;
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ATTACHED;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.COUPLED;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.DELETED;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -32,7 +31,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
 
     @Override
     public List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
-        return fileMetaDataService.findActivatedAllByEntityTypeAndEntityId(domainType, entityId).stream()
+        return fileMetaDataService.findActivatedAll(domainType, entityId).stream()
                 .map(FileMetaDataListQuery::from)
                 .toList();
     }
@@ -46,22 +45,22 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
                 .map(FileMetaData::getId)
                 .collect(Collectors.toSet());
         Set<UUID> newIds = command.ids().stream()
-                .map(UuidCreator::fromString)
+                .map(UUID::fromString)
                 .collect(Collectors.toSet());
 
-        // attach files
+        // delete files
         fileMetaDataList.stream()
                 .filter(fileMetaData -> !newIds.contains(fileMetaData.getId()))
-                .forEach(fileMetaData -> fileMetaData.updateStatus(ATTACHED));
+                .forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
 
-        // active files
+        // couple files
         fileMetaDataService.getByIds(
                         newIds.stream()
                                 .filter(id -> !existingIds.contains(id))
                                 .toList())
                 .forEach(fileMetaData -> {
-                    fileMetaData.updateLinedEntityInfo(command.domainType(), command.entityId());
-                    fileMetaData.updateStatus(ACTIVATED);
+                    fileMetaData.updateCoupledEntityInfo(command.domainType(), command.entityId());
+                    fileMetaData.updateStatus(COUPLED);
                 });
     }
 

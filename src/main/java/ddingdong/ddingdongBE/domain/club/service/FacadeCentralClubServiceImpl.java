@@ -27,18 +27,8 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-        String clubProfileImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
-                        .stream()
-                        .findFirst()
-                        .map(FileMetaDataListQuery::key)
-                        .orElse(null);
-        String clubIntroductionImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_INTRODUCTION, club.getId())
-                        .stream()
-                        .findFirst()
-                        .map(FileMetaDataListQuery::key)
-                        .orElse(null);
+        String clubProfileImageKey = getFileKey(DomainType.CLUB_PROFILE, club.getId());
+        String clubIntroductionImageKey = getFileKey(DomainType.CLUB_INTRODUCTION, club.getId());
 
         UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(clubProfileImageKey);
         UploadedFileUrlQuery introductionImageUrlQuery = s3FileService.getUploadedFileUrl(clubIntroductionImageKey);
@@ -52,7 +42,7 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
         clubService.update(club, command.toEntity());
         facadeFileMetaDataService.updateAll(
                 new UpdateAllFileMetaDataCommand(
-                        Stream.of(command.introductionImageId())
+                        Stream.of(command.profileImageId())
                                 .filter(Objects::nonNull)
                                 .toList(),
                         DomainType.CLUB_PROFILE,
@@ -67,6 +57,14 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
                         club.getId())
         );
         return club.getId();
+    }
+
+    private String getFileKey(DomainType domainType, Long clubId) {
+        return facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, clubId)
+                .stream()
+                .map(FileMetaDataListQuery::key)
+                .findFirst()
+                .orElse(null);
     }
 
 }

@@ -97,8 +97,6 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
                 .set("location", Location.from("S1111"))
                 .set("startRecruitPeriod", LocalDateTime.of(2024, 9, 1, 0, 0))
                 .set("startRecruitPeriod", LocalDateTime.of(2024, 12, 31, 0, 0))
-                .set("profileImageKey", "test/file/2024-01-01/test/uuid")
-                .set("introductionImageKey", "test/file/2024-01-01/test/uuid")
                 .set("clubMembers", null)
                 .set("deletedAt", null)
                 .sample());

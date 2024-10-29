@@ -37,18 +37,8 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
-        String clubProfileImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
-                        .stream()
-                        .findFirst()
-                        .map(FileMetaDataListQuery::key)
-                        .orElse(null);
-        String clubIntroductionImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_INTRODUCTION, club.getId())
-                        .stream()
-                        .findFirst()
-                        .map(FileMetaDataListQuery::key)
-                        .orElse(null);
+        String clubProfileImageKey = getFileKey(DomainType.CLUB_PROFILE, clubId);
+        String clubIntroductionImageKey = getFileKey(DomainType.CLUB_INTRODUCTION, clubId);
         return UserClubQuery.of(
                 club,
                 s3FileService.getUploadedFileUrl(clubProfileImageKey),
@@ -62,6 +52,14 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
             return BEFORE_RECRUIT;
         }
         return club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
+    }
+
+    private String getFileKey(DomainType domainType, Long clubId) {
+        return facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, clubId)
+                .stream()
+                .map(FileMetaDataListQuery::key)
+                .findFirst()
+                .orElse(null);
     }
 
 }

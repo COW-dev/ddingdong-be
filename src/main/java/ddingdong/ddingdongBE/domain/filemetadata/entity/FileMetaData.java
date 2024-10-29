@@ -67,7 +67,7 @@ public class FileMetaData extends BaseEntity {
         this.fileStatus = fileStatus;
     }
 
-    public void updateLinedEntityInfo(DomainType domainType, Long entityId) {
+    public void updateCoupledEntityInfo(DomainType domainType, Long entityId) {
         this.domainType = domainType;
         this.entityId = entityId;
     }
