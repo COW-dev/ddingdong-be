@@ -39,8 +39,8 @@ public record UserClubResponse(
         String ideal,
         @Schema(description = "모집Url", example = "url")
         String formUrl,
-        UserClubImageUrlResponse profileImageUrl,
-        UserClubImageUrlResponse introductionImageUrl
+        UserClubImageUrlResponse profileImage,
+        UserClubImageUrlResponse introductionImage
 ) {
 
     public static UserClubResponse from(UserClubQuery query) {

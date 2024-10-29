@@ -8,9 +8,8 @@ import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
-import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -52,7 +51,6 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
 
         //then
         Banner createdBanner = bannerRepository.findById(createdBannerId).orElseThrow();
-        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findAll();
         assertThat(createdBanner)
                 .extracting("id", "user.id", "webImageKey", "mobileImageKey")
                 .contains(
@@ -61,7 +59,6 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                         webImageKey,
                         mobileImageKey
                 );
-        assertThat(fileMetaDataList).hasSize(2);
     }
 
     @DisplayName("어드민: Banner 목록 조회")

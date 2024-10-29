@@ -8,6 +8,8 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
@@ -40,15 +42,18 @@ public class S3FileService {
     private String serverProfile;
 
     private final AmazonS3Client amazonS3Client;
+    private final FacadeFileMetaDataService facadeFileMetaDataService;
 
     public GeneratePreSignedUrlRequestQuery generatePresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
-        UUID fileId = UuidCreator.getTimeOrderedEpoch();
+        UUID id = UuidCreator.getTimeOrderedEpoch();
         ContentType contentType = ContentType.fromExtension(extractFileExtension(command.fileName()));
-        String key = generateKey(contentType, command, fileId);
+        String key = generateKey(contentType, command, id);
         Date expiration = getExpirationTime();
 
+        facadeFileMetaDataService.create(new CreateFileMetaDataCommand(id, key, command.fileName()));
+        
         GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
-        return new GeneratePreSignedUrlRequestQuery(request, key, contentType.getMimeType());
+        return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
     }
 
     public URL getPresignedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
@@ -74,7 +79,7 @@ public class S3FileService {
                 splitKey[splitKey.length - 3] + "/" +
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
-        return new UploadedFileUrlQuery(originUrl, cdnUrl);
+        return new UploadedFileUrlQuery(splitKey[splitKey.length -1], originUrl, cdnUrl);
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
@@ -107,7 +112,7 @@ public class S3FileService {
                                UUID uploadFileName) {
         return String.format("%s/%s/%s/%s/%s",
                 serverProfile,
-                contentType.isVideo() ? "video" : "file",
+                contentType.getKeyMediaType(),
                 formatDate(command.generatedAt()),
                 command.authId(),
                 uploadFileName.toString());

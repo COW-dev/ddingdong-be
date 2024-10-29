@@ -6,37 +6,37 @@ import lombok.Getter;
 
 @Getter
 public enum ContentType {
-    JPEG("image/jpeg", false, "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
-    PNG("image/png", false, "png"),
-    GIF("image/gif", false, "gif"),
-    WEBP("image/webp", false, "webp"),
-    TIFF("image/tiff", false, "tiff", "tif"),
-    BMP("image/bmp", false, "bmp"),
-    SVG("image/svg+xml", false, "svg", "svgz"),
-    ICO("image/x-icon", false, "ico"),
-    HEIC("image/heic", false, "heic"),
-    HEIF("image/heif", false, "heif"),
-    RAW("image/x-raw", false, "raw", "arw", "cr2", "nrw", "k25"),
-    PSD("image/vnd.adobe.photoshop", false, "psd"),
-    PDF("application/pdf", false, "pdf"),
-    MSWORD("application/msword", false, "doc"),
-    DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", false, "docx"),
-    EXCEL("application/vnd.ms-excel", false, "xls"),
-    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", false, "xlsx"),
-    TEXT("text/plain", false, "txt"),
-    HTML("text/html", false, "html"),
-    MP4("video/mp4", true, "mp4"),
-    WEBM("video/webm", true, "webm"),
-    MOV("video/quicktime", true, "mov"),
-    OCTET_STREAM("application/octet-stream", false);
+    JPEG("image/jpeg", "IMAGE", "jpg", "jpeg", "jpe", "jif", "jfif", "jfi"),
+    PNG("image/png", "IMAGE", "png"),
+    GIF("image/gif", "IMAGE", "gif"),
+    WEBP("image/webp", "IMAGE", "webp"),
+    TIFF("image/tiff", "IMAGE", "tiff", "tif"),
+    BMP("image/bmp", "IMAGE", "bmp"),
+    SVG("image/svg+xml", "IMAGE", "svg", "svgz"),
+    ICO("image/x-icon", "IMAGE", "ico"),
+    HEIC("image/heic", "IMAGE", "heic"),
+    HEIF("image/heif", "IMAGE", "heif"),
+    RAW("image/x-raw", "IMAGE", "raw", "arw", "cr2", "nrw", "k25"),
+    PSD("image/vnd.adobe.photoshop", "IMAGE", "psd"),
+    PDF("application/pdf", "FILE", "pdf"),
+    MSWORD("application/msword", "FILE", "doc"),
+    DOCX("application/vnd.openxmlformats-officedocument.wordprocessingml.document", "FILE", "docx"),
+    EXCEL("application/vnd.ms-excel", "FILE", "xls"),
+    XLSX("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "FILE", "xlsx"),
+    TEXT("text/plain", "FILE", "txt"),
+    HTML("text/html", "FILE", "html"),
+    MP4("video/mp4", "VIDEO", "mp4"),
+    WEBM("video/webm", "VIDEO", "webm"),
+    MOV("video/quicktime", "VIDEO", "mov"),
+    OCTET_STREAM("application/octet-stream","FILE");
 
     private final String mimeType;
-    private final boolean isVideo;
+    private final String keyMediaType;
     private final List<String> extensions;
 
-    ContentType(String mimeType, boolean isVideo, String... extensions) {
+    ContentType(String mimeType,String keyMediaType, String... extensions) {
         this.mimeType = mimeType;
-        this.isVideo = isVideo;
+        this.keyMediaType = keyMediaType;
         this.extensions = Arrays.asList(extensions);
     }
 
@@ -50,7 +50,4 @@ public enum ContentType {
         return OCTET_STREAM;
     }
 
-    public boolean isVideo() {
-        return this.isVideo;
-    }
 }

@@ -40,8 +40,8 @@ public record MyClubInfoResponse(
         @Schema(description = "모집Url", example = "url")
         String formUrl,
         @Schema(description = "동아리 프로필 이미지 Url", example = "url")
-        MyClubInfoImageUrlResponse profileImageUrl,
-        MyClubInfoImageUrlResponse introductionImageUrl
+        MyClubInfoImageUrlResponse profileImage,
+        MyClubInfoImageUrlResponse introductionImage
 ) {
 
     public static MyClubInfoResponse from(MyClubInfoQuery query) {
@@ -69,6 +69,8 @@ public record MyClubInfoResponse(
             description = "동아리 - 내 동아리 정보 이미지 URL 조회 응답"
     )
     record MyClubInfoImageUrlResponse(
+            @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+            String id,
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
@@ -79,7 +81,7 @@ public record MyClubInfoResponse(
             if (query == null) {
                 return null;
             }
-            return new MyClubInfoImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new MyClubInfoImageUrlResponse(query.id(), query.originUrl(), query.cdnUrl());
         }
 
     }
