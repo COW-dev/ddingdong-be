@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.auth.service.AuthService;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.CreateClubCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.AdminClubListQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -39,7 +39,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
         return clubService.findAll().stream()
                 .map(club -> {
                     String clubProfileImageKey = facadeFileMetaDataService.getAllByEntityTypeAndEntityId(
-                                    EntityType.CLUB_PROFILE, club.getId()).stream()
+                                    DomainType.CLUB_PROFILE, club.getId()).stream()
                             .findFirst()
                             .map(FileMetaDataListQuery::key)
                             .orElse(null);

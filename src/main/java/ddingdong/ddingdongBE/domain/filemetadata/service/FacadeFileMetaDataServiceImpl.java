@@ -4,7 +4,7 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ACTIVA
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.ATTACHED;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
@@ -31,8 +31,8 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
     }
 
     @Override
-    public List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(EntityType entityType, Long entityId) {
-        return fileMetaDataService.findActivatedAllByEntityTypeAndEntityId(entityType, entityId).stream()
+    public List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
+        return fileMetaDataService.findActivatedAllByEntityTypeAndEntityId(domainType, entityId).stream()
                 .map(FileMetaDataListQuery::from)
                 .toList();
     }
@@ -41,7 +41,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
     @Transactional
     public void updateAll(UpdateAllFileMetaDataCommand command) {
         List<FileMetaData> fileMetaDataList =
-                fileMetaDataService.findAllByEntityTypeAndEntityId(command.entityType(), command.entityId());
+                fileMetaDataService.findAllByEntityTypeAndEntityId(command.domainType(), command.entityId());
         Set<UUID> existingIds = fileMetaDataList.stream()
                 .map(FileMetaData::getId)
                 .collect(Collectors.toSet());
@@ -60,7 +60,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
                                 .filter(id -> !existingIds.contains(id))
                                 .toList())
                 .forEach(fileMetaData -> {
-                    fileMetaData.updateLinedEntityInfo(command.entityType(), command.entityId());
+                    fileMetaData.updateLinedEntityInfo(command.domainType(), command.entityId());
                     fileMetaData.updateStatus(ACTIVATED);
                 });
     }

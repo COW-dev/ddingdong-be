@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.filemetadata.repository;
 
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import java.util.List;
@@ -11,14 +11,14 @@ import org.springframework.data.repository.query.Param;
 
 public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID> {
 
-    @Query("select fmd from FileMetaData fmd where fmd.entityType = :entityType and fmd.entityId = :entityId and fmd.fileStatus = :fileStatus")
+    @Query("select fmd from FileMetaData fmd where fmd.domainType = :domainType and fmd.entityId = :entityId and fmd.fileStatus = :fileStatus")
     List<FileMetaData> findAllByEntityTypeAndEntityIdWithFileStatus(
-            @Param("entityType") EntityType entityType,
+            @Param("domainType") DomainType domainType,
             @Param("entityId") Long entityId,
             @Param("fileStatus") FileStatus fileStatus
     );
 
-    List<FileMetaData> findAllByEntityTypeAndEntityId(EntityType entityType, Long entityId);
+    List<FileMetaData> findAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     List<FileMetaData> findByIdIn(List<UUID> ids);
 

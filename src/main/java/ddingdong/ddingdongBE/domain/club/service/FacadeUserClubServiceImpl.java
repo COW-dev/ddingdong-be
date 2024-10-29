@@ -8,7 +8,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
@@ -38,13 +38,13 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
         String clubProfileImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_PROFILE, club.getId())
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                         .stream()
                         .findFirst()
                         .map(FileMetaDataListQuery::key)
                         .orElse(null);
         String clubIntroductionImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_INTRODUCTION, club.getId())
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_INTRODUCTION, club.getId())
                         .stream()
                         .findFirst()
                         .map(FileMetaDataListQuery::key)

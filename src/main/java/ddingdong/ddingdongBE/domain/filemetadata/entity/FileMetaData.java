@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(indexes = {@Index(columnList = "entityType,entityId,fileStatus")})
+@Table(indexes = {@Index(columnList = "domainType,entityId,fileStatus")})
 public class FileMetaData extends BaseEntity {
 
     @Id
@@ -32,7 +32,7 @@ public class FileMetaData extends BaseEntity {
     private String fileName;
 
     @Enumerated(EnumType.STRING)
-    private EntityType entityType;
+    private DomainType domainType;
 
     private Long entityId;
 
@@ -44,13 +44,13 @@ public class FileMetaData extends BaseEntity {
     private FileCategory fileCategory;
 
     @Builder
-    private FileMetaData(UUID id, String fileKey, String fileName, EntityType entityType, Long entityId,
+    private FileMetaData(UUID id, String fileKey, String fileName, DomainType domainType, Long entityId,
                          FileStatus fileStatus,
                          FileCategory fileCategory) {
         this.id = id;
         this.fileKey = fileKey;
         this.fileName = fileName;
-        this.entityType = entityType;
+        this.domainType = domainType;
         this.entityId = entityId;
         this.fileStatus = fileStatus;
         this.fileCategory = fileCategory;
@@ -67,8 +67,8 @@ public class FileMetaData extends BaseEntity {
         this.fileStatus = fileStatus;
     }
 
-    public void updateLinedEntityInfo(EntityType entityType, Long entityId) {
-        this.entityType = entityType;
+    public void updateLinedEntityInfo(DomainType domainType, Long entityId) {
+        this.domainType = domainType;
         this.entityId = entityId;
     }
 

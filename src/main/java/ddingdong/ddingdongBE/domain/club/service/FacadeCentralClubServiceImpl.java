@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.club.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
@@ -28,13 +28,13 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
         String clubProfileImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_PROFILE, club.getId())
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                         .stream()
                         .findFirst()
                         .map(FileMetaDataListQuery::key)
                         .orElse(null);
         String clubIntroductionImageKey =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(EntityType.CLUB_INTRODUCTION, club.getId())
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(DomainType.CLUB_INTRODUCTION, club.getId())
                         .stream()
                         .findFirst()
                         .map(FileMetaDataListQuery::key)
@@ -55,7 +55,7 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
                         Stream.of(command.introductionImageId())
                                 .filter(Objects::nonNull)
                                 .toList(),
-                        EntityType.CLUB_PROFILE,
+                        DomainType.CLUB_PROFILE,
                         club.getId())
         );
         facadeFileMetaDataService.updateAll(
@@ -63,7 +63,7 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
                         Stream.of(command.introductionImageId())
                                 .filter(Objects::nonNull)
                                 .toList(),
-                        EntityType.CLUB_INTRODUCTION,
+                        DomainType.CLUB_INTRODUCTION,
                         club.getId())
         );
         return club.getId();

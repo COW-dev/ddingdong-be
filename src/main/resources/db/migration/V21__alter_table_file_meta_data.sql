@@ -2,7 +2,7 @@ ALTER TABLE file_meta_data
     ADD entity_id BIGINT NULL;
 
 ALTER TABLE file_meta_data
-    ADD entity_type VARCHAR(255) NULL;
+    ADD domain_type VARCHAR(255) NULL;
 
 ALTER TABLE file_meta_data
     ADD file_status VARCHAR(255) NULL;
@@ -22,7 +22,7 @@ ALTER TABLE file_meta_data
 ALTER TABLE file_meta_data
     MODIFY `key` VARCHAR (255) NOT NULL;
 
-CREATE INDEX IDX_file_meta_data_entity_type_entity_id_file_status ON file_meta_data (entity_type, entity_id, file_status);
+CREATE INDEX IDX_file_meta_data_domain_type_entity_id_file_status ON file_meta_data (domain_type, entity_id, file_status);
 
 ALTER TABLE file_meta_data
     DROP COLUMN file_id;

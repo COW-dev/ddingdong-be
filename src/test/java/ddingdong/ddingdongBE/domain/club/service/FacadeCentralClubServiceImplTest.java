@@ -12,7 +12,7 @@ import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
@@ -63,14 +63,14 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
         FileMetaData clubProfileImageFileMetaData = fixture.giveMeBuilder(FileMetaData.class)
                 .set("id", id1)
                 .set("fileKey", "test/IMAGE/2024-01-01/" + id1)
-                .set("entityType", EntityType.CLUB_PROFILE)
+                .set("entityType", DomainType.CLUB_PROFILE)
                 .set("entityId", savedClub.getId())
                 .set("fileStatus", FileStatus.ACTIVATED)
                 .sample();
         FileMetaData clubIntroductionImageFileMetaData = fixture.giveMeBuilder(FileMetaData.class)
                 .set("id", id2)
                 .set("fileKey", "test/IMAGE/2024-01-01/" + id2)
-                .set("entityType", EntityType.CLUB_INTRODUCTION)
+                .set("entityType", DomainType.CLUB_INTRODUCTION)
                 .set("entityId", savedClub.getId())
                 .set("fileStatus", FileStatus.ACTIVATED)
                 .sample();

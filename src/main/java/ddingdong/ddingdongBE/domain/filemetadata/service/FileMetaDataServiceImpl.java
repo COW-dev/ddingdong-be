@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.filemetadata.service;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.*;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import java.util.List;
@@ -45,13 +45,13 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
-    public List<FileMetaData> findActivatedAllByEntityTypeAndEntityId(EntityType entityType, Long entityId) {
-        return fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(entityType, entityId, ACTIVATED);
+    public List<FileMetaData> findActivatedAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
+        return fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(domainType, entityId, ACTIVATED);
     }
 
     @Override
-    public List<FileMetaData> findAllByEntityTypeAndEntityId(EntityType entityType, Long entityId) {
-        return fileMetaDataRepository.findAllByEntityTypeAndEntityId(entityType, entityId);
+    public List<FileMetaData> findAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
+        return fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
     }
 
     @Override

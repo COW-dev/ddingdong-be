@@ -7,7 +7,7 @@ import com.github.f4b6a3.uuid.UuidCreator;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.EntityType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
@@ -52,17 +52,17 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void getAllByEntityTypeAndEntityId() {
         //given
-        EntityType entityType = EntityType.CLUB_PROFILE;
+        DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
         fileMetaDataRepository.saveAll(fixture.giveMeBuilder(FileMetaData.class)
-                .set("entityType", entityType)
+                .set("entityType", domainType)
                 .set("entityId", entityId)
                 .set("fileStatus", FileStatus.ACTIVATED)
                 .sampleList(3));
 
         //when
         List<FileMetaDataListQuery> result =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(entityType, entityId);
+                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, entityId);
 
         //then
         assertThat(result).hasSize(3);
@@ -72,7 +72,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToActivated() {
         //given
-        EntityType entityType = EntityType.CLUB_PROFILE;
+        DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
@@ -92,13 +92,13 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
         ));
 
         UpdateAllFileMetaDataCommand command = new UpdateAllFileMetaDataCommand(List.of(id1.toString(), id2.toString()),
-                entityType, entityId);
+                domainType, entityId);
         //when
         facadeFileMetaDataService.updateAll(command);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
-                entityType, entityId, FileStatus.ACTIVATED);
+                domainType, entityId, FileStatus.ACTIVATED);
         assertThat(result).hasSize(2)
                 .extracting("fileStatus")
                 .contains(FileStatus.ACTIVATED);
@@ -108,7 +108,7 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToActivatedAndAttached() {
         //given
-        EntityType entityType = EntityType.CLUB_PROFILE;
+        DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
@@ -121,20 +121,20 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id2)
-                        .set("entityType", entityType)
+                        .set("entityType", domainType)
                         .set("entityId", entityId)
                         .set("fileStatus", FileStatus.ACTIVATED)
                         .sample()
         ));
 
         UpdateAllFileMetaDataCommand command =
-                new UpdateAllFileMetaDataCommand(List.of(id1.toString()), entityType, entityId);
+                new UpdateAllFileMetaDataCommand(List.of(id1.toString()), domainType, entityId);
         //when
         facadeFileMetaDataService.updateAll(command);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByEntityTypeAndEntityIdWithFileStatus(
-                entityType, entityId, FileStatus.ACTIVATED);
+                domainType, entityId, FileStatus.ACTIVATED);
         FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElseThrow();
         assertThat(result).hasSize(1)
                 .extracting("id", "fileStatus")
@@ -146,27 +146,27 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     @Test
     void updateAllToAttached() {
         //given
-        EntityType entityType = EntityType.CLUB_PROFILE;
+        DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id1)
-                        .set("entityType", entityType)
+                        .set("entityType", domainType)
                         .set("entityId", entityId)
                         .set("fileStatus", FileStatus.ACTIVATED)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", id2)
-                        .set("entityType", entityType)
+                        .set("entityType", domainType)
                         .set("entityId", entityId)
                         .set("fileStatus", FileStatus.ACTIVATED)
                         .sample()
         ));
 
         UpdateAllFileMetaDataCommand command =
-                new UpdateAllFileMetaDataCommand(List.of(), entityType, entityId);
+                new UpdateAllFileMetaDataCommand(List.of(), domainType, entityId);
         //when
         facadeFileMetaDataService.updateAll(command);
 

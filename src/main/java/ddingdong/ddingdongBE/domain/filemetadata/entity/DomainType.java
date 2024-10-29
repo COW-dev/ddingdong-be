@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.filemetadata.entity;
 
-public enum EntityType {
+public enum DomainType {
     CLUB_PROFILE,
     CLUB_INTRODUCTION
 }
