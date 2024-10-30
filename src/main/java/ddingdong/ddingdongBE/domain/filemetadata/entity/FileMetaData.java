@@ -56,10 +56,12 @@ public class FileMetaData extends BaseEntity {
         this.fileCategory = fileCategory;
     }
 
-    public static FileMetaData of(String key, FileCategory fileCategory) {
+    public static FileMetaData createFending(UUID id, String fileKey, String fileName) {
         return FileMetaData.builder()
-                .id(extractFilename(key))
-                .fileCategory(fileCategory)
+                .id(id)
+                .fileKey(fileKey)
+                .fileName(fileName)
+                .fileStatus(FileStatus.PENDING)
                 .build();
     }
 
@@ -72,8 +74,4 @@ public class FileMetaData extends BaseEntity {
         this.entityId = entityId;
     }
 
-    private static UUID extractFilename(String key) {
-        String[] splitKey = key.split("/");
-        return UuidCreator.fromString(splitKey[splitKey.length - 1]);
-    }
 }
