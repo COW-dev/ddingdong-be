@@ -17,6 +17,7 @@ import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.repository.FixZoneRepository;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommand;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCommand;
+import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralMyFixZoneListQuery;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -70,13 +71,13 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId1)
-                        .set("key", "test/IMAGE/2024-01-01/" + fileId1)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.PENDING)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId2)
-                        .set("key", "test/IMAGE/2024-01-01/" + fileId2)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.PENDING)
                         .sample()
@@ -87,7 +88,11 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
 
         //then
         Optional<FixZone> result = fixZoneRepository.findById(createdFixZoneId);
+        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(List.of(fileId1, fileId2));
         assertThat(result).isPresent();
+        assertThat(fileMetaDataList).hasSize(2)
+                .extracting("domainType", "entityId", "fileStatus")
+                .contains(tuple(DomainType.FIZ_ZONE_IMAGE, result.get().getId(), FileStatus.COUPLED));
     }
 
     @DisplayName("동아리 - 내 픽스존 목록 조회")
@@ -137,13 +142,62 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
                 .sample();
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
+        UUID fileId1 = UuidCreator.getTimeOrderedEpoch();
+        UUID fileId2 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.saveAll(List.of(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", fileId1)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
+                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("entityId", savedFixZone.getId())
+                        .set("fileName", "test")
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample(),
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", fileId2)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
+                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("entityId", savedFixZone.getId())
+                        .set("fileName", "test")
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        ));
 
         //when
-        facadeCentralFixZoneService.getFixZone(savedFixZone.getId());
+        CentralFixZoneQuery result = facadeCentralFixZoneService.getFixZone(savedFixZone.getId());
 
         //then
-        Optional<FixZone> result = fixZoneRepository.findById(savedFixZone.getId());
-        assertThat(result.isPresent()).isTrue();
+        assertThat(result.id()).isEqualTo(savedFixZone.getId());
+        assertThat(result.imageUrlQueries()).hasSize(2)
+                .extracting("id")
+                .containsExactlyInAnyOrder(fileId1.toString(), fileId2.toString());
+    }
+
+    @DisplayName("동아리 - 픽스존 조회 - 이미지X")
+    @Test
+    void getFixZoneWithNoneImage() {
+        //given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .set("user", null)
+                .set("clubMembers", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("deletedAt", null)
+                .set("profileImageKey", "test/file/2024-01-01/uuid")
+                .sample();
+        Club savedClub = clubRepository.save(club);
+        FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("club", savedClub)
+                .set("isCompleted", false)
+                .set("deletedAt", null)
+                .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
+                .sample();
+        FixZone savedFixZone = fixZoneRepository.save(fixZone);
+
+        //when
+        CentralFixZoneQuery result = facadeCentralFixZoneService.getFixZone(savedFixZone.getId());
+
+        //then
+        assertThat(result.id()).isEqualTo(savedFixZone.getId());
     }
 
     @DisplayName("동아리 - 픽스존 수정")
