@@ -9,7 +9,6 @@ import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
@@ -56,8 +55,7 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
         return fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(domainType, clubId)
                 .stream()
-                .map(FileMetaData::getFileKey)
-                .map(s3FileService::getUploadedFileUrl)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .findFirst()
                 .orElse(null);
     }

@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
@@ -13,7 +12,9 @@ import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuer
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralMyFixZoneListQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,11 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         Club club = clubService.getByUserId(command.userId());
         FixZone createdFixZone = command.toEntity(club);
         Long createdFixZoneId = fixZoneService.save(createdFixZone);
-        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, createdFixZoneId);
+        fileMetaDataService.updateAll(
+                Objects.requireNonNullElse(command.fixZoneImageIds(), Collections.emptyList()),
+                DomainType.FIX_ZONE_IMAGE,
+                createdFixZoneId
+        );
         return createdFixZoneId;
     }
 
@@ -54,15 +59,13 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
                 .getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
-                .map(FileMetaData::getFileKey)
-                .map(s3FileService::getUploadedFileUrl)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .toList();
 
         UploadedFileUrlQuery clubProfileImageKey = fileMetaDataService
                 .getCoupledAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                 .stream()
-                .map(FileMetaData::getFileKey)
-                .map(s3FileService::getUploadedFileUrl)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .findFirst()
                 .orElse(null);
         return CentralFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageKey);
@@ -73,7 +76,10 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     public Long update(UpdateFixZoneCommand command) {
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
         fixZone.update(command.toEntity());
-        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, fixZone.getId());
+        fileMetaDataService.updateAll(
+                Objects.requireNonNullElse(command.fixZoneImageIds(), Collections.emptyList()),
+                DomainType.FIX_ZONE_IMAGE,
+                fixZone.getId());
         return fixZone.getId();
     }
 

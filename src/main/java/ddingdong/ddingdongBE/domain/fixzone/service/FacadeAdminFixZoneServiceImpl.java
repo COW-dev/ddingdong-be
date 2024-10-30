@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneListQuery;
@@ -36,16 +35,14 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
                 .getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
-                .map(FileMetaData::getFileKey)
-                .map(s3FileService::getUploadedFileUrl)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .toList();
         Club club = fixZone.getClub();
         UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService
                 .getCoupledAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                 .stream()
                 .findFirst()
-                .map(FileMetaData::getFileKey)
-                .map(s3FileService::getUploadedFileUrl)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .orElse(null);
         return AdminFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageQuery);
     }
