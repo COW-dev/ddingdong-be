@@ -53,10 +53,10 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
                 .orElse(null);
     }
 
-    private void updateFileMetaData(String command, DomainType clubProfile, Long entityId) {
+    private void updateFileMetaData(String fileId, DomainType clubProfile, Long entityId) {
         facadeFileMetaDataService.updateAll(
                 new UpdateAllFileMetaDataCommand(
-                        Stream.of(command)
+                        Stream.of(fileId)
                                 .filter(Objects::nonNull)
                                 .toList(),
                         clubProfile,

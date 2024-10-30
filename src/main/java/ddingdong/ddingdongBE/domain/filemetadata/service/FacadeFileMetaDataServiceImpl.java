@@ -40,7 +40,7 @@ public class FacadeFileMetaDataServiceImpl implements FacadeFileMetaDataService 
     @Transactional
     public void updateAll(UpdateAllFileMetaDataCommand command) {
         List<FileMetaData> fileMetaDataList =
-                fileMetaDataService.findAllByEntityTypeAndEntityId(command.domainType(), command.entityId());
+                fileMetaDataService.findActivatedAll(command.domainType(), command.entityId());
         Set<UUID> existingIds = fileMetaDataList.stream()
                 .map(FileMetaData::getId)
                 .collect(Collectors.toSet());

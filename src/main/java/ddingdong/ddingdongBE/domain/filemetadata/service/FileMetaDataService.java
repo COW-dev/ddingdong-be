@@ -15,7 +15,5 @@ public interface FileMetaDataService {
 
     List<FileMetaData> findActivatedAll(DomainType domainType, Long entityId);
 
-    List<FileMetaData> findAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
-
     List<FileMetaData> getByIds(List<UUID> ids);
 }

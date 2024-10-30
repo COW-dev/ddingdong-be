@@ -50,11 +50,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
-    public List<FileMetaData> findAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
-        return fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
-    }
-
-    @Override
     public List<FileMetaData> getByIds(List<UUID> ids) {
         return fileMetaDataRepository.findByIdIn(ids);
     }

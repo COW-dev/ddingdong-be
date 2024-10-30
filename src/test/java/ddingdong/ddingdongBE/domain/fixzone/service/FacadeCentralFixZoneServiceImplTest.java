@@ -139,7 +139,6 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
-                .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
                 .sample();
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
         UUID fileId1 = UuidCreator.getTimeOrderedEpoch();
@@ -189,7 +188,6 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
-                .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
                 .sample();
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
 
@@ -208,14 +206,13 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
-                .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
                 .sample();
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
         UpdateFixZoneCommand command = new UpdateFixZoneCommand(
                 savedFixZone.getId(),
                 "test",
                 "test",
-                List.of("/test/file/2024-01-01/uuid", "/test/file/2024-01-02/uuid")
+                List.of("0192c828-ffce-7ee8-94a8-d9d4c8cdec00", "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         );
 
         //when
@@ -235,15 +232,38 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
-                .set("imageKeys", List.of("test/file/2024-01-01/uuid", "test/file/2024-01-02/uuid"))
                 .sample();
         FixZone savedFixZone = fixZoneRepository.save(fixZone);
+        UUID fileId1 = UuidCreator.getTimeOrderedEpoch();
+        UUID fileId2 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.saveAll(List.of(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", fileId1)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
+                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("entityId", savedFixZone.getId())
+                        .set("fileName", "test")
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample(),
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", fileId2)
+                        .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
+                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("entityId", savedFixZone.getId())
+                        .set("fileName", "test")
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        ));
 
         //when
         facadeCentralFixZoneService.delete(savedFixZone.getId());
 
         //then
         Optional<FixZone> result = fixZoneRepository.findById(savedFixZone.getId());
+        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(List.of(fileId1, fileId2));
         assertThat(result.isPresent()).isFalse();
+        assertThat(fileMetaDataList).hasSize(2)
+                .extracting("fileStatus")
+                .containsOnly(FileStatus.DELETED);
     }
 }
