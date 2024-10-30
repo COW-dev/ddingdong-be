@@ -1,13 +1,11 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.DOCUMENT_FILE;
-
-import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -31,7 +29,7 @@ public class FacadeAdminDocumentService {
     public void update(UpdateDocumentCommand command) {
         Document document = documentService.getById(command.documentId());
         documentService.update(document, command.toEntity());
-        createFileMetaDatas(command.fileInfos());
+        updateFileMetaDatas(command.fileIds(), DomainType.DOCUMENT_FILE, document.getId());
     }
 
     @Transactional

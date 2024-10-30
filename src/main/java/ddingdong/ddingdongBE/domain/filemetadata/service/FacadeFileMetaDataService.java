@@ -14,6 +14,4 @@ public interface FacadeFileMetaDataService {
     List<FileMetaDataListQuery> getAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
 
     void updateAll(UpdateAllFileMetaDataCommand command);
-
-
 }
