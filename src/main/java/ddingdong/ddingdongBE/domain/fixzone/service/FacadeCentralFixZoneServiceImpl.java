@@ -32,7 +32,11 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     public Long create(CreateFixZoneCommand command) {
         Club club = clubService.getByUserId(command.userId());
         FixZone createdFixZone = command.toEntity(club);
-        return fixZoneService.save(createdFixZone);
+        Long createdFixZoneId = fixZoneService.save(createdFixZone);
+        for (String fixZoneImageId : command.fixZoneImageIds()) {
+            updateFileMetaData(fixZoneImageId, createdFixZoneId);
+        }
+        return createdFixZoneId;
     }
 
     @Override

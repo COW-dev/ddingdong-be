@@ -12,8 +12,8 @@ public record CreateFixZoneRequest(
         @NotNull
         @Schema(description = "내용")
         String content,
-        @Schema(description = "픽스존 내용 이미지 키", example = "[\"prod/file/2024-01-01/uuid1\", \"prod/file/2024-01-01/uuid2\"]")
-        List<String> fixZoneImageKeys
+        @Schema(description = "픽스존 이미지 식별자 목록", example = "[\"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\", \"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\"]")
+        List<String> fixZoneImageIds
 ) {
 
     public CreateFixZoneCommand toCommand(Long userId) {
@@ -21,7 +21,7 @@ public record CreateFixZoneRequest(
                 userId,
                 title,
                 content,
-                fixZoneImageKeys
+                fixZoneImageIds
         );
     }
 
