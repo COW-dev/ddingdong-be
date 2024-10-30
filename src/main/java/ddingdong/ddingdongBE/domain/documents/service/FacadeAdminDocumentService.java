@@ -19,12 +19,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeAdminDocumentService {
 
     private final DocumentService documentService;
-    private final FileMetaDataService fileMetaDataService;
+    private final FacadeFileMetaDataService facadeFileMetaDataService;
 
     @Transactional
     public void create(CreateDocumentCommand command) {
-        documentService.create(command.toEntity());
-        createFileMetaDatas(command.fileInfos());
+        Long documentId = documentService.create(command.toEntity());
+        updateFileMetaDatas(command.fileIds(), DomainType.DOCUMENT_FILE, documentId);
     }
 
     @Transactional
@@ -39,13 +39,7 @@ public class FacadeAdminDocumentService {
         documentService.delete(documentId);
     }
 
-    private void createFileMetaDatas(List<FileInfo> fileInfos) {
-        if(fileInfos.isEmpty()) {
-            return;
-        }
-        List<FileMetaData> fileMetaDatas = fileInfos.stream()
-            .map(fileInfo -> FileMetaData.of(fileInfo.fileKey(), DOCUMENT_FILE))
-            .toList();
-        fileMetaDataService.save(fileMetaDatas);
+    private void updateFileMetaDatas(List<String> fileIds, DomainType domainType, Long id) {
+        facadeFileMetaDataService.updateAll(new UpdateAllFileMetaDataCommand(fileIds, domainType, id));
     }
 }
