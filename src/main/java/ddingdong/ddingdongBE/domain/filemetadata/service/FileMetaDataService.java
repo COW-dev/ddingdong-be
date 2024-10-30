@@ -7,13 +7,11 @@ import java.util.UUID;
 
 public interface FileMetaDataService {
 
-    void save(List<FileMetaData> fileMetaDataList);
+    UUID create(FileMetaData fileMetaData);
 
-    UUID save(FileMetaData fileMetaData);
+    List<FileMetaData> getCoupledAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
 
-    FileMetaData getById(UUID fileId);
+    void updateAll(List<String> ids, DomainType domainType, Long entityId);
 
-    List<FileMetaData> findActivatedAll(DomainType domainType, Long entityId);
 
-    List<FileMetaData> getByIds(List<UUID> ids);
 }
