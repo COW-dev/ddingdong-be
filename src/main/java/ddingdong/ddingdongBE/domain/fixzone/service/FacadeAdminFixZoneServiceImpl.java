@@ -2,8 +2,8 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneListQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService {
 
     private final FixZoneService fixZoneService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
+    private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
@@ -33,18 +33,18 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
     @Override
     public AdminFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
-        List<UploadedFileUrlQuery> imageUrlQueries = facadeFileMetaDataService
-                .getAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+        List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
                 .stream()
-                .map(FileMetaDataListQuery::key)
+                .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
         Club club = fixZone.getClub();
-        UploadedFileUrlQuery clubProfileImageQuery = facadeFileMetaDataService
-                .getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
+        UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                 .stream()
                 .findFirst()
-                .map(FileMetaDataListQuery::key)
+                .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)
                 .orElse(null);
         return AdminFixZoneQuery.of(fixZone, imageUrlQueries, clubProfileImageQuery);

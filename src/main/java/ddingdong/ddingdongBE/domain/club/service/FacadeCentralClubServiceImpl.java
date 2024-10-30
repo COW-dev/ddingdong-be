@@ -4,9 +4,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.Objects;
@@ -21,17 +20,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
 
     private final ClubService clubService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
+    private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-        String clubProfileImageKey = getFileKey(DomainType.CLUB_PROFILE, club.getId());
-        String clubIntroductionImageKey = getFileKey(DomainType.CLUB_INTRODUCTION, club.getId());
+        String clubProfileImageFileKey = getFileKey(DomainType.CLUB_PROFILE, club.getId());
+        String clubIntroductionImageFileKey = getFileKey(DomainType.CLUB_INTRODUCTION, club.getId());
 
-        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(clubProfileImageKey);
-        UploadedFileUrlQuery introductionImageUrlQuery = s3FileService.getUploadedFileUrl(clubIntroductionImageKey);
+        UploadedFileUrlQuery profileImageUrlQuery = s3FileService.getUploadedFileUrl(clubProfileImageFileKey);
+        UploadedFileUrlQuery introductionImageUrlQuery = s3FileService.getUploadedFileUrl(clubIntroductionImageFileKey);
         return MyClubInfoQuery.of(club, profileImageUrlQuery, introductionImageUrlQuery);
     }
 
@@ -46,21 +45,20 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     }
 
     private String getFileKey(DomainType domainType, Long clubId) {
-        return facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, clubId)
+        return fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(domainType, clubId)
                 .stream()
-                .map(FileMetaDataListQuery::key)
+                .map(FileMetaData::getFileKey)
                 .findFirst()
                 .orElse(null);
     }
 
     private void updateFileMetaData(String fileId, DomainType clubProfile, Long entityId) {
-        facadeFileMetaDataService.updateAll(
-                new UpdateAllFileMetaDataCommand(
-                        Stream.of(fileId)
-                                .filter(Objects::nonNull)
-                                .toList(),
-                        clubProfile,
-                        entityId)
+        fileMetaDataService.updateAll(
+                Stream.of(fileId)
+                        .filter(Objects::nonNull)
+                        .toList(),
+                clubProfile,
+                entityId
         );
     }
 

@@ -112,10 +112,10 @@ public class FacadeClubActivityReportService {
     }
 
     private void createFileMetaData(String key) {
-        if (key == null) {
-            return;
-        }
-        fileMetaDataService.save(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
+//        if (key == null) {
+//            return;
+//        }
+//        fileMetaDataService.save(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
     private String getRequestTerm(List<CreateActivityReportCommand> commands) {

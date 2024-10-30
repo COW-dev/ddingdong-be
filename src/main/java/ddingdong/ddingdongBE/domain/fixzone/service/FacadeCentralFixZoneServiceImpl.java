@@ -3,11 +3,9 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommand;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCommand;
@@ -27,7 +25,6 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
 
     private final FixZoneService fixZoneService;
     private final ClubService clubService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
@@ -37,12 +34,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         Club club = clubService.getByUserId(command.userId());
         FixZone createdFixZone = command.toEntity(club);
         Long createdFixZoneId = fixZoneService.save(createdFixZone);
-        facadeFileMetaDataService.updateAll(
-                new UpdateAllFileMetaDataCommand(
-                        command.fixZoneImageIds(),
-                        DomainType.FIZ_ZONE_IMAGE,
-                        createdFixZoneId
-                ));
+        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIZ_ZONE_IMAGE, createdFixZoneId);
         return createdFixZoneId;
     }
 
@@ -59,17 +51,17 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     public CentralFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
         Club club = fixZone.getClub();
-        List<UploadedFileUrlQuery> imageUrlQueries = facadeFileMetaDataService
-                .getAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+        List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
                 .stream()
-                .map(FileMetaDataListQuery::key)
+                .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)
                 .toList();
 
-        UploadedFileUrlQuery clubProfileImageKey = facadeFileMetaDataService
-                .getAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
+        UploadedFileUrlQuery clubProfileImageKey = fileMetaDataService
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                 .stream()
-                .map(FileMetaDataListQuery::key)
+                .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)
                 .findFirst()
                 .orElse(null);
@@ -81,12 +73,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     public Long update(UpdateFixZoneCommand command) {
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
         fixZone.update(command.toEntity());
-        facadeFileMetaDataService.updateAll(
-                new UpdateAllFileMetaDataCommand(
-                        command.fixZoneImageIds(),
-                        DomainType.FIZ_ZONE_IMAGE,
-                        fixZone.getId()
-                ));
+        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIZ_ZONE_IMAGE, fixZone.getId());
         return fixZone.getId();
     }
 
@@ -94,7 +81,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Transactional
     public void delete(Long fixZoneId) {
         fixZoneService.delete(fixZoneId);
-        fileMetaDataService.findActivatedAll(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+        fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
                 .forEach(fileMetaData -> fileMetaData.updateStatus(FileStatus.DELETED));
     }
 
