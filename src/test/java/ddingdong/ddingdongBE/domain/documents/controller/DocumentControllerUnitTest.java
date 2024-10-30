@@ -12,13 +12,10 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
-import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 class DocumentControllerUnitTest extends WebApiUnitTestSupport {
 
@@ -34,7 +31,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         when(facadeDocumentService.getDocumentList(any())).thenReturn(queries);
 
         //when //then
-        mockMvc.perform(get("/server/documents")
+        mockMvc.perform(get("/server/documents?page=1&limit=10")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
