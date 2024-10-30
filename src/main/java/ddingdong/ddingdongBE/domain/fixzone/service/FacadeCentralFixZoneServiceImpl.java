@@ -34,7 +34,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         Club club = clubService.getByUserId(command.userId());
         FixZone createdFixZone = command.toEntity(club);
         Long createdFixZoneId = fixZoneService.save(createdFixZone);
-        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIZ_ZONE_IMAGE, createdFixZoneId);
+        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, createdFixZoneId);
         return createdFixZoneId;
     }
 
@@ -52,7 +52,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         FixZone fixZone = fixZoneService.getById(fixZoneId);
         Club club = fixZone.getClub();
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
-                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
                 .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)
@@ -73,7 +73,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     public Long update(UpdateFixZoneCommand command) {
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
         fixZone.update(command.toEntity());
-        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIZ_ZONE_IMAGE, fixZone.getId());
+        fileMetaDataService.updateAll(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, fixZone.getId());
         return fixZone.getId();
     }
 
@@ -81,7 +81,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Transactional
     public void delete(Long fixZoneId) {
         fixZoneService.delete(fixZoneId);
-        fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+        fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .forEach(fileMetaData -> fileMetaData.updateStatus(FileStatus.DELETED));
     }
 

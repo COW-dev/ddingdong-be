@@ -34,7 +34,7 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
     public AdminFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
-                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIZ_ZONE_IMAGE, fixZoneId)
+                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
                 .map(FileMetaData::getFileKey)
                 .map(s3FileService::getUploadedFileUrl)

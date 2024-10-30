@@ -92,7 +92,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
         assertThat(result).isPresent();
         assertThat(fileMetaDataList).hasSize(2)
                 .extracting("domainType", "entityId", "fileStatus")
-                .contains(tuple(DomainType.FIZ_ZONE_IMAGE, result.get().getId(), FileStatus.COUPLED));
+                .contains(tuple(DomainType.FIX_ZONE_IMAGE, result.get().getId(), FileStatus.COUPLED));
     }
 
     @DisplayName("동아리 - 내 픽스존 목록 조회")
@@ -147,7 +147,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId1)
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
-                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.COUPLED)
@@ -155,7 +155,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId2)
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
-                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.COUPLED)
@@ -240,7 +240,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId1)
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
-                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.COUPLED)
@@ -248,7 +248,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 fixture.giveMeBuilder(FileMetaData.class)
                         .set("id", fileId2)
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
-                        .set("domainType", DomainType.FIZ_ZONE_IMAGE)
+                        .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
                         .set("fileName", "test")
                         .set("fileStatus", FileStatus.COUPLED)
