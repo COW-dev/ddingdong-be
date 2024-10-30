@@ -4,6 +4,9 @@ import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.GetDocumentListCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.util.List;
@@ -17,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeDocumentService {
 
     private final DocumentService documentService;
+    private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
     public List<DocumentListQuery> getDocumentList(GetDocumentListCommand command) {
@@ -28,9 +32,15 @@ public class FacadeDocumentService {
 
     public DocumentQuery getDocument(Long documentId) {
         Document document = documentService.getById(documentId);
-        List<UploadedFileUrlAndNameQuery> fileInfoQueries = document.getFileInfos().stream()
-                .map(s3FileService::getUploadedFileUrlAndName)
-                .toList();
+        List<UploadedFileUrlAndNameQuery> fileInfoQueries = getFileInfos(documentId);
         return DocumentQuery.of(document, fileInfoQueries);
+    }
+
+    private List<UploadedFileUrlAndNameQuery> getFileInfos(Long documentId) {
+        List<FileMetaData> fileMetaDatas = fileMetaDataService.findAllByEntityTypeAndEntityId(
+                DomainType.DOCUMENT_FILE, documentId);
+        return fileMetaDatas.stream()
+                .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
+                .toList();
     }
 }

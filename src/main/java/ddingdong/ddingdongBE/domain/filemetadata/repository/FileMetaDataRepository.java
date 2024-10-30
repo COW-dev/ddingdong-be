@@ -21,5 +21,4 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
     List<FileMetaData> findAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     List<FileMetaData> findByIdIn(List<UUID> ids);
-
 }

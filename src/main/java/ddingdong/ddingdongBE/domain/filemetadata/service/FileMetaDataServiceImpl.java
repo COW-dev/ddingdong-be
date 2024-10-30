@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.filemetadata.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.*;
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.COUPLED;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -58,5 +58,4 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     public List<FileMetaData> getByIds(List<UUID> ids) {
         return fileMetaDataRepository.findByIdIn(ids);
     }
-
 }

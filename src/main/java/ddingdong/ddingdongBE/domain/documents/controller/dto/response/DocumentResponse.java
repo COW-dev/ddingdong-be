@@ -23,7 +23,7 @@ public record DocumentResponse(
     LocalDate createdAt,
 
     @ArraySchema(arraySchema = @Schema(description = "첨부파일 목록", implementation = DocumentFileUrlsResponse.class))
-    List<DocumentFileUrlsResponse> fileUrls
+    List<DocumentFileUrlsResponse> files
 ) {
 
     public static DocumentResponse from(DocumentQuery query) {
@@ -34,14 +34,16 @@ public record DocumentResponse(
         return DocumentResponse.builder()
             .title(query.title())
             .createdAt(query.createdAt())
-            .fileUrls(fileUrls)
+            .files(fileUrls)
             .build();
     }
 
     @Schema(name = "DocumentFileUrlsResponse", description = "자료실 파일 URL 정보")
     record DocumentFileUrlsResponse(
+        @Schema(description = "파일ID", example = "uuid")
+        String id,
         @Schema(description = "파일 이름", example = "파일이름.pdf")
-        String fileName,
+        String name,
         @Schema(description = "원본 URL", example = "url")
         String originUrl,
         @Schema(description = "CDN URL", example = "url")
@@ -52,7 +54,7 @@ public record DocumentResponse(
             if (query == null) {
                 return null;
             }
-            return new DocumentFileUrlsResponse(query.fileName(), query.originUrl(), query.cdnUrl());
+            return new DocumentFileUrlsResponse(query.id(), query.name(), query.originUrl(), query.cdnUrl());
         }
     }
 }

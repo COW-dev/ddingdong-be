@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
-import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
@@ -83,9 +82,14 @@ public class S3FileService {
         return new UploadedFileUrlQuery(splitKey[splitKey.length -1], originUrl, cdnUrl);
     }
 
-    public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(FileInfo fileInfo) {
-        UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(fileInfo.fileKey());
-        return new UploadedFileUrlAndNameQuery(fileUrlQuery.originUrl(), fileUrlQuery.cdnUrl(), fileInfo.fileName());
+    public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(String key, String fileName) {
+        UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(key);
+        return new UploadedFileUrlAndNameQuery(
+            fileUrlQuery.id(),
+            fileName,
+            fileUrlQuery.originUrl(),
+            fileUrlQuery.cdnUrl()
+        );
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

@@ -1,11 +1,9 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.common.converter.ObjectJsonConverter;
 import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -40,10 +38,6 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
-    @Convert(converter = ObjectJsonConverter.class)
-    @Column(name = "document_file_infos")
-    private List<FileInfo> fileInfos;
-
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
@@ -53,12 +47,10 @@ public class Document extends BaseEntity {
         this.id = id;
         this.user = user;
         this.title = title;
-        this.fileInfos = fileInfos;
         super.setCreatedAt(createdAt);
     }
 
     public void updateDocument(Document document) {
-        this.fileInfos = document.getFileInfos();
         this.title = document.getTitle();
     }
 }
