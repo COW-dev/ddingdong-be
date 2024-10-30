@@ -1,10 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
-import java.util.List;
 
 public record MyClubInfoQuery(
         String name,
@@ -21,8 +19,7 @@ public record MyClubInfoQuery(
         String ideal,
         String formUrl,
         UploadedFileUrlQuery profileImageUrlQuery,
-        UploadedFileUrlQuery introductionImageUrlQuery,
-        List<ClubMember> clubMembers
+        UploadedFileUrlQuery introductionImageUrlQuery
 ) {
 
     public static MyClubInfoQuery of(
@@ -45,8 +42,7 @@ public record MyClubInfoQuery(
                 club.getIdeal(),
                 club.getFormUrl(),
                 profileImageUrlQuery,
-                introductionImageUrlQuery,
-                club.getClubMembers()
+                introductionImageUrlQuery
         );
     }
 }

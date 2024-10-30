@@ -14,8 +14,8 @@ public record UploadUrlResponse(
 
         @Schema(description = "presignedUrl", example = "https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg")
         String uploadUrl,
-        @Schema(description = "업로드 key(경로)", example = "local/file/2024-01-01/cow/UUID")
-        String key,
+        @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        String id,
         @Schema(description = "contentType(presignedUrl 업로드 요청 시 사용)", example = "image/png")
         String contentType
 
@@ -24,7 +24,7 @@ public record UploadUrlResponse(
     public static UploadUrlResponse of(GeneratePreSignedUrlRequestQuery query, URL uploadUrl) {
         return UploadUrlResponse.builder()
                 .uploadUrl(uploadUrl.toString())
-                .key(query.key())
+                .id(query.id().toString())
                 .contentType(query.contentType())
                 .build();
     }

@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class NoticeServiceImpl implements NoticeService {
 
+    public static final int NOTICE_COUNT_FOR_PAGE = 10;
+
     private final NoticeRepository noticeRepository;
 
     @Override
@@ -43,7 +45,8 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     public int getNoticePageCount() {
-        return (int) noticeRepository.countAll();
+        int totalCount = noticeRepository.countAll();
+        return (totalCount + NOTICE_COUNT_FOR_PAGE - 1) / NOTICE_COUNT_FOR_PAGE;
     }
 
 }

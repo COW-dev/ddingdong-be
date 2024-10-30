@@ -59,7 +59,7 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
 
     private void createFileMetaData(List<String> fileKeys) {
         if (!fileKeys.isEmpty()) {
-            fileMetaDataService.create(
+            fileMetaDataService.save(
                 fileKeys.stream()
                     .map(fileKey -> FileMetaData.of(fileKey, FileCategory.NOTICE_FILE))
                     .toList()

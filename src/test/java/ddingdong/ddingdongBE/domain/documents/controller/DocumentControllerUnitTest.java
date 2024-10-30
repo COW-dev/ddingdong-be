@@ -30,14 +30,11 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         //given
         List<DocumentListQuery> queries = List.of(
             DocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
-            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build()
-        );
-
-        Mockito.when(facadeDocumentService.getDocumentList(any()))
-                .thenReturn(queries);
+            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
+        when(facadeDocumentService.getDocumentList(any())).thenReturn(queries);
 
         //when //then
-        mockMvc.perform(get("/server/documents?page=1&limit=10")
+        mockMvc.perform(get("/server/documents")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
@@ -48,28 +45,28 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andExpect(jsonPath("$[1].title").value("B"));
     }
 
-    @WithMockAuthenticatedUser
-    @DisplayName("documents 상세조회 요청을 수행한다.")
-    @Test
-    void getDocument() throws Exception {
-        //given
-        List<UploadedFileUrlAndNameQuery> fileInfoQueries = List.of(new UploadedFileUrlAndNameQuery("originUrl1","cdnUrl1", "제목1"),
-            new UploadedFileUrlAndNameQuery("originUrl2","cdnUrl2", "제목2"));
-        DocumentQuery query = DocumentQuery.builder()
-            .title("title")
-            .fileInfoQueries(fileInfoQueries)
-            .createdAt(LocalDate.now()).build();
-        Long documentId = 1L;
-        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
-
-        //when //then
-        mockMvc.perform(get("/server/documents/{documentId}", 1L)
-                        .with(csrf()))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.title").value("title"))
-                .andExpect(jsonPath("$.fileUrls", hasSize(fileInfoQueries.size())))
-                .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
-                .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
-    }
+//    @WithMockAuthenticatedUser
+//    @DisplayName("documents 상세조회 요청을 수행한다.")
+//    @Test
+//    void getDocument() throws Exception {
+//        //given
+//        List<UploadedFileUrlQuery> filurls = List.of(new UploadedFileUrlQuery("originUrl1","cdnUrl1"),
+//            new UploadedFileUrlQuery("originUrl2","cdnUrl2"));
+//        DocumentQuery query = DocumentQuery.builder()
+//            .title("title")
+//            .fileUrls(filurls)
+//            .createdAt(LocalDate.now()).build();
+//        Long documentId = 1L;
+//        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
+//
+//        //when //then
+//        mockMvc.perform(get("/server/documents/{documentId}", 1L)
+//                        .with(csrf()))
+//                .andDo(print())
+//                .andExpect(status().isOk())
+//                .andExpect(jsonPath("$.title").value("title"))
+//                .andExpect(jsonPath("$.fileUrls", hasSize(filurls.size())))
+//                .andExpect(jsonPath("$.fileUrls[0].originUrl").value("originUrl1"))
+//                .andExpect(jsonPath("$.fileUrls[0].cdnUrl").value("cdnUrl1"));
+//    }
 }

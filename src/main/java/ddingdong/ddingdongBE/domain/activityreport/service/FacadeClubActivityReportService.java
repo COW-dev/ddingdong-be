@@ -115,7 +115,7 @@ public class FacadeClubActivityReportService {
         if (key == null) {
             return;
         }
-        fileMetaDataService.create(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
+        fileMetaDataService.save(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
     }
 
     private String getRequestTerm(List<CreateActivityReportCommand> commands) {

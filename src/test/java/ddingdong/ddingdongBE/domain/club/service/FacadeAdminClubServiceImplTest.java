@@ -73,7 +73,6 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
                 .set("id", null)
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
-                .set("profileImageKey", "test/file/2024-01-01/test/uuid")
                 .set("deletedAt", null)
                 .sampleList(3);
         clubRepository.saveAll(clubs);
