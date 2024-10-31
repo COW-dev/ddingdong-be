@@ -39,12 +39,12 @@ public class FacadeAdminDocumentService {
     }
 
     private void createFileMetaDatas(List<String> keys) {
-        if(keys.isEmpty()) {
-            return;
-        }
-        List<FileMetaData> fileMetaDatas = keys.stream()
-            .map(key -> FileMetaData.of(key, DOCUMENT_FILE))
-            .toList();
-        fileMetaDataService.save(fileMetaDatas);
+//        if(keys.isEmpty()) {
+//            return;
+//        }
+//        List<FileMetaData> fileMetaDatas = keys.stream()
+//            .map(key -> FileMetaData.of(key, DOCUMENT_FILE))
+//            .toList();
+//        fileMetaDataService.save(fileMetaDatas);
     }
 }

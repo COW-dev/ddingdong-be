@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery.FixZoneCommentQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,12 +23,12 @@ public record CentralFixZoneResponse(
         String content,
         @Schema(description = "픽스존 완료 처리 여부")
         boolean isCompleted,
-        @Schema(description = "요청 시각", pattern = "yyyy-MM-dd HH:mm:ss",  example = "2024-01-01 14:30:00")
+        @Schema(description = "요청 시각", pattern = "yyyy-MM-dd HH:mm:ss", example = "2024-01-01 14:30:00")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime requestedAt,
-        @Schema(description = "이미지 URL 목록")
-        List<FixZoneImageUrlResponse> imageUrls,
-        @Schema(description = "Fix Zone 댓글 목록")
+        @ArraySchema(schema = @Schema(description = "이미지 URL 목록"))
+        List<FixZoneImageUrlResponse> images,
+        @ArraySchema(schema = @Schema(description = "Fix Zone 댓글 목록"))
         List<CentralFixZoneCommentResponse> comments
 ) {
 
@@ -54,6 +55,8 @@ public record CentralFixZoneResponse(
             description = "동아리 - 픽스존 이미지 URL 조회 응답"
     )
     record FixZoneImageUrlResponse(
+            @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00l")
+            String id,
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
@@ -64,7 +67,7 @@ public record CentralFixZoneResponse(
             if (query == null) {
                 return null;
             }
-            return new FixZoneImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new FixZoneImageUrlResponse(query.id(), query.originUrl(), query.cdnUrl());
         }
 
     }
@@ -93,7 +96,7 @@ public record CentralFixZoneResponse(
         public record FixZoneCommentCommenterResponse(
                 @Schema(description = "댓글 작성자")
                 String name,
-                FixZoneCommentCommenterProfileImageResponse profileImageUrl
+                FixZoneCommentCommenterProfileImageResponse profileImage
         ) {
 
             public static FixZoneCommentCommenterResponse from(FixZoneCommentQuery query) {

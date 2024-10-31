@@ -26,7 +26,7 @@ public record AdminFixZoneResponse(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
         LocalDateTime requestedAt,
         @Schema(description = "이미지 URL 목록")
-        List<FixZoneImageUrlResponse> imageUrls,
+        List<FixZoneImageUrlResponse> images,
         @Schema(description = "Fix Zone 댓글 목록")
         List<AdminFixZoneCommentResponse> comments
 ) {
@@ -93,7 +93,7 @@ public record AdminFixZoneResponse(
         public record FixZoneCommentCommenterResponse(
                 @Schema(description = "댓글 작성자")
                 String name,
-                FixZoneCommentCommenterProfileImageResponse profileImageUrl
+                FixZoneCommentCommenterProfileImageResponse profileImage
         ) {
 
             public static FixZoneCommentCommenterResponse from(FixZoneCommentQuery query) {

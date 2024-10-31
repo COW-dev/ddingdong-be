@@ -9,9 +9,9 @@ import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FacadeFileMetaDataService;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeUserClubServiceImpl implements FacadeUserClubService {
 
     private final ClubService clubService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
+    private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
     @Override
@@ -37,12 +37,10 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
-        String clubProfileImageKey = getFileKey(DomainType.CLUB_PROFILE, clubId);
-        String clubIntroductionImageKey = getFileKey(DomainType.CLUB_INTRODUCTION, clubId);
         return UserClubQuery.of(
                 club,
-                s3FileService.getUploadedFileUrl(clubProfileImageKey),
-                s3FileService.getUploadedFileUrl(clubIntroductionImageKey)
+                getFileKey(DomainType.CLUB_PROFILE, clubId),
+                getFileKey(DomainType.CLUB_INTRODUCTION, clubId)
         );
     }
 
@@ -54,10 +52,10 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
         return club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
 
-    private String getFileKey(DomainType domainType, Long clubId) {
-        return facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, clubId)
+    private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
+        return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
                 .stream()
-                .map(FileMetaDataListQuery::key)
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .findFirst()
                 .orElse(null);
     }
