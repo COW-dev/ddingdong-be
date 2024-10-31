@@ -7,14 +7,13 @@ public record UpdateFixZoneCommand(
         Long fixZoneId,
         String title,
         String content,
-        List<String> fixZoneImageKeys
+        List<String> fixZoneImageIds
 ) {
 
     public FixZone toEntity() {
         return FixZone.builder()
                 .title(title)
                 .content(content)
-                .imageKeys(fixZoneImageKeys)
                 .build();
     }
 

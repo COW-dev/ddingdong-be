@@ -17,7 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeAdminDocumentService {
 
     private final DocumentService documentService;
-    private final FacadeFileMetaDataService facadeFileMetaDataService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     public void create(CreateDocumentCommand command) {
@@ -38,6 +38,6 @@ public class FacadeAdminDocumentService {
     }
 
     private void updateFileMetaDatas(List<String> fileIds, DomainType domainType, Long id) {
-        facadeFileMetaDataService.updateAll(new UpdateAllFileMetaDataCommand(fileIds, domainType, id));
+        fileMetaDataService.updateAll(new UpdateAllFileMetaDataCommand(fileIds, domainType, id));
     }
 }

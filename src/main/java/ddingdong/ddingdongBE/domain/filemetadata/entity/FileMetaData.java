@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.filemetadata.entity;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -56,10 +55,12 @@ public class FileMetaData extends BaseEntity {
         this.fileCategory = fileCategory;
     }
 
-    public static FileMetaData of(String key, FileCategory fileCategory) {
+    public static FileMetaData createPending(UUID id, String fileKey, String fileName) {
         return FileMetaData.builder()
-                .id(extractFilename(key))
-                .fileCategory(fileCategory)
+                .id(id)
+                .fileKey(fileKey)
+                .fileName(fileName)
+                .fileStatus(FileStatus.PENDING)
                 .build();
     }
 
@@ -72,8 +73,4 @@ public class FileMetaData extends BaseEntity {
         this.entityId = entityId;
     }
 
-    private static UUID extractFilename(String key) {
-        String[] splitKey = key.split("/");
-        return UuidCreator.fromString(splitKey[splitKey.length - 1]);
-    }
 }

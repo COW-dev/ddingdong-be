@@ -11,9 +11,6 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.CreateFileMetaDataCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.command.UpdateAllFileMetaDataCommand;
-import ddingdong.ddingdongBE.domain.filemetadata.service.dto.query.FileMetaDataListQuery;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,10 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
+class FileMetaDataServiceImplTest extends TestContainerSupport {
 
     @Autowired
-    private FacadeFileMetaDataService facadeFileMetaDataService;
+    private FileMetaDataService fileMetaDataService;
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
 
@@ -37,20 +34,19 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
     void create() {
         //given
         UUID id = UuidCreator.getTimeOrderedEpoch();
-        CreateFileMetaDataCommand command =
-                new CreateFileMetaDataCommand(id, "local/file/2024-01-01/" + id, "test.jpg");
+        FileMetaData fileMetaData = FileMetaData.createPending(id, "local/file/2024-01-01/" + id, "test.jpg");
 
         //when
-        UUID createdFileMetaDataId = facadeFileMetaDataService.create(command);
+        UUID createdFileMetaDataId = fileMetaDataService.create(fileMetaData);
 
         //then
-        Optional<FileMetaData> fileMetaData = fileMetaDataRepository.findById(createdFileMetaDataId);
-        assertThat(fileMetaData).isPresent();
+        Optional<FileMetaData> result = fileMetaDataRepository.findById(createdFileMetaDataId);
+        assertThat(result).isPresent();
     }
 
     @DisplayName("FileMetaData 조회")
     @Test
-    void getAllByEntityTypeAndEntityId() {
+    void getCoupledAllByDomainTypeAndEntityId() {
         //given
         DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
@@ -61,8 +57,8 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                 .sampleList(3));
 
         //when
-        List<FileMetaDataListQuery> result =
-                facadeFileMetaDataService.getAllByEntityTypeAndEntityId(domainType, entityId);
+        List<FileMetaData> result =
+                fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
 
         //then
         assertThat(result).hasSize(3);
@@ -91,10 +87,8 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                         .sample()
         ));
 
-        UpdateAllFileMetaDataCommand command = new UpdateAllFileMetaDataCommand(List.of(id1.toString(), id2.toString()),
-                domainType, entityId);
         //when
-        facadeFileMetaDataService.updateAll(command);
+        fileMetaDataService.updateAll(List.of(id1.toString(), id2.toString()), domainType, entityId);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
@@ -127,10 +121,8 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                         .sample()
         ));
 
-        UpdateAllFileMetaDataCommand command =
-                new UpdateAllFileMetaDataCommand(List.of(id1.toString()), domainType, entityId);
         //when
-        facadeFileMetaDataService.updateAll(command);
+        fileMetaDataService.updateAll(List.of(id1.toString()), domainType, entityId);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
@@ -165,10 +157,8 @@ class FacadeFileMetaDataServiceImplTest extends TestContainerSupport {
                         .sample()
         ));
 
-        UpdateAllFileMetaDataCommand command =
-                new UpdateAllFileMetaDataCommand(List.of(), domainType, entityId);
         //when
-        facadeFileMetaDataService.updateAll(command);
+        fileMetaDataService.updateAll(List.of(), domainType, entityId);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
