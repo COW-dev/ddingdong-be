@@ -1,51 +1,19 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
-import static ddingdong.ddingdongBE.common.constant.PageConstant.DEFAULT_DOCUMENT_PAGE_SIZE;
-
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
-import ddingdong.ddingdongBE.domain.documents.repository.DocumentRepository;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class DocumentService {
+public interface DocumentService {
 
-    private final DocumentRepository documentRepository;
+    Long create(Document document);
 
-    @Transactional
-    public Long create(Document document) {
-        Document createdDocument = documentRepository.save(document);
-        return createdDocument.getId();
-    }
+    List<Document> getDocumentListByPage(int page, int limit);
 
-    public List<Document> getDocumentListByPage(int page, int limit) {
-        int offset = (page - 1) * limit;
-        return documentRepository.findAllByPage(limit, offset);
-    }
+    int getNoticePageCount();
 
-    public int getNoticePageCount() {
-        int totalCount = documentRepository.countBy();
-        return (totalCount + DEFAULT_DOCUMENT_PAGE_SIZE - 1) / DEFAULT_DOCUMENT_PAGE_SIZE;
-    }
+    Document getById(Long documentId);
 
-    public Document getById(Long documentId) {
-        return documentRepository.findById(documentId)
-            .orElseThrow(() -> new ResourceNotFound("해당 Document(ID: " + documentId + ")" + "를 찾을 수 없습니다."));
-    }
+    void update(Document document, Document updatedDocument);
 
-    @Transactional
-    public void update(Document document, Document updatedDocument) {
-        document.updateDocument(updatedDocument);
-    }
-
-    @Transactional
-    public void delete(Long documentId) {
-        Document document = getById(documentId);
-        documentRepository.delete(document);
-    }
+    void delete(Long documentId);
 }

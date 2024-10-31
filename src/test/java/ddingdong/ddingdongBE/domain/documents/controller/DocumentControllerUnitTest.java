@@ -31,7 +31,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         );
         int totalPageCount = 10;
         DocumentListPagingQuery queries = DocumentListPagingQuery.of(documents, totalPageCount);
-        when(facadeDocumentService.getDocumentList(any())).thenReturn(queries);
+        when(facadeDocumentServiceImpl.getDocumentList(any())).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/documents?page=1&limit=10")
