@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.documents.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,7 +11,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -43,7 +41,7 @@ public class Document extends BaseEntity {
 
 
     @Builder
-    private Document(Long id, User user, String title, List<FileInfo> fileInfos, LocalDateTime createdAt) {
+    private Document(Long id, User user, String title, LocalDateTime createdAt) {
         this.id = id;
         this.user = user;
         this.title = title;

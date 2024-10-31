@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.documents.service;
 
+import static ddingdong.ddingdongBE.common.constant.PageConstant.DEFAULT_DOCUMENT_PAGE_SIZE;
+
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.repository.DocumentRepository;
@@ -24,6 +26,11 @@ public class DocumentService {
     public List<Document> getDocumentListByPage(int page, int limit) {
         int offset = (page - 1) * limit;
         return documentRepository.findAllByPage(limit, offset);
+    }
+
+    public int getNoticePageCount() {
+        int totalCount = documentRepository.countBy();
+        return (totalCount + DEFAULT_DOCUMENT_PAGE_SIZE - 1) / DEFAULT_DOCUMENT_PAGE_SIZE;
     }
 
     public Document getById(Long documentId) {

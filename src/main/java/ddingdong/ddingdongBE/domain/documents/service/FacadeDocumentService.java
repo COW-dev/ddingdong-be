@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.documents.service;
 
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.GetDocumentListCommand;
-import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListPagingQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -23,11 +23,10 @@ public class FacadeDocumentService {
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
-    public List<DocumentListQuery> getDocumentList(GetDocumentListCommand command) {
+    public DocumentListPagingQuery getDocumentList(GetDocumentListCommand command) {
         List<Document> documents = documentService.getDocumentListByPage(command.page(), command.limit());
-        return documents.stream()
-            .map(DocumentListQuery::from)
-            .toList();
+        int totalPageCount = documentService.getNoticePageCount();
+        return DocumentListPagingQuery.of(documents, totalPageCount);
     }
 
     public DocumentQuery getDocument(Long documentId) {
@@ -37,7 +36,7 @@ public class FacadeDocumentService {
     }
 
     private List<UploadedFileUrlAndNameQuery> getFileInfos(Long documentId) {
-        List<FileMetaData> fileMetaDatas = fileMetaDataService.findAllByEntityTypeAndEntityId(
+        List<FileMetaData> fileMetaDatas = fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(
                 DomainType.DOCUMENT_FILE, documentId);
         return fileMetaDatas.stream()
                 .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
