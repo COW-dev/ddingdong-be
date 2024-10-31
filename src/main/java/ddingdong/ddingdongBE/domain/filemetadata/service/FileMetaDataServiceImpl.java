@@ -33,12 +33,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     @Override
     public void updateToCoupled(List<String> ids, DomainType domainType, Long entityId) {
-        List<UUID> fileMetaDataIds = toUUIDs(ids);
-        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
-        if (fileMetaDatas.isEmpty()) {
-            return;
-        }
-        fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(COUPLED));
+        ids.forEach(id -> {
+            updateToCoupled(id, domainType, entityId);
+        });
     }
 
     @Override
@@ -48,6 +45,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         if (fileMetaData == null) {
             return;
         }
+        fileMetaData.updateCoupledEntityInfo(domainType, entityId);
         fileMetaData.updateStatus(COUPLED);
     }
 
@@ -76,11 +74,5 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             fileMetaData.updateStatus(DELETED);
             fileMetaDataRepository.delete(fileMetaData);
         });
-    }
-
-    private List<UUID> toUUIDs(List<String> ids) {
-        return ids.stream()
-                .map(UUID::fromString)
-                .toList();
     }
 }
