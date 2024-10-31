@@ -13,5 +13,5 @@ public interface FileMetaDataService {
 
     void updateAll(List<String> ids, DomainType domainType, Long entityId);
 
-
+    void delete(DomainType domainType, Long entityId);
 }

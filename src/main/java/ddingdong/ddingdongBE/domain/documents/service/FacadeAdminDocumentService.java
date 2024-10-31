@@ -33,5 +33,6 @@ public class FacadeAdminDocumentService {
     @Transactional
     public void delete(Long documentId) {
         documentService.delete(documentId);
+        fileMetaDataService.delete(DomainType.DOCUMENT_FILE, documentId);
     }
 }

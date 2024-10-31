@@ -61,4 +61,10 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
                 });
     }
 
+    @Override
+    public void delete(DomainType domainType, Long entityId) {
+        List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
+        fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
+    }
+
 }
