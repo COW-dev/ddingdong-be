@@ -38,7 +38,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
     public List<AdminClubListQuery> findAll() {
         return clubService.findAll().stream()
                 .map(club -> {
-                    UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(
+                    UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(
                                     DomainType.CLUB_PROFILE, club.getId())
                             .stream()
                             .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))

@@ -55,7 +55,7 @@ public class FileMetaData extends BaseEntity {
         this.fileCategory = fileCategory;
     }
 
-    public static FileMetaData createFending(UUID id, String fileKey, String fileName) {
+    public static FileMetaData createPending(UUID id, String fileKey, String fileName) {
         return FileMetaData.builder()
                 .id(id)
                 .fileKey(fileKey)

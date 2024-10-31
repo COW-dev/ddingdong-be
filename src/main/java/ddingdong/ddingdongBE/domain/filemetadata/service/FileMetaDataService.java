@@ -9,7 +9,7 @@ public interface FileMetaDataService {
 
     UUID create(FileMetaData fileMetaData);
 
-    List<FileMetaData> getCoupledAllByEntityTypeAndEntityId(DomainType domainType, Long entityId);
+    List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     void updateAll(List<String> ids, DomainType domainType, Long entityId);
 

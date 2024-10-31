@@ -42,7 +42,7 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     }
 
     private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
-        return fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(domainType, clubId)
+        return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
                 .stream()
                 .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .findFirst()

@@ -34,7 +34,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
     void create() {
         //given
         UUID id = UuidCreator.getTimeOrderedEpoch();
-        FileMetaData fileMetaData = FileMetaData.createFending(id, "local/file/2024-01-01/" + id, "test.jpg");
+        FileMetaData fileMetaData = FileMetaData.createPending(id, "local/file/2024-01-01/" + id, "test.jpg");
 
         //when
         UUID createdFileMetaDataId = fileMetaDataService.create(fileMetaData);
@@ -46,7 +46,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
 
     @DisplayName("FileMetaData 조회")
     @Test
-    void getCoupledAllByEntityTypeAndEntityId() {
+    void getCoupledAllByDomainTypeAndEntityId() {
         //given
         DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
@@ -58,7 +58,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
 
         //when
         List<FileMetaData> result =
-                fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(domainType, entityId);
+                fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
 
         //then
         assertThat(result).hasSize(3);

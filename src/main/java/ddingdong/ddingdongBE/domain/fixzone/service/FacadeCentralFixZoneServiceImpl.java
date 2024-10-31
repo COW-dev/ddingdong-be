@@ -57,13 +57,13 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         FixZone fixZone = fixZoneService.getById(fixZoneId);
         Club club = fixZone.getClub();
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
-                .getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
+                .getCoupledAllByDomainTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
                 .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .toList();
 
         UploadedFileUrlQuery clubProfileImageKey = fileMetaDataService
-                .getCoupledAllByEntityTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
+                .getCoupledAllByDomainTypeAndEntityId(DomainType.CLUB_PROFILE, club.getId())
                 .stream()
                 .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
                 .findFirst()
@@ -87,7 +87,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Transactional
     public void delete(Long fixZoneId) {
         fixZoneService.delete(fixZoneId);
-        fileMetaDataService.getCoupledAllByEntityTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
+        fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .forEach(fileMetaData -> fileMetaData.updateStatus(FileStatus.DELETED));
     }
 

@@ -29,7 +29,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
-    public List<FileMetaData> getCoupledAllByEntityTypeAndEntityId(DomainType domainType, Long entityId) {
+    public List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 

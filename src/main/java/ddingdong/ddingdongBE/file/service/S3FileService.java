@@ -50,7 +50,7 @@ public class S3FileService {
         String key = generateKey(contentType, command, id);
         Date expiration = getExpirationTime();
 
-        fileMetaDataService.create(FileMetaData.createFending(id, key, command.fileName()));
+        fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
 
         GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
         return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
