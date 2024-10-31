@@ -36,9 +36,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Override
     @Transactional
     public void updateAll(List<String> ids, DomainType domainType, Long entityId) {
-        if(ids == null || ids.isEmpty()) {
-            return;
-        }
         List<FileMetaData> fileMetaDataList =
                 fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
         Set<UUID> existingIds = fileMetaDataList.stream()
