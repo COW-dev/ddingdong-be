@@ -43,6 +43,9 @@ public record AdminClubListResponse(
     ) {
 
         public static AdminClubListImageUrlResponse from(UploadedFileUrlQuery query) {
+            if(query == null){
+                return null;
+            }
             return new AdminClubListImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 
