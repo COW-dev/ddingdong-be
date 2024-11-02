@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.notice.controller.dto.request;
 
-import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.UpdateNoticeCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -15,11 +14,11 @@ public record UpdateNoticeRequest(
     @Schema(description = "공지사항 내용", example = "공지사항 내용")
     String content,
 
-    @Schema(description = "공지사항 이미지 key 목록")
-    List<String> imageKeys,
+    @Schema(description = "공지사항 이미지 식별자 목록", example = "[\"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\", \"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\"]")
+    List<String> images,
 
-    @Schema(description = "공지사항 파일 정보 목록")
-    List<FileInfo> fileInfos
+    @Schema(description = "공지사항 파일 식별자 목록", example = "[\"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\", \"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\"]")
+    List<String> files
 ) {
 
     public UpdateNoticeCommand toCommand(Long noticeId) {
@@ -27,8 +26,8 @@ public record UpdateNoticeRequest(
             .noticeId(noticeId)
             .title(title)
             .content(content)
-            .imageKeys(imageKeys)
-            .fileInfos(fileInfos)
+            .images(images)
+            .files(files)
             .build();
     }
 

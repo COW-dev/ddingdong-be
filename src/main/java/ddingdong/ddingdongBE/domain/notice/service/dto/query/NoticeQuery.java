@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.notice.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -11,20 +12,18 @@ public record NoticeQuery(
     String title,
     String content,
     LocalDateTime createdAt,
-    List<UploadedFileUrlQuery> imageUrls,
-    List<String> fileNames,
-    List<UploadedFileUrlQuery> fileUrls
+    List<UploadedFileUrlQuery> images,
+    List<UploadedFileUrlAndNameQuery> files
 ) {
 
-    public static NoticeQuery of(Notice notice, List<UploadedFileUrlQuery> imageUrls,
-        List<String> fileNames, List<UploadedFileUrlQuery> fileUrls) {
+    public static NoticeQuery of(Notice notice, List<UploadedFileUrlQuery> images,
+        List<UploadedFileUrlAndNameQuery> files) {
         return NoticeQuery.builder()
             .title(notice.getTitle())
             .content(notice.getContent())
             .createdAt(notice.getCreatedAt())
-            .imageUrls(imageUrls)
-            .fileNames(fileNames)
-            .fileUrls(fileUrls)
+            .images(images)
+            .files(files)
             .build();
     }
 }

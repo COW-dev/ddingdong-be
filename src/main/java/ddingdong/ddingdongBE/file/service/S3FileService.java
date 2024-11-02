@@ -12,17 +12,17 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j
@@ -80,6 +80,21 @@ public class S3FileService {
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
         return new UploadedFileUrlQuery(splitKey[splitKey.length - 1], originUrl, cdnUrl);
+    }
+
+    public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(String key, String fileName) {
+        if (key == null) {
+            return null;
+        }
+        String region = amazonS3Client.getRegionName();
+        String[] splitKey = key.split("/");
+        String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
+        String cdnUrl = FILE_CDN_URL +
+            splitKey[splitKey.length - 3] + "/" +
+            splitKey[splitKey.length - 2] + "/" +
+            splitKey[splitKey.length - 1];
+        return new UploadedFileUrlAndNameQuery(splitKey[splitKey.length - 1], fileName, originUrl,
+            cdnUrl);
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

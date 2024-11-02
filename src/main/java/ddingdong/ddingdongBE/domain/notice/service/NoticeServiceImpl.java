@@ -19,8 +19,8 @@ public class NoticeServiceImpl implements NoticeService {
 
     @Override
     @Transactional
-    public Notice save(Notice notice) {
-        return noticeRepository.save(notice);
+    public Long save(Notice notice) {
+        return noticeRepository.save(notice).getId();
     }
 
     @Override
