@@ -11,7 +11,13 @@ public interface FileMetaDataService {
 
     List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
-    void updateAll(List<String> ids, DomainType domainType, Long entityId);
+    void updateToCoupled(List<String> ids, DomainType domainType, Long entityId);
 
-    void delete(DomainType domainType, Long entityId);
+    void updateToCoupled(String id, DomainType domainType, Long entityId);
+
+    void updateToDelete(DomainType domainType, Long entityId);
+
+    void update(String id, DomainType domainType, Long entityId);
+
+    void update(List<String> ids, DomainType domainType, Long entityId);
 }
