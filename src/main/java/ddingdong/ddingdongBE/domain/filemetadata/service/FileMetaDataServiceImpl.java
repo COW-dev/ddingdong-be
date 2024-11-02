@@ -32,14 +32,14 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
-    public void updateToCoupled(List<String> ids, DomainType domainType, Long entityId) {
+    public void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId) {
         ids.forEach(id -> {
-            updateToCoupled(id, domainType, entityId);
+            updateStatusToCoupled(id, domainType, entityId);
         });
     }
 
     @Override
-    public void updateToCoupled(String id, DomainType domainType, Long entityId) {
+    public void updateStatusToCoupled(String id, DomainType domainType, Long entityId) {
         UUID fileMetaDataId = UUID.fromString(id);
         FileMetaData fileMetaData = fileMetaDataRepository.findById(fileMetaDataId).orElse(null);
         if (fileMetaData == null) {
@@ -51,24 +51,24 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     @Override
     public void update(String id, DomainType domainType, Long entityId) {
-        updateToDelete(domainType, entityId);
+        updateStatusToDelete(domainType, entityId);
         if (id == null) {
             return;
         }
-        updateToCoupled(id, domainType, entityId);
+        updateStatusToCoupled(id, domainType, entityId);
     }
 
     @Override
     public void update(List<String> ids, DomainType domainType, Long entityId) {
-        updateToDelete(domainType, entityId);
+        updateStatusToDelete(domainType, entityId);
         if (ids == null || ids.isEmpty()) {
             return;
         }
-        updateToCoupled(ids, domainType, entityId);
+        updateStatusToCoupled(ids, domainType, entityId);
     }
 
     @Override
-    public void updateToDelete(DomainType domainType, Long entityId) {
+    public void updateStatusToDelete(DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
