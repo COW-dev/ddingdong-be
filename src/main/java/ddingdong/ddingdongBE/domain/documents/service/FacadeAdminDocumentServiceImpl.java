@@ -21,7 +21,7 @@ public class FacadeAdminDocumentServiceImpl implements FacadeAdminDocumentServic
     @Override
     public void create(CreateDocumentCommand command) {
         Long documentId = documentService.create(command.toEntity());
-        fileMetaDataService.updateAll(command.fileIds(), DomainType.DOCUMENT_FILE, documentId);
+        fileMetaDataService.updateToCoupled(command.fileIds(), DomainType.DOCUMENT_FILE, documentId);
     }
 
     @Transactional
@@ -29,13 +29,13 @@ public class FacadeAdminDocumentServiceImpl implements FacadeAdminDocumentServic
     public void update(UpdateDocumentCommand command) {
         Document document = documentService.getById(command.documentId());
         documentService.update(document, command.toEntity());
-        fileMetaDataService.updateAll(command.fileIds(), DomainType.DOCUMENT_FILE, command.documentId());
+        fileMetaDataService.update(command.fileIds(), DomainType.DOCUMENT_FILE, command.documentId());
     }
 
     @Transactional
     @Override
     public void delete(Long documentId) {
         documentService.delete(documentId);
-        fileMetaDataService.delete(DomainType.DOCUMENT_FILE, documentId);
+        fileMetaDataService.updateToDelete(DomainType.DOCUMENT_FILE, documentId);
     }
 }
