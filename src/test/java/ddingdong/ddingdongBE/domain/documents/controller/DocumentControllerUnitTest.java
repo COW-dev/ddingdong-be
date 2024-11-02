@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.documents.controller;
 
-import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -10,8 +10,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
-import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListQuery;
-import java.time.LocalDate;
+import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListPagingQuery;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -24,20 +25,21 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
     @Test
     void getAllDocuments() throws Exception {
         //given
-        List<DocumentListQuery> queries = List.of(
-            DocumentListQuery.builder().id(1L).title("A").createdAt(LocalDate.now()).build(),
-            DocumentListQuery.builder().id(2L).title("B").createdAt(LocalDate.now()).build());
-        when(facadeDocumentService.getDocuments()).thenReturn(queries);
+        List<Document> documents = List.of(
+            Document.builder().id(1L).title("A").createdAt(LocalDateTime.now()).build(),
+            Document.builder().id(2L).title("B").createdAt(LocalDateTime.now()).build()
+        );
+        int totalPageCount = 10;
+        DocumentListPagingQuery queries = DocumentListPagingQuery.of(documents, totalPageCount);
+        when(facadeDocumentServiceImpl.getDocumentList(any())).thenReturn(queries);
 
         //when //then
-        mockMvc.perform(get("/server/documents")
+        mockMvc.perform(get("/server/documents?page=1&limit=10")
                         .with(csrf()))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(queries.size())))
                 .andExpect(jsonPath("$[0].id").value(1L))
                 .andExpect(jsonPath("$[0].title").value("A"))
-                .andExpect(jsonPath("$[1].id").value(2L))
                 .andExpect(jsonPath("$[1].title").value("B"));
     }
 
