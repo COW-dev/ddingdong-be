@@ -38,9 +38,7 @@ public class FacadeClubActivityReportService {
         String term,
         String clubName
     ) {
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(
-            clubName,
-            term);
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(clubName, term);
         return activityReports.stream()
             .map(this::parseToQuery)
             .toList();
@@ -72,6 +70,7 @@ public class FacadeClubActivityReportService {
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             Long activityId = activityReportService.create(activityReport);
+
             fileMetaDataService.updateToCoupled(command.imageId(), DomainType.ACTIVITY_REPORT_IMAGE, activityId);
         });
     }
@@ -102,26 +101,13 @@ public class FacadeClubActivityReportService {
     @Transactional
     public void delete(User user, String term) {
         Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(
-            club.getName(),
-            term);
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
         activityReportService.deleteAll(activityReports);
     }
 
-    private void updateFileMetaDatas(List<ActivityReport> activityReports) {
-        List<>
-    }
-
-    private String getRequestTerm(List<CreateActivityReportCommand> commands) {
-        return commands.stream()
-            .findFirst()
-            .map(CreateActivityReportCommand::term)
-            .orElse(null);
-    }
-
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        UploadedFileUrlQuery imageUrl = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
-        return ActivityReportQuery.of(activityReport, imageUrl);
+        UploadedFileUrlQuery image = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
+        return ActivityReportQuery.of(activityReport, image);
     }
 
     private List<ActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {

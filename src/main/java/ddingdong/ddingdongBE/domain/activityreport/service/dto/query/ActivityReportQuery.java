@@ -16,11 +16,11 @@ public record ActivityReportQuery(
     String place,
     LocalDateTime startDate,
     LocalDateTime endDate,
-    UploadedFileUrlQuery imageUrl,
+    UploadedFileUrlQuery image,
     List<Participant> participants
 ) {
 
-  public static ActivityReportQuery of(ActivityReport activityReport, UploadedFileUrlQuery imageUrl) {
+  public static ActivityReportQuery of(ActivityReport activityReport, UploadedFileUrlQuery image) {
     return ActivityReportQuery.builder()
         .id(activityReport.getId())
         .createdAt(activityReport.getCreatedAt())
@@ -29,7 +29,7 @@ public record ActivityReportQuery(
         .place(activityReport.getPlace())
         .startDate(activityReport.getStartDate())
         .endDate(activityReport.getEndDate())
-        .imageUrl(imageUrl)
+        .image(image)
         .participants(activityReport.getParticipants())
         .build();
   }

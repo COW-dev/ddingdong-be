@@ -35,8 +35,8 @@ public record ActivityReportResponse(
     @Schema(description = "활동 종료 일자", example = "2024-01-04")
     LocalDateTime endDate,
 
-    @Schema(description = "활동보고서 이미지 URL", implementation = ActivityReportImageUrlResponse.class)
-    ActivityReportImageUrlResponse imageUrl,
+    @Schema(description = "활동보고서 이미지 URL", implementation = ActivityReportImageResponse.class)
+    ActivityReportImageResponse image,
 
     @Schema(description = "활동 참여자 목록",
         example = """
@@ -58,7 +58,7 @@ public record ActivityReportResponse(
             .place(query.place())
             .startDate(query.startDate())
             .endDate(query.endDate())
-            .imageUrl(ActivityReportImageUrlResponse.from(query.imageUrl()))
+            .image(ActivityReportImageResponse.from(query.image()))
             .participants(query.participants())
             .build();
     }
@@ -67,19 +67,20 @@ public record ActivityReportResponse(
         name = "ActivityReportImageUrlResponse",
         description = "활동보고서 이미지 URL 조회 응답"
     )
-    record ActivityReportImageUrlResponse(
+    record ActivityReportImageResponse(
+        @Schema(description = "활동보고서 이미지 ID", example = "uuid")
+        String id,
         @Schema(description = "원본 url", example = "url")
         String originUrl,
         @Schema(description = "cdn url", example = "url")
         String cdnUrl
     ) {
 
-        public static ActivityReportImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static ActivityReportImageResponse from(UploadedFileUrlQuery query) {
             if (query == null) {
                 return null;
             }
-            return new ActivityReportImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new ActivityReportImageResponse(query.id(), query.originUrl(), query.cdnUrl());
         }
-
     }
 }
