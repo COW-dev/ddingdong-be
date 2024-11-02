@@ -103,6 +103,9 @@ public class FacadeClubActivityReportService {
         Club club = clubService.getByUserId(user.getId());
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
         activityReportService.deleteAll(activityReports);
+        activityReports.forEach(activityReport -> {
+           fileMetaDataService.updateToDelete(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
+        });
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
