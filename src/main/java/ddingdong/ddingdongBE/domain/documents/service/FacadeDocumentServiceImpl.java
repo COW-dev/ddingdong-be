@@ -26,7 +26,7 @@ public class FacadeDocumentServiceImpl implements FacadeDocumentService {
     @Override
     public DocumentListPagingQuery getDocumentList(GetDocumentListCommand command) {
         List<Document> documents = documentService.getDocumentListByPage(command.page(), command.limit());
-        int totalPageCount = documentService.getNoticePageCount();
+        Long totalPageCount = documentService.getDocumentPageCount();
         return DocumentListPagingQuery.of(documents, totalPageCount);
     }
 

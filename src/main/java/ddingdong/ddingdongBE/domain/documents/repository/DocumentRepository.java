@@ -18,6 +18,4 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             nativeQuery = true
     )
     List<Document> findAllByPage(int limit, int offset);
-
-    int countBy();
 }

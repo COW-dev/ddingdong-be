@@ -8,10 +8,10 @@ import lombok.Builder;
 @Builder
 public record DocumentListPagingQuery(
     List<DocumentInfo> documentInfos,
-    int totalPageCount
+    Long totalPageCount
 ) {
 
-    public static DocumentListPagingQuery of(List<Document> documents, int totalPageCount) {
+    public static DocumentListPagingQuery of(List<Document> documents, Long totalPageCount) {
         List<DocumentInfo> documentInfos = documents.stream()
                 .map(DocumentInfo::from)
                 .toList();

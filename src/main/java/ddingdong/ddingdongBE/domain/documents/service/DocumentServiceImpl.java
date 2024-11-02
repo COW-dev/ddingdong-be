@@ -31,8 +31,8 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public int getNoticePageCount() {
-        int totalCount = documentRepository.countBy();
+    public Long getDocumentPageCount() {
+        Long totalCount = documentRepository.count();
         return (totalCount + DEFAULT_DOCUMENT_PAGE_SIZE - 1) / DEFAULT_DOCUMENT_PAGE_SIZE;
     }
 

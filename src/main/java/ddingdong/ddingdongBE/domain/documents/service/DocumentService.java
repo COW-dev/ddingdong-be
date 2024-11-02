@@ -9,7 +9,7 @@ public interface DocumentService {
 
     List<Document> getDocumentListByPage(int page, int limit);
 
-    int getNoticePageCount();
+    Long getDocumentPageCount();
 
     Document getById(Long documentId);
 

@@ -17,7 +17,7 @@ public record DocumentListResponse(
         @Schema(description = "자료실 정보", implementation = DocumentDto.class)
         List<DocumentDto> documents,
         @Schema(description = "총 페이지 수", example = "10")
-        int totalPageCount
+        Long totalPageCount
 ) {
 
     public static DocumentListResponse from(DocumentListPagingQuery query) {
