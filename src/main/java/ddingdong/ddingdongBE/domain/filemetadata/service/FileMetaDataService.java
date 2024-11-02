@@ -20,6 +20,4 @@ public interface FileMetaDataService {
     void update(String id, DomainType domainType, Long entityId);
 
     void update(List<String> ids, DomainType domainType, Long entityId);
-
-
 }

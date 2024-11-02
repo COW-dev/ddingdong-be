@@ -9,14 +9,13 @@ import lombok.Builder;
 public record CreateDocumentCommand(
     User user,
     String title,
-    List<String> fileKeys
+    List<String> fileIds
 ) {
 
     public Document toEntity() {
         return Document.builder()
             .user(user)
             .title(title)
-            .fileKeys(fileKeys)
             .build();
     }
 }

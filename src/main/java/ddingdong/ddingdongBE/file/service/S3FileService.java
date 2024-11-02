@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
 import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +81,16 @@ public class S3FileService {
                 splitKey[splitKey.length - 2] + "/" +
                 splitKey[splitKey.length - 1];
         return new UploadedFileUrlQuery(splitKey[splitKey.length - 1], originUrl, cdnUrl);
+    }
+
+    public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(String key, String fileName) {
+        UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(key);
+        return new UploadedFileUrlAndNameQuery(
+            fileUrlQuery.id(),
+            fileName,
+            fileUrlQuery.originUrl(),
+            fileUrlQuery.cdnUrl()
+        );
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
