@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileCategory.ACTIVITY_REPORT_IMAGE;
-
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
@@ -12,7 +10,7 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
@@ -20,6 +18,7 @@ import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -72,8 +71,8 @@ public class FacadeClubActivityReportService {
         Club club = clubService.getByUserId(user.getId());
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
-            activityReportService.create(activityReport);
-            fileMetaDataService.updateToCoupled(command.imageId(), DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
+            Long activityId = activityReportService.create(activityReport);
+            fileMetaDataService.updateToCoupled(command.imageId(), DomainType.ACTIVITY_REPORT_IMAGE, activityId);
         });
     }
 
@@ -84,15 +83,20 @@ public class FacadeClubActivityReportService {
         List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
-
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
-        List<ActivityReport> updateActivityReports = commands.stream()
-            .map(UpdateActivityReportCommand::toEntity)
-            .toList();
 
-        activityReportService.update(activityReports, updateActivityReports);
+        IntStream.range(0, activityReports.size())
+            .forEach(index -> {
+                ActivityReport activityReport = activityReports.get(index);
+                ActivityReport updateActivityReport = commands.get(index).toEntity();
+                activityReportService.update(activityReport, updateActivityReport);
 
-        createFileMetaDatas(updateActivityReports);
+                fileMetaDataService.update(
+                    commands.get(index).imageId(),
+                    DomainType.ACTIVITY_REPORT_IMAGE,
+                    activityReport.getId()
+                );
+            });
     }
 
     @Transactional
@@ -104,17 +108,8 @@ public class FacadeClubActivityReportService {
         activityReportService.deleteAll(activityReports);
     }
 
-    private void createFileMetaDatas(List<ActivityReport> activityReports) {
-        activityReports.forEach(activityReport -> {
-            createFileMetaData(activityReport.getImageKey());
-        });
-    }
-
-    private void createFileMetaData(String key) {
-//        if (key == null) {
-//            return;
-//        }
-//        fileMetaDataService.save(FileMetaData.of(key, ACTIVITY_REPORT_IMAGE));
+    private void updateFileMetaDatas(List<ActivityReport> activityReports) {
+        List<>
     }
 
     private String getRequestTerm(List<CreateActivityReportCommand> commands) {
