@@ -7,9 +7,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,31 +32,47 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
-    @Transactional
-    public void updateAll(List<String> ids, DomainType domainType, Long entityId) {
-        List<FileMetaData> fileMetaDataList =
-                fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
-        Set<UUID> existingIds = fileMetaDataList.stream()
-                .map(FileMetaData::getId)
-                .collect(Collectors.toSet());
-        Set<UUID> newIds = ids.stream()
-                .map(UUID::fromString)
-                .collect(Collectors.toSet());
-
-        // delete files
-        fileMetaDataList.stream()
-                .filter(fileMetaData -> !newIds.contains(fileMetaData.getId()))
-                .forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
-
-        // couple files
-        fileMetaDataRepository.findByIdIn(
-                        newIds.stream()
-                                .filter(id -> !existingIds.contains(id))
-                                .toList())
-                .forEach(fileMetaData -> {
-                    fileMetaData.updateCoupledEntityInfo(domainType, entityId);
-                    fileMetaData.updateStatus(COUPLED);
-                });
+    public void updateToCoupled(List<String> ids, DomainType domainType, Long entityId) {
+        ids.forEach(id -> {
+            updateToCoupled(id, domainType, entityId);
+        });
     }
 
+    @Override
+    public void updateToCoupled(String id, DomainType domainType, Long entityId) {
+        UUID fileMetaDataId = UUID.fromString(id);
+        FileMetaData fileMetaData = fileMetaDataRepository.findById(fileMetaDataId).orElse(null);
+        if (fileMetaData == null) {
+            return;
+        }
+        fileMetaData.updateCoupledEntityInfo(domainType, entityId);
+        fileMetaData.updateStatus(COUPLED);
+    }
+
+    @Override
+    public void update(String id, DomainType domainType, Long entityId) {
+        updateToDelete(domainType, entityId);
+        if (id == null) {
+            return;
+        }
+        updateToCoupled(id, domainType, entityId);
+    }
+
+    @Override
+    public void update(List<String> ids, DomainType domainType, Long entityId) {
+        updateToDelete(domainType, entityId);
+        if (ids == null || ids.isEmpty()) {
+            return;
+        }
+        updateToCoupled(ids, domainType, entityId);
+    }
+
+    @Override
+    public void updateToDelete(DomainType domainType, Long entityId) {
+        List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
+        fileMetaDatas.forEach(fileMetaData -> {
+            fileMetaData.updateStatus(DELETED);
+            fileMetaDataRepository.delete(fileMetaData);
+        });
+    }
 }

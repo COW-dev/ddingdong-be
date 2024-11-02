@@ -11,6 +11,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -26,6 +27,8 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
     private FileMetaDataService fileMetaDataService;
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
+    @Autowired
+    private EntityManager em;
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
@@ -86,10 +89,12 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
                         .set("fileStatus", FileStatus.PENDING)
                         .sample()
         ));
-
+            em.flush();
+            em.clear();
         //when
-        fileMetaDataService.updateAll(List.of(id1.toString(), id2.toString()), domainType, entityId);
-
+        fileMetaDataService.updateToCoupled(List.of(id1.toString(), id2.toString()), domainType, entityId);
+        em.flush();
+        em.clear();
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
                 domainType, entityId, FileStatus.COUPLED);
@@ -122,16 +127,20 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         ));
 
         //when
-        fileMetaDataService.updateAll(List.of(id1.toString()), domainType, entityId);
+        fileMetaDataService.update(List.of(id1.toString()), domainType, entityId);
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
                 domainType, entityId, FileStatus.COUPLED);
-        FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElseThrow();
+//        FileMetaData attachedFileMetaData = (FileMetaData) em.createNativeQuery("select * from ddingdong.file_meta_data where id = :id",
+//                        FileMetaData.class)
+//                .setParameter("id", id2)
+//                .getSingleResult();
+        FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElse(null);
         assertThat(result).hasSize(1)
                 .extracting("id", "fileStatus")
                 .contains(tuple(id1, FileStatus.COUPLED));
-        assertThat(attachedFileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
+        assertThat(attachedFileMetaData).isEqualTo(null);
     }
 
     @DisplayName("FileMetaData 수정 - DELETED")
@@ -158,16 +167,21 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         ));
 
         //when
-        fileMetaDataService.updateAll(List.of(), domainType, entityId);
-
+        fileMetaDataService.updateToDelete(domainType, entityId);
+        em.flush();
         //then
+//        List<FileMetaData> result = (List<FileMetaData>) em.createNativeQuery("select * from ddingdong.file_meta_data where id IN (:ids)",
+//                FileMetaData.class)
+//                .setParameter("ids", Arrays.asList(id1, id2))
+//                .getResultList();
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
-        assertThat(result).hasSize(2)
-                .allSatisfy(fileMetaData -> {
-                    assertThat(fileMetaData.getDomainType()).isEqualTo(domainType);
-                    assertThat(fileMetaData.getEntityId()).isEqualTo(entityId);
-                    assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
-                });
+        assertThat(result).isEmpty();
+//        assertThat(result).hasSize(2)
+//                .allSatisfy(fileMetaData -> {
+//                    assertThat(fileMetaData.getDomainType()).isEqualTo(domainType);
+//                    assertThat(fileMetaData.getEntityId()).isEqualTo(entityId);
+//                    assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
+//                });
     }
 
 
