@@ -70,11 +70,10 @@ public class FacadeClubActivityReportService {
         List<CreateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
-        String term = getRequestTerm(commands);
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
             activityReportService.create(activityReport);
-            createFileMetaData(command.imageKey());
+            fileMetaDataService.updateToCoupled(command.imageId(), DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
         });
     }
 
