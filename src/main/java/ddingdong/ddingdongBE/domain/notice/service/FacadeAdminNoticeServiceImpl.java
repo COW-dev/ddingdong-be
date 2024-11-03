@@ -33,12 +33,9 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
         Notice notice = noticeService.getById(command.noticeId());
         notice.update(command.toEntity());
 
-        fileMetaDataService.updateToDelete(DomainType.NOTICE_IMAGE, command.noticeId());
-        fileMetaDataService.updateToDelete(DomainType.NOTICE_FILE, command.noticeId());
-
-        fileMetaDataService.updateToCoupled(command.images(), DomainType.NOTICE_IMAGE,
+        fileMetaDataService.update(command.images(), DomainType.NOTICE_IMAGE,
             command.noticeId());
-        fileMetaDataService.updateToCoupled(command.images(), DomainType.NOTICE_FILE,
+        fileMetaDataService.update(command.images(), DomainType.NOTICE_FILE,
             command.noticeId());
     }
 

@@ -6,6 +6,7 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.DELETE
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -31,6 +33,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 
+    @Transactional
     @Override
     public void updateToCoupled(List<String> ids, DomainType domainType, Long entityId) {
         ids.forEach(id -> {
@@ -38,6 +41,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         });
     }
 
+    @Transactional
     @Override
     public void updateToCoupled(String id, DomainType domainType, Long entityId) {
         UUID fileMetaDataId = UUID.fromString(id);
@@ -49,6 +53,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaData.updateStatus(COUPLED);
     }
 
+    @Transactional
     @Override
     public void update(String id, DomainType domainType, Long entityId) {
         updateToDelete(domainType, entityId);
@@ -58,6 +63,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         updateToCoupled(id, domainType, entityId);
     }
 
+    @Transactional
     @Override
     public void update(List<String> ids, DomainType domainType, Long entityId) {
         updateToDelete(domainType, entityId);
@@ -67,12 +73,15 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         updateToCoupled(ids, domainType, entityId);
     }
 
+    @Transactional
     @Override
     public void updateToDelete(DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
+            entityManager.flush();
             fileMetaDataRepository.delete(fileMetaData);
         });
     }
+
 }
