@@ -12,13 +12,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class DocumentServiceTest extends TestContainerSupport {
+class DocumentServiceImplTest extends TestContainerSupport {
 
     @Autowired
     private DocumentRepository documentRepository;
 
     @Autowired
-    private DocumentService documentService;
+    private DocumentServiceImpl documentServiceImpl;
 
 
     @DisplayName("document(자료)를 생성한다.")
@@ -30,7 +30,7 @@ class DocumentServiceTest extends TestContainerSupport {
                 .build();
 
         //when
-        Long createdDocumentId = documentService.create(document);
+        Long createdDocumentId = documentServiceImpl.create(document);
 
         //then
         Optional<Document> foundDocument = documentRepository.findById(createdDocumentId);
