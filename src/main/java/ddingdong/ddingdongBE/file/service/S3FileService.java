@@ -83,18 +83,13 @@ public class S3FileService {
     }
 
     public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(String key, String fileName) {
-        if (key == null) {
-            return null;
-        }
-        String region = amazonS3Client.getRegionName();
-        String[] splitKey = key.split("/");
-        String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
-        String cdnUrl = FILE_CDN_URL +
-            splitKey[splitKey.length - 3] + "/" +
-            splitKey[splitKey.length - 2] + "/" +
-            splitKey[splitKey.length - 1];
-        return new UploadedFileUrlAndNameQuery(splitKey[splitKey.length - 1], fileName, originUrl,
-            cdnUrl);
+        UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(key);
+        return new UploadedFileUrlAndNameQuery(
+            fileUrlQuery.id(),
+            fileName,
+            fileUrlQuery.originUrl(),
+            fileUrlQuery.cdnUrl()
+        );
     }
 
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {

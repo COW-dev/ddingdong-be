@@ -6,4 +6,5 @@ public enum DomainType {
     FIX_ZONE_IMAGE,
     NOTICE_IMAGE,
     NOTICE_FILE,
+    DOCUMENT_FILE
 }

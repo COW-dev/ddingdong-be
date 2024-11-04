@@ -18,17 +18,16 @@ public record CreateDocumentRequest(
     @Schema(description = "자료 제목", example = "자료 제목입니다")
     String title,
 
-    @NotNull(message = "자료 파일 key는 필수입니다")
-    @Schema(description = "자료 파일 Key", example = "[{serverProfile}/{contentType}/2024-01-01/{authId}/{uuid},"
-        + " {serverProfile}/{contentType}/2024-01-02/{authId}/{uuid}]")
-    List<String> fileKeys
+    @NotNull(message = "자료 ID는 필수입니다")
+    @Schema(description = "자료 ID", example = "uuid")
+    List<String> fileIds
 ) {
 
     public CreateDocumentCommand toCommand(User admin) {
         return CreateDocumentCommand.builder()
             .title(title)
             .user(admin)
-            .fileKeys(fileKeys)
+            .fileIds(fileIds)
             .build();
     }
 }

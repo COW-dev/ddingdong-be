@@ -92,7 +92,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
             em.flush();
             em.clear();
         //when
-        fileMetaDataService.updateToCoupled(List.of(id1.toString(), id2.toString()), domainType, entityId);
+        fileMetaDataService.updateStatusToCoupled(List.of(id1.toString(), id2.toString()), domainType, entityId);
         em.flush();
         em.clear();
         //then
@@ -167,7 +167,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         ));
 
         //when
-        fileMetaDataService.updateToDelete(domainType, entityId);
+        fileMetaDataService.updateStatusToDelete(domainType, entityId);
         em.flush();
         //then
 //        List<FileMetaData> result = (List<FileMetaData>) em.createNativeQuery("select * from ddingdong.file_meta_data where id IN (:ids)",
