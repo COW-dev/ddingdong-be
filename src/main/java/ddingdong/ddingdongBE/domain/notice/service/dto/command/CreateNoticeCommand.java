@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.notice.service.dto.command;
 
-import ddingdong.ddingdongBE.common.vo.FileInfo;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
@@ -11,17 +10,15 @@ public record CreateNoticeCommand(
     User user,
     String title,
     String content,
-    List<String> imageKeys,
-    List<FileInfo> fileInfos
+    List<String> images,
+    List<String> files
 ) {
 
-    public Notice toEntity(String fileInfos) {
+    public Notice toEntity() {
         return Notice.builder()
             .user(user)
             .title(title)
             .content(content)
-            .imageKeys(imageKeys)
-            .fileInfos(fileInfos)
             .build();
     }
 

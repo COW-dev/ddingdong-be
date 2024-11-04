@@ -15,15 +15,14 @@ import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQ
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 @Service
 @Slf4j

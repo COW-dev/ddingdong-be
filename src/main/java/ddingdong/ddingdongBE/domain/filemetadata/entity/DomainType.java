@@ -4,5 +4,7 @@ public enum DomainType {
     CLUB_PROFILE,
     CLUB_INTRODUCTION,
     FIX_ZONE_IMAGE,
+    NOTICE_IMAGE,
+    NOTICE_FILE,
     DOCUMENT_FILE
 }
