@@ -35,7 +35,7 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
 
         fileMetaDataService.update(command.images(), DomainType.NOTICE_IMAGE,
             command.noticeId());
-        fileMetaDataService.update(command.images(), DomainType.NOTICE_FILE,
+        fileMetaDataService.update(command.files(), DomainType.NOTICE_FILE,
             command.noticeId());
     }
 
