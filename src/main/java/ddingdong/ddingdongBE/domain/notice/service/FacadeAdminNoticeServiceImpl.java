@@ -22,9 +22,9 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
         Notice notice = command.toEntity();
         Long createdNoticeId = noticeService.save(notice);
 
-        fileMetaDataService.updateToCoupled(command.images(), DomainType.NOTICE_IMAGE,
+        fileMetaDataService.updateStatusToCoupled(command.images(), DomainType.NOTICE_IMAGE,
             createdNoticeId);
-        fileMetaDataService.updateToCoupled(command.files(), DomainType.NOTICE_FILE,
+        fileMetaDataService.updateStatusToCoupled(command.files(), DomainType.NOTICE_FILE,
             createdNoticeId);
     }
 
@@ -44,8 +44,8 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
         Notice notice = noticeService.getById(noticeId);
         noticeService.delete(notice);
 
-        fileMetaDataService.updateToDelete(DomainType.NOTICE_IMAGE, noticeId);
-        fileMetaDataService.updateToDelete(DomainType.NOTICE_FILE, noticeId);
+        fileMetaDataService.updateStatusToDelete(DomainType.NOTICE_IMAGE, noticeId);
+        fileMetaDataService.updateStatusToDelete(DomainType.NOTICE_FILE, noticeId);
     }
 
 }
