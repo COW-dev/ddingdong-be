@@ -38,7 +38,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Transactional
     @Override
     public void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId) {
-\       List<UUID> fileMetaDataId = toUUIDs(ids);
+        List<UUID> fileMetaDataId = toUUIDs(ids);
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
         if (fileMetaDatas.isEmpty()) {
             log.warn("fileMetaData를 찾을 수 없습니다. requestIds={}", ids);
