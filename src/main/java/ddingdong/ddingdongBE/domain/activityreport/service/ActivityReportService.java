@@ -1,61 +1,22 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
-import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-@Service
-@Transactional(readOnly = true)
-@RequiredArgsConstructor
-public class ActivityReportService {
+public interface ActivityReportService {
 
-    private final ActivityReportRepository activityReportRepository;
+    List<ActivityReport> getActivityReports();
 
-    public List<ActivityReport> getActivityReports() {
-        return activityReportRepository.findAll();
-    }
+    List<ActivityReport> getActivityReportsByClub(final Club club);
 
-    public List<ActivityReport> getActivityReportsByClub(final Club club) {
-        return activityReportRepository.findByClubName(club.getName());
-    }
+    List<ActivityReport> getActivityReport(String clubName, String term);
 
-    public List<ActivityReport> getActivityReport(
-        final String clubName,
-        final String term
-    ) {
-        return activityReportRepository.findByClubNameAndTerm(clubName, term);
-    }
+    Long create(final ActivityReport activityReport);
 
-    @Transactional
-    public Long create(final ActivityReport activityReport) {
-        ActivityReport createdActivityReport = activityReportRepository.save(activityReport);
-        return createdActivityReport.getId();
-    }
+    void update(ActivityReport activityReport, ActivityReport updateActivityReport);
 
-    @Transactional
-    public void update(
-        final ActivityReport activityReport,
-        final ActivityReport updateActivityReport
-    ) {
-        activityReport.update(updateActivityReport);
-    }
+    void deleteAll(List<ActivityReport> activityReports);
 
-    @Transactional
-    public void deleteAll(List<ActivityReport> activityReports) {
-        activityReportRepository.deleteAll(activityReports);
-    }
-
-    public List<ActivityReport> getActivityReportOrThrow(String clubName, String term) {
-        List<ActivityReport> activityReports = getActivityReport(clubName, term);
-        if (activityReports.isEmpty()) {
-            throw new ResourceNotFound("해당 ActivityReports(clubName: " + clubName + ", term: " + term + ")"
-                + "를 찾을 수 없습니다.");
-        }
-        return activityReports;
-    }
+    List<ActivityReport> getActivityReportOrThrow(String clubName, String term);
 }
