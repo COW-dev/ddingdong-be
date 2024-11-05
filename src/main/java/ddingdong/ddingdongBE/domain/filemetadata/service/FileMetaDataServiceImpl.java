@@ -6,6 +6,7 @@ import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.DELETE
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -33,9 +35,10 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 
+    @Transactional
     @Override
-    public void updateToCoupled(List<String> ids, DomainType domainType, Long entityId) {
-        List<UUID> fileMetaDataId = toUUIDs(ids);
+    public void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId) {
+\       List<UUID> fileMetaDataId = toUUIDs(ids);
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
         if (fileMetaDatas.isEmpty()) {
             log.warn("fileMetaData를 찾을 수 없습니다. requestIds={}", ids);
@@ -47,14 +50,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         });
     }
 
-    private List<UUID> toUUIDs(List<String> ids) {
-        return ids.stream()
-            .map(UUID::fromString)
-            .toList();
-    }
-
+    @Transactional
     @Override
-    public void updateToCoupled(String id, DomainType domainType, Long entityId) {
+    public void updateStatusToCoupled(String id, DomainType domainType, Long entityId) {
         UUID fileMetaDataId = UUID.fromString(id);
         FileMetaData fileMetaData = fileMetaDataRepository.findById(fileMetaDataId).orElse(null);
         if (fileMetaData == null) {
@@ -65,32 +63,42 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaData.updateStatus(COUPLED);
     }
 
+    @Transactional
     @Override
     public void update(String id, DomainType domainType, Long entityId) {
-        updateToDelete(domainType, entityId);
+        updateStatusToDelete(domainType, entityId);
         if (id == null) {
-            log.info("업데이트 중 업로드 이미지가 제거되었습니다.");
+            log.info("업데이트 과정에서 이미지가 제거되었습니다.");
             return;
         }
-        updateToCoupled(id, domainType, entityId);
+        updateStatusToCoupled(id, domainType, entityId);
     }
 
+    @Transactional
     @Override
     public void update(List<String> ids, DomainType domainType, Long entityId) {
-        updateToDelete(domainType, entityId);
+        updateStatusToDelete(domainType, entityId);
         if (ids == null || ids.isEmpty()) {
-            log.info("업데이트 중 업로드 이미지가 제거되었습니다.");
+            log.info("업데이트 과정에서 이미지가 제거되었습니다.");
             return;
         }
-        updateToCoupled(ids, domainType, entityId);
+        updateStatusToCoupled(ids, domainType, entityId);
     }
 
+    @Transactional
     @Override
-    public void updateToDelete(DomainType domainType, Long entityId) {
+    public void updateStatusToDelete(DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
+            entityManager.flush();
             fileMetaDataRepository.delete(fileMetaData);
         });
+    }
+
+    private List<UUID> toUUIDs(List<String> ids) {
+        return ids.stream()
+                .map(UUID::fromString)
+                .toList();
     }
 }

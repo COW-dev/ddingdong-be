@@ -5,7 +5,7 @@ import java.util.List;
 
 public interface NoticeService {
 
-    Notice save(Notice notice);
+    Long save(Notice notice);
 
     void delete(Notice notice);
 

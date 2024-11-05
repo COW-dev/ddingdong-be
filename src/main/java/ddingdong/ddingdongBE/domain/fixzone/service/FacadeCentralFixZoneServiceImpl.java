@@ -32,7 +32,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         Club club = clubService.getByUserId(command.userId());
         FixZone createdFixZone = command.toEntity(club);
         Long createdFixZoneId = fixZoneService.save(createdFixZone);
-        fileMetaDataService.updateToCoupled(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, createdFixZoneId);
+        fileMetaDataService.updateStatusToCoupled(command.fixZoneImageIds(), DomainType.FIX_ZONE_IMAGE, createdFixZoneId);
         return createdFixZoneId;
     }
 
@@ -77,6 +77,6 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
     @Transactional
     public void delete(Long fixZoneId) {
         fixZoneService.delete(fixZoneId);
-        fileMetaDataService.updateToDelete(DomainType.FIX_ZONE_IMAGE, fixZoneId);
+        fileMetaDataService.updateStatusToDelete(DomainType.FIX_ZONE_IMAGE, fixZoneId);
     }
 }

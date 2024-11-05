@@ -54,7 +54,8 @@ public record DocumentResponse(
             if (query == null) {
                 return null;
             }
-            return new DocumentFileUrlsResponse(query.id(), query.name(), query.originUrl(), query.cdnUrl());
+            return new DocumentFileUrlsResponse(query.id(), query.fileName(), query.originUrl(),
+                query.cdnUrl());
         }
     }
 }
