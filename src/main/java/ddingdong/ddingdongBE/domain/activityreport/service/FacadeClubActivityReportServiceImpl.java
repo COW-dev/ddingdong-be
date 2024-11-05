@@ -40,6 +40,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
         String clubName
     ) {
         List<ActivityReport> activityReports = activityReportService.getActivityReport(clubName, term);
+
         return activityReports.stream()
             .map(this::parseToQuery)
             .toList();
@@ -116,7 +117,12 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
-        UploadedFileUrlQuery image = s3FileService.getUploadedFileUrl(activityReport.getImageKey());
+        UploadedFileUrlQuery image = fileMetaDataService
+            .getCoupledAllByDomainTypeAndEntityId(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId())
+            .stream()
+            .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+            .findFirst()
+            .orElse(null);
         return ActivityReportQuery.of(activityReport, image);
     }
 
