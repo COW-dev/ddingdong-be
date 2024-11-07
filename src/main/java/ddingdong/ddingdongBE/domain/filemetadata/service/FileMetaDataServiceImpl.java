@@ -44,7 +44,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         }
         List<UUID> fileMetaDataId = toUUIDs(ids);
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
-        if (fileMetaDatas.isEmpty()) {
+        if (ids.size() != fileMetaDatas.size()) {
             throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataId + ")를 찾을 수 없습니다.");
         }
         fileMetaDatas.forEach(fileMetaData -> {
