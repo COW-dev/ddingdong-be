@@ -17,7 +17,7 @@ public class TimeParser {
 
   public static LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
     if (dateString == null) {
-      return currentDate;
+      return null;
     }
 
     if (dateString.isBlank()) {
