@@ -10,8 +10,8 @@ public record CreateNoticeCommand(
     User user,
     String title,
     String content,
-    List<String> images,
-    List<String> files
+    List<String> imageIds,
+    List<String> fileIds
 ) {
 
     public Notice toEntity() {
