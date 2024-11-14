@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.filemetadata.service;
 
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.COUPLED;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.DELETED;
-import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.PENDING;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -46,11 +45,10 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         List<UUID> fileMetaDataId = toUUIDs(ids);
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
         if (ids.size() != fileMetaDatas.size()) {
-            log.info(ids.size() + " , " + fileMetaDatas.size());
             throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataId + ")를 찾을 수 없습니다.");
         }
         fileMetaDatas.stream()
-            .filter(fileMetaData -> fileMetaData.getFileStatus() == PENDING)
+            .filter(FileMetaData::isPending)
             .forEach(fileMetaData -> {
             fileMetaData.updateCoupledEntityInfo(domainType, entityId);
             fileMetaData.updateStatus(COUPLED);
@@ -106,7 +104,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             return false;
         }
         FileMetaData fileMetaData = findById(UUID.fromString(id));
-        return fileMetaData.getFileStatus() == COUPLED;
+        return fileMetaData.isCoupled();
     }
 
     private void deleteExcludingIds(List<String> ids, DomainType domainType, Long entityId) {
