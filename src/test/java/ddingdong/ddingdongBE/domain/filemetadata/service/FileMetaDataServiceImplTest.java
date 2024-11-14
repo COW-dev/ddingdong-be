@@ -205,19 +205,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         fileMetaDataService.updateStatusToDelete(domainType, entityId);
         em.flush();
         //then
-//        List<FileMetaData> result = (List<FileMetaData>) em.createNativeQuery("select * from ddingdong.file_meta_data where id IN (:ids)",
-//                FileMetaData.class)
-//                .setParameter("ids", Arrays.asList(id1, id2))
-//                .getResultList();
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
         assertThat(result).isEmpty();
-//        assertThat(result).hasSize(2)
-//                .allSatisfy(fileMetaData -> {
-//                    assertThat(fileMetaData.getDomainType()).isEqualTo(domainType);
-//                    assertThat(fileMetaData.getEntityId()).isEqualTo(entityId);
-//                    assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
-//                });
     }
-
-
 }

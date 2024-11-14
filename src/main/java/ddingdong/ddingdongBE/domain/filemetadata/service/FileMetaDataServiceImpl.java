@@ -96,9 +96,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
-            entityManager.flush();
-            fileMetaDataRepository.delete(fileMetaData);
         });
+        entityManager.flush();
+        fileMetaDataRepository.deleteAll(fileMetaDatas);
     }
 
     private boolean isCoupled(String id) {
@@ -115,9 +115,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
                 .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
                 .forEach(fileMetaData -> {
                     fileMetaData.updateStatus(DELETED);
-                    entityManager.flush();
-                    fileMetaDataRepository.delete(fileMetaData);
                 });
+        entityManager.flush();
+        fileMetaDataRepository.deleteAll(fileMetaDatas);
     }
 
     private FileMetaData findById(UUID id) {
