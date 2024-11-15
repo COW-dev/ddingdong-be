@@ -15,10 +15,10 @@ public record UpdateNoticeRequest(
     String content,
 
     @Schema(description = "공지사항 이미지 식별자 목록", example = "[\"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\", \"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\"]")
-    List<String> images,
+    List<String> imageIds,
 
     @Schema(description = "공지사항 파일 식별자 목록", example = "[\"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\", \"0192c828-ffce-7ee8-94a8-d9d4c8cdec00\"]")
-    List<String> files
+    List<String> fileIds
 ) {
 
     public UpdateNoticeCommand toCommand(Long noticeId) {
@@ -26,8 +26,8 @@ public record UpdateNoticeRequest(
             .noticeId(noticeId)
             .title(title)
             .content(content)
-            .images(images)
-            .files(files)
+            .imageIds(imageIds)
+            .fileIds(fileIds)
             .build();
     }
 
