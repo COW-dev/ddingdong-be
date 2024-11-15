@@ -15,7 +15,7 @@ services:
     ports:
       - "8080:8080"
   mysql:
-    image: mysql:8.0.33
+    image: mysql:8.0.40
     environment:
       MYSQL_DATABASE: ddingdong
       MYSQL_ROOT_PASSWORD: ${DEV_DB_PASSWORD}
