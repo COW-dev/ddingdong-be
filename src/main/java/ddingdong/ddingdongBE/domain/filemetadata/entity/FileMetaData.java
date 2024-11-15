@@ -81,4 +81,11 @@ public class FileMetaData extends BaseEntity {
         this.entityId = entityId;
     }
 
+    public boolean isCoupled() {
+        return this.fileStatus == FileStatus.COUPLED;
+    }
+
+    public boolean isPending() {
+        return this.fileStatus == FileStatus.PENDING;
+    }
 }

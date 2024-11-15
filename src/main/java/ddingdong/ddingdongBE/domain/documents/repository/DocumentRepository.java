@@ -13,7 +13,7 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             FROM document AS d
             ORDER BY d.id DESC
             LIMIT :limit
-            OFFSET :offsetValue
+            OFFSET :offset
             """,
             nativeQuery = true
     )
