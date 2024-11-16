@@ -2,8 +2,6 @@ version: '3.8'
 services:
   spring:
     image: public.ecr.aws/${DEV_ECR_REGISTRY_ALIAS}/dev-ecr:${VERSION:-latest}
-    volumes:
-      - mysql-volume:/var/lib/mysql
     environment:
       - VERSION=${VERSION:-latest}
       - SPRING_PROFILES_ACTIVE=dev
@@ -14,6 +12,7 @@ services:
       - mysql
     ports:
       - "8080:8080"
+
   mysql:
     image: mysql:8.0.40
     environment:
@@ -22,6 +21,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
+    volumes:
+      - mysql-volume:/var/lib/mysql
 
 volumes:
   mysql-volume:
