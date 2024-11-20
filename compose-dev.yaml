@@ -23,6 +23,8 @@ services:
       TZ: Asia/Seoul
     ports:
       - "3306:3306"
+    volumes:
+      - mysql-volume:/var/lib/mysql
 
 volumes:
   mysql-volume:
