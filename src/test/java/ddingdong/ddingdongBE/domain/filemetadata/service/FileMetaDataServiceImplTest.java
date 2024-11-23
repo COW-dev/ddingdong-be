@@ -91,8 +91,7 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
                 .set("fileStatus", FileStatus.PENDING)
                 .sample()
         ));
-        em.flush();
-        em.clear();
+
         //when
         fileMetaDataService.updateStatusToCoupled(List.of(id1.toString(), id2.toString()), domainType, entityId);
         em.flush();
@@ -117,9 +116,9 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         fileMetaDataRepository.saveAll(List.of(
             fixture.giveMeBuilder(FileMetaData.class)
                 .set("id", id1)
-                .set("domainType", null)
-                .set("entityId", null)
-                .set("fileStatus", FileStatus.PENDING)
+                .set("domainType", domainType)
+                .set("entityId", entityId)
+                .set("fileStatus", FileStatus.COUPLED)
                 .sample(),
             fixture.giveMeBuilder(FileMetaData.class)
                 .set("id", id2)
@@ -136,8 +135,8 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
             .sample();
         fileMetaDataRepository.save(fileMetaData);
         //when
-        fileMetaDataService.update(List.of(id1.toString(), fileMetaData.getId().toString()), domainType, entityId);
-
+        fileMetaDataService.update(List.of(id1.toString(), id3.toString()), domainType, entityId);
+        em.flush();
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
             domainType, entityId, FileStatus.COUPLED);
