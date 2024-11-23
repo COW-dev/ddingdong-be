@@ -84,7 +84,8 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             updateStatusToDelete(domainType, entityId);
             return;
         }
-        List<String> newIds = deleteOldIds(ids, domainType, entityId); //기존 id제외하고 새로 업데이트할 id만 반환
+        deleteOldIds(ids, domainType, entityId); //ids에 포함된 id를 가진 fileMetaData외에 전부 제거
+        List<String> newIds = getNewIds(ids); //기존 id가 아닌 새로운 id 반환
         updateStatusToCoupled(newIds, domainType, entityId);
     }
 
@@ -99,6 +100,14 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaDataRepository.deleteAll(fileMetaDatas);
     }
 
+    private List<String> getNewIds(List<String> ids) {
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
+        return fileMetaDatas.stream()
+            .filter(FileMetaData::isPending)
+            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
+            .toList();
+    }
+
     private boolean isCoupled(String id) {
         if (id == null) {
             return false;
@@ -107,19 +116,14 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaData.isCoupled();
     }
 
-    private List<String> deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
+    private void deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
-
         List<FileMetaData> deleteTarget = fileMetaDatas.stream()
             .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
             .toList();
         deleteTarget.forEach(target -> target.updateStatus(DELETED));
         entityManager.flush();
         fileMetaDataRepository.deleteAll(deleteTarget);
-        return fileMetaDatas.stream()
-            .filter(FileMetaData::isPending)
-            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
-            .toList();
     }
 
     private FileMetaData findById(UUID id) {
