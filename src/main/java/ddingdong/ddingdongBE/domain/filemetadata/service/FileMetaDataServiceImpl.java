@@ -50,9 +50,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaDatas.stream()
             .filter(FileMetaData::isPending)
             .forEach(fileMetaData -> {
-            fileMetaData.updateCoupledEntityInfo(domainType, entityId);
-            fileMetaData.updateStatus(COUPLED);
-        });
+                fileMetaData.updateCoupledEntityInfo(domainType, entityId);
+                fileMetaData.updateStatus(COUPLED);
+            });
     }
 
     @Transactional
@@ -108,20 +108,17 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     private List<String> deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
-        List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
-        fileMetaDatas.stream()
-                .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
-                .forEach(fileMetaData -> {
-                    fileMetaData.updateStatus(DELETED);
-                    fileMetaDatas.remove(fileMetaData);
-                });
-        entityManager.flush();
-        fileMetaDataRepository.deleteAll(fileMetaDatas);
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
 
+        List<FileMetaData> deleteTarget = fileMetaDatas.stream()
+            .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
+            .toList();
+        deleteTarget.forEach(target -> target.updateStatus(DELETED));
+        entityManager.flush();
+        fileMetaDataRepository.deleteAll(deleteTarget);
         return fileMetaDatas.stream()
             .filter(FileMetaData::isPending)
-            .map(FileMetaData::getId)
-            .map(String::valueOf)
+            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
             .toList();
     }
 
@@ -132,7 +129,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private List<UUID> toUUIDs(List<String> ids) {
         return ids.stream()
-                .map(UUID::fromString)
-                .toList();
+            .map(UUID::fromString)
+            .toList();
     }
 }
