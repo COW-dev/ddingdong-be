@@ -134,7 +134,6 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
             .set("fileStatus", FileStatus.PENDING)
             .sample();
         fileMetaDataRepository.save(fileMetaData);
-        em.flush();
         //when
         fileMetaDataService.update(List.of(id1.toString(), id3.toString()), domainType, entityId);
         em.flush();
