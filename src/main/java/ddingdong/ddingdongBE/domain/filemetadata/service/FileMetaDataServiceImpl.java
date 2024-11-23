@@ -42,10 +42,10 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         if (ids == null || ids.isEmpty()) {
             return;
         }
-        List<UUID> fileMetaDataId = toUUIDs(ids);
-        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
+        List<UUID> fileMetaDataIds = toUUIDs(ids);
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
         if (ids.size() != fileMetaDatas.size()) {
-            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataId + ")를 찾을 수 없습니다.");
+            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataIds + ")를 찾을 수 없습니다.");
         }
         fileMetaDatas.stream()
             .filter(FileMetaData::isPending)
@@ -84,8 +84,8 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             updateStatusToDelete(domainType, entityId);
             return;
         }
-        deleteExcludingIds(ids, domainType, entityId);
-        updateStatusToCoupled(ids, domainType, entityId);
+        List<String> newIds = deleteOldIds(ids, domainType, entityId);
+        updateStatusToCoupled(newIds, domainType, entityId);
     }
 
     @Transactional
@@ -107,15 +107,22 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaData.isCoupled();
     }
 
-    private void deleteExcludingIds(List<String> ids, DomainType domainType, Long entityId) {
+    private List<String> deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.stream()
                 .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
                 .forEach(fileMetaData -> {
                     fileMetaData.updateStatus(DELETED);
+                    fileMetaDatas.remove(fileMetaData);
                 });
         entityManager.flush();
         fileMetaDataRepository.deleteAll(fileMetaDatas);
+
+        return fileMetaDatas.stream()
+            .filter(FileMetaData::isPending)
+            .map(FileMetaData::getId)
+            .map(String::valueOf)
+            .toList();
     }
 
     private FileMetaData findById(UUID id) {
