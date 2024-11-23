@@ -84,7 +84,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             updateStatusToDelete(domainType, entityId);
             return;
         }
-        List<String> newIds = deleteOldIds(ids, domainType, entityId);
+        List<String> newIds = deleteOldIds(ids, domainType, entityId); //기존 id제외하고 새로 업데이트할 id만 반환
         updateStatusToCoupled(newIds, domainType, entityId);
     }
 
