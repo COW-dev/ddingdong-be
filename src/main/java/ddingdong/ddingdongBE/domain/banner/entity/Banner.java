@@ -33,7 +33,6 @@ public class Banner extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    //TODO: migration script
     private String link;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")

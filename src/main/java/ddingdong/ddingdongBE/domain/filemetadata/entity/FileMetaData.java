@@ -42,8 +42,6 @@ public class FileMetaData extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private FileCategory fileCategory;
 
-    //TODO: migration script
-
     @Builder
     private FileMetaData(UUID id, String fileKey, String fileName, DomainType domainType, Long entityId,
                          FileStatus fileStatus,
