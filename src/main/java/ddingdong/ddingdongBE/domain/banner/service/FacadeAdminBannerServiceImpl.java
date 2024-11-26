@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.banner.service;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.util.List;
@@ -22,12 +23,11 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
     @Override
     @Transactional
     public Long create(CreateBannerCommand command) {
-//        fileMetaDataService.save(List.of(
-//                        FileMetaData.of(command.webImageKey(), BANNER_WEB_IMAGE),
-//                        FileMetaData.of(command.mobileImageKey(), BANNER_MOBILE_IMAGE)
-//                )
-//        );
-        return bannerService.save(command.toEntity());
+        Long savedBannerId = bannerService.save(command.toEntity());
+        fileMetaDataService.updateStatusToCoupled(command.webImageId(), DomainType.BANNER_WEB_IMAGE, savedBannerId);
+        fileMetaDataService.updateStatusToCoupled(
+                command.mobileImageId(), DomainType.BANNER_MOBILE_IMAGE, savedBannerId);
+        return savedBannerId;
     }
 
     @Override
