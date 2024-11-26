@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
-import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.UserBannerListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
