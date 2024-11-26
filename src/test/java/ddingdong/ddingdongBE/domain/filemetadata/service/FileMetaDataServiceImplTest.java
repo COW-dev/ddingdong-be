@@ -141,11 +141,12 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
             domainType, entityId, FileStatus.COUPLED);
 
-        FileMetaData attachedFileMetaData = fileMetaDataRepository.findById(id2).orElse(null);
+        Optional<FileMetaData> deletedFileMetaData = fileMetaDataRepository.findById(id2);
         assertThat(result).hasSize(2)
             .extracting("id", "fileStatus")
             .contains(tuple(id1, FileStatus.COUPLED), tuple(id3, FileStatus.COUPLED));
-        assertThat(attachedFileMetaData).isEqualTo(null);
+        assertThat(deletedFileMetaData).isPresent();
+        assertThat(deletedFileMetaData.get().getFileStatus()).isEqualTo(FileStatus.DELETED);
     }
 
     @DisplayName("FileMetaData 수정 - COUPLED & DELETED 기존 아이디를 그대로 입력할 경우")
@@ -202,9 +203,11 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
 
         //when
         fileMetaDataService.updateStatusToDelete(domainType, entityId);
-        em.flush();
+
         //then
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
-        assertThat(result).isEmpty();
+        assertThat(result).hasSize(2)
+                .extracting(FileMetaData::getFileStatus)
+                .containsOnly(FileStatus.DELETED);
     }
 }
