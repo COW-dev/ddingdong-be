@@ -10,7 +10,8 @@ public record AdminBannerListQuery(
 ) {
 
     public static AdminBannerListQuery of(
-            Banner banner, UploadedFileUrlQuery webImageUrlQuery,
+            Banner banner,
+            UploadedFileUrlQuery webImageUrlQuery,
             UploadedFileUrlQuery mobileImageUrlQuery
     ) {
         return new AdminBannerListQuery(banner.getId(), webImageUrlQuery, mobileImageUrlQuery);

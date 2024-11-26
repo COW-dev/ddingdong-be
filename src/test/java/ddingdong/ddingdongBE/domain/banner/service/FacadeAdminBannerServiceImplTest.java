@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -10,6 +11,8 @@ import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -39,25 +42,52 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     @Test
     void create() {
         //given
-        UUID webUUID = UuidCreator.getTimeOrderedEpoch();
-        UUID mobileUUID = UuidCreator.getTimeOrderedEpoch();
-        String webImageKey = "test/file/2024-01-01/" + webUUID.toString();
-        String mobileImageKey = "test/file/2024-01-01/" + mobileUUID.toString();
+        String link = "testLink";
+        UUID webImageId = UuidCreator.getTimeOrderedEpoch();
+        UUID mobileImageId = UuidCreator.getTimeOrderedEpoch();
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        CreateBannerCommand command = new CreateBannerCommand(savedUser, webImageKey, mobileImageKey);
+        CreateBannerCommand command = new CreateBannerCommand(
+                savedUser,
+                link,
+                webImageId.toString(),
+                mobileImageId.toString()
+        );
+
+        fileMetaDataRepository.saveAll(List.of(
+                        FileMetaData.builder()
+                                .id(webImageId)
+                                .fileKey("test")
+                                .fileName("test")
+                                .fileStatus(FileStatus.PENDING)
+                                .build(),
+                        FileMetaData.builder()
+                                .id(mobileImageId)
+                                .fileKey("test")
+                                .fileName("test")
+                                .fileStatus(FileStatus.PENDING)
+                                .build()
+                )
+        );
 
         //when
         Long createdBannerId = facadeAdminBannerService.create(command);
 
         //then
         Banner createdBanner = bannerRepository.findById(createdBannerId).orElseThrow();
+        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findAllByEntityIdWithFileStatus(
+                createdBannerId, FileStatus.COUPLED);
         assertThat(createdBanner)
-                .extracting("id", "user.id", "webImageKey", "mobileImageKey")
+                .extracting("id", "user.id", "link")
                 .contains(
                         createdBanner.getId(),
                         savedUser.getId(),
-                        webImageKey,
-                        mobileImageKey
+                        link
+                );
+        assertThat(fileMetaDataList).hasSize(2)
+                .extracting(FileMetaData::getId, FileMetaData::getFileStatus)
+                .containsExactlyInAnyOrder(
+                        tuple(webImageId, FileStatus.COUPLED),
+                        tuple(mobileImageId, FileStatus.COUPLED)
                 );
     }
 
@@ -69,8 +99,6 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         List<Banner> banners = fixtureMonkey.giveMeBuilder(Banner.class)
                 .set("user", savedUser)
                 .set("deletedAt", null)
-                .set("webImageKey", "test/file/2024-01-01/test/uuid" )
-                .set("mobileImageKey", "test/file/2024-01-01/test/uuid" )
                 .sampleList(5);
         bannerRepository.saveAll(banners);
 

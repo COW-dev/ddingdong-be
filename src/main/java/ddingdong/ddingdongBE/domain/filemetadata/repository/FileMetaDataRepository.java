@@ -18,6 +18,12 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
             @Param("fileStatus") FileStatus fileStatus
     );
 
+    @Query("select fmd from FileMetaData fmd where fmd.entityId = :entityId and fmd.fileStatus = :fileStatus")
+    List<FileMetaData> findAllByEntityIdWithFileStatus(
+            @Param("entityId") Long entityId,
+            @Param("fileStatus") FileStatus fileStatus
+    );
+
     List<FileMetaData> findAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     List<FileMetaData> findByIdIn(List<UUID> ids);

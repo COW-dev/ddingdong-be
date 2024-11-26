@@ -10,16 +10,18 @@ import jakarta.validation.constraints.NotNull;
         description = "어드민 - 배너 생성 요청"
 )
 public record CreateBannerRequest(
-        @Schema(description = "웹 이미지 key", example = "local/file/2024-01-01/ddingdong/uuid")
+        @Schema(description = "연결 링크", example = "https://test-link.com")
+        String link,
+        @Schema(description = "웹 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         @NotNull(message = "webImageKey는 필수입니다.")
-        String webImageKey,
-        @Schema(description = "모바일 이미지 key", example = "local/file/2024-01-01/ddingdong/uuid")
-        @NotNull(message = "mobileImageKey 필수입니다.")
+        String webImageId,
+        @Schema(description = "모바일 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        @NotNull(message = "mobileImageId 필수입니다.")
         String mobileImageKey
 ) {
 
     public CreateBannerCommand toCommand(User user) {
-        return new CreateBannerCommand(user, webImageKey, mobileImageKey);
+        return new CreateBannerCommand(user, link, webImageId, mobileImageKey);
     }
 
 }
