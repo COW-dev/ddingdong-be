@@ -11,14 +11,35 @@ import org.springframework.data.repository.query.Param;
 
 public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID> {
 
-    @Query("select fmd from FileMetaData fmd where fmd.domainType = :domainType and fmd.entityId = :entityId and fmd.fileStatus = :fileStatus")
+    @Query("""
+        select fmd from FileMetaData fmd
+        where fmd.domainType = :domainType
+        and fmd.entityId = :entityId
+        and fmd.fileStatus = :fileStatus
+        and fmd.fileStatus != 'DELETED'
+        """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatus(
-            @Param("domainType") DomainType domainType,
-            @Param("entityId") Long entityId,
-            @Param("fileStatus") FileStatus fileStatus
+        @Param("domainType") DomainType domainType,
+        @Param("entityId") Long entityId,
+        @Param("fileStatus") FileStatus fileStatus
     );
 
-    List<FileMetaData> findAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
+    @Query(value = """
+        select * from file_meta_data
+        where domain_type = :#{#domainType.name()}
+        and entity_id = :entityId
+        and file_status != 'DELETED'
+        """, nativeQuery = true)
+    List<FileMetaData> findAllByDomainTypeAndEntityId(
+        @Param("domainType") DomainType domainType,
+        @Param("entityId") Long entityId
+    );
 
-    List<FileMetaData> findByIdIn(List<UUID> ids);
+    @Query(value = """
+        select *
+        from file_meta_data
+        where id in (:ids)
+        and file_status != 'DELETED'
+        """, nativeQuery = true)
+    List<FileMetaData> findByIdIn(@Param("ids") List<UUID> ids);
 }
