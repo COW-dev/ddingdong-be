@@ -29,13 +29,6 @@ public class GeneralBannerService implements BannerService {
 
     @Override
     @Transactional
-    public void update(Long bannerId, Banner updatedBanner) {
-        Banner banner = getBanner(bannerId);
-        banner.update(updatedBanner);
-    }
-
-    @Override
-    @Transactional
     public void delete(Long bannerId) {
         Banner banner = getBanner(bannerId);
         bannerRepository.delete(banner);
