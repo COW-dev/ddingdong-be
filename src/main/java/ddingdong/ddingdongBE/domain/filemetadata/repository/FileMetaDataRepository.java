@@ -17,6 +17,7 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
         and fmd.entityId = :entityId
         and fmd.fileStatus = :fileStatus
         and fmd.fileStatus != 'DELETED'
+        order by fmd.id asc
         """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatus(
         @Param("domainType") DomainType domainType,
