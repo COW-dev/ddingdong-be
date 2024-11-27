@@ -106,14 +106,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             .toList();
     }
 
-    private List<String> getNewIds(List<String> ids) {
-        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
-        return fileMetaDatas.stream()
-            .filter(FileMetaData::isPending)
-            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
-            .toList();
-    }
-
     private boolean isCoupled(String id) {
         if (id == null) {
             return false;
