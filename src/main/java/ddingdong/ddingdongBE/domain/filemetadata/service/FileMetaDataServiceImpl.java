@@ -96,8 +96,14 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
         });
-        entityManager.flush();
-        fileMetaDataRepository.deleteAll(fileMetaDatas);
+    }
+
+    private List<String> getNewIds(List<String> ids) {
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
+        return fileMetaDatas.stream()
+            .filter(FileMetaData::isPending)
+            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
+            .toList();
     }
 
     private List<String> getNewIds(List<String> ids) {
@@ -122,8 +128,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
             .toList();
         deleteTarget.forEach(target -> target.updateStatus(DELETED));
-        entityManager.flush();
-        fileMetaDataRepository.deleteAll(deleteTarget);
     }
 
     private FileMetaData findById(UUID id) {
