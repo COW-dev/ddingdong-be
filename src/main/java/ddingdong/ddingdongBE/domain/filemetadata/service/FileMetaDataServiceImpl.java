@@ -36,6 +36,13 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 
+    @Override
+    public List<FileMetaData> getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType domainType,
+        Long entityId) {
+        return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
+            domainType, entityId, COUPLED);
+    }
+
     @Transactional
     @Override
     public void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId) {
