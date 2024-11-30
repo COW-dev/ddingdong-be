@@ -39,20 +39,15 @@ public class FileMetaData extends BaseEntity {
     @Column(nullable = false)
     private FileStatus fileStatus;
 
-    @Enumerated(EnumType.STRING)
-    private FileCategory fileCategory;
-
     @Builder
     private FileMetaData(UUID id, String fileKey, String fileName, DomainType domainType, Long entityId,
-                         FileStatus fileStatus,
-                         FileCategory fileCategory) {
+                         FileStatus fileStatus) {
         this.id = id;
         this.fileKey = fileKey;
         this.fileName = fileName;
         this.domainType = domainType;
         this.entityId = entityId;
         this.fileStatus = fileStatus;
-        this.fileCategory = fileCategory;
     }
 
     public static FileMetaData createPending(UUID id, String fileKey, String fileName) {

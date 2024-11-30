@@ -7,5 +7,5 @@ ALTER TABLE banner
 ALTER TABLE banner
     DROP COLUMN web_image_key;
 
-ALTER TABLE file_meta_data
-    DROP COLUMN deleted_at
+ALTER TABLE banner
+    DROP COLUMN file_category;
