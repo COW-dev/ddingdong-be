@@ -15,7 +15,6 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
         select fmd from FileMetaData fmd
         where fmd.domainType = :domainType
         and fmd.entityId = :entityId
-        and fmd.fileStatus = :fileStatus
         and fmd.fileStatus != 'DELETED'
         """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatus(
@@ -50,13 +49,12 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
     List<FileMetaData> findByIdIn(@Param("ids") List<UUID> ids);
 
     @Query("""
-        select fmd from FileMetaData fmd
-        where fmd.domainType = :domainType
-        and fmd.entityId = :entityId
-        and fmd.fileStatus = :fileStatus
-        and fmd.fileStatus != 'DELETED'
-        order by fmd.id asc
-        """)
+            select fmd from FileMetaData fmd
+            where fmd.domainType = :domainType
+            and fmd.entityId = :entityId
+            and fmd.fileStatus = :fileStatus
+            order by fmd.id asc
+            """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
             @Param("domainType") DomainType domainType,
             @Param("entityId") Long entityId,
