@@ -48,7 +48,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     @Override
     public List<FileMetaData> getCoupledAllByEntityIds(List<Long> entityIds) {
-        return fileMetaDataRepository.findAllByEntityIds(entityIds);
+        return fileMetaDataRepository.findAllWithBannerByEntityIds(entityIds);
     }
 
     @Transactional
