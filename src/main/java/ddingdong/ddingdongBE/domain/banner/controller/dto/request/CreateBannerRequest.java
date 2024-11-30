@@ -17,11 +17,11 @@ public record CreateBannerRequest(
         String webImageId,
         @Schema(description = "모바일 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         @NotNull(message = "mobileImageId 필수입니다.")
-        String mobileImageKey
+        String mobileImageId
 ) {
 
     public CreateBannerCommand toCommand(User user) {
-        return new CreateBannerCommand(user, link, webImageId, mobileImageKey);
+        return new CreateBannerCommand(user, link, webImageId, mobileImageId);
     }
 
 }
