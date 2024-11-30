@@ -12,11 +12,11 @@ import org.springframework.data.repository.query.Param;
 public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID> {
 
     @Query("""
-        select fmd from FileMetaData fmd
-        where fmd.domainType = :domainType
-        and fmd.entityId = :entityId
-        and fmd.fileStatus != 'DELETED'
-        """)
+    select fmd from FileMetaData fmd
+    where fmd.domainType = :domainType
+    and fmd.entityId = :entityId
+    and fmd.fileStatus = :fileStatus
+    """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatus(
             @Param("domainType") DomainType domainType,
             @Param("entityId") Long entityId,
