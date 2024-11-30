@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 
 public record AdminBannerListQuery(
         Long id,
+        String link,
         UploadedFileUrlQuery webImageUrlQuery,
         UploadedFileUrlQuery mobileImageUrlQuery
 ) {
@@ -14,7 +15,7 @@ public record AdminBannerListQuery(
             UploadedFileUrlQuery webImageUrlQuery,
             UploadedFileUrlQuery mobileImageUrlQuery
     ) {
-        return new AdminBannerListQuery(banner.getId(), webImageUrlQuery, mobileImageUrlQuery);
+        return new AdminBannerListQuery(banner.getId(), banner.getLink(), webImageUrlQuery, mobileImageUrlQuery);
     }
 
 }

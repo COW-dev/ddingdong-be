@@ -11,6 +11,7 @@ import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
 import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
@@ -96,19 +97,72 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     void findAll() {
         //given
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        List<Banner> banners = fixtureMonkey.giveMeBuilder(Banner.class)
-                .set("user", savedUser)
-                .set("deletedAt", null)
-                .sampleList(5);
-        bannerRepository.saveAll(banners);
+        bannerRepository.saveAll(List.of(
+                fixtureMonkey.giveMeBuilder(Banner.class)
+                        .set("id", 1L)
+                        .set("user", savedUser)
+                        .set("deletedAt", null)
+                        .sample(),
+                fixtureMonkey.giveMeBuilder(Banner.class)
+                        .set("id", 2L)
+                        .set("user", savedUser)
+                        .set("deletedAt", null)
+                        .sample()
+        ));
+
+        FileMetaData fileMetaData1 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("entityId", 1L)
+                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
+                .set("domainType", DomainType.BANNER_WEB_IMAGE)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample();
+        FileMetaData fileMetaData2 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("entityId", 1L)
+                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
+                .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample();
+        FileMetaData fileMetaData3 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("entityId", 2L)
+                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
+                .set("domainType", DomainType.BANNER_WEB_IMAGE)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample();
+        FileMetaData fileMetaData4 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("entityId", 2L)
+                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
+                .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample();
+        fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2, fileMetaData3, fileMetaData4));
 
         //when
         List<AdminBannerListQuery> result = facadeAdminBannerService.findAll();
 
         //then
         assertThat(result)
-                .hasSize(5)
-                .isSortedAccordingTo(Comparator.comparing(AdminBannerListQuery::id).reversed());
+                .hasSize(2)
+                .isSortedAccordingTo(Comparator.comparing(AdminBannerListQuery::id).reversed())
+                .satisfies(queries -> {
+                    AdminBannerListQuery firstBanner = queries.get(0);
+                    AdminBannerListQuery secondBanner = queries.get(1);
+
+                    // id=2인 배너 검증 (역순이므로 첫 번째)
+                    assertThat(firstBanner)
+                            .satisfies(banner -> {
+                                assertThat(banner.id()).isEqualTo(2L);
+                                assertThat(banner.webImageUrlQuery()).isNotNull();
+                                assertThat(banner.mobileImageUrlQuery()).isNotNull();
+                            });
+
+                    // id=1인 배너 검증
+                    assertThat(secondBanner)
+                            .satisfies(banner -> {
+                                assertThat(banner.id()).isEqualTo(1L);
+                                assertThat(banner.webImageUrlQuery()).isNotNull();
+                                assertThat(banner.mobileImageUrlQuery()).isNotNull();
+                            });
+                });
     }
 
     @DisplayName("어드민: Banner 삭제")
