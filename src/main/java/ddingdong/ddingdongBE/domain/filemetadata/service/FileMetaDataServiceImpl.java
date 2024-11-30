@@ -36,21 +36,30 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
 
+    @Override
+    public List<FileMetaData> getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType domainType,
+        Long entityId) {
+        return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
+            domainType, entityId, COUPLED);
+    }
+
     @Transactional
     @Override
     public void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId) {
-        if (ids.isEmpty()) {
+        if (ids == null || ids.isEmpty()) {
             return;
         }
-        List<UUID> fileMetaDataId = toUUIDs(ids);
-        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataId);
+        List<UUID> fileMetaDataIds = toUUIDs(ids);
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
         if (ids.size() != fileMetaDatas.size()) {
-            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataId + ")를 찾을 수 없습니다.");
+            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataIds + ")를 찾을 수 없습니다.");
         }
-        fileMetaDatas.forEach(fileMetaData -> {
-            fileMetaData.updateCoupledEntityInfo(domainType, entityId);
-            fileMetaData.updateStatus(COUPLED);
-        });
+        fileMetaDatas.stream()
+            .filter(FileMetaData::isPending)
+            .forEach(fileMetaData -> {
+                fileMetaData.updateCoupledEntityInfo(domainType, entityId);
+                fileMetaData.updateStatus(COUPLED);
+            });
     }
 
     @Transactional
@@ -60,10 +69,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             return;
         }
         UUID fileMetaDataId = UUID.fromString(id);
-        FileMetaData fileMetaData = fileMetaDataRepository.findById(fileMetaDataId).orElse(null);
-        if (fileMetaData == null) {
-            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataId + ")를 찾을 수 없습니다.");
-        }
+        FileMetaData fileMetaData = findById(fileMetaDataId);
         fileMetaData.updateCoupledEntityInfo(domainType, entityId);
         fileMetaData.updateStatus(COUPLED);
     }
@@ -71,37 +77,66 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Transactional
     @Override
     public void update(String id, DomainType domainType, Long entityId) {
-        updateStatusToDelete(domainType, entityId);
-        if (id == null) {
+        if (isCoupled(id)) {
             return;
         }
+        updateStatusToDelete(domainType, entityId);
         updateStatusToCoupled(id, domainType, entityId);
     }
 
     @Transactional
     @Override
     public void update(List<String> ids, DomainType domainType, Long entityId) {
-        updateStatusToDelete(domainType, entityId);
         if (ids == null || ids.isEmpty()) {
+            updateStatusToDelete(domainType, entityId);
             return;
         }
-        updateStatusToCoupled(ids, domainType, entityId);
+        deleteOldIds(ids, domainType, entityId); //ids에 포함된 id를 가진 fileMetaData외에 전부 제거
+        List<String> newIds = getNewIds(ids); //기존 id가 아닌 새로운 id 반환
+        updateStatusToCoupled(newIds, domainType, entityId);
     }
 
     @Transactional
     @Override
     public void updateStatusToDelete(DomainType domainType, Long entityId) {
-        List<FileMetaData> fileMetaDatas = getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> {
             fileMetaData.updateStatus(DELETED);
-            entityManager.flush();
-            fileMetaDataRepository.delete(fileMetaData);
         });
+    }
+
+    private List<String> getNewIds(List<String> ids) {
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
+        return fileMetaDatas.stream()
+            .filter(FileMetaData::isPending)
+            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
+            .toList();
+    }
+
+    private boolean isCoupled(String id) {
+        if (id == null) {
+            return false;
+        }
+        FileMetaData fileMetaData = findById(UUID.fromString(id));
+        return fileMetaData.isCoupled();
+    }
+
+    private void deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
+        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
+        List<FileMetaData> deleteTarget = fileMetaDatas.stream()
+            .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
+            .toList();
+        deleteTarget.forEach(target -> target.updateStatus(DELETED));
+    }
+
+    private FileMetaData findById(UUID id) {
+        return fileMetaDataRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(id: " + id + ")를 찾을 수 없습니다."));
     }
 
     private List<UUID> toUUIDs(List<String> ids) {
         return ids.stream()
-                .map(UUID::fromString)
-                .toList();
+            .map(UUID::fromString)
+            .toList();
     }
 }

@@ -13,6 +13,7 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
         value = """
             SELECT *
             FROM notice AS n
+            WHERE deleted_at IS NULL
             ORDER BY n.id DESC
             LIMIT :limit
             OFFSET :offsetValue

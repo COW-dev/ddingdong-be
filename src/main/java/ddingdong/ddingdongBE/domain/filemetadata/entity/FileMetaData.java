@@ -8,21 +8,18 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import java.time.LocalDateTime;
 import java.util.UUID;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "file_meta_data",indexes = {@Index(columnList = "domainType,entityId,fileStatus")})
-@SQLDelete(sql = "update file_meta_data set deleted_at = CURRENT_TIMESTAMP where id=?")
-@SQLRestriction("deleted_at IS NULL")
+@SQLRestriction("file_status != 'DELETED'")
 public class FileMetaData extends BaseEntity {
 
     @Id
@@ -46,9 +43,6 @@ public class FileMetaData extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     private FileCategory fileCategory;
-
-    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
-    private LocalDateTime deletedAt;
 
     @Builder
     private FileMetaData(UUID id, String fileKey, String fileName, DomainType domainType, Long entityId,
@@ -81,4 +75,11 @@ public class FileMetaData extends BaseEntity {
         this.entityId = entityId;
     }
 
+    public boolean isCoupled() {
+        return this.fileStatus == FileStatus.COUPLED;
+    }
+
+    public boolean isPending() {
+        return this.fileStatus == FileStatus.PENDING;
+    }
 }

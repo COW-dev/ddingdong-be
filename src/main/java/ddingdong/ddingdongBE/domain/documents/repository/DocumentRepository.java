@@ -11,9 +11,10 @@ public interface DocumentRepository extends JpaRepository<Document, Long> {
             value = """
             SELECT *
             FROM document AS d
+            WHERE deleted_at IS NULL
             ORDER BY d.id DESC
             LIMIT :limit
-            OFFSET :offsetValue
+            OFFSET :offset
             """,
             nativeQuery = true
     )

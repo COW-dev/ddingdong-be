@@ -41,7 +41,7 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
         Notice notice = noticeService.getById(noticeId);
 
         List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
-            .getCoupledAllByDomainTypeAndEntityId(DomainType.NOTICE_IMAGE, noticeId)
+            .getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType.NOTICE_IMAGE, noticeId)
             .stream()
             .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
             .toList();
