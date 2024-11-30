@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -46,6 +44,11 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
             domainType, entityId, COUPLED);
+    }
+
+    @Override
+    public List<FileMetaData> getCoupledAllByEntityIds(List<Long> entityIds) {
+        return fileMetaDataRepository.findAllByEntityIds(entityIds);
     }
 
     @Transactional

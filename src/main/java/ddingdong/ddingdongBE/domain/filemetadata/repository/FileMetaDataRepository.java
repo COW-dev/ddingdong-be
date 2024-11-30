@@ -60,4 +60,7 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
             @Param("entityId") Long entityId,
             @Param("fileStatus") FileStatus fileStatus
     );
+
+    @Query("SELECT f FROM FileMetaData f WHERE f.entityId IN :entityIds AND f.fileStatus != 'DELETED'")
+    List<FileMetaData> findAllByEntityIds(@Param("entityIds") List<Long> entityIds);
 }
