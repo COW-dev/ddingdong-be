@@ -38,6 +38,9 @@ public class FacadeUserBannerServiceImpl implements FacadeUserBannerService {
     }
 
     private UserBannerListQuery createBannerListQuery(Banner banner, List<FileMetaData> bannerImages) {
+        if(bannerImages.isEmpty()) {
+            return UserBannerListQuery.of(banner, null, null);
+        }
         Map<DomainType, FileMetaData> fileMetaDataMap = bannerImages.stream()
                 .filter(fileMetaData -> fileMetaData.getEntityId().equals(banner.getId()))
                 .collect(Collectors.toMap(
