@@ -17,9 +17,11 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +38,18 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     private UserRepository userRepository;
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+
+
+    @BeforeEach
+    void resetAutoIncrement() {
+        entityManager.createNativeQuery("ALTER TABLE banner AUTO_INCREMENT = 1").executeUpdate();
+        fileMetaDataRepository.deleteAll();
+        bannerRepository.deleteAll();
+    }
 
     @DisplayName("어드민: Banner 생성")
     @Test
