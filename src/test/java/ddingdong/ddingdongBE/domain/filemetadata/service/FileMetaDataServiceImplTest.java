@@ -206,8 +206,6 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
-        assertThat(result).hasSize(2)
-                .extracting(FileMetaData::getFileStatus)
-                .containsOnly(FileStatus.DELETED);
+        assertThat(result).isEmpty();
     }
 }

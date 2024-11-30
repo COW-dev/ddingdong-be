@@ -264,8 +264,6 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
         Optional<FixZone> result = fixZoneRepository.findById(savedFixZone.getId());
         List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(List.of(fileId1, fileId2));
         assertThat(result).isEmpty();
-        assertThat(fileMetaDataList).hasSize(2)
-                .extracting("fileStatus")
-                .containsOnly(FileStatus.DELETED);
+        assertThat(fileMetaDataList).isEmpty();
     }
 }
