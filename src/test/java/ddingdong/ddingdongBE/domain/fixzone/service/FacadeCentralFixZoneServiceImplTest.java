@@ -212,7 +212,7 @@ class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
                 savedFixZone.getId(),
                 "test",
                 "test",
-                List.of("0192c828-ffce-7ee8-94a8-d9d4c8cdec00", "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+                null
         );
 
         //when

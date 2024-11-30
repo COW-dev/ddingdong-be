@@ -111,8 +111,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testactivity",
                 "testideal",
                 "testformUrl",
-                UuidCreator.getTimeBased().toString(),
-                UuidCreator.getTimeBased().toString()
+                null,
+                null
         );
 
         //when
