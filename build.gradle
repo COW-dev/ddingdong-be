@@ -98,12 +98,12 @@ sonar {
         property "sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test"
 
         property "sonar.exclusions", [
-                "**/ddngdong/ddingdongBE/common/**",
-                "**/ddngdong/ddingdongBE/*Request*",
-                "**/ddngdong/ddingdongBE/*Response*",
-                "**/ddngdong/ddingdongBE/*Command*",
-                "**/ddngdong/ddingdongBE/*Query*",
-                "**/ddngdong/ddingdongBE/*Dto*"
+                "**/ddingdong/ddingdongBE/common/**",
+                "**/ddingdong/ddingdongBE/*Request*",
+                "**/ddingdong/ddingdongBE/*Response*",
+                "**/ddingdong/ddingdongBE/*Command*",
+                "**/ddingdong/ddingdongBE/*Query*",
+                "**/ddingdong/ddingdongBE/*Dto*"
         ].join(',')
     }
 }
@@ -113,12 +113,12 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                    "ddngdong/ddingdongBE/common/**",
-                    "ddngdong/ddingdongBE/*Request*",
-                    "ddngdong/ddingdongBE/*Response*",
-                    "ddngdong/ddingdongBE/*Command*",
-                    "ddngdong/ddingdongBE/*Query*",
-                    "ddngdong/ddingdongBE/*Dto*"
+                    "ddingdong/ddingdongBE/common/**",
+                    "ddingdong/ddingdongBE/*Request*",
+                    "ddingdong/ddingdongBE/*Response*",
+                    "ddingdong/ddingdongBE/*Command*",
+                    "ddingdong/ddingdongBE/*Query*",
+                    "ddingdong/ddingdongBE/*Dto*"
             ])
         }))
     }
