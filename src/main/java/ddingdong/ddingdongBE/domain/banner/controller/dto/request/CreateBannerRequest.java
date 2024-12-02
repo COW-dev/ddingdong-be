@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerComma
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.URL;
 
 @Schema(
         name = "CreateBannerRequest",
@@ -11,9 +12,10 @@ import jakarta.validation.constraints.NotNull;
 )
 public record CreateBannerRequest(
         @Schema(description = "연결 링크", example = "https://test-link.com")
+        @URL
         String link,
         @Schema(description = "웹 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
-        @NotNull(message = "webImageKey는 필수입니다.")
+        @NotNull(message = "webImageId는 필수입니다.")
         String webImageId,
         @Schema(description = "모바일 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         @NotNull(message = "mobileImageId 필수입니다.")

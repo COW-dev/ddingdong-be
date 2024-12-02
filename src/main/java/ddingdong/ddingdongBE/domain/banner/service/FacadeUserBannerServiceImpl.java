@@ -45,7 +45,8 @@ public class FacadeUserBannerServiceImpl implements FacadeUserBannerService {
                 .filter(fileMetaData -> fileMetaData.getEntityId().equals(banner.getId()))
                 .collect(Collectors.toMap(
                         FileMetaData::getDomainType,
-                        fileMetaData -> fileMetaData
+                        fileMetaData -> fileMetaData,
+                        (existing, replacement) -> existing
                 ));
 
         UploadedFileUrlQuery webImageUrlQuery = s3FileService.getUploadedFileUrl(
