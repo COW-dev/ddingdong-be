@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.2.6'
     id 'io.spring.dependency-management' version '1.1.3'
+    id 'jacoco'
     id "org.sonarqube" version "5.1.0.4882"
 }
 
@@ -83,6 +84,7 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    finalizedBy 'jacocoTestReport'
 }
 
 sonar {
@@ -90,5 +92,39 @@ sonar {
         property "sonar.projectKey", "COW-dev_ddingdong-be"
         property "sonar.organization", "cow-dev"
         property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.sourceEncoding", "UTF-8"
+        property "sonar.java.source", "${java.sourceCompatibility}"
+        property "sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/jacocoTestReport.xml"
+        property "sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test"
+
+        property "sonar.exclusions", [
+                "**/ddngdong/ddingdongBE/common/**",
+                "**/ddngdong/ddingdongBE/*Request*",
+                "**/ddngdong/ddingdongBE/*Response*",
+                "**/ddngdong/ddingdongBE/*Command*",
+                "**/ddngdong/ddingdongBE/*Query*",
+                "**/ddngdong/ddingdongBE/*Dto*"
+        ].join(',')
+    }
+}
+
+jacocoTestReport {
+    dependsOn test
+    afterEvaluate {
+        classDirectories.setFrom(files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: [
+                    "ddngdong/ddingdongBE/common/**",
+                    "ddngdong/ddingdongBE/*Request*",
+                    "ddngdong/ddingdongBE/*Response*",
+                    "ddngdong/ddingdongBE/*Command*",
+                    "ddngdong/ddingdongBE/*Query*",
+                    "ddngdong/ddingdongBE/*Dto*"
+            ])
+        }))
+    }
+    reports {
+        html.required = true
+        xml.required = true
+        csv.required = false
     }
 }
