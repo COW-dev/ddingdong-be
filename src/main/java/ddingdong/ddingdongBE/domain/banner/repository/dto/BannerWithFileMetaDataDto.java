@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import java.util.List;
 
-public record BannerWithFileMetaData(
+public record BannerWithFileMetaDataDto(
         Banner banner,
         List<FileMetaData> fileMetaDataList
 ) {
