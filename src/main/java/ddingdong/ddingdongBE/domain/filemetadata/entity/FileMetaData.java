@@ -75,4 +75,8 @@ public class FileMetaData extends BaseEntity {
     public boolean isPending() {
         return this.fileStatus == FileStatus.PENDING;
     }
+
+    public boolean isOwn(Long entityId) {
+        return this.entityId.equals(entityId);
+    }
 }

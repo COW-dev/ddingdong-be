@@ -58,10 +58,11 @@ public class FacadeAdminBannerServiceImpl implements FacadeAdminBannerService {
 
     private AdminBannerListQuery createBannerListQuery(Banner banner, List<FileMetaData> bannerImages) {
         Map<DomainType, FileMetaData> fileMetaDataMap = bannerImages.stream()
-                .filter(fileMetaData -> fileMetaData.getEntityId().equals(banner.getId()))
+                .filter(fileMetaData -> fileMetaData.isOwn(banner.getId()))
                 .collect(Collectors.toMap(
                         FileMetaData::getDomainType,
-                        fileMetaData -> fileMetaData
+                        fileMetaData -> fileMetaData,
+                        (existing, replacement) -> existing
                 ));
 
         UploadedFileUrlQuery webImageUrlQuery = s3FileService.getUploadedFileUrl(

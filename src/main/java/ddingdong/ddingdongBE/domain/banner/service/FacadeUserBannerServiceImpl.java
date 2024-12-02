@@ -30,22 +30,28 @@ public class FacadeUserBannerServiceImpl implements FacadeUserBannerService {
         if (banners.isEmpty()) {
             return Collections.emptyList();
         }
+
         List<FileMetaData> bannerImages = fileMetaDataService.getCoupledAllByEntityIds(
-                banners.stream().map(Banner::getId).toList());
+                banners.stream()
+                        .map(Banner::getId)
+                        .toList()
+        );
+
         return banners.stream()
                 .map(banner -> createBannerListQuery(banner, bannerImages))
                 .toList();
     }
 
     private UserBannerListQuery createBannerListQuery(Banner banner, List<FileMetaData> bannerImages) {
-        if(bannerImages.isEmpty()) {
+        if (bannerImages.isEmpty()) {
             return UserBannerListQuery.of(banner, null, null);
         }
         Map<DomainType, FileMetaData> fileMetaDataMap = bannerImages.stream()
                 .filter(fileMetaData -> fileMetaData.getEntityId().equals(banner.getId()))
                 .collect(Collectors.toMap(
                         FileMetaData::getDomainType,
-                        fileMetaData -> fileMetaData
+                        fileMetaData -> fileMetaData,
+                        (existing, replacement) -> existing
                 ));
 
         UploadedFileUrlQuery webImageUrlQuery = s3FileService.getUploadedFileUrl(
