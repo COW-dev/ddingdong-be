@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FacadeAdminFixZoneServiceImplTest extends TestContainerSupport {
+class FacadeAdminGeneralFixZoneServiceTest extends TestContainerSupport {
 
     @Autowired
     private FacadeAdminFixZoneService facadeAdminFixZoneService;

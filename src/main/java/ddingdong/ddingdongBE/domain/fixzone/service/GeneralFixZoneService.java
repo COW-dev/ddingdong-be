@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FixZoneServiceImpl implements FixZoneService {
+public class GeneralFixZoneService implements FixZoneService {
 
     private final FixZoneRepository fixZoneRepository;
 

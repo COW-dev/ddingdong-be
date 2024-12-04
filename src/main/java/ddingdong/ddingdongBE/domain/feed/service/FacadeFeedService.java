@@ -19,25 +19,25 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeFeedService {
 
-  private final FeedService feedService;
+  private final GeneralFeedService generalFeedService;
   private final FileInformationService fileInformationService;
 
   public List<FeedListQuery> getAllByClubId(Long clubId) {
-    List<Feed> feeds = feedService.getAllByClubId(clubId);
+    List<Feed> feeds = generalFeedService.getAllByClubId(clubId);
     return feeds.stream()
         .map(FeedListQuery::from)
         .toList();
   }
 
   public List<FeedListQuery> getNewestAll() {
-    List<Feed> feeds = feedService.getNewestAll();
+    List<Feed> feeds = generalFeedService.getNewestAll();
     return feeds.stream()
         .map(FeedListQuery::from)
         .toList();
   }
 
   public FeedQuery getById(Long feedId) {
-    Feed feed = feedService.getById(feedId);
+    Feed feed = generalFeedService.getById(feedId);
     ClubProfileQuery clubProfileQuery = extractClubInfo(feed.getClub());
     return FeedQuery.of(feed, clubProfileQuery);
   }

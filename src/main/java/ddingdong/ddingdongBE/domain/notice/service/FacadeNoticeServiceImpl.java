@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeNoticeServiceImpl implements FacadeNoticeService {
 
-    private final NoticeServiceImpl noticeService;
+    private final NoticeService noticeService;
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 

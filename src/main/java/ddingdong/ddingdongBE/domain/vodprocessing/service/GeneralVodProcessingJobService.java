@@ -10,7 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class VodProcessingJobServiceImpl implements VodProcessingJobService {
+public class GeneralVodProcessingJobService implements VodProcessingJobService {
 
     private final VodProcessingJobRepository vodProcessingJobRepository;
 

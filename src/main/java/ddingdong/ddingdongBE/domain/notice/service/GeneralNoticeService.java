@@ -11,7 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class NoticeServiceImpl implements NoticeService {
+public class GeneralNoticeService implements NoticeService {
 
     public static final int NOTICE_COUNT_FOR_PAGE = 10;
 
