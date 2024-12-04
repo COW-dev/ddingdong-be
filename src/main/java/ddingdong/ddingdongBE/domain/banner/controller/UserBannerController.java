@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.domain.banner.controller.dto.response.UserBannerLis
 import ddingdong.ddingdongBE.domain.banner.service.FacadeUserBannerService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController

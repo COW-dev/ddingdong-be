@@ -12,16 +12,21 @@ import org.springframework.data.repository.query.Param;
 public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID> {
 
     @Query("""
-        select fmd from FileMetaData fmd
-        where fmd.domainType = :domainType
-        and fmd.entityId = :entityId
-        and fmd.fileStatus = :fileStatus
-        and fmd.fileStatus != 'DELETED'
-        """)
+    select fmd from FileMetaData fmd
+    where fmd.domainType = :domainType
+    and fmd.entityId = :entityId
+    and fmd.fileStatus = :fileStatus
+    """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatus(
-        @Param("domainType") DomainType domainType,
-        @Param("entityId") Long entityId,
-        @Param("fileStatus") FileStatus fileStatus
+            @Param("domainType") DomainType domainType,
+            @Param("entityId") Long entityId,
+            @Param("fileStatus") FileStatus fileStatus
+    );
+
+    @Query("select fmd from FileMetaData fmd where fmd.entityId = :entityId and fmd.fileStatus = :fileStatus")
+    List<FileMetaData> findAllByEntityIdWithFileStatus(
+            @Param("entityId") Long entityId,
+            @Param("fileStatus") FileStatus fileStatus
     );
 
     @Query(value = """
@@ -31,8 +36,8 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
         and file_status != 'DELETED'
         """, nativeQuery = true)
     List<FileMetaData> findAllByDomainTypeAndEntityId(
-        @Param("domainType") DomainType domainType,
-        @Param("entityId") Long entityId
+            @Param("domainType") DomainType domainType,
+            @Param("entityId") Long entityId
     );
 
     @Query(value = """
@@ -44,16 +49,18 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
     List<FileMetaData> findByIdIn(@Param("ids") List<UUID> ids);
 
     @Query("""
-        select fmd from FileMetaData fmd
-        where fmd.domainType = :domainType
-        and fmd.entityId = :entityId
-        and fmd.fileStatus = :fileStatus
-        and fmd.fileStatus != 'DELETED'
-        order by fmd.id asc
-        """)
+            select fmd from FileMetaData fmd
+            where fmd.domainType = :domainType
+            and fmd.entityId = :entityId
+            and fmd.fileStatus = :fileStatus
+            order by fmd.id asc
+            """)
     List<FileMetaData> findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
-        @Param("domainType") DomainType domainType,
-        @Param("entityId") Long entityId,
-        @Param("fileStatus") FileStatus fileStatus
+            @Param("domainType") DomainType domainType,
+            @Param("entityId") Long entityId,
+            @Param("fileStatus") FileStatus fileStatus
     );
+
+    @Query("SELECT f FROM FileMetaData f WHERE (f.domainType = 'BANNER_WEB_IMAGE' OR f.domainType = 'BANNER_MOBILE_IMAGE') AND  f.entityId IN :entityIds AND f.fileStatus != 'DELETED'")
+    List<FileMetaData> findAllWithBannerByEntityIds(@Param("entityIds") List<Long> entityIds);
 }

@@ -33,23 +33,16 @@ public class Banner extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    private String webImageKey;
-
-    private String mobileImageKey;
+    private String link;
 
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    private Banner(Long id, User user, String webImageKey, String mobileImageKey) {
+    private Banner(Long id, User user, String link) {
         this.id = id;
         this.user = user;
-        this.webImageKey = webImageKey;
-        this.mobileImageKey = mobileImageKey;
+        this.link = link;
     }
 
-    public void update(Banner banner) {
-        this.webImageKey = banner.getWebImageKey();
-        this.mobileImageKey = banner.getMobileImageKey();
-    }
 }

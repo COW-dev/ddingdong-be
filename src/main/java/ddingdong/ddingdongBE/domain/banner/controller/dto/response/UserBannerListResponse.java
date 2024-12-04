@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 public record UserBannerListResponse(
         @Schema(description = "배너 식별자", example = "1")
         Long id,
+        @Schema(description = "연결 링크", example = "https://test.com")
+        String link,
         UserBannerListImageUrlResponse webImageUrl,
         UserBannerListImageUrlResponse mobileImageUrl
 ) {
@@ -18,6 +20,7 @@ public record UserBannerListResponse(
     public static UserBannerListResponse from(UserBannerListQuery query) {
         return new UserBannerListResponse(
                 query.id(),
+                query.link(),
                 UserBannerListImageUrlResponse.from(query.webImageUrlQuery()),
                 UserBannerListImageUrlResponse.from(query.mobileImageUrlQuery())
         );
