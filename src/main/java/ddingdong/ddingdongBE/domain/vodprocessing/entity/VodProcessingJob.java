@@ -12,6 +12,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -38,6 +39,7 @@ public class VodProcessingJob extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private ConvertJobStatus convertJobStatus;
 
+    @Builder
     private VodProcessingJob(Long id, VodProcessingNotification vodProcessingNotification, String convertJobId,
                              String userAuthId, ConvertJobStatus convertJobStatus) {
         this.id = id;
