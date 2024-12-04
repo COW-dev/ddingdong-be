@@ -46,7 +46,8 @@ public class SecurityConfig {
                     API_PREFIX + "/banners/**",
                     API_PREFIX + "/documents/**",
                     API_PREFIX + "/questions/**",
-                    API_PREFIX + "/feeds/**")
+                    API_PREFIX + "/feeds/**",
+                        API_PREFIX + "/internal/**")
                 .permitAll()
                 .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
                 .permitAll()
