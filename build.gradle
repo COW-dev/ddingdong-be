@@ -118,7 +118,9 @@ jacocoTestReport {
                     "ddingdong/ddingdongBE/*Response*",
                     "ddingdong/ddingdongBE/*Command*",
                     "ddingdong/ddingdongBE/*Query*",
-                    "ddingdong/ddingdongBE/*Dto*"
+                    "ddingdong/ddingdongBE/*Dto*",
+                    "ddingdong/ddingdongBE/*Controller*",
+                    "ddingdong/ddingdongBE/**/General*Service"
             ])
         }))
     }
