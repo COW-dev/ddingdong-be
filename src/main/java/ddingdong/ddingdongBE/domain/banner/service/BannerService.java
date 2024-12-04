@@ -9,8 +9,6 @@ public interface BannerService {
 
     List<Banner> findAll();
 
-    void update(Long bannerId, Banner updatedBanner);
-
     void delete(Long bannerId);
 
 }

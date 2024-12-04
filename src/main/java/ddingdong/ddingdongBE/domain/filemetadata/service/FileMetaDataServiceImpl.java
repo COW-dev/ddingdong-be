@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import jakarta.persistence.EntityManager;
 import java.util.List;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
-    private final EntityManager entityManager;
 
     @Override
     @Transactional
@@ -37,10 +35,20 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
+    public List<FileMetaData> getCoupledAllByEntityId(Long entityId) {
+        return fileMetaDataRepository.findAllByEntityIdWithFileStatus(entityId, COUPLED);
+    }
+
+    @Override
     public List<FileMetaData> getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType domainType,
         Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
             domainType, entityId, COUPLED);
+    }
+
+    @Override
+    public List<FileMetaData> getCoupledAllByEntityIds(List<Long> entityIds) {
+        return fileMetaDataRepository.findAllWithBannerByEntityIds(entityIds);
     }
 
     @Transactional
@@ -50,16 +58,16 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             return;
         }
         List<UUID> fileMetaDataIds = toUUIDs(ids);
-        List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
-        if (ids.size() != fileMetaDatas.size()) {
+        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
+        if (ids.size() != fileMetaDataList.size()) {
             throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataIds + ")를 찾을 수 없습니다.");
         }
-        fileMetaDatas.stream()
-            .filter(FileMetaData::isPending)
-            .forEach(fileMetaData -> {
-                fileMetaData.updateCoupledEntityInfo(domainType, entityId);
-                fileMetaData.updateStatus(COUPLED);
-            });
+        fileMetaDataList.stream()
+                .filter(FileMetaData::isPending)
+                .forEach(fileMetaData -> {
+                    fileMetaData.updateCoupledEntityInfo(domainType, entityId);
+                    fileMetaData.updateStatus(COUPLED);
+                });
     }
 
     @Transactional
@@ -100,17 +108,15 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     @Override
     public void updateStatusToDelete(DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
-        fileMetaDatas.forEach(fileMetaData -> {
-            fileMetaData.updateStatus(DELETED);
-        });
+        fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
     }
 
     private List<String> getNewIds(List<String> ids) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
         return fileMetaDatas.stream()
-            .filter(FileMetaData::isPending)
-            .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
-            .toList();
+                .filter(FileMetaData::isPending)
+                .map(fileMetaData -> String.valueOf(fileMetaData.getId()))
+                .toList();
     }
 
     private boolean isCoupled(String id) {
@@ -124,19 +130,19 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     private void deleteOldIds(List<String> ids, DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
         List<FileMetaData> deleteTarget = fileMetaDatas.stream()
-            .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
-            .toList();
+                .filter(fileMetaData -> !ids.contains(String.valueOf(fileMetaData.getId())))
+                .toList();
         deleteTarget.forEach(target -> target.updateStatus(DELETED));
     }
 
     private FileMetaData findById(UUID id) {
         return fileMetaDataRepository.findById(id)
-            .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(id: " + id + ")를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(id: " + id + ")를 찾을 수 없습니다."));
     }
 
     private List<UUID> toUUIDs(List<String> ids) {
         return ids.stream()
-            .map(UUID::fromString)
-            .toList();
+                .map(UUID::fromString)
+                .toList();
     }
 }

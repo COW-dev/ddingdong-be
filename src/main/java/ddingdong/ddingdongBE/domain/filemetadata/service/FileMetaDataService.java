@@ -11,8 +11,12 @@ public interface FileMetaDataService {
 
     List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
+    List<FileMetaData> getCoupledAllByEntityId(Long entityId);
+
     List<FileMetaData> getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType domainType,
         Long entityId);
+
+    List<FileMetaData> getCoupledAllByEntityIds(List<Long> entityIds);
 
     void updateStatusToCoupled(List<String> ids, DomainType domainType, Long entityId);
 

@@ -5,15 +5,15 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 
 public record CreateBannerCommand(
         User user,
-        String webImageKey,
-        String mobileImageKey
+        String link,
+        String webImageId,
+        String mobileImageId
 ) {
 
     public Banner toEntity() {
         return Banner.builder()
                 .user(user)
-                .webImageKey(webImageKey)
-                .mobileImageKey(mobileImageKey)
+                .link(link)
                 .build();
     }
 
