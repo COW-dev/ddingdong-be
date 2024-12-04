@@ -19,7 +19,6 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-//TODO: migration script
 public class VodProcessingJob extends BaseEntity {
 
     @Id
