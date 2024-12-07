@@ -113,14 +113,14 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                    "ddingdong/ddingdongBE/common/**",
-                    "ddingdong/ddingdongBE/**/*Request*",
-                    "ddingdong/ddingdongBE/**/*Response*",
-                    "ddingdong/ddingdongBE/**/*Command*",
-                    "ddingdong/ddingdongBE/**/*Query*",
-                    "ddingdong/ddingdongBE/**/*Dto*",
-                    "ddingdong/ddingdongBE/**/*Controller*",
-                    "ddingdong/ddingdongBE/**/General*Service.class"
+                    "**/ddingdong/ddingdongBE/common/**",
+                    "**/ddingdong/ddingdongBE/**/*Request*",
+                    "**/ddingdong/ddingdongBE/**/*Response*",
+                    "**/ddingdong/ddingdongBE/**/*Command*",
+                    "**/ddingdong/ddingdongBE/**/*Query*",
+                    "**/ddingdong/ddingdongBE/**/*Dto*",
+                    "**/ddingdong/ddingdongBE/**/*Controller*",
+                    "**/ddingdong/ddingdongBE/**/General*Service"
             ])
         }))
     }
