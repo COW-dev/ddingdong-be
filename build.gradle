@@ -102,7 +102,7 @@ sonar {
         """
     }
 
-    property "sonar.coverage.exclusions",
+        property "sonar.coverage.exclusions",
             "**/common/**, **/controller/**, **/dto/**, **/General**Service"
 }
 
