@@ -5,7 +5,7 @@ CREATE TABLE vod_processing_job
     updated_at         timestamp             NULL,
     notification_id    BIGINT                NULL,
     convert_job_id     VARCHAR(255)          NOT NULL,
-    user_id            BIGINT                NOT NULL,
+    user_id            VARCHAR(255)          NOT NULL,
     convert_job_status VARCHAR(255)          NULL,
     CONSTRAINT PK_vod_processing_job PRIMARY KEY (id)
 );
