@@ -26,9 +26,9 @@ class FacadeGeneralVodProcessingJobServiceTest extends TestContainerSupport {
     void createPendingVodProcessingJob() {
         //given
         String convertJobId = "testId";
-        String userAuthId = "testAuthId";
+        String userId = "testId";
         CreatePendingVodProcessingJobCommand command = new CreatePendingVodProcessingJobCommand(
-                convertJobId, userAuthId);
+                convertJobId, userId);
 
         //when
         Long createdPendingVodProcessingJobId = facadeVodProcessingJobService.create(command);
@@ -37,9 +37,9 @@ class FacadeGeneralVodProcessingJobServiceTest extends TestContainerSupport {
         Optional<VodProcessingJob> result = vodProcessingJobRepository.findById(createdPendingVodProcessingJobId);
         assertThat(result).isPresent();
         assertThat(result.get())
-                .extracting(VodProcessingJob::getConvertJobId, VodProcessingJob::getUserAuthId,
+                .extracting(VodProcessingJob::getConvertJobId, VodProcessingJob::getUserId,
                         VodProcessingJob::getConvertJobStatus)
-                .containsExactly(convertJobId, userAuthId, ConvertJobStatus.PENDING);
+                .containsExactly(convertJobId, userId, ConvertJobStatus.PENDING);
     }
 
 }

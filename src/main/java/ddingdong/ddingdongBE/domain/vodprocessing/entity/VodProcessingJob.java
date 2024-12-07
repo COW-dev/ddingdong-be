@@ -33,18 +33,18 @@ public class VodProcessingJob extends BaseEntity {
     private String convertJobId;
 
     @Column(nullable = false)
-    private String userAuthId;
+    private String userId;
 
     @Enumerated(EnumType.STRING)
     private ConvertJobStatus convertJobStatus;
 
     @Builder
     private VodProcessingJob(Long id, VodProcessingNotification vodProcessingNotification, String convertJobId,
-                             String userAuthId, ConvertJobStatus convertJobStatus) {
+                             String userId, ConvertJobStatus convertJobStatus) {
         this.id = id;
         this.vodProcessingNotification = vodProcessingNotification;
         this.convertJobId = convertJobId;
-        this.userAuthId = userAuthId;
+        this.userId = userId;
         this.convertJobStatus = convertJobStatus;
     }
 }

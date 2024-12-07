@@ -4,11 +4,11 @@ import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.CreatePend
 
 public record CreatePendingVodProcessingJobRequest(
         String convertJobId,
-        String userAuthId
+        String userId
 ) {
 
     public CreatePendingVodProcessingJobCommand toCommand() {
-        return new CreatePendingVodProcessingJobCommand(convertJobId, userAuthId);
+        return new CreatePendingVodProcessingJobCommand(convertJobId, userId);
     }
 
 }
