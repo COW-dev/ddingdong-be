@@ -100,10 +100,10 @@ sonar {
         property "sonar.exclusions", """
             **/ddingdong/ddingdongBE/common/**,
         """
+        property "sonar.coverage.exclusions",
+                "**/common/**, **/controller/**, **/dto/**, **/General**Service"
     }
 
-        property "sonar.coverage.exclusions",
-            "**/common/**, **/controller/**, **/dto/**, **/General**Service"
 }
 
 jacocoTestReport {
