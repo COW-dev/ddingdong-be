@@ -97,16 +97,16 @@ sonar {
         property "sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test"
 
-        property "sonar.exclusions", [
-                "**/ddingdong/ddingdongBE/common/**",
-                "**/ddingdong/ddingdongBE/**/**Request**",
-                "**/ddingdong/ddingdongBE/**/**Response**",
-                "**/ddingdong/ddingdongBE/**/**Command**",
-                "**/ddingdong/ddingdongBE/**/**Query**",
-                "**/ddingdong/ddingdongBE/**/**Dto**",
-                "**/ddingdong/ddingdongBE/**/**Controller**",
-                "**/ddingdong/ddingdongBE/**/General*Service.class"
-        ].join(',')
+        property "sonar.exclusions", """
+            **/ddingdong/ddingdongBE/common/**,
+            **/ddingdong/ddingdongBE/**/*Request*,
+            **/ddingdong/ddingdongBE/**/*Response*,
+            **/ddingdong/ddingdongBE/**/*Command*,
+            **/ddingdong/ddingdongBE/**/*Query*,
+            **/ddingdong/ddingdongBE/**/*Dto*,
+            **/ddingdong/ddingdongBE/**/*Controller*,
+            **/ddingdong/ddingdongBE/**/General*Service
+        """
     }
 }
 
