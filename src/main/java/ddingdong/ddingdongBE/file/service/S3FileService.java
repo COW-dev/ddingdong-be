@@ -124,7 +124,7 @@ public class S3FileService {
                 serverProfile,
                 contentType.getKeyMediaType(),
                 formatDate(command.generatedAt()),
-                command.authId(),
+                command.userId(),
                 uploadFileName.toString());
     }
 

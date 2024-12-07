@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public record GeneratePreSignedUrlRequestCommand(
         LocalDateTime generatedAt,
-        String authId,
+        Long userId,
         String fileName
 ) {
 
