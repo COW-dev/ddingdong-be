@@ -101,7 +101,7 @@ sonar {
             **/ddingdong/ddingdongBE/common/**,
         """
         property "sonar.coverage.exclusions",
-                "**/common/**, **/controller/**, **/dto/**, **/service/General**Servce"
+                "**/common/**, **/controller/**, **/dto/**, **/service/General**Service"
     }
 
 }
