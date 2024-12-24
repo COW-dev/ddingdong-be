@@ -12,8 +12,8 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
 
     private final VodProcessingJobService vodProcessingJobService;
 
-
     @Override
+    @Transactional
     public Long create(CreatePendingVodProcessingJobCommand command) {
         return vodProcessingJobService.save(command.toPendingVodProcessingJob());
     }
