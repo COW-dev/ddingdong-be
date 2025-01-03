@@ -92,6 +92,7 @@ public class S3FileService {
         );
     }
 
+    //TODO: video 피드 조회 시 수정 필요
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
         String fileId = extractFileId(key);
         String region = amazonS3Client.getRegionName();
@@ -124,7 +125,7 @@ public class S3FileService {
                 serverProfile,
                 contentType.getKeyMediaType(),
                 formatDate(command.generatedAt()),
-                command.authId(),
+                command.userId(),
                 uploadFileName.toString());
     }
 

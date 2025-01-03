@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
 
-    private final NoticeServiceImpl noticeService;
+    private final NoticeService noticeService;
     private final FileMetaDataService fileMetaDataService;
 
     @Transactional

@@ -36,10 +36,10 @@ class S3FileServiceTest extends TestContainerSupport {
     void generatePreSignedUrlRequest() {
         //given
         LocalDateTime now = LocalDateTime.now();
-        String authId = "test";
+        Long userId = 1L;
         String fileName = "image.jpg";
         GeneratePreSignedUrlRequestCommand command =
-                new GeneratePreSignedUrlRequestCommand(now, authId, fileName);
+                new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
@@ -56,9 +56,9 @@ class S3FileServiceTest extends TestContainerSupport {
                             .isEqualTo("image/jpeg");
 
                     assertThat(request.getKey())
-                            .as("Key should contain correct date, authId, and fileId")
+                            .as("Key should contain correct date, userId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                                    "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
                             .contains(fileId.toString());
                 });
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId.toString())).isTrue();
@@ -75,9 +75,9 @@ class S3FileServiceTest extends TestContainerSupport {
     void generateVIDEOPreSignedUrlRequest(String fileName) {
         //given
         LocalDateTime now = LocalDateTime.now();
-        String authId = "test";
+        Long userId = 1L;
         GeneratePreSignedUrlRequestCommand command =
-                new GeneratePreSignedUrlRequestCommand(now, authId, fileName);
+                new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
@@ -91,9 +91,9 @@ class S3FileServiceTest extends TestContainerSupport {
                             .as("Content type should match the video's MIME type")
                             .isEqualTo(expectedContentType(fileName));
                     assertThat(request.getKey())
-                            .as("Key should contain correct date, authId, and fileId")
+                            .as("Key should contain correct date, userId, and fileId")
                             .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), authId))
+                                    "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
                             .contains(id.toString());
 
                     assertThat(Pattern.matches(UUID7_PATTERN.pattern(), id.toString())).isTrue();

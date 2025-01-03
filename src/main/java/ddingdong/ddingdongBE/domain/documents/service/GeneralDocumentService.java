@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class DocumentServiceImpl implements DocumentService {
+public class GeneralDocumentService implements DocumentService {
 
     private final DocumentRepository documentRepository;
 

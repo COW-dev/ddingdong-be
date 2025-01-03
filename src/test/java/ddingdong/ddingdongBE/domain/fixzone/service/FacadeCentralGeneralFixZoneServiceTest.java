@@ -34,7 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Transactional
 @SpringBootTest
-class FacadeCentralFixZoneServiceImplTest extends TestContainerSupport {
+class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
 
     @Autowired
     private FacadeCentralFixZoneService facadeCentralFixZoneService;
