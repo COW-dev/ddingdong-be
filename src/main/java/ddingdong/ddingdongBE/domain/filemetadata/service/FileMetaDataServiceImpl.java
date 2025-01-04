@@ -7,8 +7,11 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import ddingdong.ddingdongBE.domain.filemetadata.service.dto.FileMetaDataIdOrderDto;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -22,8 +25,8 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     private final FileMetaDataRepository fileMetaDataRepository;
 
-    @Override
     @Transactional
+    @Override
     public UUID create(FileMetaData fileMetaData) {
         FileMetaData savedFileMetaData = fileMetaDataRepository.save(fileMetaData);
         return savedFileMetaData.getId();
@@ -41,9 +44,9 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     @Override
     public List<FileMetaData> getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType domainType,
-        Long entityId) {
+                                                                             Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatusOrderedAsc(
-            domainType, entityId, COUPLED);
+                domainType, entityId, COUPLED);
     }
 
     @Override
@@ -82,6 +85,37 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaData.updateStatus(COUPLED);
     }
 
+    @Override
+    public void updateStatusToCoupledWithOrder(
+            List<FileMetaDataIdOrderDto> fileMetaDataIdOrderDtos,
+            DomainType domainType,
+            Long entityId
+    ) {
+        if (fileMetaDataIdOrderDtos == null || fileMetaDataIdOrderDtos.isEmpty()) {
+            return;
+        }
+        List<UUID> fileMetaDataIds = toUUIDs(fileMetaDataIdOrderDtos.stream()
+                .map(FileMetaDataIdOrderDto::fileMetaDatId)
+                .toList());
+        List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
+        if (fileMetaDataIdOrderDtos.size() != fileMetaDataList.size()) {
+            throw new ResourceNotFound("해당 FileMetaData(id: " + fileMetaDataIds + ")를 찾을 수 없습니다.");
+        }
+        Map<UUID, Integer> orderMap = fileMetaDataIdOrderDtos.stream()
+                .collect(Collectors.toMap(
+                        dto -> UUID.fromString(dto.fileMetaDatId()),
+                        FileMetaDataIdOrderDto::fileMetaDataOrder
+                ));
+
+        fileMetaDataList.forEach(fileMetaData -> {
+            fileMetaData.updateOrder(orderMap.get(fileMetaData.getId()));
+            if (fileMetaData.isPending()) {
+                fileMetaData.updateCoupledEntityInfo(domainType, entityId);
+                fileMetaData.updateStatus(COUPLED);
+            }
+        });
+    }
+
     @Transactional
     @Override
     public void update(String id, DomainType domainType, Long entityId) {
@@ -102,6 +136,21 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         deleteOldIds(ids, domainType, entityId); //ids에 포함된 id를 가진 fileMetaData외에 전부 제거
         List<String> newIds = getNewIds(ids); //기존 id가 아닌 새로운 id 반환
         updateStatusToCoupled(newIds, domainType, entityId);
+    }
+
+    @Transactional
+    @Override
+    public void updateWithOrder(List<FileMetaDataIdOrderDto> fileMetaDataIdOrderDtos, DomainType domainType,
+                                Long entityId) {
+        if (fileMetaDataIdOrderDtos == null || fileMetaDataIdOrderDtos.isEmpty()) {
+            updateStatusToDelete(domainType, entityId);
+            return;
+        }
+        List<String> ids = fileMetaDataIdOrderDtos.stream()
+                .map(FileMetaDataIdOrderDto::fileMetaDatId)
+                .toList();
+        deleteOldIds(ids, domainType, entityId); //ids에 포함된 id를 가진 fileMetaData외에 전부 제거
+        updateStatusToCoupledWithOrder(fileMetaDataIdOrderDtos, domainType, entityId);
     }
 
     @Transactional
