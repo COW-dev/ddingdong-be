@@ -7,19 +7,33 @@ import lombok.Builder;
 
 @Builder
 public record CreateNoticeCommand(
-    User user,
-    String title,
-    String content,
-    List<String> imageIds,
-    List<String> fileIds
+        User user,
+        String title,
+        String content,
+        List<ImageInfo> imageInfos,
+        List<FileInfo> fileInfos
 ) {
 
     public Notice toEntity() {
         return Notice.builder()
-            .user(user)
-            .title(title)
-            .content(content)
-            .build();
+                .user(user)
+                .title(title)
+                .content(content)
+                .build();
+    }
+
+    public record ImageInfo(
+            String imagId,
+            int order
+    ) {
+
+    }
+
+    public record FileInfo(
+            String fileId,
+            int order
+    ) {
+
     }
 
 }

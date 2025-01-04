@@ -37,7 +37,7 @@ public interface AdminNoticeApi {
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping("/{noticeId}")
     void updateNotice(
-        @PathVariable Long noticeId,
+        @PathVariable("noticeId") Long noticeId,
         @RequestBody UpdateNoticeRequest request
     );
 
@@ -46,6 +46,6 @@ public interface AdminNoticeApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/{noticeId}")
-    void deleteNotice(@PathVariable Long noticeId);
+    void deleteNotice(@PathVariable("noticeId") Long noticeId);
 
 }

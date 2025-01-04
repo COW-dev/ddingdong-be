@@ -20,13 +20,13 @@ public class NoticeController implements NoticeApi {
     @Override
     public NoticeListResponse getNoticeList(GetNoticePagingRequest request) {
         NoticeListPagingQuery noticeListPagingQuery = facadeNoticeServiceImpl.getNoticeList(
-            request.toCommand());
+                request.toCommand());
 
         return NoticeListResponse.from(noticeListPagingQuery);
     }
 
     @Override
-    public NoticeResponse getNotice(@PathVariable Long noticeId) {
+    public NoticeResponse getNotice(Long noticeId) {
         NoticeQuery query = facadeNoticeServiceImpl.getNotice(noticeId);
         return NoticeResponse.from(query);
     }
