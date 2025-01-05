@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.filemetadata.service.dto;
 
 public record FileMetaDataIdOrderDto(
-        String fileMetaDatId,
+        String fileMetaDataId,
         int fileMetaDataOrder
 
 ) {

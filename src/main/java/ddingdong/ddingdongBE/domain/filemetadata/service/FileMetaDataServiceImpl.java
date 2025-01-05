@@ -95,7 +95,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             return;
         }
         List<UUID> fileMetaDataIds = toUUIDs(fileMetaDataIdOrderDtos.stream()
-                .map(FileMetaDataIdOrderDto::fileMetaDatId)
+                .map(FileMetaDataIdOrderDto::fileMetaDataId)
                 .toList());
         List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findByIdIn(fileMetaDataIds);
         if (fileMetaDataIdOrderDtos.size() != fileMetaDataList.size()) {
@@ -103,7 +103,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         }
         Map<UUID, Integer> orderMap = fileMetaDataIdOrderDtos.stream()
                 .collect(Collectors.toMap(
-                        dto -> UUID.fromString(dto.fileMetaDatId()),
+                        dto -> UUID.fromString(dto.fileMetaDataId()),
                         FileMetaDataIdOrderDto::fileMetaDataOrder
                 ));
 
@@ -147,7 +147,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
             return;
         }
         List<String> ids = fileMetaDataIdOrderDtos.stream()
-                .map(FileMetaDataIdOrderDto::fileMetaDatId)
+                .map(FileMetaDataIdOrderDto::fileMetaDataId)
                 .toList();
         deleteOldIds(ids, domainType, entityId); //ids에 포함된 id를 가진 fileMetaData외에 전부 제거
         updateStatusToCoupledWithOrder(fileMetaDataIdOrderDtos, domainType, entityId);

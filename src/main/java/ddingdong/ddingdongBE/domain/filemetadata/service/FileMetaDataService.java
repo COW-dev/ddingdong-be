@@ -23,7 +23,7 @@ public interface FileMetaDataService {
 
     void updateStatusToCoupled(String id, DomainType domainType, Long entityId);
 
-    void updateStatusToCoupledWithOrder(List<FileMetaDataIdOrderDto> ids, DomainType domainType, Long entityId);
+    void updateStatusToCoupledWithOrder(List<FileMetaDataIdOrderDto> fileMetaDataIdOrderDtos, DomainType domainType, Long entityId);
 
     void updateStatusToDelete(DomainType domainType, Long entityId);
 
