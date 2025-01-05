@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.common.config;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
@@ -33,57 +34,58 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthService authService, JwtConfig config)
             throws Exception {
         http
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers(API_PREFIX + "/auth/**",
-                    API_PREFIX + "/events/**")
-                .permitAll()
-                .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
-                .requestMatchers(API_PREFIX + "/central/**").hasRole("CLUB")
-                .requestMatchers(actuatorPath).hasRole("ADMIN")
-                .requestMatchers(GET,
-                    API_PREFIX + "/clubs/**",
-                    API_PREFIX + "/notices/**",
-                    API_PREFIX + "/banners/**",
-                    API_PREFIX + "/documents/**",
-                    API_PREFIX + "/questions/**",
-                    API_PREFIX + "/feeds/**",
-                        API_PREFIX + "/internal/**")
-                .permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-            )
-            .cors(cors -> cors
-                .configurationSource(corsConfigurationSource())
-            )
-            /*
-            csrf, headers, http-basic, rememberMe, formLogin 비활성화
-            */
-            .csrf(AbstractHttpConfigurer::disable)
-            .headers(AbstractHttpConfigurer::disable)
-            .httpBasic(AbstractHttpConfigurer::disable)
-            .rememberMe(AbstractHttpConfigurer::disable)
-            .formLogin(AbstractHttpConfigurer::disable)
-            .logout(AbstractHttpConfigurer::disable)
-            /*
-            Session 설정
-             */
-            .sessionManagement(session -> session
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-            )
-            /*
-            Jwt 필터
-             */
-            .addFilterBefore(authenticationFilter(authService, config),
-                UsernamePasswordAuthenticationFilter.class)
-            /*
-            exceptionHandling
-             */
-            .exceptionHandling(exceptions -> exceptions
-                .authenticationEntryPoint(restAuthenticationEntryPoint())
-                .accessDeniedHandler(accessDeniedHandler())
-            );
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(API_PREFIX + "/auth/**",
+                                API_PREFIX + "/events/**")
+                        .permitAll()
+                        .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
+                        .requestMatchers(API_PREFIX + "/central/**").hasRole("CLUB")
+                        .requestMatchers(actuatorPath).hasRole("ADMIN")
+                        .requestMatchers(GET,
+                                API_PREFIX + "/clubs/**",
+                                API_PREFIX + "/notices/**",
+                                API_PREFIX + "/banners/**",
+                                API_PREFIX + "/documents/**",
+                                API_PREFIX + "/questions/**",
+                                API_PREFIX + "/feeds/**")
+                        .permitAll()
+                        .requestMatchers(POST, API_PREFIX + "/internal/**")
+                        .permitAll()
+                        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-resources/**")
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated()
+                )
+                .cors(cors -> cors
+                        .configurationSource(corsConfigurationSource())
+                )
+                /*
+                csrf, headers, http-basic, rememberMe, formLogin 비활성화
+                */
+                .csrf(AbstractHttpConfigurer::disable)
+                .headers(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .rememberMe(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
+                /*
+                Session 설정
+                 */
+                .sessionManagement(session -> session
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                )
+                /*
+                Jwt 필터
+                 */
+                .addFilterBefore(authenticationFilter(authService, config),
+                        UsernamePasswordAuthenticationFilter.class)
+                /*
+                exceptionHandling
+                 */
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(restAuthenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler())
+                );
 
         return http.build();
     }
