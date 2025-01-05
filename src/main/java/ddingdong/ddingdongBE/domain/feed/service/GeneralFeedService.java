@@ -11,18 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class GeneralFeedService {
+public class GeneralFeedService implements FeedService {
 
   private final FeedRepository feedRepository;
 
+  @Override
   public List<Feed> getAllByClubId(Long clubId) {
     return feedRepository.findAllByClubIdOrderById(clubId);
   }
 
+  @Override
   public List<Feed> getNewestAll() {
     return feedRepository.findNewestAll();
   }
 
+  @Override
   public Feed getById(Long feedId) {
     return feedRepository.findById(feedId)
         .orElseThrow(() -> new ResourceNotFound("Feed(id: " + feedId + ")를 찾을 수 없습니다."));
