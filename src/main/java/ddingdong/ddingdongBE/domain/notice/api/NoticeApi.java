@@ -30,6 +30,6 @@ public interface NoticeApi {
         content = @Content(schema = @Schema(implementation = NoticeResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{noticeId}")
-    NoticeResponse getNotice(@PathVariable Long noticeId);
+    NoticeResponse getNotice(@PathVariable("noticeId") Long noticeId);
 
 }

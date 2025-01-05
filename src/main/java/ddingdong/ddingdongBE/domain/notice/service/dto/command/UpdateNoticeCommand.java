@@ -9,8 +9,8 @@ public record UpdateNoticeCommand(
     Long noticeId,
     String title,
     String content,
-    List<String> imageIds,
-    List<String> fileIds
+    List<ImageInfo> imageInfos,
+    List<FileInfo> fileInfos
 ) {
 
     public Notice toEntity() {
@@ -18,6 +18,20 @@ public record UpdateNoticeCommand(
             .title(title)
             .content(content)
             .build();
+    }
+
+    public record ImageInfo(
+            String imageId,
+            int order
+    ) {
+
+    }
+
+    public record FileInfo(
+            String fileId,
+            int order
+    ) {
+
     }
 
 }

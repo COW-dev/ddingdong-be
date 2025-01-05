@@ -28,7 +28,7 @@ public class AdminNoticeController implements AdminNoticeApi {
     }
 
     @Override
-    public void deleteNotice(@PathVariable Long noticeId) {
+    public void deleteNotice(Long noticeId) {
         facadeAdminNoticeService.delete(noticeId);
     }
 

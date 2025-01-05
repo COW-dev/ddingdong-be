@@ -8,7 +8,7 @@ public record CreateFixZoneCommand(
         Long userId,
         String title,
         String content,
-        List<String> fixZoneImageIds
+        List<ImageInfo> imageInfos
 ) {
 
     public FixZone toEntity(Club club) {
@@ -18,6 +18,13 @@ public record CreateFixZoneCommand(
                 .content(content)
                 .isCompleted(false)
                 .build();
+    }
+
+    public record ImageInfo(
+            String imageId,
+            int order
+    ) {
+
     }
 
 }

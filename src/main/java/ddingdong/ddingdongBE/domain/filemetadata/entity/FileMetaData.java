@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "file_meta_data",indexes = {@Index(columnList = "domainType,entityId,fileStatus")})
+@Table(name = "file_meta_data", indexes = {@Index(columnList = "domainType,entityId,fileStatus")})
 public class FileMetaData extends BaseEntity {
 
     @Id
@@ -39,15 +39,19 @@ public class FileMetaData extends BaseEntity {
     @Column(nullable = false)
     private FileStatus fileStatus;
 
+    @Column(name = "file_meta_data_order", nullable = false, columnDefinition = "integer default 0")
+    private int order;
+
     @Builder
     private FileMetaData(UUID id, String fileKey, String fileName, DomainType domainType, Long entityId,
-                         FileStatus fileStatus) {
+                         FileStatus fileStatus, int order) {
         this.id = id;
         this.fileKey = fileKey;
         this.fileName = fileName;
         this.domainType = domainType;
         this.entityId = entityId;
         this.fileStatus = fileStatus;
+        this.order = order;
     }
 
     public static FileMetaData createPending(UUID id, String fileKey, String fileName) {
@@ -78,5 +82,9 @@ public class FileMetaData extends BaseEntity {
 
     public boolean isOwn(Long entityId) {
         return this.entityId.equals(entityId);
+    }
+
+    public void updateOrder(int order) {
+        this.order = order;
     }
 }

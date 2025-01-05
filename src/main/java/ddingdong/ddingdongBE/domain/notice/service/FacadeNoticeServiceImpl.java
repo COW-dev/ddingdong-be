@@ -9,7 +9,9 @@ import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListPagingQue
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -29,8 +31,8 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
         List<Notice> notices = noticeService.getNoticeListByPage(command.page(), command.limit());
 
         List<NoticeInfo> noticeInfos = notices.stream()
-            .map(NoticeInfo::from)
-            .toList();
+                .map(NoticeInfo::from)
+                .toList();
 
         int totalPage = noticeService.getNoticePageCount();
 
@@ -40,18 +42,22 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
     public NoticeQuery getNotice(Long noticeId) {
         Notice notice = noticeService.getById(noticeId);
 
-        List<UploadedFileUrlQuery> imageUrlQueries = fileMetaDataService
-            .getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType.NOTICE_IMAGE, noticeId)
-            .stream()
-            .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
-            .toList();
+        List<UploadedFileUrlWithOrderQuery> imageUrlQueries =
+                fileMetaDataService.getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType.NOTICE_IMAGE, noticeId)
+                        .stream()
+                        .map(fileMetaData -> UploadedFileUrlWithOrderQuery.of(
+                                s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()), fileMetaData.getOrder())
+                        )
+                        .toList();
 
-        List<UploadedFileUrlAndNameQuery> fileUrlAndNameQueries = fileMetaDataService
-            .getCoupledAllByDomainTypeAndEntityId(DomainType.NOTICE_FILE, noticeId)
-            .stream()
-            .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(),
-                fileMetaData.getFileName()))
-            .toList();
+        List<UploadedFileUrlAndNameWithOrderQuery> fileUrlAndNameQueries =
+                fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(DomainType.NOTICE_FILE, noticeId).stream()
+                        .map(fileMetaData -> UploadedFileUrlAndNameWithOrderQuery.of(
+                                s3FileService.getUploadedFileUrlAndName(
+                                        fileMetaData.getFileKey(), fileMetaData.getFileName()),
+                                fileMetaData.getOrder())
+                        )
+                        .toList();
 
         return NoticeQuery.of(notice, imageUrlQueries, fileUrlAndNameQueries);
     }

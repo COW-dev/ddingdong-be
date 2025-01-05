@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery.FixZoneCommentQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -57,17 +58,19 @@ public record CentralFixZoneResponse(
     record FixZoneImageUrlResponse(
             @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00l")
             String id,
+            @Schema(description = "이미지 순서", example = "1")
+            int order,
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
             String cdnUrl
     ) {
 
-        public static FixZoneImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static FixZoneImageUrlResponse from(UploadedFileUrlWithOrderQuery query) {
             if (query == null) {
                 return null;
             }
-            return new FixZoneImageUrlResponse(query.id(), query.originUrl(), query.cdnUrl());
+            return new FixZoneImageUrlResponse(query.id(), query.order(), query.originUrl(), query.cdnUrl());
         }
 
     }
