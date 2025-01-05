@@ -43,7 +43,7 @@ public record CreateNoticeRequest(
                 .build();
     }
 
-    public record ImageInfoRequest(
+    private record ImageInfoRequest(
             @Schema(description = "이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "이미지 순서", example = "1")
@@ -53,7 +53,7 @@ public record CreateNoticeRequest(
 
     }
 
-    public record FileInfoRequest(
+    private record FileInfoRequest(
             @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "파일 순서", example = "1")

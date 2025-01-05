@@ -29,11 +29,7 @@ public record UpdateNoticeRequest(
                 .noticeId(noticeId)
                 .title(title)
                 .content(content)
-                .imageInfos((images != null) ?
-                        images.stream()
-                                .map(image -> new ImageInfo(image.id, image.order()))
-                                .toList() :
-                        List.of())
+                .imageInfos(getImageInfos())
                 .fileInfos((files != null) ?
                         files.stream()
                                 .map(file -> new FileInfo(file.id, file.order()))
@@ -42,7 +38,15 @@ public record UpdateNoticeRequest(
                 .build();
     }
 
-    public record ImageInfoRequest(
+    private List<ImageInfo> getImageInfos() {
+        return (images != null) ?
+                images.stream()
+                        .map(image -> new ImageInfo(image.id, image.order()))
+                        .toList() :
+                List.of();
+    }
+
+    private record ImageInfoRequest(
             @Schema(description = "이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "이미지 순서", example = "1")
@@ -52,7 +56,7 @@ public record UpdateNoticeRequest(
 
     }
 
-    public record FileInfoRequest(
+    private record FileInfoRequest(
             @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "파일 순서", example = "1")
