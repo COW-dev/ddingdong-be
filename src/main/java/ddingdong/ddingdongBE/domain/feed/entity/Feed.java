@@ -33,10 +33,8 @@ public class Feed extends BaseEntity {
     @Column(nullable = false)
     private String activityContent;
 
-    @Column(nullable = false)
     private String thumbnailUrl;
 
-    @Column(nullable = false)
     private String fileUrl;
 
     @Column(nullable = false)
