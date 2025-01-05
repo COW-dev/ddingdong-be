@@ -89,21 +89,14 @@ tasks.named('test') {
 
 sonar {
     properties {
-        property "sonar.projectKey", "COW-dev_ddingdong-be"
-        property "sonar.organization", "cow-dev"
-        property "sonar.host.url", "https://sonarcloud.io"
-        property "sonar.sourceEncoding", "UTF-8"
-        property "sonar.java.source", "${java.sourceCompatibility}"
-        property "sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/jacocoTestReport.xml"
-        property "sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test"
-
-        property "sonar.exclusions", """
-            **/ddingdong/ddingdongBE/common/**,
+        property "sonar.exclusions", "**/common/**"
+        property "sonar.coverage.exclusions", """
+            **/common/**,
+            **/controller/**,
+            **/dto/**,
+            **/service/General*.java
         """
-        property "sonar.coverage.exclusions",
-                "**/common/**, **/controller/**, **/dto/**, **/service/General**Service"
     }
-
 }
 
 jacocoTestReport {
@@ -111,14 +104,10 @@ jacocoTestReport {
     afterEvaluate {
         classDirectories.setFrom(files(classDirectories.files.collect {
             fileTree(dir: it, exclude: [
-                    "**/ddingdong/ddingdongBE/common/**",
-                    "**/ddingdong/ddingdongBE/**/**Request**",
-                    "**/ddingdong/ddingdongBE/**/**Response**",
-                    "**/ddingdong/ddingdongBE/**/**Command**",
-                    "**/ddingdong/ddingdongBE/**/**Query**",
-                    "**/ddingdong/ddingdongBE/**/**Dto**",
-                    "**/ddingdong/ddingdongBE/**/**Controller**",
-                    "**/ddingdong/ddingdongBE/**/General*Service.class"
+                    "**/common/**",
+                    "**/controller/**",
+                    "**/dto/**",
+                    "**/service/General*.class"
             ])
         }))
     }
