@@ -23,7 +23,7 @@ public interface FeedApi {
   @ApiResponse(responseCode = "200", description = "동아리 피드 전체 조회 성공",
       content = @Content(schema = @Schema(implementation = FeedListResponse.class)))
   @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/clubs/{clubId}/feeds")
+  @GetMapping("/central/{clubId}/feeds")
   List<FeedListResponse> getAllFeedByClubId(@PathVariable Long clubId);
 
   @Operation(summary = "전체 동아리 최신 피드 조회 API")

@@ -10,4 +10,6 @@ public enum DomainType {
     ACTIVITY_REPORT_IMAGE,
     BANNER_WEB_IMAGE,
     BANNER_MOBILE_IMAGE,
+    FEED_IMAGE,
+    FEED_VIDEO
 }

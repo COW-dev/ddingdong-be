@@ -30,4 +30,10 @@ public class GeneralFeedService implements FeedService {
     return feedRepository.findById(feedId)
         .orElseThrow(() -> new ResourceNotFound("Feed(id: " + feedId + ")를 찾을 수 없습니다."));
   }
+
+  @Override
+  public Long create(Feed feed) {
+    Feed savedFeed = feedRepository.save(feed);
+    return savedFeed.getId();
+  }
 }

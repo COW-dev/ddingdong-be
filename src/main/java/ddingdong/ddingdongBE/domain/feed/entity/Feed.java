@@ -57,4 +57,8 @@ public class Feed extends BaseEntity {
         this.feedType = feedType;
         this.fileUrl = fileUrl;
     }
+
+    public void updateFeedType(FeedType feedType) {
+        this.feedType = feedType;
+    }
 }

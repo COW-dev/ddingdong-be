@@ -33,6 +33,13 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
+    public FileMetaData getById(String id) {
+        UUID uuid = UUID.fromString(id);
+        return fileMetaDataRepository.findById(uuid)
+            .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(id: " + uuid + ")를 찾을 수 없습니다.)"));
+    }
+
+    @Override
     public List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
