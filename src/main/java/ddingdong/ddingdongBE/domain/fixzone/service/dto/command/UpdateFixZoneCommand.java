@@ -7,7 +7,7 @@ public record UpdateFixZoneCommand(
         Long fixZoneId,
         String title,
         String content,
-        List<String> fixZoneImageIds
+        List<ImageInfo> imageInfos
 ) {
 
     public FixZone toEntity() {
@@ -15,6 +15,13 @@ public record UpdateFixZoneCommand(
                 .title(title)
                 .content(content)
                 .build();
+    }
+
+    public record ImageInfo(
+            String imagId,
+            int order
+    ) {
+
     }
 
 }

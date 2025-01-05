@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery.FixZoneCommentQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -54,17 +55,19 @@ public record AdminFixZoneResponse(
             description = "어드민 - 픽스존 이미지 URL 조회 응답"
     )
     record FixZoneImageUrlResponse(
+            @Schema(description = "이미지 순서", example = "1")
+            int order,
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
             String cdnUrl
     ) {
 
-        public static FixZoneImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static FixZoneImageUrlResponse from(UploadedFileUrlWithOrderQuery query) {
             if (query == null) {
                 return null;
             }
-            return new FixZoneImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new FixZoneImageUrlResponse(query.order(), query.originUrl(), query.cdnUrl());
         }
 
     }
