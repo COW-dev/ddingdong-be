@@ -29,12 +29,16 @@ public record CreateNoticeRequest(
                 .user(user)
                 .title(title)
                 .content(content)
-                .imageInfos(images.stream()
-                        .map(image -> new ImageInfo(image.id, image.order()))
-                        .toList())
-                .fileInfos(files.stream()
-                        .map(file -> new FileInfo(file.id, file.order()))
-                        .toList())
+                .imageInfos((images != null) ?
+                        images.stream()
+                                .map(image -> new ImageInfo(image.id, image.order()))
+                                .toList() :
+                        List.of())
+                .fileInfos((files != null) ?
+                        files.stream()
+                                .map(file -> new FileInfo(file.id, file.order()))
+                                .toList() :
+                        List.of())
                 .build();
     }
 

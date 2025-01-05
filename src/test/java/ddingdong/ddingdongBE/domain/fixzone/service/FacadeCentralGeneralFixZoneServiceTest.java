@@ -16,6 +16,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataReposito
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.repository.FixZoneRepository;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommand;
+import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommand.ImageInfo;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCommand;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralMyFixZoneListQuery;
@@ -68,7 +69,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                 savedUser.getId(),
                 "test",
                 "test",
-                List.of(fileId1.toString(), fileId2.toString())
+                List.of(new ImageInfo(fileId1.toString(), 1), new ImageInfo(fileId2.toString(), 2))
         );
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
@@ -214,7 +215,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                 savedFixZone.getId(),
                 "test",
                 "test",
-                null
+                List.of()
         );
 
         //when

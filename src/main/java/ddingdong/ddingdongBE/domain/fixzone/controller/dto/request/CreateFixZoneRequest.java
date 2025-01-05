@@ -22,9 +22,11 @@ public record CreateFixZoneRequest(
                 userId,
                 title,
                 content,
-                images.stream()
-                        .map(image -> new ImageInfo(image.id, image.order()))
-                        .toList()
+                (images != null) ?
+                        images.stream()
+                                .map(image -> new ImageInfo(image.id, image.order()))
+                                .toList() :
+                        List.of()
         );
     }
 
