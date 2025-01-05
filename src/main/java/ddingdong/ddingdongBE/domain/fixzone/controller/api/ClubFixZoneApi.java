@@ -10,6 +10,7 @@ import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.CentralMyFix
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -43,7 +44,7 @@ public interface ClubFixZoneApi {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     void createFixZone(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                       @RequestBody CreateFixZoneRequest request);
+                       @RequestBody @Valid CreateFixZoneRequest request);
 
     @Operation(summary = "Fix Zone 수정 API")
     @PatchMapping(value = "/{fixZoneId}")
@@ -51,7 +52,7 @@ public interface ClubFixZoneApi {
     @SecurityRequirement(name = "AccessToken")
     void updateFixZone(
             @PathVariable("fixZoneId") Long fixZoneId,
-            @RequestBody UpdateFixZoneRequest request
+            @RequestBody @Valid UpdateFixZoneRequest request
     );
 
     @Operation(summary = "Fix Zone 삭제 API")

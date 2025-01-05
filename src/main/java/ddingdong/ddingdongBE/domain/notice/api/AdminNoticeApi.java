@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public interface AdminNoticeApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping
     void createNotice(
-        @RequestBody CreateNoticeRequest request,
+        @RequestBody @Valid CreateNoticeRequest request,
         @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
@@ -38,7 +39,7 @@ public interface AdminNoticeApi {
     @PatchMapping("/{noticeId}")
     void updateNotice(
         @PathVariable("noticeId") Long noticeId,
-        @RequestBody UpdateNoticeRequest request
+        @RequestBody @Valid UpdateNoticeRequest request
     );
 
     @Operation(summary = "공지사항 삭제 API")

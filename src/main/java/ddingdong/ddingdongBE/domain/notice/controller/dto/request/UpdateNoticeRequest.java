@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.notice.service.dto.command.UpdateNoticeComma
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.UpdateNoticeCommand.FileInfo;
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.UpdateNoticeCommand.ImageInfo;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
@@ -45,6 +46,7 @@ public record UpdateNoticeRequest(
             @Schema(description = "이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "이미지 순서", example = "1")
+            @Min(value = 1, message = "이미지 순서는 1 이상이어야 합니다")
             int order
     ) {
 
@@ -54,6 +56,7 @@ public record UpdateNoticeRequest(
             @Schema(description = "파일 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
             String id,
             @Schema(description = "파일 순서", example = "1")
+            @Min(value = 1, message = "파일 순서는 1 이상이어야 합니다")
             int order
     ) {
 
