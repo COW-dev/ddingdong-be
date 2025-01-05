@@ -21,7 +21,7 @@ public record UpdateNoticeCommand(
     }
 
     public record ImageInfo(
-            String imagId,
+            String imageId,
             int order
     ) {
 

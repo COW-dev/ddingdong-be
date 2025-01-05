@@ -5,8 +5,6 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.filemetadata.service.dto.FileMetaDataIdOrderDto;
 import ddingdong.ddingdongBE.domain.notice.entity.Notice;
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.CreateNoticeCommand;
-import ddingdong.ddingdongBE.domain.notice.service.dto.command.CreateNoticeCommand.FileInfo;
-import ddingdong.ddingdongBE.domain.notice.service.dto.command.CreateNoticeCommand.ImageInfo;
 import ddingdong.ddingdongBE.domain.notice.service.dto.command.UpdateNoticeCommand;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +48,7 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
         notice.update(command.toEntity());
 
         List<FileMetaDataIdOrderDto> imageFileMetaDataIdOrderDtos = command.imageInfos().stream()
-                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imagId(), imageInfo.order()))
+                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imageId(), imageInfo.order()))
                 .toList();
 
         List<FileMetaDataIdOrderDto> fileFileMetaDataIdOrderDtos = command.fileInfos().stream()
