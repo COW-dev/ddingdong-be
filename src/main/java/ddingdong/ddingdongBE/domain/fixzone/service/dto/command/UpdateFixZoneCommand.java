@@ -18,7 +18,7 @@ public record UpdateFixZoneCommand(
     }
 
     public record ImageInfo(
-            String imagId,
+            String imageId,
             int order
     ) {
 

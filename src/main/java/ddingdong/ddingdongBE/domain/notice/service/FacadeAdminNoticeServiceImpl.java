@@ -25,7 +25,7 @@ public class FacadeAdminNoticeServiceImpl implements FacadeAdminNoticeService {
         Long createdNoticeId = noticeService.save(notice);
 
         List<FileMetaDataIdOrderDto> imageFileMetaDataIdOrderDtos = command.imageInfos().stream()
-                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imagId(), imageInfo.order()))
+                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imageId(), imageInfo.order()))
                 .toList();
 
         List<FileMetaDataIdOrderDto> fileFileMetaDataIdOrderDtos = command.fileInfos().stream()

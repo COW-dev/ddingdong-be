@@ -21,7 +21,7 @@ public record CreateFixZoneCommand(
     }
 
     public record ImageInfo(
-            String imagId,
+            String imageId,
             int order
     ) {
 

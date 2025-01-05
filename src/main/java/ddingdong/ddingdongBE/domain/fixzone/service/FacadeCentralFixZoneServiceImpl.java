@@ -36,7 +36,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         Long createdFixZoneId = fixZoneService.save(createdFixZone);
 
         List<FileMetaDataIdOrderDto> imageFileMetaDataIdOrderDtos = command.imageInfos().stream()
-                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imagId(), imageInfo.order()))
+                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imageId(), imageInfo.order()))
                 .toList();
 
         fileMetaDataService.updateStatusToCoupledWithOrder(
@@ -82,7 +82,7 @@ public class FacadeCentralFixZoneServiceImpl implements FacadeCentralFixZoneServ
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
         fixZone.update(command.toEntity());
         List<FileMetaDataIdOrderDto> imageFileMetaDataIdOrderDtos = command.imageInfos().stream()
-                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imagId(), imageInfo.order()))
+                .map(imageInfo -> FileMetaDataIdOrderDto.of(imageInfo.imageId(), imageInfo.order()))
                 .toList();
         fileMetaDataService.updateWithOrder(imageFileMetaDataIdOrderDtos, DomainType.FIX_ZONE_IMAGE, fixZone.getId());
         return fixZone.getId();

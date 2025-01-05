@@ -23,7 +23,7 @@ public record CreateNoticeCommand(
     }
 
     public record ImageInfo(
-            String imagId,
+            String imageId,
             int order
     ) {
 
