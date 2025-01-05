@@ -33,6 +33,8 @@ public class S3FileService {
     private static final String FILE_CDN_URL = "https://ddn4vjj3ws13w.cloudfront.net/";
     private static final String VIDEO_CDN_URL = "https://d2syrtcctrfiup.cloudfront.net/";
     private static final long PRE_SIGNED_URL_EXPIRATION_TIME = 1000 * 60 * 5; // 5 minutes
+    private static final String KEY_SEPARATOR = "/";
+    private static final int KEY_COMPONENT_COUNT = 5;
 
     @Value("${spring.s3.input-bucket}")
     private String inputBucket;
@@ -103,6 +105,15 @@ public class S3FileService {
         String videoCdnUrl = generateCdnUrl("hls", fileId, "_720.m3u8");
 
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
+    }
+
+    public String findContentTypeByKey(String key) {
+        String[] parts = key.split(KEY_SEPARATOR);
+
+        if (parts.length != KEY_COMPONENT_COUNT) {
+            throw new IllegalArgumentException("잘못된 key를 입력하였습니다");
+        }
+        return parts[1]; // 두 번째 요소
     }
 
     private GeneratePresignedUrlRequest createPresignedUrlRequest(String key, ContentType contentType,
