@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.vodprocessing.service.FacadeVodProcessingJob
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -17,7 +18,7 @@ public class VodProcessingJobController {
     private final FacadeVodProcessingJobService facadeVodProcessingJobService;
 
     @PostMapping()
-    public void createPending(CreatePendingVodProcessingJobRequest request) {
+    public void createPending(@RequestBody CreatePendingVodProcessingJobRequest request) {
         facadeVodProcessingJobService.create(request.toCommand());
     }
 
