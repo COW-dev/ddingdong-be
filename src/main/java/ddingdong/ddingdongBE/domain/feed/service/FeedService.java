@@ -12,4 +12,6 @@ public interface FeedService {
     Feed getById(Long feedId);
 
     Long create(Feed feed);
+
+    void update(Feed originFeed, Feed updateFeed);
 }

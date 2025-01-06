@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
+import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import lombok.RequiredArgsConstructor;
@@ -25,13 +26,28 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
         Club club = clubService.getByUserId(command.user().getId());
         Feed feed = command.toEntity(club);
         Long createdId = feedService.create(feed);
-
         if (feed.isImage()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_IMAGE, createdId);
         }
 
         if (feed.isVideo()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_VIDEO, createdId);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void update(UpdateFeedCommand command) {
+        Feed originFeed = feedService.getById(command.feedId());
+        Feed updateFeed = command.toEntity();
+        feedService.update(originFeed, updateFeed);
+
+        if (updateFeed.isImage()) {
+            fileMetaDataService.update(command.mediaId(), DomainType.FEED_IMAGE, command.feedId());
+        }
+
+        if (updateFeed.isVideo()) {
+            fileMetaDataService.update(command.mediaId(), DomainType.FEED_VIDEO, command.feedId());
         }
     }
 }

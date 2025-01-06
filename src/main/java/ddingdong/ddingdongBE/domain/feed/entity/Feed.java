@@ -57,4 +57,9 @@ public class Feed extends BaseEntity {
     public boolean isVideo() {
         return feedType == FeedType.VIDEO;
     }
+
+    public void update(Feed updateFeed) {
+        this.activityContent = updateFeed.getActivityContent();
+        this.feedType = updateFeed.getFeedType();
+    }
 }

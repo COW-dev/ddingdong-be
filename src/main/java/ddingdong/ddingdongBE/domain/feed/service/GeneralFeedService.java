@@ -32,8 +32,15 @@ public class GeneralFeedService implements FeedService {
   }
 
   @Override
+  @Transactional
   public Long create(Feed feed) {
     Feed savedFeed = feedRepository.save(feed);
     return savedFeed.getId();
+  }
+
+  @Override
+  @Transactional
+  public void update(Feed originFeed, Feed updateFeed) {
+    originFeed.update(updateFeed);
   }
 }
