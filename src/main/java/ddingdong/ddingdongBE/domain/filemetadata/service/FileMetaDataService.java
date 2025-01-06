@@ -10,6 +10,8 @@ public interface FileMetaDataService {
 
     UUID create(FileMetaData fileMetaData);
 
+    FileMetaData getById(String id);
+
     List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     List<FileMetaData> getCoupledAllByEntityId(Long entityId);

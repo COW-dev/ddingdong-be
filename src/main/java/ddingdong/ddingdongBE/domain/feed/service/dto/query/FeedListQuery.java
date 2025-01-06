@@ -13,7 +13,7 @@ public record FeedListQuery(
   public static FeedListQuery from(Feed feed) {
     return FeedListQuery.builder()
         .id(feed.getId())
-        .thumbnailUrl(feed.getThumbnailUrl())
+        .thumbnailUrl(null)
         .feedType(feed.getFeedType().toString())
         .build();
   }

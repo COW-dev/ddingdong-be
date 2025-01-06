@@ -28,7 +28,7 @@ class S3FileServiceTest extends TestContainerSupport {
     private FileMetaDataRepository fileMetaDataRepository;
 
     private static final Pattern UUID7_PATTERN = Pattern.compile(
-            "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+        "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
     );
 
     @DisplayName("GeneratePreSignedUrlRequest(FILE)를 생성한다.")
@@ -39,7 +39,7 @@ class S3FileServiceTest extends TestContainerSupport {
         Long userId = 1L;
         String fileName = "image.jpg";
         GeneratePreSignedUrlRequestCommand command =
-                new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
+            new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
@@ -47,26 +47,26 @@ class S3FileServiceTest extends TestContainerSupport {
         //then
         UUID fileId = query.id();
         Optional<FileMetaData> createdFileMetaData =
-                fileMetaDataRepository.findById(fileId);
+            fileMetaDataRepository.findById(fileId);
 
         assertThat(query.generatePresignedUrlRequest())
-                .satisfies(request -> {
-                    assertThat(request.getContentType())
-                            .as("Content type should be image/jpeg")
-                            .isEqualTo("image/jpeg");
+            .satisfies(request -> {
+                assertThat(request.getContentType())
+                    .as("Content type should be image/jpeg")
+                    .isEqualTo("image/jpeg");
 
-                    assertThat(request.getKey())
-                            .as("Key should contain correct date, userId, and fileId")
-                            .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
-                            .contains(fileId.toString());
-                });
+                assertThat(request.getKey())
+                    .as("Key should contain correct date, userId, and fileId")
+                    .contains(String.format("%s/%d-%d-%d/%s/",
+                        "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
+                    .contains(fileId.toString());
+            });
         assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId.toString())).isTrue();
         assertThat(query.contentType()).isEqualTo("image/jpeg");
         assertThat(createdFileMetaData).isPresent();
         assertThat(createdFileMetaData.get())
-                .extracting("fileKey", "fileName", "fileStatus")
-                .containsExactly(query.generatePresignedUrlRequest().getKey(), fileName, PENDING);
+            .extracting("fileKey", "fileName", "fileStatus")
+            .containsExactly(query.generatePresignedUrlRequest().getKey(), fileName, PENDING);
     }
 
     @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
@@ -77,7 +77,7 @@ class S3FileServiceTest extends TestContainerSupport {
         LocalDateTime now = LocalDateTime.now();
         Long userId = 1L;
         GeneratePreSignedUrlRequestCommand command =
-                new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
+            new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
         GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
@@ -86,18 +86,18 @@ class S3FileServiceTest extends TestContainerSupport {
         UUID id = query.id();
 
         assertThat(query.generatePresignedUrlRequest())
-                .satisfies(request -> {
-                    assertThat(request.getContentType())
-                            .as("Content type should match the video's MIME type")
-                            .isEqualTo(expectedContentType(fileName));
-                    assertThat(request.getKey())
-                            .as("Key should contain correct date, userId, and fileId")
-                            .contains(String.format("%s/%d-%d-%d/%s/",
-                                    "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
-                            .contains(id.toString());
+            .satisfies(request -> {
+                assertThat(request.getContentType())
+                    .as("Content type should match the video's MIME type")
+                    .isEqualTo(expectedContentType(fileName));
+                assertThat(request.getKey())
+                    .as("Key should contain correct date, userId, and fileId")
+                    .contains(String.format("%s/%d-%d-%d/%s/",
+                        "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
+                    .contains(id.toString());
 
-                    assertThat(Pattern.matches(UUID7_PATTERN.pattern(), id.toString())).isTrue();
-                });
+                assertThat(Pattern.matches(UUID7_PATTERN.pattern(), id.toString())).isTrue();
+            });
 
     }
 

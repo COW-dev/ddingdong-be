@@ -34,12 +34,6 @@ public class Feed extends BaseEntity {
     private String activityContent;
 
     @Column(nullable = false)
-    private String thumbnailUrl;
-
-    @Column(nullable = false)
-    private String fileUrl;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private FeedType feedType;
 
@@ -50,11 +44,17 @@ public class Feed extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Feed(String activityContent, String thumbnailUrl, Club club, FeedType feedType, String fileUrl) {
+    private Feed(String activityContent, Club club, FeedType feedType) {
         this.activityContent = activityContent;
-        this.thumbnailUrl = thumbnailUrl;
         this.club = club;
         this.feedType = feedType;
-        this.fileUrl = fileUrl;
+    }
+
+    public boolean isImage() {
+        return feedType == FeedType.IMAGE;
+    }
+
+    public boolean isVideo() {
+        return feedType == FeedType.VIDEO;
     }
 }

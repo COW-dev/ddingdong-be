@@ -208,4 +208,28 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         List<FileMetaData> result = fileMetaDataRepository.findByIdIn(List.of(id1, id2));
         assertThat(result).isEmpty();
     }
+
+
+    @DisplayName("fileMetaData id를 활용하여 FileMetaData를 찾을 수 있다.")
+    @Test
+    void getById() {
+        // given
+        DomainType domainType = DomainType.FEED_IMAGE;
+        Long entityId = 1L;
+        UUID id1 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+            fixture.giveMeBuilder(FileMetaData.class)
+                .set("id", id1)
+                .set("domainType", domainType)
+                .set("entityId", entityId)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample()
+        );
+        // when
+        FileMetaData fileMetaData = fileMetaDataService.getById(id1.toString());
+        // then
+        assertThat(fileMetaData.getId()).isEqualTo(id1);
+        assertThat(fileMetaData.getDomainType()).isEqualTo(domainType);
+        assertThat(fileMetaData.getEntityId()).isEqualTo(entityId);
+    }
 }
