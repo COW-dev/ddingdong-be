@@ -42,4 +42,31 @@ class GeneralFeedServiceTest extends TestContainerSupport {
         assertThat(finded.getActivityContent()).isEqualTo("활동내용");
         assertThat(finded.getFeedType()).isEqualTo(FeedType.IMAGE);
     }
+
+    @DisplayName("originFeed의 정보를 updateFeed의 정보로 업데이트한다.")
+    @Test
+    void update() {
+        // given
+        Feed originFeed = fixtureMonkey.giveMeBuilder(Feed.class)
+            .set("activityContent", "기존 활동내용")
+            .set("feedType", FeedType.IMAGE)
+            .set("deletedAt", null)
+            .set("club", null)
+            .sample();
+        Feed updateFeed = fixtureMonkey.giveMeBuilder(Feed.class)
+            .set("activityContent", "업데이트된 활동 내용")
+            .set("feedType", FeedType.VIDEO)
+            .set("deletedAt", null)
+            .set("club", null)
+            .sample();
+        Long originFeedId = feedService.create(originFeed);
+        // when
+        feedService.update(originFeed, updateFeed);
+        feedRepository.flush();
+        // then
+        Feed feed = feedRepository.findById(originFeedId).orElse(null);
+        assertThat(feed).isNotNull();
+        assertThat(feed.getActivityContent()).isEqualTo("업데이트된 활동 내용");
+        assertThat(feed.getFeedType()).isEqualTo(FeedType.VIDEO);
+    }
 }
