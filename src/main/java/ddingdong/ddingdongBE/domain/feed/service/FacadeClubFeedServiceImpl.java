@@ -40,14 +40,24 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
     public void update(UpdateFeedCommand command) {
         Feed originFeed = feedService.getById(command.feedId());
         Feed updateFeed = command.toEntity();
-        feedService.update(originFeed, updateFeed);
 
         if (updateFeed.isImage()) {
             fileMetaDataService.update(command.mediaId(), DomainType.FEED_IMAGE, command.feedId());
+            if (isNotEqualFeedType(originFeed, updateFeed)) {
+                fileMetaDataService.updateStatusToDelete(DomainType.FEED_VIDEO, command.feedId());
+            }
         }
 
         if (updateFeed.isVideo()) {
             fileMetaDataService.update(command.mediaId(), DomainType.FEED_VIDEO, command.feedId());
+            if (isNotEqualFeedType(originFeed, updateFeed)) {
+                fileMetaDataService.updateStatusToDelete(DomainType.FEED_IMAGE, command.feedId());
+            }
         }
+        feedService.update(originFeed, updateFeed);
+    }
+
+    private boolean isNotEqualFeedType(Feed originFeed, Feed updateFeed) {
+        return originFeed.getFeedType() != updateFeed.getFeedType();
     }
 }
