@@ -39,17 +39,17 @@ class FeedRepositoryTest extends DataJpaTestSupport {
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
                 .set("club", savedClub)
-                .set("thumbnailUrl", "썸네일1")
+                .set("activityContent", "내용1")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
                 .set("club", savedClub)
-                .set("thumbnailUrl", "썸네일2")
+                .set("activityContent", "내용2")
                 .set("feedType", FeedType.VIDEO)
                 .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
                 .set("club", savedClub)
-                .set("thumbnailUrl", "썸네일3")
+                .set("activityContent", "내용3")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         feedRepository.save(feed1);
@@ -60,11 +60,11 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         List<Feed> feeds = feedRepository.findAllByClubIdOrderById(savedClub.getId());
 
         // then
-        Assertions.assertThat(feeds.get(0).getThumbnailUrl()).isEqualTo("썸네일3");
+        Assertions.assertThat(feeds.get(0).getActivityContent()).isEqualTo("내용3");
         Assertions.assertThat(feeds.get(0).getId()).isEqualTo(3L);
-        Assertions.assertThat(feeds.get(1).getThumbnailUrl()).isEqualTo("썸네일2");
+        Assertions.assertThat(feeds.get(1).getActivityContent()).isEqualTo("내용2");
         Assertions.assertThat(feeds.get(1).getId()).isEqualTo(2L);
-        Assertions.assertThat(feeds.get(2).getThumbnailUrl()).isEqualTo("썸네일1");
+        Assertions.assertThat(feeds.get(2).getActivityContent()).isEqualTo("내용1");
         Assertions.assertThat(feeds.get(2).getId()).isEqualTo(1L);
     }
 
