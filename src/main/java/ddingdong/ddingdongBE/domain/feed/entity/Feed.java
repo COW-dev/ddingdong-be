@@ -53,4 +53,12 @@ public class Feed extends BaseEntity {
     public void updateFeedType(FeedType feedType) {
         this.feedType = feedType;
     }
+
+    public boolean isImage() {
+        return feedType == FeedType.IMAGE;
+    }
+
+    public boolean isVideo() {
+        return feedType == FeedType.VIDEO;
+    }
 }
