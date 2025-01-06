@@ -19,8 +19,8 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
     private final FileMetaDataService fileMetaDataService;
     private final FeedService feedService;
 
-    @Transactional
     @Override
+    @Transactional
     public void create(CreateFeedCommand command) {
         Club club = clubService.getByUserId(command.user().getId());
         Feed feed = command.toEntity(club);
