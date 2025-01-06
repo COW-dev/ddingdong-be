@@ -19,7 +19,7 @@ public record FeedQuery(
         .id(feed.getId())
         .clubProfileQuery(clubProfileQuery)
         .activityContent(feed.getActivityContent())
-        .fileUrl(feed.getFileUrl())
+        .fileUrl(null)
         .feedType(feed.getFeedType().toString())
         .createdDate(LocalDate.from(feed.getCreatedAt()))
         .build();
