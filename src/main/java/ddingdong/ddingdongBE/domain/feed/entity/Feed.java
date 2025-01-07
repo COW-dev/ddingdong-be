@@ -60,6 +60,5 @@ public class Feed extends BaseEntity {
 
     public void update(Feed updateFeed) {
         this.activityContent = updateFeed.getActivityContent();
-        this.feedType = updateFeed.getFeedType();
     }
 }

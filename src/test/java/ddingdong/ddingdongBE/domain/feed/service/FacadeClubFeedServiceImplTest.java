@@ -24,7 +24,6 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
-import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -100,41 +99,16 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
                 .set("club", null)
                 .sample()
         );
-        UUID origin = UuidCreator.getTimeOrderedEpoch();
-        UUID update = UuidCreator.getTimeOrderedEpoch();
-        fileMetaDataRepository.saveAll(List.of(
-            fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", origin)
-                .set("domainType", DomainType.FEED_VIDEO)
-                .set("fileStatus", FileStatus.COUPLED)
-                .set("entityId", savedFeed.getId())
-                .sample(),
-            fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", update)
-                .set("fileStatus", FileStatus.PENDING)
-                .sample()
-            )
-        );
         UpdateFeedCommand command = fixtureMonkey.giveMeBuilder(UpdateFeedCommand.class)
-            .set("contentType", "IMAGE")
             .set("activityContent", "변경된 활동내용")
-            .set("mediaId", update.toString())
             .set("feedId", savedFeed.getId())
             .sample();
         // when
         facadeClubFeedService.update(command);
         entityManager.flush();
         // then
-        FileMetaData originFileMetaData = fileMetaDataRepository.findById(origin).orElse(null);
-        assertThat(originFileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
-        FileMetaData updateFileMetaData = fileMetaDataRepository.findById(update).orElse(null);
-        assertThat(updateFileMetaData).isNotNull();
-        assertThat(updateFileMetaData.getDomainType()).isEqualTo(DomainType.FEED_IMAGE);
-        assertThat(updateFileMetaData.getFileStatus()).isEqualTo(FileStatus.COUPLED);
-
         Feed finded = feedRepository.findById(savedFeed.getId()).orElse(null);
         assertThat(finded).isNotNull();
         assertThat(finded.getActivityContent()).isEqualTo("변경된 활동내용");
-        assertThat(finded.getFeedType()).isEqualTo(FeedType.IMAGE);
     }
 }
