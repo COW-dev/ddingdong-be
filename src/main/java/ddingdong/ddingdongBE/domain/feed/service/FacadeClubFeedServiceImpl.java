@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
+import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import lombok.RequiredArgsConstructor;
@@ -33,5 +34,13 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
         if (feed.isVideo()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_VIDEO, createdId);
         }
+    }
+
+    @Override
+    @Transactional
+    public void update(UpdateFeedCommand command) {
+        Feed originFeed = feedService.getById(command.feedId());
+        Feed updateFeed = command.toEntity();
+        originFeed.update(updateFeed);
     }
 }

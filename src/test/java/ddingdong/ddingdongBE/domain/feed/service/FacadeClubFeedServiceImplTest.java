@@ -14,6 +14,7 @@ import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
+import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
@@ -21,6 +22,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataReposito
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
@@ -41,9 +43,10 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
     private FileMetaDataRepository fileMetaDataRepository;
     @Autowired
     private FeedRepository feedRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
-
 
     @DisplayName("요청된 Command를 사용하여 feed를 생성하며, FileMetaData를 Couple 상태로 변경한다.")
     @Test
@@ -83,5 +86,29 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
         Feed feed = feedRepository.findById(fileMetaData.getEntityId()).orElse(null);
         assertThat(feed).isNotNull();
         assertThat(feed.getFeedType()).isEqualTo(FeedType.IMAGE);
+    }
+
+    @DisplayName("요청된 Command를 사용하여 feed를 수정한다")
+    @Test
+    void update() {
+        // given
+        Feed savedFeed = feedRepository.save(
+            fixtureMonkey.giveMeBuilder(Feed.class)
+                .set("activityContent", "기존 활동내용")
+                .set("feedType", FeedType.VIDEO)
+                .set("club", null)
+                .sample()
+        );
+        UpdateFeedCommand command = fixtureMonkey.giveMeBuilder(UpdateFeedCommand.class)
+            .set("activityContent", "변경된 활동내용")
+            .set("feedId", savedFeed.getId())
+            .sample();
+        // when
+        facadeClubFeedService.update(command);
+        entityManager.flush();
+        // then
+        Feed finded = feedRepository.findById(savedFeed.getId()).orElse(null);
+        assertThat(finded).isNotNull();
+        assertThat(finded.getActivityContent()).isEqualTo("변경된 활동내용");
     }
 }
