@@ -88,7 +88,7 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
         assertThat(feed.getFeedType()).isEqualTo(FeedType.IMAGE);
     }
 
-    @DisplayName("요청된 Command를 사용하여 feed를 수정하며, FileMetaData의 id및 domainType을 변경한다.")
+    @DisplayName("요청된 Command를 사용하여 feed를 수정한다")
     @Test
     void update() {
         // given

@@ -49,13 +49,11 @@ class GeneralFeedServiceTest extends TestContainerSupport {
         // given
         Feed originFeed = fixtureMonkey.giveMeBuilder(Feed.class)
             .set("activityContent", "기존 활동내용")
-            .set("feedType", FeedType.IMAGE)
             .set("deletedAt", null)
             .set("club", null)
             .sample();
         Feed updateFeed = fixtureMonkey.giveMeBuilder(Feed.class)
             .set("activityContent", "업데이트된 활동 내용")
-            .set("feedType", FeedType.VIDEO)
             .set("deletedAt", null)
             .set("club", null)
             .sample();
@@ -67,6 +65,5 @@ class GeneralFeedServiceTest extends TestContainerSupport {
         Feed feed = feedRepository.findById(originFeedId).orElse(null);
         assertThat(feed).isNotNull();
         assertThat(feed.getActivityContent()).isEqualTo("업데이트된 활동 내용");
-        assertThat(feed.getFeedType()).isEqualTo(FeedType.VIDEO);
     }
 }
