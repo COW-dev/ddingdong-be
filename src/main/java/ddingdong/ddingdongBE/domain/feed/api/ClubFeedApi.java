@@ -38,6 +38,6 @@ public interface ClubFeedApi {
     @PutMapping("/central/clubs/feeds/{feedId}")
     void updateFeed(
         @PathVariable("feedId") Long feedId,
-        @RequestBody UpdateFeedRequest updateFeedRequest
+        @RequestBody @Valid UpdateFeedRequest updateFeedRequest
     );
 }

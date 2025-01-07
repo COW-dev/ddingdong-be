@@ -41,6 +41,6 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
     public void update(UpdateFeedCommand command) {
         Feed originFeed = feedService.getById(command.feedId());
         Feed updateFeed = command.toEntity();
-        feedService.update(originFeed, updateFeed);
+        originFeed.update(updateFeed);
     }
 }
