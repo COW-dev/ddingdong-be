@@ -8,4 +8,5 @@ public interface FacadeClubFeedService {
     void create(CreateFeedCommand command);
 
     void update(UpdateFeedCommand command);
+
 }

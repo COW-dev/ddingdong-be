@@ -26,6 +26,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
         Club club = clubService.getByUserId(command.user().getId());
         Feed feed = command.toEntity(club);
         Long createdId = feedService.create(feed);
+
         if (feed.isImage()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_IMAGE, createdId);
         }

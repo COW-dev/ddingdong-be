@@ -49,7 +49,6 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
-
     @DisplayName("요청된 Command를 사용하여 feed를 생성하며, FileMetaData를 Couple 상태로 변경한다.")
     @Test
     void create() {
