@@ -21,17 +21,13 @@ public class SseConnectionService {
         sseConnectionRepository.save(id, sseEmitter);
 
         // 연결 완료 콜백
-        sseEmitter.onCompletion(() -> {
-            sseConnectionRepository.deleteById(id);
-        });
+        sseEmitter.onCompletion(() -> sseConnectionRepository.deleteById(id));
 
         // 연결 타임아웃 콜백
         sseEmitter.onTimeout(sseEmitter::complete);
 
         // 연결 에러 콜백
-        sseEmitter.onError((ex) -> {
-            sseConnectionRepository.deleteById(id);
-        });
+        sseEmitter.onError((ex) -> sseConnectionRepository.deleteById(id));
 
         try {
             sseEmitter.send(
