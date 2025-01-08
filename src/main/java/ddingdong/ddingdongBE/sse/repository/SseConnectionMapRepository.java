@@ -2,10 +2,10 @@ package ddingdong.ddingdongBE.sse.repository;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-@RestController
+@Repository
 public class SseConnectionMapRepository implements SseConnectionRepository {
 
     private final Map<String, SseEmitter> emitters = new ConcurrentHashMap<>();
