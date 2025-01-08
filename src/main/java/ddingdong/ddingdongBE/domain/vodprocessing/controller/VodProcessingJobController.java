@@ -21,7 +21,7 @@ public class VodProcessingJobController {
     private final FacadeVodProcessingJobService facadeVodProcessingJobService;
 
     @PostMapping()
-    public void createPending(@RequestBody CreatePendingVodProcessingJobRequest request) {
+    public void createPending(@RequestBody @Valid CreatePendingVodProcessingJobRequest request) {
         facadeVodProcessingJobService.create(request.toCommand());
     }
 

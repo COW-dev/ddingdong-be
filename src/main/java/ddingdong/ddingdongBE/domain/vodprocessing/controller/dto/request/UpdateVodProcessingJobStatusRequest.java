@@ -6,10 +6,10 @@ import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.UUID;
 
 public record UpdateVodProcessingJobStatusRequest(
-        @NotNull
+        @NotNull(message = "변환 작업 ID는 필수입니다")
         @UUID
         String convertJobId,
-        @NotNull
+        @NotNull(message = "상태는 필수입니다")
         ConvertJobStatus status
 ) {
 
