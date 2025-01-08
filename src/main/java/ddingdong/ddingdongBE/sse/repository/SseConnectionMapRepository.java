@@ -30,6 +30,7 @@ public class SseConnectionMapRepository implements SseConnectionRepository {
 
     @Override
     public void deleteAll() {
+        emitters.values().forEach(SseEmitter::complete);
         emitters.clear();
     }
 }
