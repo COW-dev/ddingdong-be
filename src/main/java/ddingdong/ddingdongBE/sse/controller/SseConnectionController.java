@@ -18,6 +18,6 @@ public class SseConnectionController implements SseConnectionApi {
     public SseEmitter subscribe(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
         Long timeout = 60L * 1000; // 1분 (60초 * 1000밀리초)
-        return sseConnectionService.subscribe(user.getAuthId(), timeout);
+        return sseConnectionService.subscribe(user.getId().toString(), timeout);
     }
 }
