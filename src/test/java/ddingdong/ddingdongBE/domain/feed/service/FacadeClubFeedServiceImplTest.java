@@ -119,28 +119,30 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
     @Test
     void delete() {
         // given
-        Long entityId = 1L;
         UUID uuid = UuidCreator.getTimeOrderedEpoch();
 
+
+        Feed savedFeed = feedRepository.save(
+            fixtureMonkey.giveMeBuilder(Feed.class)
+                .set("feedType", FeedType.IMAGE)
+                .set("activityContent", "활동내용")
+                .set("club", null)
+                .sample()
+        );
         fileMetaDataRepository.save(
             fixtureMonkey.giveMeBuilder(FileMetaData.class)
                 .set("id", uuid)
-                .set("entityId", entityId)
+                .set("entityId", savedFeed.getId())
                 .set("domainType", DomainType.FEED_IMAGE)
                 .set("fileStatus", FileStatus.COUPLED)
                 .sample()
         );
-        feedRepository.save(
-            fixtureMonkey.giveMeBuilder(Feed.class)
-                .set("id", entityId)
-                .set("feedType", FeedType.IMAGE)
-                .set("club", null)
-                .sample()
-        );
+        entityManager.flush();
         // when
-        facadeClubFeedService.delete(entityId);
+        facadeClubFeedService.delete(savedFeed.getId());
+        entityManager.flush();
         // then
-        Feed feed = feedRepository.findById(entityId).orElse(null);
+        Feed feed = feedRepository.findById(savedFeed.getId()).orElse(null);
         FileMetaData fileMetaData = fileMetaDataRepository.findById(uuid).orElse(null);
         assertThat(feed).isNull();
         assertThat(fileMetaData).isNotNull();
