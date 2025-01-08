@@ -39,6 +39,7 @@ public class GeneralFeedService implements FeedService {
     }
 
     @Override
+    @Transactional
     public void delete(Feed feed) {
         feedRepository.delete(feed);
     }

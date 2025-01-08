@@ -46,6 +46,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
     }
 
     @Override
+    @Transactional
     public void delete(Long feedId) {
         Feed feed = feedService.getById(feedId);
         feedService.delete(feed);
