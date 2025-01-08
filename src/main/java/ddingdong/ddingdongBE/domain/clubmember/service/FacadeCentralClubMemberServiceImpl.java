@@ -6,7 +6,6 @@ import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.AllClubMemberInfoQuery;
-import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.ClubMemberListQuery;
 import ddingdong.ddingdongBE.file.service.ExcelFileService;
 import java.util.HashSet;
 import java.util.List;
@@ -34,10 +33,7 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
     @Override
     public AllClubMemberInfoQuery getAllMyClubMember(Long userId) {
         Club club = clubService.getByUserId(userId);
-        List<ClubMemberListQuery> clubMemberListQueries = club.getClubMembers().stream()
-            .map(ClubMemberListQuery::from)
-            .toList();
-        return AllClubMemberInfoQuery.of(club.getName(), clubMemberListQueries);
+        return AllClubMemberInfoQuery.of(club.getName(), club.getClubMembers());
     }
 
     @Override
