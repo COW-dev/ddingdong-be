@@ -9,4 +9,5 @@ public interface FacadeClubFeedService {
 
     void update(UpdateFeedCommand command);
 
+    void delete(Long feedId);
 }

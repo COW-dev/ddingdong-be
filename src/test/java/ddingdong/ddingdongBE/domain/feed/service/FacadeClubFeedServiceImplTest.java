@@ -19,6 +19,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataServiceImpl;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -47,6 +48,8 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
     private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+    @Autowired
+    private FileMetaDataServiceImpl fileMetaDataServiceImpl;
 
     @DisplayName("요청된 Command를 사용하여 feed를 생성하며, FileMetaData를 Couple 상태로 변경한다.")
     @Test
@@ -110,5 +113,73 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
         Feed finded = feedRepository.findById(savedFeed.getId()).orElse(null);
         assertThat(finded).isNotNull();
         assertThat(finded.getActivityContent()).isEqualTo("변경된 활동내용");
+    }
+
+    @DisplayName("주어진 feedId를 가진 Feed 엔터티를 삭제 및 fileMetaData 상태를 DELETED로 변경 - IMAGE")
+    @Test
+    void deleteImage() {
+        // given
+        UUID uuid = UuidCreator.getTimeOrderedEpoch();
+
+
+        Feed savedFeed = feedRepository.save(
+            fixtureMonkey.giveMeBuilder(Feed.class)
+                .set("feedType", FeedType.IMAGE)
+                .set("activityContent", "활동내용")
+                .set("club", null)
+                .sample()
+        );
+        fileMetaDataRepository.save(
+            fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", uuid)
+                .set("entityId", savedFeed.getId())
+                .set("domainType", DomainType.FEED_IMAGE)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample()
+        );
+        entityManager.flush();
+        // when
+        facadeClubFeedService.delete(savedFeed.getId());
+        entityManager.flush();
+        // then
+        Feed feed = feedRepository.findById(savedFeed.getId()).orElse(null);
+        FileMetaData fileMetaData = fileMetaDataRepository.findById(uuid).orElse(null);
+        assertThat(feed).isNull();
+        assertThat(fileMetaData).isNotNull();
+        assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
+    }
+
+    @DisplayName("주어진 feedId를 가진 Feed 엔터티를 삭제 및 fileMetaData 상태를 DELETED로 변경 - VIDEO")
+    @Test
+    void deleteVideo() {
+        // given
+        UUID uuid = UuidCreator.getTimeOrderedEpoch();
+
+
+        Feed savedFeed = feedRepository.save(
+            fixtureMonkey.giveMeBuilder(Feed.class)
+                .set("feedType", FeedType.VIDEO)
+                .set("activityContent", "활동내용")
+                .set("club", null)
+                .sample()
+        );
+        fileMetaDataRepository.save(
+            fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", uuid)
+                .set("entityId", savedFeed.getId())
+                .set("domainType", DomainType.FEED_VIDEO)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample()
+        );
+        entityManager.flush();
+        // when
+        facadeClubFeedService.delete(savedFeed.getId());
+        entityManager.flush();
+        // then
+        Feed feed = feedRepository.findById(savedFeed.getId()).orElse(null);
+        FileMetaData fileMetaData = fileMetaDataRepository.findById(uuid).orElse(null);
+        assertThat(feed).isNull();
+        assertThat(fileMetaData).isNotNull();
+        assertThat(fileMetaData.getFileStatus()).isEqualTo(FileStatus.DELETED);
     }
 }

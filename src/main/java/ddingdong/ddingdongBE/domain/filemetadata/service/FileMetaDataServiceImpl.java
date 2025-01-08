@@ -92,6 +92,7 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaData.updateStatus(COUPLED);
     }
 
+    @Transactional
     @Override
     public void updateStatusToCoupledWithOrder(
             List<FileMetaDataIdOrderDto> fileMetaDataIdOrderDtos,
