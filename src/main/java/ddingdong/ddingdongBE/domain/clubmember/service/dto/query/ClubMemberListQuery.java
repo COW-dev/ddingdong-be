@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.clubmember.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 
-public record CentralClubMemberListQuery(
+public record ClubMemberListQuery(
         Long id,
         String name,
         String studentNumber,
@@ -11,8 +11,8 @@ public record CentralClubMemberListQuery(
         String department
 ) {
 
-    public static CentralClubMemberListQuery from(ClubMember clubMember){
-        return new CentralClubMemberListQuery(
+    public static ClubMemberListQuery from(ClubMember clubMember){
+        return new ClubMemberListQuery(
                 clubMember.getId(),
                 clubMember.getName(),
                 clubMember.getStudentNumber(),

@@ -1,13 +1,13 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.CentralClubMemberListQuery;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.ClubMemberListQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(
         name = "ClubMemberResponse",
         description = "중앙동아리 - 동아리원 조회 응답"
 )
-public record CentralClubMemberListResponse(
+public record ClubMemberListResponse(
         @Schema(description = "식별자", example = "1")
         Long id,
         @Schema(description = "이름", example = "홍길동")
@@ -25,8 +25,8 @@ public record CentralClubMemberListResponse(
         String department
 ) {
 
-    public static CentralClubMemberListResponse from(CentralClubMemberListQuery query) {
-        return new CentralClubMemberListResponse(
+    public static ClubMemberListResponse from(ClubMemberListQuery query) {
+        return new ClubMemberListResponse(
                 query.id(),
                 query.name(),
                 query.studentNumber(),
