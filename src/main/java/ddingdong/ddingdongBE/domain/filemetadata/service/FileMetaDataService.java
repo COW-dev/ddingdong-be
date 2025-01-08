@@ -34,6 +34,4 @@ public interface FileMetaDataService {
     void update(List<String> ids, DomainType domainType, Long entityId);
 
     void updateWithOrder(List<FileMetaDataIdOrderDto> fileMetaDataIdOrderDtos, DomainType domainType, Long entityId);
-
-    void updateStatusToDeleteByEntityId(Class<?> classType, Long entityId);
 }

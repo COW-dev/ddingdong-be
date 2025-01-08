@@ -50,6 +50,6 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
     public void delete(Long feedId) {
         Feed feed = feedService.getById(feedId);
         feedService.delete(feed);
-        fileMetaDataService.updateStatusToDeleteByEntityId(Feed.class, feed.getId());
+        fileMetaDataService.updateStatusToDelete(feed.getFeedType().getDomainType(), feed.getId());
     }
 }

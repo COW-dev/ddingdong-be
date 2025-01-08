@@ -163,15 +163,6 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
 
     @Transactional
     @Override
-    public void updateStatusToDeleteByEntityId(Class<?> classType, Long entityId) {
-        List<DomainType> domainTypes = DomainType.findAllByClassType(classType);
-        domainTypes.forEach(domainType -> {
-            updateStatusToDelete(domainType, entityId);
-        });
-    }
-
-    @Transactional
-    @Override
     public void updateStatusToDelete(DomainType domainType, Long entityId) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findAllByDomainTypeAndEntityId(domainType, entityId);
         fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
