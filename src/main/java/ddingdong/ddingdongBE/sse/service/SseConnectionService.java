@@ -27,7 +27,10 @@ public class SseConnectionService {
         sseEmitter.onTimeout(sseEmitter::complete);
 
         // 연결 에러 콜백
-        sseEmitter.onError((ex) -> sseConnectionRepository.deleteById(id));
+        sseEmitter.onError((ex) -> {
+            log.warn("SSE Connection error: {}", ex.getMessage());
+            sseConnectionRepository.deleteById(id);
+        });
 
         try {
             sseEmitter.send(
