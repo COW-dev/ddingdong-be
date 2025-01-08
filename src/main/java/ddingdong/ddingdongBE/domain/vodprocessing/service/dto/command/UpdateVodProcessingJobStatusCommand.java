@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
 
 public record UpdateVodProcessingJobStatusCommand(
         String convertJobId,
-        ConvertJobStatus convertJobStatus
+        ConvertJobStatus status
 ) {
 
 }

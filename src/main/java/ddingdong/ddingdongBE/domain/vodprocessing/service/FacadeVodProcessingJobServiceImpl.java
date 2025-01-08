@@ -24,7 +24,7 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     @Transactional
     public void updateVodProcessingJobStatus(UpdateVodProcessingJobStatusCommand command) {
         VodProcessingJob vodProcessingJob = vodProcessingJobService.getByConvertJobId(command.convertJobId());
-        vodProcessingJob.updateConvertJobStatus(command.convertJobStatus());
+        vodProcessingJob.updateConvertJobStatus(command.status());
     }
 
 }
