@@ -4,16 +4,16 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.club.api.CentralClubApi;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.CentralClubMemberListResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.AllClubMemberInfoResponse;
 import ddingdong.ddingdongBE.domain.club.controller.dto.response.MyClubInfoResponse;
 import ddingdong.ddingdongBE.domain.club.service.FacadeCentralClubService;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.clubmember.service.FacadeCentralClubMemberService;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.AllClubMemberInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -54,11 +54,10 @@ public class CentralClubController implements CentralClubApi {
     }
 
     @Override
-    public List<CentralClubMemberListResponse> getMyClubMembers(PrincipalDetails principalDetails) {
+    public AllClubMemberInfoResponse getMyClubMembers(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        return facadeCentralClubMemberService.getAllMyClubMember(user.getId()).stream()
-                .map(CentralClubMemberListResponse::from)
-                .toList();
+        AllClubMemberInfoQuery query = facadeCentralClubMemberService.getAllMyClubMember(user.getId());
+        return AllClubMemberInfoResponse.from(query);
     }
 
     @Override
