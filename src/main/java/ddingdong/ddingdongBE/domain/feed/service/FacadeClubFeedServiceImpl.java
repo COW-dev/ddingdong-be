@@ -29,6 +29,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
 
         if (feed.isImage()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_IMAGE, createdId);
+            return;
         }
 
         if (feed.isVideo()) {
@@ -42,5 +43,19 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
         Feed originFeed = feedService.getById(command.feedId());
         Feed updateFeed = command.toEntity();
         originFeed.update(updateFeed);
+    }
+
+    @Override
+    public void delete(Long feedId) {
+        Feed feed = feedService.getById(feedId);
+        feedService.delete(feed);
+        if (feed.isImage()) {
+            fileMetaDataService.updateStatusToDelete(DomainType.FEED_IMAGE, feedId);
+            return;
+        }
+
+        if (feed.isVideo()) {
+            fileMetaDataService.updateStatusToDelete(DomainType.FEED_VIDEO, feedId);
+        }
     }
 }

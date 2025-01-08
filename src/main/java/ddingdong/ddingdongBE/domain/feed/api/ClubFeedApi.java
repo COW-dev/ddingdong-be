@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -18,14 +19,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Feed - Club", description = "Feed API")
-@RequestMapping("/server")
+@RequestMapping("/server/central")
 public interface ClubFeedApi {
 
     @Operation(summary = "동아리 피드 생성 API")
     @ApiResponse(responseCode = "201", description = "동아리 피드 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    @PostMapping("/central/clubs/feeds")
+    @PostMapping("/clubs/feeds")
     void createFeed(
         @RequestBody @Valid CreateFeedRequest createFeedRequest,
         @AuthenticationPrincipal PrincipalDetails principalDetails
@@ -35,9 +36,19 @@ public interface ClubFeedApi {
     @ApiResponse(responseCode = "204", description = "동아리 피드 수정 성공")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    @PutMapping("/central/clubs/feeds/{feedId}")
+    @PutMapping("/clubs/feeds/{feedId}")
     void updateFeed(
         @PathVariable("feedId") Long feedId,
         @RequestBody @Valid UpdateFeedRequest updateFeedRequest
     );
+
+    @Operation(summary = "동아리 피드 삭제 API")
+    @ApiResponse(responseCode = "204", description = "동아리 피드 삭제 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/clubs/feeds/{feedId}")
+    void deleteFeed(
+        @PathVariable("feedId") Long feedId
+    );
+
 }

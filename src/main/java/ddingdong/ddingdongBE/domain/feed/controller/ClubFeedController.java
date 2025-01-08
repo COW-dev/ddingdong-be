@@ -31,4 +31,9 @@ public class ClubFeedController implements ClubFeedApi {
     ) {
         facadeClubFeedService.update(updateFeedRequest.toCommand(feedId));
     }
+
+    @Override
+    public void deleteFeed(Long feedId) {
+        facadeClubFeedService.delete(feedId);
+    }
 }

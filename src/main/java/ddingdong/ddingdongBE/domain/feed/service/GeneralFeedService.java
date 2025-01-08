@@ -37,4 +37,9 @@ public class GeneralFeedService implements FeedService {
         Feed savedFeed = feedRepository.save(feed);
         return savedFeed.getId();
     }
+
+    @Override
+    public void delete(Feed feed) {
+        feedRepository.delete(feed);
+    }
 }
