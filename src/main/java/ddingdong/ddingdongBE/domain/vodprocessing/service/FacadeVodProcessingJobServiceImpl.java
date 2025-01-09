@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.vodprocessing.service;
 
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.CreatePendingVodProcessingJobCommand;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.UpdateVodProcessingJobStatusCommand;
 import lombok.RequiredArgsConstructor;
@@ -13,11 +14,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJobService {
 
     private final VodProcessingJobService vodProcessingJobService;
+    private final VodProcessingNotificationService vodProcessingNotificationService;
 
     @Override
     @Transactional
     public Long create(CreatePendingVodProcessingJobCommand command) {
-        return vodProcessingJobService.save(command.toPendingVodProcessingJob());
+        VodProcessingNotification pendingNotification =
+                vodProcessingNotificationService.save(VodProcessingNotification.pending());
+        return vodProcessingJobService.save(command.toPendingVodProcessingJob(pendingNotification));
     }
 
     @Override

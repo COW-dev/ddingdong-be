@@ -10,6 +10,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -32,5 +33,22 @@ public class VodProcessingNotification extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_status", nullable = false)
     private VodNotificationStatus vodNotificationStatus;
+
+    @Builder
+    private VodProcessingNotification(Long id, LocalDateTime expiredAt, LocalDateTime sentAt, int retryCount,
+                                     VodNotificationStatus vodNotificationStatus) {
+        this.id = id;
+        this.expiredAt = expiredAt;
+        this.sentAt = sentAt;
+        this.retryCount = retryCount;
+        this.vodNotificationStatus = vodNotificationStatus;
+    }
+
+    public static VodProcessingNotification pending() {
+        return VodProcessingNotification.builder()
+                .retryCount(0)
+                .vodNotificationStatus(VodNotificationStatus.PENDING)
+                .build();
+    }
 
 }

@@ -5,6 +5,7 @@ import static ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodNotificationStatus;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
 import ddingdong.ddingdongBE.domain.vodprocessing.repository.VodProcessingJobRepository;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.CreatePendingVodProcessingJobCommand;
@@ -39,16 +40,24 @@ class FacadeGeneralVodProcessingJobServiceTest extends TestContainerSupport {
         Optional<VodProcessingJob> result = vodProcessingJobRepository.findById(createdPendingVodProcessingJobId);
         assertThat(result).isPresent();
         assertThat(result.get())
-                .extracting(VodProcessingJob::getConvertJobId, VodProcessingJob::getUserId,
-                        VodProcessingJob::getConvertJobStatus)
-                .containsExactly(convertJobId, userId, PENDING);
+                .satisfies(job -> {
+                    assertThat(job.getConvertJobId()).isEqualTo(convertJobId);
+                    assertThat(job.getUserId()).isEqualTo(userId);
+                    assertThat(job.getConvertJobStatus()).isEqualTo(PENDING);
+                    assertThat(job.getVodProcessingNotification())
+                            .satisfies(notification ->
+                                    assertThat(
+                                            notification.getVodNotificationStatus()).isEqualTo(
+                                            VodNotificationStatus.PENDING)
+                            );
+                });
     }
 
     @DisplayName("CodProcessingJob 상태를 변경한다.")
     @Test
     void updateVodProcessingJobStatus() {
         //given
-        VodProcessingJob savedVodProcessingJob = vodProcessingJobRepository.save(VodProcessingJob.builder()
+        vodProcessingJobRepository.save(VodProcessingJob.builder()
                 .convertJobStatus(PENDING)
                 .userId("1")
                 .convertJobId("test")
