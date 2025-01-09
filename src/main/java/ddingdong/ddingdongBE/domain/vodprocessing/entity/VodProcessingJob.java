@@ -47,4 +47,8 @@ public class VodProcessingJob extends BaseEntity {
         this.userId = userId;
         this.convertJobStatus = convertJobStatus;
     }
+
+    public void updateConvertJobStatus(ConvertJobStatus convertJobStatus) {
+        this.convertJobStatus = convertJobStatus;
+    }
 }

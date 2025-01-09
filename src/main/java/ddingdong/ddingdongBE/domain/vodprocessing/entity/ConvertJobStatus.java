@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.vodprocessing.entity;
 
 public enum ConvertJobStatus {
-    PENDING
+    PENDING,
+    COMPLETE,
+    ERROR
 }
