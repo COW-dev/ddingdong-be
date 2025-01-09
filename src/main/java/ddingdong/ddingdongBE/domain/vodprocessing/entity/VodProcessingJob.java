@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.vodprocessing.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -29,6 +30,10 @@ public class VodProcessingJob extends BaseEntity {
     @JoinColumn(name = "notification_id")
     private VodProcessingNotification vodProcessingNotification;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_meta_data_id")
+    private FileMetaData fileMetaData;
+
     @Column(nullable = false)
     private String convertJobId;
 
@@ -39,10 +44,11 @@ public class VodProcessingJob extends BaseEntity {
     private ConvertJobStatus convertJobStatus;
 
     @Builder
-    private VodProcessingJob(Long id, VodProcessingNotification vodProcessingNotification, String convertJobId,
-                             String userId, ConvertJobStatus convertJobStatus) {
+    private VodProcessingJob(Long id, VodProcessingNotification vodProcessingNotification, FileMetaData fileMetaData,
+                             String convertJobId, String userId, ConvertJobStatus convertJobStatus) {
         this.id = id;
         this.vodProcessingNotification = vodProcessingNotification;
+        this.fileMetaData = fileMetaData;
         this.convertJobId = convertJobId;
         this.userId = userId;
         this.convertJobStatus = convertJobStatus;
