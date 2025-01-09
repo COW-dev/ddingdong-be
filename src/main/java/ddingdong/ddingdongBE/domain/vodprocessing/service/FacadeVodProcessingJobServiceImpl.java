@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.vodprocessing.service;
 
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.CreatePendingVodProcessingJobCommand;
@@ -14,14 +16,16 @@ import org.springframework.transaction.annotation.Transactional;
 public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJobService {
 
     private final VodProcessingJobService vodProcessingJobService;
+    private final FileMetaDataService fileMetaDataService;
     private final VodProcessingNotificationService vodProcessingNotificationService;
 
     @Override
     @Transactional
     public Long create(CreatePendingVodProcessingJobCommand command) {
+        FileMetaData fileMetaData = fileMetaDataService.getById(command.fileId());
         VodProcessingNotification pendingNotification =
                 vodProcessingNotificationService.save(VodProcessingNotification.pending());
-        return vodProcessingJobService.save(command.toPendingVodProcessingJob(pendingNotification));
+        return vodProcessingJobService.save(command.toPendingVodProcessingJob(pendingNotification, fileMetaData));
     }
 
     @Override

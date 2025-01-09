@@ -9,11 +9,14 @@ public record CreatePendingVodProcessingJobRequest(
         @UUID
         String convertJobId,
         @NotNull(message = "userId는 필수입니다.")
-        String userId
+        String userId,
+        @NotNull(message = "파일Id는 빌수입니다.")
+        @UUID
+        String fileId
 ) {
 
     public CreatePendingVodProcessingJobCommand toCommand() {
-        return new CreatePendingVodProcessingJobCommand(convertJobId, userId);
+        return new CreatePendingVodProcessingJobCommand(convertJobId, userId, fileId);
     }
 
 }
