@@ -14,6 +14,7 @@ public class GeneralVodProcessingNotificationService implements VodProcessingNot
     private final VodProcessingNotificationRepository notificationRepository;
 
     @Override
+    @Transactional
     public VodProcessingNotification save(VodProcessingNotification vodProcessingNotification) {
         return notificationRepository.save(vodProcessingNotification);
     }
