@@ -1,19 +1,19 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,20 +36,13 @@ public class FacadeFeedService {
     List<Feed> feeds = feedPage.getContent();
     List<FeedListQuery> feedListQueries = feeds.stream()
         .map(feed -> {
-          FileMetaData fileMetaData = getFileMetaData(feed);
+          FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
           UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
           return FeedListQuery.of(feed, urlQuery);
         }).toList();
 
     PagingQuery pagingQuery = PagingQuery.from(feedPage, feeds.get(feeds.size() -1).getId());
     return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
-  }
-
-  private FileMetaData getFileMetaData(Feed feed) {
-    return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(feed.getFeedType().getDomainType(), feed.getId())
-        .stream()
-        .findFirst()
-        .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + feed.getId() + ")를 찾을 수 없습니다.)"));
   }
 
   public List<FeedListQuery> getNewestAll() {
@@ -62,22 +55,36 @@ public class FacadeFeedService {
   public FeedQuery getById(Long feedId) {
     Feed feed = feedService.getById(feedId);
     ClubProfileQuery clubProfileQuery = extractClubInfo(feed.getClub());
-    return FeedQuery.of(feed, clubProfileQuery);
+    FeedFileUrlQuery feedFileUrlQuery = extractFeedFileInfo(feed);
+    return FeedQuery.of(feed, clubProfileQuery, feedFileUrlQuery);
+  }
+
+  private FeedFileUrlQuery extractFeedFileInfo(Feed feed) {
+    FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
+    if (feed.isImage()) {
+      UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
+      return new FeedFileUrlQuery(urlQuery.id(), urlQuery.originUrl(), urlQuery.cdnUrl());
+    }
+
+    if (feed.isVideo()) {
+      UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
+      return new FeedFileUrlQuery(fileMetaData.getId().toString(), urlQuery.videoOriginUrl(), urlQuery.videoCdnUrl());
+    }
+
+    throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");
   }
 
   private ClubProfileQuery extractClubInfo(Club club) {
     String clubName = club.getName();
-    List<String> profileImageUrls = fileInformationService.getImageUrls(
-        IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId()
-    );
-    String profileImageUrl = profileImageUrls.stream()
-        .findFirst()
-        .orElse(null);
+    FileMetaData fileMetaData = getFileMetaData(DomainType.CLUB_PROFILE, club.getId());
+    UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
+    return new ClubProfileQuery(club.getId(), clubName, urlQuery.originUrl(), urlQuery.cdnUrl());
+  }
 
-    return ClubProfileQuery.builder()
-        .id(club.getId())
-        .name(clubName)
-        .profileImageUrl(profileImageUrl)
-        .build();
+  private FileMetaData getFileMetaData(DomainType domainType, Long id) {
+    return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, id)
+        .stream()
+        .findFirst()
+        .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + id + ")를 찾을 수 없습니다.)"));
   }
 }
