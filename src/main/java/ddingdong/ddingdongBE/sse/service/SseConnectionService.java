@@ -46,6 +46,21 @@ public class SseConnectionService {
         return sseEmitter;
     }
 
+    public void send(String id, Object data) {
+        SseEmitter sseEmitter = sseConnectionRepository.findById(id);
+        if(sseEmitter != null) {
+            try {
+                sseEmitter.send(SseEmitter.event()
+                        .name("sse")
+                        .data(data));
+                log.debug("SSE Event sent to user {}: {}", id, "sse");
+            } catch (IOException e) {
+                log.error("Error sending SSE event to user: {}", id, e);
+                sseEmitter.complete();
+            }
+        }
+    }
+
     private void checkExistingEmitter(String id) {
         SseEmitter oldEmitter = sseConnectionRepository.findById(id);
         if (oldEmitter != null) {
