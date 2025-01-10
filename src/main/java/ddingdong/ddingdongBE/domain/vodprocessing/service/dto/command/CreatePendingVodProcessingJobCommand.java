@@ -11,7 +11,7 @@ public record CreatePendingVodProcessingJobCommand(
         String fileId
 ) {
 
-    public VodProcessingJob toPendingVodProcessingJob((VodProcessingNotification notification, FileMetaData fileMetaData) {
+    public VodProcessingJob toPendingVodProcessingJob(VodProcessingNotification notification, FileMetaData fileMetaData) {
         return VodProcessingJob.builder()
                 .convertJobId(convertJobId)
                 .fileMetaData(fileMetaData)

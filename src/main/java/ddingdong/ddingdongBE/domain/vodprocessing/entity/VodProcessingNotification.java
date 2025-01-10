@@ -51,4 +51,9 @@ public class VodProcessingNotification extends BaseEntity {
                 .build();
     }
 
+    public void updateVodNotificationStatusToSent(LocalDateTime sentAt) {
+        this.sentAt = sentAt;
+        this.vodNotificationStatus = VodNotificationStatus.SENT;
+    }
+
 }
