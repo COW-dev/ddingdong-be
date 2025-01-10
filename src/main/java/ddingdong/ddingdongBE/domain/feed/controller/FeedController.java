@@ -1,10 +1,11 @@
 package ddingdong.ddingdongBE.domain.feed.controller;
 
 import ddingdong.ddingdongBE.domain.feed.api.FeedApi;
-import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedListResponse;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.ClubFeedPageResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedListResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FacadeFeedService;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import java.util.List;
@@ -18,11 +19,13 @@ public class FeedController implements FeedApi {
   private final FacadeFeedService facadeFeedService;
 
   @Override
-  public List<FeedListResponse> getAllFeedByClubId(Long clubId) {
-    List<FeedListQuery> feedListQueries = facadeFeedService.getAllByClubId(clubId);
-    return feedListQueries.stream()
-        .map(FeedListResponse::from)
-        .toList();
+  public ClubFeedPageResponse getFeedPageByClub(
+      Long clubId,
+      int size,
+      Long currentCursorId
+  ) {
+    ClubFeedPageQuery clubFeedPageQuery = facadeFeedService.getFeedPageByClub(clubId, size, currentCursorId);
+    return ClubFeedPageResponse.from(clubFeedPageQuery);
   }
 
   @Override
