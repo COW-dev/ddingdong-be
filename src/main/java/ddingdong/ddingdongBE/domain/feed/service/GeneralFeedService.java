@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,8 +17,8 @@ public class GeneralFeedService implements FeedService {
     private final FeedRepository feedRepository;
 
     @Override
-    public List<Feed> getAllByClubId(Long clubId) {
-        return feedRepository.findAllByClubIdOrderById(clubId);
+    public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {
+        return feedRepository.findFirstPageByClubIdOrderById(clubId, size, currentCursorId);
     }
 
     @Override
