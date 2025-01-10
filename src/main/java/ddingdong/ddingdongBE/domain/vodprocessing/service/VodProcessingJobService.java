@@ -10,4 +10,6 @@ public interface VodProcessingJobService {
 
     VodProcessingJob getByConvertJobId(String convertJobId);
 
+    VodProcessingJob getByVideoFeedId(Long videoFeedId);
+
 }

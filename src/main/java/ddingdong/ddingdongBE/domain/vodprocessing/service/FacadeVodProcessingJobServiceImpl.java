@@ -47,8 +47,7 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
 
     private void checkVodProcessingJobStatus(VodProcessingJob vodProcessingJob) {
         ConvertJobStatus convertJobStatus = vodProcessingJob.getConvertJobStatus();
-        if (convertJobStatus == ConvertJobStatus.COMPLETE
-                || vodProcessingJob.getConvertJobStatus() == ConvertJobStatus.ERROR) {
+        if (convertJobStatus != ConvertJobStatus.PENDING) {
             checkExistingFeedAndNotify(convertJobStatus, vodProcessingJob);
         }
     }
