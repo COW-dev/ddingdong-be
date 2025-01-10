@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.feed.repository;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import java.util.List;
+import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -28,4 +29,19 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
       """
       , nativeQuery = true)
   List<Feed> findNewestAll();
+
+
+  @Query(value = """
+        select *
+        from feed f
+        where (:currentCursorId is null or id < :currentCursorId)
+            and f.club_id = :clubId
+        order by f.id DESC
+        limit :size
+        """, nativeQuery = true)
+  Slice<Feed> findFirstPageByClubIdOrderById(
+      @Param("clubId") Long clubId,
+      @Param("size") int size,
+      @Param("currentCursorId") Long currentCursorId
+  );
 }
