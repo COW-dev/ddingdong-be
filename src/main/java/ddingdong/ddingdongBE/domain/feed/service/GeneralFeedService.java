@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +30,11 @@ public class GeneralFeedService implements FeedService {
     public Feed getById(Long feedId) {
         return feedRepository.findById(feedId)
             .orElseThrow(() -> new ResourceNotFound("Feed(id: " + feedId + ")를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public Optional<Feed> findById(Long feedId) {
+        return feedRepository.findById(feedId);
     }
 
     @Override
