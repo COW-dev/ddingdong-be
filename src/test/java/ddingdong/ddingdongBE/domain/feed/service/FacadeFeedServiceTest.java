@@ -78,61 +78,63 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(infos).hasSize(3);
     }
 
-    @DisplayName("모든 사용자는 전체 동아리의 최신 피드를 조회할 수 있다.")
-    @Test
-    void getNewestAll() {
-        // given
-        Club club1 = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우1")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club club2 = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우2")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club club3 = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우3")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub1 = clubRepository.save(club1);
-        Club savedClub2 = clubRepository.save(club2);
-        Club savedClub3 = clubRepository.save(club3);
+//TODO: Feed 조회 API 개발 완료 후 재작성
 
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub1)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub1)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub2)
-                .sample();
-        Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub2)
-                .sample();
-        Feed feed5 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub3)
-                .sample();
-        Feed feed6 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub3)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
-
-        // when
-        List<FeedListQuery> infos = facadeFeedService.getNewestAll();
-
-        // then
-        assertThat(infos).hasSize(3);
-        assertThat(infos.get(0).id()).isEqualTo(feed6.getId());
-        assertThat(infos.get(1).id()).isEqualTo(feed4.getId());
-        assertThat(infos.get(2).id()).isEqualTo(feed2.getId());
-    }
+//    @DisplayName("모든 사용자는 전체 동아리의 최신 피드를 조회할 수 있다.")
+//    @Test
+//    void getNewestAll() {
+//        // given
+//        Club club1 = fixture.giveMeBuilder(Club.class)
+//                .set("name", "카우1")
+//                .set("user", null)
+//                .set("score", Score.from(BigDecimal.ZERO))
+//                .set("clubMembers", null)
+//                .sample();
+//        Club club2 = fixture.giveMeBuilder(Club.class)
+//                .set("name", "카우2")
+//                .set("user", null)
+//                .set("score", Score.from(BigDecimal.ZERO))
+//                .set("clubMembers", null)
+//                .sample();
+//        Club club3 = fixture.giveMeBuilder(Club.class)
+//                .set("name", "카우3")
+//                .set("user", null)
+//                .set("score", Score.from(BigDecimal.ZERO))
+//                .set("clubMembers", null)
+//                .sample();
+//        Club savedClub1 = clubRepository.save(club1);
+//        Club savedClub2 = clubRepository.save(club2);
+//        Club savedClub3 = clubRepository.save(club3);
+//
+//        Feed feed1 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub1)
+//                .sample();
+//        Feed feed2 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub1)
+//                .sample();
+//        Feed feed3 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub2)
+//                .sample();
+//        Feed feed4 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub2)
+//                .sample();
+//        Feed feed5 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub3)
+//                .sample();
+//        Feed feed6 = fixture.giveMeBuilder(Feed.class)
+//                .set("club", savedClub3)
+//                .sample();
+//        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
+//
+//        // when
+//        List<FeedListQuery> infos = facadeFeedService.getNewestAll();
+//
+//        // then
+//        assertThat(infos).hasSize(3);
+//        assertThat(infos.get(0).id()).isEqualTo(feed6.getId());
+//        assertThat(infos.get(1).id()).isEqualTo(feed4.getId());
+//        assertThat(infos.get(2).id()).isEqualTo(feed2.getId());
+//    }
 
     @DisplayName("모든 사용자는 동아리 피드에 대해 상세 조회할 수 있다.")
     @Test

@@ -13,6 +13,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.dto.command.UpdateVodProcessingJobStatusCommand;
 import ddingdong.ddingdongBE.sse.service.SseConnectionService;
 import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
@@ -54,13 +55,15 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         FileMetaData fileMetaData = FileMetaData.builder()
                 .entityId(feedId)
                 .build();
-
+        VodProcessingNotification pending = VodProcessingNotification.pending();
         VodProcessingJob vodProcessingJob = VodProcessingJob.builder()
                 .convertJobId(convertJobId)
+                .vodProcessingNotification(pending)
                 .convertJobStatus(ConvertJobStatus.PENDING)
                 .userId(userId.toString())
                 .fileMetaData(fileMetaData)
                 .build();
+
 
         Feed feed = Feed.builder()
                 .id(feedId)
@@ -96,9 +99,10 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         FileMetaData fileMetaData = FileMetaData.builder()
                 .entityId(feedId)
                 .build();
-
+        VodProcessingNotification pending = VodProcessingNotification.pending();
         VodProcessingJob vodProcessingJob = VodProcessingJob.builder()
                 .convertJobId(convertJobId)
+                .vodProcessingNotification(pending)
                 .convertJobStatus(ConvertJobStatus.PENDING)
                 .userId(userId.toString())
                 .fileMetaData(fileMetaData)

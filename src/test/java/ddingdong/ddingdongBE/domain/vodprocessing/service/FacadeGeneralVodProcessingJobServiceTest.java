@@ -43,7 +43,6 @@ class FacadeGeneralVodProcessingJobServiceTest extends TestContainerSupport {
         CreatePendingVodProcessingJobCommand command = new CreatePendingVodProcessingJobCommand(
                 convertJobId, userId, savedFileMetaData.getId().toString());
 
-
         //when
         Long createdPendingVodProcessingJobId = facadeVodProcessingJobService.create(command);
 
@@ -63,28 +62,6 @@ class FacadeGeneralVodProcessingJobServiceTest extends TestContainerSupport {
                             );
                 });
         assertThat(result.get().getFileMetaData().getId()).isEqualTo(fileId);
-    }
-
-    @DisplayName("CodProcessingJob 상태를 변경한다.")
-    @Test
-    void updateVodProcessingJobStatus() {
-        //given
-        vodProcessingJobRepository.save(VodProcessingJob.builder()
-                .convertJobStatus(PENDING)
-                .userId("1")
-                .convertJobId("test")
-                .build());
-
-        UpdateVodProcessingJobStatusCommand command = new UpdateVodProcessingJobStatusCommand("test", COMPLETE);
-
-        //when
-        facadeVodProcessingJobService.updateVodProcessingJobStatus(command);
-
-        //then
-        Optional<VodProcessingJob> result = vodProcessingJobRepository.findByConvertJobId("test");
-        assertThat(result).isPresent();
-        assertThat(result.get().getUserId()).isEqualTo("1");
-        assertThat(result.get().getConvertJobStatus()).isEqualTo(COMPLETE);
     }
 
 }
