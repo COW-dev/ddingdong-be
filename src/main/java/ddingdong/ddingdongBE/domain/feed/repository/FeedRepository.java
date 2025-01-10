@@ -39,7 +39,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
         order by f.id DESC
         limit :size
         """, nativeQuery = true)
-  Slice<Feed> findFirstPageByClubIdOrderById(
+  Slice<Feed> findPageByClubIdOrderById(
       @Param("clubId") Long clubId,
       @Param("size") int size,
       @Param("currentCursorId") Long currentCursorId

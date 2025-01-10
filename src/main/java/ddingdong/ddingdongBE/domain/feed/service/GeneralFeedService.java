@@ -18,7 +18,7 @@ public class GeneralFeedService implements FeedService {
 
     @Override
     public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {
-        return feedRepository.findFirstPageByClubIdOrderById(clubId, size, currentCursorId);
+        return feedRepository.findPageByClubIdOrderById(clubId, size, currentCursorId);
     }
 
     @Override
