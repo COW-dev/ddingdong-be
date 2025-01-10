@@ -9,15 +9,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface FeedRepository extends JpaRepository<Feed, Long> {
 
-  @Query(value = """ 
-      SELECT * FROM feed
-      WHERE club_id =:clubId
-      AND deleted_at IS NULL
-      ORDER BY id DESC
-      """
-      , nativeQuery = true)
-  List<Feed> findAllByClubIdOrderById(@Param("clubId") Long clubId);
-
   @Query(value = """
       SELECT * FROM feed f
       WHERE f.id in
@@ -34,7 +25,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
   @Query(value = """
         select *
         from feed f
-        where (:currentCursorId is null or id < :currentCursorId)
+        where (:currentCursorId = -1 or id < :currentCursorId)
             and f.club_id = :clubId
         order by f.id DESC
         limit :size
