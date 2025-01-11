@@ -22,17 +22,12 @@ public class GeneralFeedService implements FeedService {
     @Override
     public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {
         Slice<Feed> feedPages = feedRepository.findPageByClubIdOrderById(clubId, size + 1, currentCursorId);
-        List<Feed> feeds = new ArrayList<>(feedPages.getContent());
-        if (feeds.size() == size + 1) {
-            feeds.remove(feeds.size() - 1);
-            return new SliceImpl<>(feeds, PageRequest.of(feedPages.getNumber(), size), true);
-        }
-        return feedPages;
+        return buildSlice(feedPages, size);
     }
-
     @Override
-    public List<Feed> getNewestAll() {
-        return feedRepository.findNewestAll();
+    public Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPages = feedRepository.findNewestPerClubPage(size + 1, currentCursorId);
+        return buildSlice(feedPages, size);
     }
 
     @Override
@@ -52,5 +47,16 @@ public class GeneralFeedService implements FeedService {
     @Transactional
     public void delete(Feed feed) {
         feedRepository.delete(feed);
+    }
+
+    private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
+        List<Feed> content = new ArrayList<>(originalSlice.getContent());
+        boolean hasNext = content.size() > size;
+
+        if (hasNext) {
+            content.remove(content.size() - 1);
+        }
+
+        return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
     }
 }

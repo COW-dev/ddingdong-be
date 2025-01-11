@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.NewestFeedPerClubPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -32,22 +33,22 @@ public class FacadeFeedService {
 
   public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
-
     List<Feed> feeds = feedPage.getContent();
-    List<FeedListQuery> feedListQueries = feeds.stream()
-        .map(feed -> {
-          FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
-          UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
-          return FeedListQuery.of(feed, urlQuery);
-        }).toList();
 
+    List<FeedListQuery> feedListQueries = buildFeedListQuery(feeds);
     PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
+
     return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
   }
 
-  public List<FeedListQuery> getNewestAll() {
-    List<Feed> feeds = feedService.getNewestAll();
-    return null;
+  public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
+    Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
+    List<Feed> feeds = feedPage.getContent();
+
+    List<FeedListQuery> feedListQueries = buildFeedListQuery(feeds);
+    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
+
+    return NewestFeedPerClubPageQuery.of(feedListQueries, pagingQuery);
   }
 
   public FeedQuery getById(Long feedId) {
@@ -85,4 +86,14 @@ public class FacadeFeedService {
         .findFirst()
         .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + id + ")를 찾을 수 없습니다.)"));
   }
+
+  private List<FeedListQuery> buildFeedListQuery(List<Feed> feeds) {
+    return feeds.stream()
+        .map(feed -> {
+          FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
+          UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
+          return FeedListQuery.of(feed, urlQuery);
+        }).toList();
+  }
+
 }
