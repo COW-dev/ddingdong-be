@@ -32,6 +32,8 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void setUp() {
         feedRepository.deleteAll();
         feedRepository.flush();
+        clubRepository.deleteAll();
+        clubRepository.flush();
     }
 
     @DisplayName("모든 동아리의 최신 피드 페이지를 주어진 정보에 맞춰 반환한다.")
@@ -111,21 +113,25 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 1L)
             .set("club", savedClub)
             .set("activityContent", "내용1")
             .set("feedType", FeedType.IMAGE)
             .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 2L)
             .set("club", savedClub)
             .set("activityContent", "내용2")
             .set("feedType", FeedType.VIDEO)
             .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 3L)
             .set("club", savedClub)
             .set("activityContent", "내용3")
             .set("feedType", FeedType.IMAGE)
             .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 4L)
             .set("club", savedClub)
             .set("activityContent", "내용4")
             .set("feedType", FeedType.IMAGE)
@@ -140,7 +146,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         // then
         List<Feed> feeds = page.getContent();
         assertThat(feeds.size()).isEqualTo(1);
-        assertThat(feeds.get(0).getId()).isEqualTo(feed1.getId());
+        assertThat(feeds.get(0).getId()).isEqualTo(1);
         assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed1.getActivityContent());
     }
 
@@ -157,21 +163,25 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 1L)
             .set("club", savedClub)
             .set("activityContent", "내용1")
             .set("feedType", FeedType.IMAGE)
             .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 2L)
             .set("club", savedClub)
             .set("activityContent", "내용2")
             .set("feedType", FeedType.VIDEO)
             .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 3L)
             .set("club", savedClub)
             .set("activityContent", "내용3")
             .set("feedType", FeedType.IMAGE)
             .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 4L)
             .set("club", savedClub)
             .set("activityContent", "내용4")
             .set("feedType", FeedType.IMAGE)
