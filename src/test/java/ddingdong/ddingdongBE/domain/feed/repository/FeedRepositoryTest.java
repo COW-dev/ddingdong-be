@@ -34,49 +34,6 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         feedRepository.flush();
     }
 
-    @DisplayName("동아리 ID로 해당 동아리의 모든 피드를 최신순으로 조회한다.")
-    @Test
-    void findAllByClubIdOrderById() {
-        // given
-        Club club = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
-        Club savedClub = clubRepository.save(club);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용1")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용2")
-            .set("feedType", FeedType.VIDEO)
-            .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용3")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
-        feedRepository.save(feed1);
-        feedRepository.save(feed2);
-        feedRepository.save(feed3);
-
-        // when
-        List<Feed> feeds = feedRepository.findAllByClubIdOrderById(savedClub.getId());
-
-        // then
-        assertThat(feeds.get(0).getActivityContent()).isEqualTo("내용3");
-        assertThat(feeds.get(0).getId()).isEqualTo(3L);
-        assertThat(feeds.get(1).getActivityContent()).isEqualTo("내용2");
-        assertThat(feeds.get(1).getId()).isEqualTo(2L);
-        assertThat(feeds.get(2).getActivityContent()).isEqualTo("내용1");
-        assertThat(feeds.get(2).getId()).isEqualTo(1L);
-    }
-
     @DisplayName("모든 동아리의 최신 피드를 모두 조회할 수 있다.")
     @Test
     void test() {

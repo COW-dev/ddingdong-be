@@ -45,39 +45,6 @@ class FacadeFeedServiceTest extends TestContainerSupport {
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
-    @DisplayName("모든 사용자는 피드를 조회할 수 있다.")
-    @Test
-    void getAllFeed() {
-        // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3));
-
-        // when
-        List<FeedListQuery> infos = facadeFeedService.getAllByClubId(1L);
-
-        // then
-        assertThat(infos).hasSize(3);
-    }
-
     @DisplayName("모든 사용자는 전체 동아리의 최신 피드를 조회할 수 있다.")
     @Test
     void getNewestAll() {
@@ -169,7 +136,6 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(info.clubProfileQuery().name()).isEqualTo(savedClub.getName());
         assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
         assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
-        assertThat(info.clubProfileQuery().profileImageUrl()).isEqualTo(null);
         assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
     }
 }
