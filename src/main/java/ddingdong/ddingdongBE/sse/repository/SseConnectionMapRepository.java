@@ -1,5 +1,9 @@
 package ddingdong.ddingdongBE.sse.repository;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException;
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.common.exception.SseException;
+import ddingdong.ddingdongBE.common.exception.SseException.SseEmitterNotFound;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
@@ -16,8 +20,12 @@ public class SseConnectionMapRepository implements SseConnectionRepository {
     }
 
     @Override
-    public SseEmitter findById(String id) {
-        return emitters.get(id);
+    public SseEmitter getById(String id) {
+        SseEmitter sseEmitter = emitters.get(id);
+        if(sseEmitter == null) {
+            throw new SseEmitterNotFound(id);
+        }
+        return sseEmitter;
     }
 
     @Override

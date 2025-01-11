@@ -6,7 +6,7 @@ public interface SseConnectionRepository {
 
     void save(String id, SseEmitter sseEmitter);
 
-    SseEmitter findById(String id);
+    SseEmitter getById(String id);
 
     void deleteById(String id);
 
