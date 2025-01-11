@@ -132,16 +132,14 @@ class FeedRepositoryTest extends DataJpaTestSupport {
 
         Long clubId = savedClub.getId();
         int size = 2;
-        Long cursorId = -1L;
+        Long cursorId = 2L;
         // when
         Slice<Feed> page = feedRepository.findPageByClubIdOrderById(clubId, size, cursorId);
         // then
         List<Feed> feeds = page.getContent();
-        assertThat(feeds.size()).isEqualTo(2);
-        assertThat(feeds.get(0).getId()).isEqualTo(feed4.getId());
-        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed4.getActivityContent());
-        assertThat(feeds.get(1).getId()).isEqualTo(feed3.getId());
-        assertThat(feeds.get(1).getActivityContent()).isEqualTo(feed3.getActivityContent());
+        assertThat(feeds.size()).isEqualTo(1);
+        assertThat(feeds.get(0).getId()).isEqualTo(feed1.getId());
+        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed1.getActivityContent());
 
     }
 
@@ -181,13 +179,15 @@ class FeedRepositoryTest extends DataJpaTestSupport {
 
         Long clubId = savedClub.getId();
         int size = 2;
-        Long cursorId = 2L;
+        Long cursorId = 4L;
         // when
         Slice<Feed> page = feedRepository.findPageByClubIdOrderById(clubId, size, cursorId);
         // then
         List<Feed> feeds = page.getContent();
-        assertThat(feeds.size()).isEqualTo(1);
-        assertThat(feeds.get(0).getId()).isEqualTo(feed1.getId());
-        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed1.getActivityContent());
+        assertThat(feeds.size()).isEqualTo(2);
+        assertThat(feeds.get(0).getId()).isEqualTo(feed3.getId());
+        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed3.getActivityContent());
+        assertThat(feeds.get(1).getId()).isEqualTo(feed2.getId());
+        assertThat(feeds.get(1).getActivityContent()).isEqualTo(feed2.getActivityContent());
     }
 }
