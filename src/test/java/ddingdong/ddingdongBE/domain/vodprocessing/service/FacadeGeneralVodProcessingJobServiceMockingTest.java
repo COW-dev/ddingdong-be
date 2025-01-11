@@ -55,7 +55,7 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         FileMetaData fileMetaData = FileMetaData.builder()
                 .entityId(feedId)
                 .build();
-        VodProcessingNotification pending = VodProcessingNotification.pending();
+        VodProcessingNotification pending = VodProcessingNotification.creatPending();
         VodProcessingJob vodProcessingJob = VodProcessingJob.builder()
                 .convertJobId(convertJobId)
                 .vodProcessingNotification(pending)
@@ -85,7 +85,7 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         // then
         verify(vodProcessingJobService).getByConvertJobId(convertJobId);
         verify(feedService).findById(feedId);
-        verify(sseConnectionService).send(eq(userId.toString()), any(SseEvent.class));
+        verify(sseConnectionService).sendVodProcessingNotification(eq(vodProcessingJob), any(SseEvent.class));
     }
 
     @DisplayName("작업 완료시 Feed가 존재하지 않으면 SSE 이벤트를 발송하지 않는다")
@@ -99,7 +99,7 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         FileMetaData fileMetaData = FileMetaData.builder()
                 .entityId(feedId)
                 .build();
-        VodProcessingNotification pending = VodProcessingNotification.pending();
+        VodProcessingNotification pending = VodProcessingNotification.creatPending();
         VodProcessingJob vodProcessingJob = VodProcessingJob.builder()
                 .convertJobId(convertJobId)
                 .vodProcessingNotification(pending)
@@ -124,7 +124,7 @@ class FacadeGeneralVodProcessingJobServiceMockingTest{
         // then
         verify(vodProcessingJobService).getByConvertJobId(convertJobId);
         verify(feedService).findById(feedId);
-        verify(sseConnectionService, never()).send(any(), any());
+        verify(sseConnectionService, never()).sendVodProcessingNotification(any(), any());
     }
 
 

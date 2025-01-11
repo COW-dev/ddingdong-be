@@ -65,15 +65,13 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
 
     private void checkVodProcessingJobAndNotify(Feed feed) {
         VodProcessingJob vodProcessingJob = vodProcessingJobService.getByVideoFeedId(feed.getId());
-        if (vodProcessingJob.getConvertJobStatus() != ConvertJobStatus.PENDING) {
+        if (vodProcessingJob.isPossibleNotify()) {
             SseEvent<ConvertJobStatus> sseEvent = SseEvent.of(
                     "vod-processing",
                     vodProcessingJob.getConvertJobStatus(),
                     LocalDateTime.now()
             );
-            sseConnectionService.send(vodProcessingJob.getUserId(), sseEvent);
-            VodProcessingNotification vodProcessingNotification = vodProcessingJob.getVodProcessingNotification();
-            vodProcessingNotification.updateVodNotificationStatusToSent(LocalDateTime.now());
+            sseConnectionService.sendVodProcessingNotification(vodProcessingJob, sseEvent);
         }
     }
 }

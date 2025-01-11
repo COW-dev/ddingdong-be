@@ -33,7 +33,7 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     public Long create(CreatePendingVodProcessingJobCommand command) {
         FileMetaData fileMetaData = fileMetaDataService.getById(command.fileId());
         VodProcessingNotification pendingNotification =
-                vodProcessingNotificationService.save(VodProcessingNotification.pending());
+                vodProcessingNotificationService.save(VodProcessingNotification.creatPending());
         return vodProcessingJobService.save(command.toPendingVodProcessingJob(pendingNotification, fileMetaData));
     }
 
@@ -46,19 +46,20 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     }
 
     private void checkVodProcessingJobStatus(VodProcessingJob vodProcessingJob) {
-        ConvertJobStatus convertJobStatus = vodProcessingJob.getConvertJobStatus();
-        if (convertJobStatus != ConvertJobStatus.PENDING) {
-            checkExistingFeedAndNotify(convertJobStatus, vodProcessingJob);
+        if (vodProcessingJob.isPossibleNotify()) {
+            checkExistingFeedAndNotify(vodProcessingJob);
         }
     }
 
-    private void checkExistingFeedAndNotify(ConvertJobStatus convertJobStatus, VodProcessingJob vodProcessingJob) {
+    private void checkExistingFeedAndNotify(VodProcessingJob vodProcessingJob) {
         Optional<Feed> optionalFeed = feedService.findById(vodProcessingJob.getFileMetaData().getEntityId());
         if (optionalFeed.isPresent()) {
-            SseEvent<ConvertJobStatus> sseEvent = SseEvent.of("vod-processing", convertJobStatus, LocalDateTime.now());
-            sseConnectionService.send(vodProcessingJob.getUserId(), sseEvent);
-            VodProcessingNotification vodProcessingNotification = vodProcessingJob.getVodProcessingNotification();
-            vodProcessingNotification.updateVodNotificationStatusToSent(LocalDateTime.now());
+            SseEvent<ConvertJobStatus> sseEvent = SseEvent.of(
+                    "vod-processing",
+                    vodProcessingJob.getConvertJobStatus(),
+                    LocalDateTime.now()
+            );
+            sseConnectionService.sendVodProcessingNotification(vodProcessingJob, sseEvent);
         }
     }
 

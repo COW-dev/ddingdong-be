@@ -44,7 +44,7 @@ public class VodProcessingNotification extends BaseEntity {
         this.vodNotificationStatus = vodNotificationStatus;
     }
 
-    public static VodProcessingNotification pending() {
+    public static VodProcessingNotification creatPending() {
         return VodProcessingNotification.builder()
                 .retryCount(0)
                 .vodNotificationStatus(VodNotificationStatus.PENDING)

@@ -32,7 +32,7 @@ class SseConnectionServiceTest extends TestContainerSupport {
 
         // then
         assertThat(emitter).isNotNull();
-        assertThat(sseConnectionRepository.getById(TEST_ID)).isNotNull();
+        assertThat(sseConnectionRepository.findById(TEST_ID)).isNotNull();
     }
 
     @DisplayName("동일한 ID로 재구독 시 기존 연결은 종료되고 새로운 연결이 생성되어야 한다")
@@ -46,7 +46,8 @@ class SseConnectionServiceTest extends TestContainerSupport {
 
         // then
         assertThat(firstEmitter).isNotEqualTo(secondEmitter);
-        assertThat(sseConnectionRepository.getById(TEST_ID)).isEqualTo(secondEmitter);
+        assertThat(sseConnectionRepository.findById(TEST_ID)).isPresent();
+        assertThat(sseConnectionRepository.findById(TEST_ID).get()).isEqualTo(secondEmitter);
     }
 
     @DisplayName("서로 다른 ID로 구독 시 각각 독립적인 SSE 연결이 생성되어야 한다")
@@ -60,9 +61,9 @@ class SseConnectionServiceTest extends TestContainerSupport {
         sseConnectionService.subscribe(TEST_ID_2, TEST_TIMEOUT);
 
         // then
-        assertThat(sseConnectionRepository.getById(TEST_ID)).isNotNull();
-        assertThat(sseConnectionRepository.getById(TEST_ID_2)).isNotNull();
-        assertThat(sseConnectionRepository.getById(TEST_ID))
-                .isNotEqualTo(sseConnectionRepository.getById(TEST_ID_2));
+        assertThat(sseConnectionRepository.findById(TEST_ID)).isNotNull();
+        assertThat(sseConnectionRepository.findById(TEST_ID_2)).isNotNull();
+        assertThat(sseConnectionRepository.findById(TEST_ID))
+                .isNotEqualTo(sseConnectionRepository.findById(TEST_ID_2));
     }
 }
