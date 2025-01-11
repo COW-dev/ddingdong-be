@@ -17,7 +17,7 @@ public record NewestFeedListResponse(
   public static NewestFeedListResponse from(FeedListQuery info) {
     return NewestFeedListResponse.builder()
         .id(info.id())
-        .thumbnailUrl(info.thumbnailUrl())
+//        .thumbnailUrl(info.thumbnailUrl())
         .feedType(info.feedType())
         .build();
   }
