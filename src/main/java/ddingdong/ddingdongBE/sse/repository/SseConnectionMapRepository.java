@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.sse.repository;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -16,8 +17,8 @@ public class SseConnectionMapRepository implements SseConnectionRepository {
     }
 
     @Override
-    public SseEmitter findById(String id) {
-        return emitters.get(id);
+    public Optional<SseEmitter> findById(String id) {
+        return Optional.ofNullable(emitters.get(id));
     }
 
     @Override

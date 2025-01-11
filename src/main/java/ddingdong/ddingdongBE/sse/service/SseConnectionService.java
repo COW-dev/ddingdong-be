@@ -1,10 +1,16 @@
 package ddingdong.ddingdongBE.sse.service;
 
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
 import ddingdong.ddingdongBE.sse.repository.SseConnectionRepository;
+import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.mvc.method.annotation.ResponseBodyEmitter;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 @Slf4j
@@ -46,11 +52,28 @@ public class SseConnectionService {
         return sseEmitter;
     }
 
-    private void checkExistingEmitter(String id) {
-        SseEmitter oldEmitter = sseConnectionRepository.findById(id);
-        if (oldEmitter != null) {
-            oldEmitter.complete();
+    public void sendVodProcessingNotification(VodProcessingJob vodProcessingJob, SseEvent<?> data) {
+        String sseId = vodProcessingJob.getUserId();
+        Optional<SseEmitter> optionalSseEmitter = sseConnectionRepository.findById(sseId);
+        if(optionalSseEmitter.isPresent()) {
+            SseEmitter sseEmitter = optionalSseEmitter.get();
+            try {
+                sseEmitter.send(SseEmitter.event()
+                        .name("sse")
+                        .data(data));
+                log.debug("SSE Event sent to user {}: {}", sseId, "sse");
+            } catch (IOException e) {
+                log.error("Error sending SSE event to user: {}", sseId, e);
+                sseEmitter.complete();
+            }
         }
+        VodProcessingNotification vodProcessingNotification = vodProcessingJob.getVodProcessingNotification();
+        vodProcessingNotification.updateVodNotificationStatusToSent(LocalDateTime.now());
+    }
+
+    private void checkExistingEmitter(String id) {
+        Optional<SseEmitter> oldEmitter = sseConnectionRepository.findById(id);
+        oldEmitter.ifPresent(ResponseBodyEmitter::complete);
     }
 
 }

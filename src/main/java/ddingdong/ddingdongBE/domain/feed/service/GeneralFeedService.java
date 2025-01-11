@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -34,6 +35,11 @@ public class GeneralFeedService implements FeedService {
     public Feed getById(Long feedId) {
         return feedRepository.findById(feedId)
             .orElseThrow(() -> new ResourceNotFound("Feed(id: " + feedId + ")를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public Optional<Feed> findById(Long feedId) {
+        return feedRepository.findById(feedId);
     }
 
     @Override

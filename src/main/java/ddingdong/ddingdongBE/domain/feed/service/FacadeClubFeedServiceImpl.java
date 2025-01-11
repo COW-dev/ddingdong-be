@@ -7,6 +7,13 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
+import ddingdong.ddingdongBE.domain.vodprocessing.service.VodProcessingJobService;
+import ddingdong.ddingdongBE.sse.service.SseConnectionService;
+import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,11 +21,13 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
+public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
 
     private final ClubService clubService;
     private final FileMetaDataService fileMetaDataService;
     private final FeedService feedService;
+    private final VodProcessingJobService vodProcessingJobService;
+    private final SseConnectionService sseConnectionService;
 
     @Override
     @Transactional
@@ -34,6 +43,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
 
         if (feed.isVideo()) {
             fileMetaDataService.updateStatusToCoupled(command.mediaId(), DomainType.FEED_VIDEO, createdId);
+            checkVodProcessingJobAndNotify(feed);
         }
     }
 
@@ -51,5 +61,17 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService{
         Feed feed = feedService.getById(feedId);
         feedService.delete(feed);
         fileMetaDataService.updateStatusToDelete(feed.getFeedType().getDomainType(), feed.getId());
+    }
+
+    private void checkVodProcessingJobAndNotify(Feed feed) {
+        VodProcessingJob vodProcessingJob = vodProcessingJobService.getByVideoFeedId(feed.getId());
+        if (vodProcessingJob.isPossibleNotify()) {
+            SseEvent<ConvertJobStatus> sseEvent = SseEvent.of(
+                    "vod-processing",
+                    vodProcessingJob.getConvertJobStatus(),
+                    LocalDateTime.now()
+            );
+            sseConnectionService.sendVodProcessingNotification(vodProcessingJob, sseEvent);
+        }
     }
 }
