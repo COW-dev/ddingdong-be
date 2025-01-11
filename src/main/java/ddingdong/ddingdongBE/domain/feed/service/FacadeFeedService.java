@@ -41,15 +41,13 @@ public class FacadeFeedService {
           return FeedListQuery.of(feed, urlQuery);
         }).toList();
 
-    PagingQuery pagingQuery = PagingQuery.from(feedPage, feeds.get(feeds.size() -1).getId());
+    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
     return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
   }
 
   public List<FeedListQuery> getNewestAll() {
     List<Feed> feeds = feedService.getNewestAll();
-    return feeds.stream()
-        .map(FeedListQuery::from)
-        .toList();
+    return null;
   }
 
   public FeedQuery getById(Long feedId) {
