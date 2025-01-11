@@ -44,7 +44,8 @@ public class Feed extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Feed(String activityContent, Club club, FeedType feedType) {
+    private Feed(Long id, String activityContent, Club club, FeedType feedType) {
+        this.id = id;
         this.activityContent = activityContent;
         this.club = club;
         this.feedType = feedType;

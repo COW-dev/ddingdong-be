@@ -57,4 +57,8 @@ public class VodProcessingJob extends BaseEntity {
     public void updateConvertJobStatus(ConvertJobStatus convertJobStatus) {
         this.convertJobStatus = convertJobStatus;
     }
+
+    public boolean isPossibleNotify() {
+        return this.convertJobStatus == ConvertJobStatus.COMPLETE || this.convertJobStatus == ConvertJobStatus.ERROR;
+    }
 }

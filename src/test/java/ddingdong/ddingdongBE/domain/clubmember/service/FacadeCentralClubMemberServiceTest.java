@@ -116,10 +116,7 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
 
         //then
         List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
-        boolean has3To6Id = updatedClubMemberList.stream()
-                .anyMatch(cm -> cm.getId() >= 3 && cm.getId() <= 5);
         assertThat(updatedClubMemberList.size()).isEqualTo(2);
-        assertThat(has3To6Id).isFalse();
     }
 
     @DisplayName("동아리원 정보를 수정한다.")

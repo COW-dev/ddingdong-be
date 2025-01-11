@@ -46,7 +46,8 @@ class SseConnectionServiceTest extends TestContainerSupport {
 
         // then
         assertThat(firstEmitter).isNotEqualTo(secondEmitter);
-        assertThat(sseConnectionRepository.findById(TEST_ID)).isEqualTo(secondEmitter);
+        assertThat(sseConnectionRepository.findById(TEST_ID)).isPresent();
+        assertThat(sseConnectionRepository.findById(TEST_ID).get()).isEqualTo(secondEmitter);
     }
 
     @DisplayName("서로 다른 ID로 구독 시 각각 독립적인 SSE 연결이 생성되어야 한다")
