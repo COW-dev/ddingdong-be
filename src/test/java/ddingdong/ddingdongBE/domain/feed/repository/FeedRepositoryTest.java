@@ -34,9 +34,9 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         feedRepository.flush();
     }
 
-    @DisplayName("모든 동아리의 최신 피드를 모두 조회할 수 있다.")
+    @DisplayName("모든 동아리의 최신 피드 페이지를 주어진 정보에 맞춰 반환한다.")
     @Test
-    void test() {
+    void findNewestPerClubPage() {
         // given
         Club club1 = fixture.giveMeBuilder(Club.class)
             .set("name", "카우1")
@@ -86,14 +86,16 @@ class FeedRepositoryTest extends DataJpaTestSupport {
             .sample();
         feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
 
+        int size = 2;
+        Long currentCursorId = -1L;
         // when
-        List<Feed> newestFeeds = feedRepository.findNewestAll();
+        Slice<Feed> newestFeeds = feedRepository.findNewestPerClubPage(size, currentCursorId);
 
         // then
-        assertThat(newestFeeds.size()).isEqualTo(3);
-        assertThat(newestFeeds.get(0).getId()).isEqualTo(6L);
-        assertThat(newestFeeds.get(1).getId()).isEqualTo(4L);
-        assertThat(newestFeeds.get(2).getId()).isEqualTo(2L);
+        List<Feed> feeds = newestFeeds.getContent();
+        assertThat(feeds.size()).isEqualTo(2);
+        assertThat(feeds.get(0).getId()).isEqualTo(6);
+        assertThat(feeds.get(1).getId()).isEqualTo(4);
     }
 
     @DisplayName("size 개수보다 남은 feed의 개수가 적다면, 그 수만큼 페이지로 반환한다.")
@@ -140,7 +142,6 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         assertThat(feeds.size()).isEqualTo(1);
         assertThat(feeds.get(0).getId()).isEqualTo(feed1.getId());
         assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed1.getActivityContent());
-
     }
 
     @DisplayName("cursorId보다 작은 Feed를 size 개수만큼 페이지로 반환한다.")
