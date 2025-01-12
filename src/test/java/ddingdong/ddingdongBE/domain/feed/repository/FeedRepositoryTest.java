@@ -63,26 +63,32 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub3 = clubRepository.save(club3);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 1L)
             .set("club", savedClub1)
             .set("activityContent", "내용 1 올드")
             .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 2L)
             .set("club", savedClub1)
             .set("activityContent", "내용 1 최신")
             .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 3L)
             .set("club", savedClub2)
             .set("activityContent", "내용 2 올드")
             .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 4L)
             .set("club", savedClub2)
             .set("activityContent", "내용 2 최신")
             .sample();
         Feed feed5 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 5L)
             .set("club", savedClub3)
             .set("activityContent", "내용 3 올드")
             .sample();
         Feed feed6 = fixture.giveMeBuilder(Feed.class)
+            .set("id", 6L)
             .set("club", savedClub3)
             .set("activityContent", "내용 3 최신")
             .sample();

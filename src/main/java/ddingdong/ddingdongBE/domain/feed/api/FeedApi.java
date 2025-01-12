@@ -25,7 +25,7 @@ public interface FeedApi {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/clubs/{clubId}/feeds")
     ClubFeedPageResponse getFeedPageByClub(
-        @PathVariable Long clubId,
+        @PathVariable("clubId") Long clubId,
         @RequestParam(value = "size", defaultValue = "9") int size,
         @RequestParam(value = "currentCursorId", defaultValue = "-1") Long currentCursorId
         );
