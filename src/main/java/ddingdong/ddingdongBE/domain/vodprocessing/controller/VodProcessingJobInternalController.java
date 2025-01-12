@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/server/internal/trigger/vod-processing-job")
 @RequiredArgsConstructor
-public class VodProcessingJobController {
+public class VodProcessingJobInternalController {
 
     private final FacadeVodProcessingJobService facadeVodProcessingJobService;
 
