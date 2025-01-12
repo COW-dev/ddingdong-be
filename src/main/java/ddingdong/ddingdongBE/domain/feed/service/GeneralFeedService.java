@@ -3,9 +3,13 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Slice;
+import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,13 +21,14 @@ public class GeneralFeedService implements FeedService {
     private final FeedRepository feedRepository;
 
     @Override
-    public List<Feed> getAllByClubId(Long clubId) {
-        return feedRepository.findAllByClubIdOrderById(clubId);
+    public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {
+        Slice<Feed> feedPages = feedRepository.findPageByClubIdOrderById(clubId, size + 1, currentCursorId);
+        return buildSlice(feedPages, size);
     }
-
     @Override
-    public List<Feed> getNewestAll() {
-        return feedRepository.findNewestAll();
+    public Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPages = feedRepository.findNewestPerClubPage(size + 1, currentCursorId);
+        return buildSlice(feedPages, size);
     }
 
     @Override
@@ -48,5 +53,20 @@ public class GeneralFeedService implements FeedService {
     @Transactional
     public void delete(Feed feed) {
         feedRepository.delete(feed);
+    }
+
+    private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
+        List<Feed> content = new ArrayList<>(originalSlice.getContent());
+        if (content.isEmpty()) {
+            throw new ResourceNotFound("Feed 페이지 내 콘텐츠를 찾을 수 없습니다.");
+        }
+
+        boolean hasNext = content.size() > size;
+
+        if (hasNext) {
+            content.remove(content.size() - 1);
+        }
+
+        return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
     }
 }

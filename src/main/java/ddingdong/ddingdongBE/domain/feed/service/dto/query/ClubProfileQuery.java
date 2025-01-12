@@ -6,7 +6,8 @@ import lombok.Builder;
 public record ClubProfileQuery(
     Long id,
     String name,
-    String profileImageUrl
+    String profileImageOriginUrl,
+    String profileImageCdnUrl
 ) {
 
 }

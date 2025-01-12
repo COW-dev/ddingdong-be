@@ -1,14 +1,14 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import java.util.List;
+import org.springframework.data.domain.Slice;
 import java.util.Optional;
 
 public interface FeedService {
 
-    List<Feed> getAllByClubId(Long clubId);
+    Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId);
 
-    List<Feed> getNewestAll();
+    Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId);
 
     Feed getById(Long feedId);
 

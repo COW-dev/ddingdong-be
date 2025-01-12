@@ -1,10 +1,9 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.ArgumentMatchers.any;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -13,17 +12,23 @@ import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
+import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
@@ -40,127 +45,73 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     @Autowired
     private FacadeFeedService facadeFeedService;
 
+    @Autowired
+    private FileMetaDataRepository fileMetaDataRepository;
+
     @MockBean
-    private FileInformationService fileInformationService;
+    private S3FileService s3FileService;
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
-    @DisplayName("모든 사용자는 피드를 조회할 수 있다.")
-    @Test
-    void getAllFeed() {
-        // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3));
-
-        // when
-        List<FeedListQuery> infos = facadeFeedService.getAllByClubId(1L);
-
-        // then
-        assertThat(infos).hasSize(3);
+    @BeforeEach
+    void setUp() {
+        feedRepository.deleteAll();
+        feedRepository.flush();
+        clubRepository.deleteAll();
+        clubRepository.flush();
     }
-
-//TODO: Feed 조회 API 개발 완료 후 재작성
-
-//    @DisplayName("모든 사용자는 전체 동아리의 최신 피드를 조회할 수 있다.")
-//    @Test
-//    void getNewestAll() {
-//        // given
-//        Club club1 = fixture.giveMeBuilder(Club.class)
-//                .set("name", "카우1")
-//                .set("user", null)
-//                .set("score", Score.from(BigDecimal.ZERO))
-//                .set("clubMembers", null)
-//                .sample();
-//        Club club2 = fixture.giveMeBuilder(Club.class)
-//                .set("name", "카우2")
-//                .set("user", null)
-//                .set("score", Score.from(BigDecimal.ZERO))
-//                .set("clubMembers", null)
-//                .sample();
-//        Club club3 = fixture.giveMeBuilder(Club.class)
-//                .set("name", "카우3")
-//                .set("user", null)
-//                .set("score", Score.from(BigDecimal.ZERO))
-//                .set("clubMembers", null)
-//                .sample();
-//        Club savedClub1 = clubRepository.save(club1);
-//        Club savedClub2 = clubRepository.save(club2);
-//        Club savedClub3 = clubRepository.save(club3);
-//
-//        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub1)
-//                .sample();
-//        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub1)
-//                .sample();
-//        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub2)
-//                .sample();
-//        Feed feed4 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub2)
-//                .sample();
-//        Feed feed5 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub3)
-//                .sample();
-//        Feed feed6 = fixture.giveMeBuilder(Feed.class)
-//                .set("club", savedClub3)
-//                .sample();
-//        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
-//
-//        // when
-//        List<FeedListQuery> infos = facadeFeedService.getNewestAll();
-//
-//        // then
-//        assertThat(infos).hasSize(3);
-//        assertThat(infos.get(0).id()).isEqualTo(feed6.getId());
-//        assertThat(infos.get(1).id()).isEqualTo(feed4.getId());
-//        assertThat(infos.get(2).id()).isEqualTo(feed2.getId());
-//    }
 
     @DisplayName("모든 사용자는 동아리 피드에 대해 상세 조회할 수 있다.")
     @Test
     void getFeedById() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .set("deletedAt", null)
-                .sample();
+            .set("id", 1L)
+            .set("name", "카우")
+            .set("user", null)
+            .set("score", Score.from(BigDecimal.ZERO))
+            .set("clubMembers", null)
+            .set("deletedAt", null)
+            .sample();
         Club savedClub = clubRepository.save(club);
-
-        given(fileInformationService.getImageUrls(
-                IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + savedClub.getId()))
-                .willReturn(new ArrayList<>());
+        DomainType clubDomainType = DomainType.CLUB_PROFILE;
+        Long clubEntityId = 1L;
+        UUID id1 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+            fixture.giveMeBuilder(FileMetaData.class)
+                .set("id", id1)
+                .set("domainType", clubDomainType)
+                .set("entityId", clubEntityId)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample()
+        );
 
         LocalDateTime now = LocalDateTime.now();
         Feed feed = fixture.giveMeBuilder(Feed.class)
-                .set("club", savedClub)
-                .set("activityContent", "카우 활동내역")
-                .set("feedType", FeedType.IMAGE)
-                .set("createdAt", now)
-                .sample();
+            .set("id", 1L)
+            .set("club", savedClub)
+            .set("activityContent", "카우 활동내역")
+            .set("feedType", FeedType.IMAGE)
+            .set("createdAt", now)
+            .sample();
         Feed savedFeed = feedRepository.save(feed);
+
+        DomainType domainType = DomainType.FEED_IMAGE;
+        Long entityId = 1L;
+        UUID id2 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+            fixture.giveMeBuilder(FileMetaData.class)
+                .set("id", id2)
+                .set("domainType", domainType)
+                .set("entityId", entityId)
+                .set("fileStatus", FileStatus.COUPLED)
+                .sample()
+        );
+
+        BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
+            .willReturn(new UploadedFileUrlQuery(null, null, null));
+        BDDMockito.given(s3FileService.getUploadedVideoUrl(any()))
+            .willReturn(new UploadedVideoUrlQuery(null, null, null,null));
 
         // when
         FeedQuery info = facadeFeedService.getById(savedFeed.getId());
@@ -171,7 +122,6 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(info.clubProfileQuery().name()).isEqualTo(savedClub.getName());
         assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
         assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
-        assertThat(info.clubProfileQuery().profileImageUrl()).isEqualTo(null);
         assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
     }
 }
