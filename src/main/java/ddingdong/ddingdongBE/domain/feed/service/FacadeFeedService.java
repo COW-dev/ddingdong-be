@@ -35,7 +35,7 @@ public class FacadeFeedService {
     Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
     List<Feed> feeds = feedPage.getContent();
 
-    List<FeedListQuery> feedListQueries = buildFeedListQuery(feeds);
+    List<FeedListQuery> feedListQueries = feeds.stream().map(this::extractFeedThumbnailInfo).toList();
     PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
 
     return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
@@ -45,7 +45,7 @@ public class FacadeFeedService {
     Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
     List<Feed> feeds = feedPage.getContent();
 
-    List<FeedListQuery> feedListQueries = buildFeedListQuery(feeds);
+    List<FeedListQuery> feedListQueries = feeds.stream().map(this::extractFeedThumbnailInfo).toList();
     PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
 
     return NewestFeedPerClubPageQuery.of(feedListQueries, pagingQuery);
@@ -56,6 +56,21 @@ public class FacadeFeedService {
     ClubProfileQuery clubProfileQuery = extractClubInfo(feed.getClub());
     FeedFileUrlQuery feedFileUrlQuery = extractFeedFileInfo(feed);
     return FeedQuery.of(feed, clubProfileQuery, feedFileUrlQuery);
+  }
+
+  private FeedListQuery extractFeedThumbnailInfo(Feed feed) {
+    FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
+    if (feed.isImage()) {
+      UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
+      return new FeedListQuery(feed.getId(), urlQuery.cdnUrl(), urlQuery.originUrl(), feed.getFeedType().name());
+    }
+
+    if (feed.isVideo()) {
+      UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
+      return new FeedListQuery(feed.getId(), urlQuery.thumbnailCdnUrl(), urlQuery.thumbnailOriginUrl(), feed.getFeedType().name());
+    }
+
+    throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");
   }
 
   private FeedFileUrlQuery extractFeedFileInfo(Feed feed) {
@@ -86,14 +101,4 @@ public class FacadeFeedService {
         .findFirst()
         .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + id + ")를 찾을 수 없습니다.)"));
   }
-
-  private List<FeedListQuery> buildFeedListQuery(List<Feed> feeds) {
-    return feeds.stream()
-        .map(feed -> {
-          FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
-          UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
-          return FeedListQuery.of(feed, urlQuery);
-        }).toList();
-  }
-
 }
