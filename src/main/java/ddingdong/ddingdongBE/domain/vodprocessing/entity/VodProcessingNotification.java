@@ -56,4 +56,7 @@ public class VodProcessingNotification extends BaseEntity {
         this.vodNotificationStatus = VodNotificationStatus.SENT;
     }
 
+    public void updateVodNotification(VodNotificationStatus vodNotificationStatus) {
+        this.vodNotificationStatus = vodNotificationStatus;
+    }
 }
