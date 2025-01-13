@@ -7,12 +7,11 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
-import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
-import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingNotification;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.VodProcessingJobService;
 import ddingdong.ddingdongBE.sse.service.SseConnectionService;
 import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
+import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -66,9 +65,11 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     private void checkVodProcessingJobAndNotify(Feed feed) {
         VodProcessingJob vodProcessingJob = vodProcessingJobService.getByVideoFeedId(feed.getId());
         if (vodProcessingJob.isPossibleNotify()) {
-            SseEvent<ConvertJobStatus> sseEvent = SseEvent.of(
+            SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
                     "vod-processing",
-                    vodProcessingJob.getConvertJobStatus(),
+                    new SseVodProcessingNotificationDto(
+                            vodProcessingJob.getVodProcessingNotification().getId(),
+                            vodProcessingJob.getConvertJobStatus()),
                     LocalDateTime.now()
             );
             sseConnectionService.sendVodProcessingNotification(vodProcessingJob, sseEvent);

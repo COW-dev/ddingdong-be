@@ -6,4 +6,6 @@ public interface VodProcessingNotificationService {
 
     VodProcessingNotification save(VodProcessingNotification vodProcessingNotification);
 
+    VodProcessingNotification getById(Long id);
+
 }
