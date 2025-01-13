@@ -52,7 +52,11 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     }
 
     private void checkExistingFeedAndNotify(VodProcessingJob vodProcessingJob) {
-        Optional<Feed> optionalFeed = feedService.findById(vodProcessingJob.getFileMetaData().getEntityId());
+        Long entityId = vodProcessingJob.getFileMetaData().getEntityId();
+        if(entityId == null) {
+            return;
+        }
+        Optional<Feed> optionalFeed = feedService.findById(entityId);
         if (optionalFeed.isPresent()) {
             SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
                     "vod-processing",
