@@ -15,6 +15,7 @@ public class FacadeVodProcessingNotificationServiceImpl implements FacadeVodProc
     private final VodProcessingNotificationService vodProcessingNotificationService;
 
     @Override
+    @Transactional
     public void updateAckedNotification(UpdateAckedNotificationCommand command) {
         VodProcessingNotification vodNotification =
                 vodProcessingNotificationService.getById(command.vodNotificationId());
