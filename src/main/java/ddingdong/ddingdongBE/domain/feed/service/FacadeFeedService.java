@@ -90,8 +90,10 @@ public class FacadeFeedService {
 
   private ClubProfileQuery extractClubInfo(Club club) {
     String clubName = club.getName();
-    FileMetaData fileMetaData = getFileMetaData(DomainType.CLUB_PROFILE, club.getId());
-    UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
+    UploadedFileUrlQuery urlQuery = getFileUrl(DomainType.CLUB_PROFILE, club.getId());
+    if (urlQuery == null) {
+      return new ClubProfileQuery(club.getId(), clubName, null, null);
+    }
     return new ClubProfileQuery(club.getId(), clubName, urlQuery.originUrl(), urlQuery.cdnUrl());
   }
 
@@ -100,5 +102,13 @@ public class FacadeFeedService {
         .stream()
         .findFirst()
         .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + id + ")를 찾을 수 없습니다.)"));
+  }
+
+  private UploadedFileUrlQuery getFileUrl(DomainType domainType, Long clubId) {
+    return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
+        .stream()
+        .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+        .findFirst()
+        .orElse(null);
   }
 }
