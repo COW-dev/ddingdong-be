@@ -147,6 +147,6 @@ public class S3FileService {
     }
 
     private String generateCdnUrl(String prefix, String filename, String suffix) {
-        return S3FileService.VIDEO_CDN_URL + "/" + prefix + filename + suffix;
+        return S3FileService.VIDEO_CDN_URL + prefix + filename + suffix;
     }
 }
