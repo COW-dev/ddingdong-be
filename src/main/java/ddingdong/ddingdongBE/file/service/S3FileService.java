@@ -97,7 +97,7 @@ public class S3FileService {
         String fileId = extractFileId(key);
         String region = amazonS3Client.getRegionName();
 
-        String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnails/", fileId, "0000000.jpg");
+        String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnails/", fileId, ".0000000.jpg");
         String thumbnailCdnUrl = generateCdnUrl("thumbnails/", fileId, ".0000000.jpg");
         String videoOriginUrl = generateS3Url(outputBucket, region, "hls/", fileId, "_720.m3u8");
         String videoCdnUrl = generateCdnUrl("hls/", fileId, "_720.m3u8");
@@ -147,6 +147,6 @@ public class S3FileService {
     }
 
     private String generateCdnUrl(String prefix, String filename, String suffix) {
-        return S3FileService.VIDEO_CDN_URL + prefix + filename + suffix;
+        return S3FileService.VIDEO_CDN_URL + "/" + prefix + filename + suffix;
     }
 }
