@@ -75,10 +75,7 @@ public class S3FileService {
         String region = amazonS3Client.getRegionName();
         String[] splitKey = key.split("/");
         String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
-        String cdnUrl = FILE_CDN_URL +
-                splitKey[splitKey.length - 3] + "/" +
-                splitKey[splitKey.length - 2] + "/" +
-                splitKey[splitKey.length - 1];
+        String cdnUrl = FILE_CDN_URL + String.join("/", splitKey);
         return new UploadedFileUrlQuery(splitKey[splitKey.length - 1], originUrl, cdnUrl);
     }
 
