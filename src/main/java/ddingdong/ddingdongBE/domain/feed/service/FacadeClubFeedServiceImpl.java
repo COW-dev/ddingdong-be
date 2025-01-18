@@ -5,15 +5,21 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.MyFeedPageQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
 import ddingdong.ddingdongBE.domain.vodprocessing.service.VodProcessingJobService;
 import ddingdong.ddingdongBE.sse.service.SseConnectionService;
 import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
 import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +33,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     private final FeedService feedService;
     private final VodProcessingJobService vodProcessingJobService;
     private final SseConnectionService sseConnectionService;
+    private final FeedFileService feedFileService;
 
     @Override
     @Transactional
@@ -60,6 +67,18 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
         Feed feed = feedService.getById(feedId);
         feedService.delete(feed);
         fileMetaDataService.updateStatusToDelete(feed.getFeedType().getDomainType(), feed.getId());
+    }
+
+    @Override
+    public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
+        Club club = clubService.getByUserId(user.getId());
+        Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
+        List<Feed> feeds = feedPage.getContent();
+
+        List<FeedListQuery> feedListQueries = feeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
+        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
+
+        return MyFeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
     private void checkVodProcessingJobAndNotify(Feed feed) {
