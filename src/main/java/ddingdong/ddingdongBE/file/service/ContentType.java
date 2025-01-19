@@ -51,13 +51,12 @@ public enum ContentType {
     }
 
 
-    public static ContentType fromMimeType(String mimeType) {
-        String lowerExtension = mimeType.substring(mimeType.lastIndexOf("/") + 1).toLowerCase();
+    public static String getMediaTypeFromMimeType(String mimeType) {
         for (ContentType contentType : values()) {
-            if (contentType.extensions.contains(lowerExtension)) {
-                return contentType;
+            if (contentType.getMimeType().equals(mimeType)) {
+                return contentType.getKeyMediaType();
             }
         }
-        return OCTET_STREAM;
+        return OCTET_STREAM.getKeyMediaType();
     }
 }
