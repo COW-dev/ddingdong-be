@@ -1,16 +1,16 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileDomainCategory.CLUB_PROFILE;
-import static ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory.IMAGE;
-
-import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.NewestFeedPerClubPageQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,42 +19,42 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeFeedService {
 
-  private final FeedService feedService;
-  private final FileInformationService fileInformationService;
+    private final FeedService feedService;
+    private final FeedFileService feedFileService;
 
-  public List<FeedListQuery> getAllByClubId(Long clubId) {
-    List<Feed> feeds = feedService.getAllByClubId(clubId);
-    return feeds.stream()
-        .map(FeedListQuery::from)
-        .toList();
-  }
+    public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
+        Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
+        if (feedPage == null) {
+            return ClubFeedPageQuery.createEmpty();
+        }
+        List<Feed> completeFeeds = feedPage.getContent();
+        List<FeedListQuery> feedListQueries = completeFeeds.stream()
+                .map(feedFileService::extractFeedThumbnailInfo)
+                .toList();
+        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
-  public List<FeedListQuery> getNewestAll() {
-    List<Feed> feeds = feedService.getNewestAll();
-    return feeds.stream()
-        .map(FeedListQuery::from)
-        .toList();
-  }
+        return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
+    }
 
-  public FeedQuery getById(Long feedId) {
-    Feed feed = feedService.getById(feedId);
-    ClubProfileQuery clubProfileQuery = extractClubInfo(feed.getClub());
-    return FeedQuery.of(feed, clubProfileQuery);
-  }
+    public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
+        if (feedPage == null) {
+            return NewestFeedPerClubPageQuery.createEmpty();
+        }
+        List<Feed> completeFeeds = feedPage.getContent();
 
-  private ClubProfileQuery extractClubInfo(Club club) {
-    String clubName = club.getName();
-    List<String> profileImageUrls = fileInformationService.getImageUrls(
-        IMAGE.getFileType() + CLUB_PROFILE.getFileDomain() + club.getId()
-    );
-    String profileImageUrl = profileImageUrls.stream()
-        .findFirst()
-        .orElse(null);
+        List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo)
+                .toList();
+        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
-    return ClubProfileQuery.builder()
-        .id(club.getId())
-        .name(clubName)
-        .profileImageUrl(profileImageUrl)
-        .build();
-  }
+        return NewestFeedPerClubPageQuery.of(feedListQueries, pagingQuery);
+    }
+
+    public FeedQuery getById(Long feedId) {
+        Feed feed = feedService.getById(feedId);
+        ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
+        FeedFileUrlQuery feedFileUrlQuery = feedFileService.extractFeedFileInfo(feed);
+        return FeedQuery.of(feed, clubProfileQuery, feedFileUrlQuery);
+    }
+
 }

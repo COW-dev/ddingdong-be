@@ -1,26 +1,29 @@
 package ddingdong.ddingdongBE.domain.banner.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.banner.entity.Banner;
+import ddingdong.ddingdongBE.domain.banner.service.dto.command.CreateBannerCommand;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+import org.hibernate.validator.constraints.URL;
 
-@Getter
-@AllArgsConstructor
-public class CreateBannerRequest {
+@Schema(
+        name = "CreateBannerRequest",
+        description = "어드민 - 배너 생성 요청"
+)
+public record CreateBannerRequest(
+        @Schema(description = "연결 링크", example = "https://test-link.com")
+        @URL
+        String link,
+        @Schema(description = "웹 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        @NotNull(message = "webImageId는 필수입니다.")
+        String webImageId,
+        @Schema(description = "모바일 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
+        @NotNull(message = "mobileImageId 필수입니다.")
+        String mobileImageId
+) {
 
-    private String title;
-
-    private String subTitle;
-
-    private String colorCode;
-
-    public Banner toEntity(User user) {
-        return Banner.builder()
-                .user(user)
-                .title(title)
-                .subTitle(subTitle)
-                .colorCode(colorCode)
-                .build();
+    public CreateBannerCommand toCommand(User user) {
+        return new CreateBannerCommand(user, link, webImageId, mobileImageId);
     }
+
 }

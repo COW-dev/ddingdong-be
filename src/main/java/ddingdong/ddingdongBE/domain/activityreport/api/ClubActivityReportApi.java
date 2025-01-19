@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequest;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
@@ -15,20 +15,18 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Activity Report - Club", description = "Activity Report Club API")
-@RequestMapping("/server/club")
+@RequestMapping("/server/central")
 public interface ClubActivityReportApi {
 
     @Operation(summary = "현재 활동보고서 회차 조회")
@@ -64,25 +62,21 @@ public interface ClubActivityReportApi {
     @ApiResponse(responseCode = "201", description = "활동보고서 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    @PostMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/my/activity-reports")
     void createActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestPart(value = "reportData") List<CreateActivityReportRequest> requests,
-        @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
-        @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
+        @RequestBody CreateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 수정")
     @ApiResponse(responseCode = "200", description = "활동보고서 수정 성공")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @PatchMapping(value = "/my/activity-reports", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PatchMapping(value = "/my/activity-reports")
     void updateActivityReport(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "term") String term,
-        @RequestPart(value = "reportData") List<UpdateActivityReportRequest> requests,
-        @RequestPart(value = "uploadFiles1", required = false) MultipartFile firstImage,
-        @RequestPart(value = "uploadFiles2", required = false) MultipartFile secondImage
+        @RequestBody UpdateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 삭제")

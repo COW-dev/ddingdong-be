@@ -1,30 +1,20 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import java.util.List;
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
+import org.springframework.data.domain.Slice;
 
-@Service
-@RequiredArgsConstructor
-@Transactional(readOnly = true)
-public class FeedService {
+public interface FeedService {
 
-  private final FeedRepository feedRepository;
+    Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId);
 
-  public List<Feed> getAllByClubId(Long clubId) {
-    return feedRepository.findAllByClubIdOrderById(clubId);
-  }
+    Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId);
 
-  public List<Feed> getNewestAll() {
-    return feedRepository.findNewestAll();
-  }
+    Feed getById(Long feedId);
 
-  public Feed getById(Long feedId) {
-    return feedRepository.findById(feedId)
-        .orElseThrow(() -> new ResourceNotFound("Feed(id: " + feedId + ")를 찾을 수 없습니다."));
-  }
+    Optional<Feed> findById(Long feedId);
+
+    Long create(Feed feed);
+
+    void delete(Feed feed);
 }

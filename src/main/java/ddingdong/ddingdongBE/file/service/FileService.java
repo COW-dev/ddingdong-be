@@ -5,15 +5,15 @@ import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
 import ddingdong.ddingdongBE.domain.fileinformation.service.FileInformationService;
 import ddingdong.ddingdongBE.file.FileStore;
-import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 import java.util.List;
 
 import lombok.RequiredArgsConstructor;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+//TODO: 리팩토링 후 제거
 @Service
 @RequiredArgsConstructor
 public class FileService {

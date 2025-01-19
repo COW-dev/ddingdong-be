@@ -2,9 +2,10 @@ package ddingdong.ddingdongBE.domain.club.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.common.exception.ErrorResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubInfoRequest;
 import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubMemberRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.request.UpdateClubRequest;
-import ddingdong.ddingdongBE.domain.club.controller.dto.response.DetailClubResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.AllClubMemberInfoResponse;
+import ddingdong.ddingdongBE.domain.club.controller.dto.response.MyClubInfoResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
@@ -13,14 +14,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +29,8 @@ import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.multipart.MultipartFile;
 
-@Tag(name = "Club - Club", description = "Club CentralClub API")
-@RequestMapping("/server/club/my")
+@Tag(name = "Club - CentralClub", description = "Club CentralClub API")
+@RequestMapping("/server/central/my")
 public interface CentralClubApi {
 
     @Operation(summary = "동아리원 명단 다운로드 API")
@@ -44,18 +43,27 @@ public interface CentralClubApi {
 
     @Operation(summary = "내 동아리 정보 조회 API")
     @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "200", description = "내 동아리 정보 조회 성공",
+            content = @Content(schema = @Schema(implementation = MyClubInfoResponse.class)))
     @SecurityRequirement(name = "AccessToken")
     @GetMapping
-    DetailClubResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
+    MyClubInfoResponse getMyClub(@AuthenticationPrincipal PrincipalDetails principalDetails);
+
+    @Operation(summary = "동아리원 명단 조회 API")
+    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "200", description = "동아리원 명단 조회 성공",
+            content = @Content(schema = @Schema(implementation = AllClubMemberInfoResponse.class)))
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/club-members")
+    AllClubMemberInfoResponse getMyClubMembers(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "내 동아리 정보 수정 API")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ApiResponse(responseCode = "204", description = "내 동아리 정보 수정 성공")
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping
     void updateClub(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                    @ModelAttribute UpdateClubRequest param,
-                    @RequestPart(name = "profileImage", required = false) List<MultipartFile> profileImage,
-                    @RequestPart(name = "introduceImages", required = false) List<MultipartFile> images);
+                    @Valid @RequestBody UpdateClubInfoRequest request);
 
     @Operation(summary = "동아리원 명단 등록 API")
     @ApiResponses(value = {
@@ -120,6 +128,6 @@ public interface CentralClubApi {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping("/club-members/{clubMemberId}")
-    void updateClubMembers(@PathVariable Long clubMemberId,
+    void updateClubMembers(@PathVariable("clubMemberId") Long clubMemberId,
                            @RequestBody @Valid UpdateClubMemberRequest request);
 }

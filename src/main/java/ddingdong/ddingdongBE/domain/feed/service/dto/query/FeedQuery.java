@@ -7,19 +7,19 @@ import lombok.Builder;
 @Builder
 public record FeedQuery(
     Long id,
-    ClubProfileQuery clubProfileQuery,
     String activityContent,
-    String fileUrl,
     String feedType,
-    LocalDate createdDate
-) {
+    LocalDate createdDate,
+    FeedFileUrlQuery feedFileUrlQuery,
+    ClubProfileQuery clubProfileQuery
+    ) {
 
-  public static FeedQuery of(Feed feed, ClubProfileQuery clubProfileQuery) {
+  public static FeedQuery of(Feed feed, ClubProfileQuery clubProfileQuery, FeedFileUrlQuery feedFileUrlQuery) {
     return FeedQuery.builder()
         .id(feed.getId())
         .clubProfileQuery(clubProfileQuery)
         .activityContent(feed.getActivityContent())
-        .fileUrl(feed.getFileUrl())
+        .feedFileUrlQuery(feedFileUrlQuery)
         .feedType(feed.getFeedType().toString())
         .createdDate(LocalDate.from(feed.getCreatedAt()))
         .build();

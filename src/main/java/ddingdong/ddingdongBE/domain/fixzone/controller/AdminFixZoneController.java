@@ -1,14 +1,15 @@
 package ddingdong.ddingdongBE.domain.fixzone.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fixzone.controller.api.AdminFixZoneApi;
 import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.CreateFixZoneCommentRequest;
-import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.GetFixZoneResponse;
-import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
-import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneCommentService;
-import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.request.UpdateFixZoneCommentRequest;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneListResponse;
+import ddingdong.ddingdongBE.domain.fixzone.controller.dto.response.AdminFixZoneResponse;
+import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneCommentService;
+import ddingdong.ddingdongBE.domain.fixzone.service.FacadeAdminFixZoneService;
+import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,53 +18,45 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AdminFixZoneController implements AdminFixZoneApi {
 
-	private final FixZoneService fixZoneService;
-    private final FixZoneCommentService fixZoneCommentService;
-    private final ClubService clubService;
+    private final FacadeAdminFixZoneService facadeAdminFixZoneService;
+    private final FacadeAdminFixZoneCommentService facadeAdminFixZoneCommentService;
 
     @Override
-    public List<GetFixZoneResponse> getFixZones() {
-        return fixZoneService.getAll();
+    public List<AdminFixZoneListResponse> getFixZones() {
+        return facadeAdminFixZoneService.getAll().stream()
+                .map(AdminFixZoneListResponse::from)
+                .toList();
+    }
+
+    @Override
+    public AdminFixZoneResponse getFixZoneDetail(Long fixZoneId) {
+        AdminFixZoneQuery query = facadeAdminFixZoneService.getFixZone(fixZoneId);
+        return AdminFixZoneResponse.from(query);
     }
 
     @Override
     public void updateFixZoneToComplete(Long fixZoneId) {
-        fixZoneService.updateToComplete(fixZoneId);
+        facadeAdminFixZoneService.updateToComplete(fixZoneId);
     }
 
     @Override
     public void createFixZoneComment(
-        PrincipalDetails principalDetails,
-        CreateFixZoneCommentRequest request,
-        Long fixZoneId
+            PrincipalDetails principalDetails,
+            CreateFixZoneCommentRequest request,
+            Long fixZoneId
     ) {
-        FixZone fixZone = fixZoneService.getById(fixZoneId);
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
-
-        fixZoneCommentService.create(fixZone, club, request);
+        User admin = principalDetails.getUser();
+        facadeAdminFixZoneCommentService.create(request.toCommand(admin.getId(), fixZoneId));
     }
 
     @Override
-    public void updateFixZoneComment(
-        PrincipalDetails principalDetails,
-        CreateFixZoneCommentRequest request,
-        Long fixZoneId,
-        Long commentId
-    ) {
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
-
-        fixZoneCommentService.update(club.getId(), commentId, request);
+    public void updateFixZoneComment(UpdateFixZoneCommentRequest request, Long fixZoneId, Long commentId) {
+        facadeAdminFixZoneCommentService.update(request.toCommand(commentId));
     }
 
     @Override
-    public void deleteFixZoneComment(
-        PrincipalDetails principalDetails,
-        Long fixZoneId,
-        Long commentId
-    ) {
-        Club club = clubService.getByClubId(principalDetails.getUser().getId());
-
-        fixZoneCommentService.delete(commentId);
+    public void deleteFixZoneComment(Long fixZoneId, Long commentId) {
+        facadeAdminFixZoneCommentService.delete(commentId);
     }
 
 }

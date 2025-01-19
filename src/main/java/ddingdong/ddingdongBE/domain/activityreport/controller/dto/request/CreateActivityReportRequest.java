@@ -24,6 +24,9 @@ public record CreateActivityReportRequest(
     @Schema(description = "활동 종료 일시", example = "2024-01-02 11:11")
     String endDate,
 
+    @Schema(description = "활동보고서 이미지 ID", example = "UUID")
+    String imageId,
+
     @Schema(description = "활동 참여자 명단",
         example = """
              [{
@@ -40,6 +43,7 @@ public record CreateActivityReportRequest(
             .term(term)
             .content(content)
             .place(place)
+            .imageId(imageId)
             .startDate(startDate)
             .endDate(endDate)
             .participants(participants)

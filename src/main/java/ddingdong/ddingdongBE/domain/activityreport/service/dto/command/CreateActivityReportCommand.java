@@ -14,6 +14,7 @@ public record CreateActivityReportCommand(
     String place,
     String startDate,
     String endDate,
+    String imageId,
     List<Participant> participants
 ) {
 

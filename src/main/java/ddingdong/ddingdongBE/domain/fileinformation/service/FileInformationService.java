@@ -5,8 +5,8 @@ import ddingdong.ddingdongBE.domain.fileinformation.entity.FileInformation;
 import ddingdong.ddingdongBE.domain.fileinformation.entity.FileTypeCategory;
 import ddingdong.ddingdongBE.domain.fileinformation.repository.FileInformationRepository;
 import ddingdong.ddingdongBE.file.FileStore;
-import ddingdong.ddingdongBE.file.dto.FileResponse;
-import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import ddingdong.ddingdongBE.file.service.dto.FileResponse;
+import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
@@ -64,4 +64,7 @@ public class FileInformationService {
         fileInformationRepository.delete(clubFileInformation);
     }
 
+    public void deleteAll(List<FileInformation> fileInformations) {
+        fileInformationRepository.deleteAll(fileInformations);
+    }
 }

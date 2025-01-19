@@ -17,7 +17,7 @@ public @interface WithMockAuthenticatedUser {
 
     long id() default 1L;
 
-    String userId() default "user";
+    String authId() default "user";
 
     String role() default "USER";
 

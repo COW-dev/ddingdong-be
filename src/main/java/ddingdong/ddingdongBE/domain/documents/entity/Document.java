@@ -48,7 +48,7 @@ public class Document extends BaseEntity {
         super.setCreatedAt(createdAt);
     }
 
-    public void updateDocument(Document updatedDocument) {
-        this.title = updatedDocument.getTitle();
+    public void updateDocument(Document document) {
+        this.title = document.getTitle();
     }
 }

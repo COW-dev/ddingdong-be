@@ -2,10 +2,13 @@ package ddingdong.ddingdongBE.domain.question.api;
 
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
-import ddingdong.ddingdongBE.domain.question.controller.dto.request.GenerateQuestionRequest;
-import ddingdong.ddingdongBE.domain.question.controller.dto.request.ModifyQuestionRequest;
-import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionResponse;
+import ddingdong.ddingdongBE.domain.question.controller.dto.request.CreateQuestionRequest;
+import ddingdong.ddingdongBE.domain.question.controller.dto.request.UpdateQuestionRequest;
+import ddingdong.ddingdongBE.domain.question.controller.dto.response.AdminQuestionListResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
@@ -29,26 +32,28 @@ public interface AdminQuestionApi {
     @PostMapping(consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    void generateQuestion(
+    void createQuestion(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @ModelAttribute GenerateQuestionRequest generateDocumentRequest);
+            @ModelAttribute CreateQuestionRequest generateDocumentRequest);
 
     @Operation(summary = "어드민 FAQ 목록 조회 API")
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    List<AdminQuestionResponse> getAllQuestions();
+    @ApiResponse(responseCode = "200", description = "어드민 FAQ 전체 조회 성공",
+            content = @Content(schema = @Schema(implementation = AdminQuestionListResponse.class)))
+    List<AdminQuestionListResponse> getAllQuestions();
 
     @Operation(summary = "어드민 FAQ 수정 API")
     @PatchMapping(value = "/{questionId}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    void modifyQuestion(@PathVariable Long questionId,
-                        @ModelAttribute ModifyQuestionRequest modifyQuestionRequest);
+    void updateQuestion(@PathVariable("questionId") Long questionId,
+                        @ModelAttribute UpdateQuestionRequest updateQuestionRequest);
 
     @Operation(summary = "어드민 FAQ 삭제 API")
     @DeleteMapping("/{questionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    void deleteQuestion(@PathVariable Long questionId);
+    void deleteQuestion(@PathVariable("questionId") Long questionId);
 }

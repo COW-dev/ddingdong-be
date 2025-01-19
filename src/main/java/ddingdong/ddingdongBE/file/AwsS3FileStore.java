@@ -4,7 +4,7 @@ import com.amazonaws.services.s3.AmazonS3Client;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 
-import ddingdong.ddingdongBE.file.dto.UploadFileDto;
+import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 
 import java.io.IOException;
 import java.net.URLEncoder;
@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+//TODO: 리팩토링 후 제거
 @Component
 @RequiredArgsConstructor
 public class AwsS3FileStore implements FileStore {
@@ -28,7 +29,7 @@ public class AwsS3FileStore implements FileStore {
 	@Value("${cloud.aws.region.static}")
 	private String region;
 
-	@Value("${spring.s3.bucket}")
+	@Value("${spring.s3.input-bucket}")
 	private String bucketName;
 
 	@Override

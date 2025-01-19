@@ -117,10 +117,9 @@ public class CustomExceptionHandler {
                 + "\n"
                 + exception.getClass().getSimpleName() + " : " + message);
 
-        return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
+        return new ErrorResponse(BAD_REQUEST.value(), message, LocalDateTime.now()
         );
     }
-
 
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요
     @ExceptionHandler(NoSuchElementException.class)

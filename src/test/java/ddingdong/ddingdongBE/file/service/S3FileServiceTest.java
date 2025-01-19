@@ -1,73 +1,115 @@
 package ddingdong.ddingdongBE.file.service;
 
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus.PENDING;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
-import ddingdong.ddingdongBE.file.controller.dto.response.UploadUrlResponse;
-import java.net.MalformedURLException;
-import java.net.URL;
+import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import ddingdong.ddingdongBE.file.service.dto.command.GeneratePreSignedUrlRequestCommand;
+import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQuery;
+import java.time.LocalDateTime;
+import java.util.Optional;
+import java.util.UUID;
 import java.util.regex.Pattern;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.util.ReflectionTestUtils;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
 
-@ExtendWith(MockitoExtension.class)
-@ActiveProfiles("test")
-class S3FileServiceTest {
+@SpringBootTest
+class S3FileServiceTest extends TestContainerSupport {
 
-    @Mock
-    private AmazonS3Client amazonS3Client;
-
-    @InjectMocks
+    @Autowired
     private S3FileService s3FileService;
+    @Autowired
+    private FileMetaDataRepository fileMetaDataRepository;
 
-    @DisplayName("presignedUrl을 생성한다.")
+    private static final Pattern UUID7_PATTERN = Pattern.compile(
+        "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
+    );
+
+    @DisplayName("GeneratePreSignedUrlRequest(FILE)를 생성한다.")
     @Test
-    void generatePreSignedUrl() throws MalformedURLException {
+    void generatePreSignedUrlRequest() {
         //given
+        LocalDateTime now = LocalDateTime.now();
+        Long userId = 1L;
         String fileName = "image.jpg";
-
-        URL expectedUrl = new URL("https://test-bucket.s3.amazonaws.com/test/jpg/image.jpg");
-        given(amazonS3Client.generatePresignedUrl(any(GeneratePresignedUrlRequest.class))).willReturn(expectedUrl);
+        GeneratePreSignedUrlRequestCommand command =
+            new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
-        UploadUrlResponse uploadUrlResponse = s3FileService.generatePreSignedUrl(fileName);
+        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
-        Pattern UUID7_PATTERN = Pattern.compile(
-                "^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-7[0-9A-Fa-f]{3}-[89ab][0-9A-Fa-f]{3}-[0-9A-Fa-f]{12}$"
-        );
-        assertThat(uploadUrlResponse.uploadUrl()).isEqualTo(expectedUrl.toString());
-        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), uploadUrlResponse.uploadFileName())).isTrue();
+        UUID fileId = query.id();
+        Optional<FileMetaData> createdFileMetaData =
+            fileMetaDataRepository.findById(fileId);
+
+        assertThat(query.generatePresignedUrlRequest())
+            .satisfies(request -> {
+                assertThat(request.getContentType())
+                    .as("Content type should be image/jpeg")
+                    .isEqualTo("image/jpeg");
+
+                assertThat(request.getKey())
+                    .as("Key should contain correct date, userId, and fileId")
+                    .contains(String.format("%s/%d-%d-%d/%s/",
+                        "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
+                    .contains(fileId.toString());
+            });
+        assertThat(Pattern.matches(UUID7_PATTERN.pattern(), fileId.toString())).isTrue();
+        assertThat(query.contentType()).isEqualTo("image/jpeg");
+        assertThat(createdFileMetaData).isPresent();
+        assertThat(createdFileMetaData.get())
+            .extracting("fileKey", "fileName", "fileStatus")
+            .containsExactly(query.generatePresignedUrlRequest().getKey(), fileName, PENDING);
     }
 
-    @DisplayName("s3 uploadedFileUrl을 조회한다.")
-    @Test
-    void getUploadedFileUrl() {
+    @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
+    @ParameterizedTest
+    @ValueSource(strings = {"video.mp4", "video.webm", "video.mov"})
+    void generateVIDEOPreSignedUrlRequest(String fileName) {
         //given
-        String fileName = "image.jpg";
-        String uploadFileName = "test";
-
-        when(amazonS3Client.getRegionName()).thenReturn("ap-northeast-2");
-
-        ReflectionTestUtils.setField(s3FileService, "bucketName", "test");
-        ReflectionTestUtils.setField(s3FileService, "serverProfile", "test");
+        LocalDateTime now = LocalDateTime.now();
+        Long userId = 1L;
+        GeneratePreSignedUrlRequestCommand command =
+            new GeneratePreSignedUrlRequestCommand(now, userId, fileName);
 
         //when
-        String uploadedFileUrl = s3FileService.getUploadedFileUrl(fileName, uploadFileName);
+        GeneratePreSignedUrlRequestQuery query = s3FileService.generatePresignedUrlRequest(command);
 
         //then
-        Assertions.assertThat(uploadedFileUrl).isEqualTo("https://test.s3.ap-northeast-2.amazonaws.com/test/jpg/test");
+        UUID id = query.id();
+
+        assertThat(query.generatePresignedUrlRequest())
+            .satisfies(request -> {
+                assertThat(request.getContentType())
+                    .as("Content type should match the video's MIME type")
+                    .isEqualTo(expectedContentType(fileName));
+                assertThat(request.getKey())
+                    .as("Key should contain correct date, userId, and fileId")
+                    .contains(String.format("%s/%d-%d-%d/%s/",
+                        "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
+                    .contains(id.toString());
+
+                assertThat(Pattern.matches(UUID7_PATTERN.pattern(), id.toString())).isTrue();
+            });
+
     }
 
+    private String expectedContentType(String fileName) {
+        if (fileName.endsWith(".mp4")) {
+            return "video/mp4";
+        } else if (fileName.endsWith(".webm")) {
+            return "video/webm";
+        } else if (fileName.endsWith(".mov")) {
+            return "video/quicktime";
+        } else {
+            throw new IllegalArgumentException("Unsupported video format");
+        }
+    }
 }

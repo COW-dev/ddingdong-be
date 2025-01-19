@@ -13,7 +13,8 @@ spring:
       ddl-auto: none
 
   s3:
-    bucket: ${BUCKET_NAME}
+    input-bucket: ${INPUT_BUCKET_NAME}
+    output-bucket: ${OUTPUT_BUCKET_NAME}
     access-key: ${AWS_ACCESS_KEY_ID}
     secret-key: ${AWS_SECRET_ACCESS_KEY}
 
@@ -40,6 +41,11 @@ swagger:
   server:
     url: ${SERVER_URL:http://localhost:8080}
 
+spring-doc:
+  swagger-ui:
+    tags-sorter: alpha
+    operations-sorter : method
+    doc-expansion : none
 
 security:
   actuator:

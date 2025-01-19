@@ -51,8 +51,8 @@ public class Question extends BaseEntity {
         super.setCreatedAt(createdAt);
     }
 
-    public void updateQuestion(Question updatedDocument) {
-        this.question = updatedDocument.getQuestion();
-        this.reply = updatedDocument.getReply();
+    public void updateQuestion(Question updatedQuestion) {
+        this.question = updatedQuestion.getQuestion();
+        this.reply = updatedQuestion.getReply();
     }
 }
