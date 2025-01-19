@@ -30,17 +30,17 @@ public class FacadeFeedService {
     List<Feed> completeFeeds = feedPage.getContent().stream().filter(this::isComplete).toList();
 
     List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
-    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds.get(completeFeeds.size() -1).getId(), feedPage.hasNext());
+    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
     return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
   }
 
   public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
-    List<Feed> feeds = feedPage.getContent();
+    List<Feed> completeFeeds = feedPage.getContent();
 
-    List<FeedListQuery> feedListQueries = feeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
-    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
+    List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
+    PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
     return NewestFeedPerClubPageQuery.of(feedListQueries, pagingQuery);
   }
