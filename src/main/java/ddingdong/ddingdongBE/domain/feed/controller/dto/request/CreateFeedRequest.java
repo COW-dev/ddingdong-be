@@ -13,7 +13,7 @@ public record CreateFeedRequest(
     @NotNull(message = "mediaId는 null이 될 수 없습니다.")
     String mediaId,
     @Schema(description = "컨텐츠 종류", example = "image/png")
-    @NotNull(message = "contentType은 null이 될 수 없습니다.")
+    @NotNull(message = "mimeType은 null이 될 수 없습니다.")
     String mimeType
 ) {
 
