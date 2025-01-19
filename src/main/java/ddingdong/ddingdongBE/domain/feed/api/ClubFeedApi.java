@@ -14,6 +14,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -60,7 +61,7 @@ public interface ClubFeedApi {
         content = @Content(schema = @Schema(implementation = MyFeedPageResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @DeleteMapping("/my/feeds")
+    @GetMapping("/my/feeds")
     MyFeedPageResponse getMyFeedPage(
         @AuthenticationPrincipal PrincipalDetails principalDetails,
         @RequestParam(value = "size", defaultValue = "9") int size,
