@@ -73,17 +73,24 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
         Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
-        List<Feed> feeds = feedPage.getContent();
+        List<Feed> completeFeeds = feedPage.getContent().stream()
+            .filter(feed -> {
+                if (feed.isVideo()) {
+                    VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
+                    return vodProcessingJob.isCompleteNotification();
+                }
+                return true;
+            }).toList();
 
-        List<FeedListQuery> feedListQueries = feeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
-        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, feeds.get(feeds.size() -1).getId(), feedPage.hasNext());
+        List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
+        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds.get(completeFeeds.size() -1).getId(), feedPage.hasNext());
 
         return MyFeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
     private void checkVodProcessingJobAndNotify(Feed feed) {
-        VodProcessingJob vodProcessingJob = vodProcessingJobService.getByVideoFeedId(feed.getId());
-        if (vodProcessingJob.isPossibleNotify()) {
+        VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
+        if (vodProcessingJob != null && vodProcessingJob.isPossibleNotify()) {
             SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
                     "vod-processing",
                     new SseVodProcessingNotificationDto(
