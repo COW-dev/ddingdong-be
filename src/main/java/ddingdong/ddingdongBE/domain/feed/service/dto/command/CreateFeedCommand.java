@@ -16,11 +16,15 @@ public record CreateFeedCommand(
 ) {
 
     public Feed toEntity(Club club) {
-        String mediaType = ContentType.fromMimeType(mimeType).getKeyMediaType();
-        return Feed.builder()
-            .activityContent(activityContent)
-            .club(club)
-            .feedType(FeedType.findByContentType(mediaType))
-            .build();
+        try {
+            String mediaType = ContentType.getMediaTypeFromMimeType(mimeType);
+            return Feed.builder()
+                    .activityContent(activityContent)
+                    .club(club)
+                    .feedType(FeedType.valueOf(mediaType))
+                    .build();
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Feed 내 해당 컨텐츠 종류(" + mimeType + ")는 지원하지 않습니다.");
+        }
     }
 }
