@@ -73,6 +73,9 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
         Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
+        if (feedPage == null) {
+            return MyFeedPageQuery.createEmpty();
+        }
         List<Feed> completeFeeds = feedPage.getContent().stream().filter(this::isComplete).toList();
 
         List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();

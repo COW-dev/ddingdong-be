@@ -8,12 +8,11 @@ import java.util.List;
 import lombok.Builder;
 
 public record MyFeedPageResponse(
-    @ArraySchema(schema = @Schema(name = "동아리 피드 정보", implementation = MyFeedPageResponse.class))
+    @ArraySchema(schema = @Schema(name = "동아리 피드 정보", implementation = MyFeedListResponse.class))
     List<MyFeedListResponse> clubFeeds,
     @Schema(name = "피드 페이지 정보", implementation = PagingResponse.class)
     PagingResponse pagingInfo
 ) {
-
 
     public static MyFeedPageResponse from(MyFeedPageQuery myFeedPageQuery) {
         List<MyFeedListResponse> clubFeeds = myFeedPageQuery.feedListQueries().stream()

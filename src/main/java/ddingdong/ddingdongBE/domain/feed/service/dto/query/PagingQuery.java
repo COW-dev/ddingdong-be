@@ -15,4 +15,8 @@ public record PagingQuery(
         }
         return new PagingQuery(currentCursorId, completeFeeds.get(completeFeeds.size() - 1).getId(), hasNext);
     }
+
+    public static PagingQuery createEmpty() {
+        return new PagingQuery(-1L, -1L, false);
+    }
 }

@@ -27,6 +27,9 @@ public class FacadeFeedService {
 
   public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
+    if (feedPage == null) {
+      return ClubFeedPageQuery.createEmpty();
+    }
     List<Feed> completeFeeds = feedPage.getContent().stream().filter(this::isComplete).toList();
 
     List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
@@ -37,6 +40,9 @@ public class FacadeFeedService {
 
   public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
+    if (feedPage == null) {
+      return NewestFeedPerClubPageQuery.createEmpty();
+    }
     List<Feed> completeFeeds = feedPage.getContent();
 
     List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
