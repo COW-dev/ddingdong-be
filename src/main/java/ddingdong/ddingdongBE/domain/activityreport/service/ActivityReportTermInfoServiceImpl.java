@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
 import java.time.Duration;
@@ -14,9 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfoService{
+public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfoService {
 
-    private static final String START_DATE = "2024-09-02";
     private static final int DEFAULT_TERM = 8;
     private static final int CORRECTION_VALUE = 8;
     private static final int TERM_LENGTH_OF_DAYS = 14;
@@ -32,23 +32,25 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     @Override
     public void create(LocalDate startDate, int totalTermCount) {
         activityReportTermInfoRepository.saveAll(
-            IntStream.range(0, totalTermCount)
-                .mapToObj(i -> {
-                    LocalDate termStartDate = startDate.plusDays(i * 14L);
-                    LocalDate termEndDate = termStartDate.plusDays(13L);
-                    return ActivityReportTermInfo.builder()
-                        .term(i + 1)
-                        .startDate(termStartDate)
-                        .endDate(termEndDate)
-                        .build();
-                })
-                .collect(Collectors.toList())
+                IntStream.range(0, totalTermCount)
+                        .mapToObj(i -> {
+                            LocalDate termStartDate = startDate.plusDays(i * 14L);
+                            LocalDate termEndDate = termStartDate.plusDays(13L);
+                            return ActivityReportTermInfo.builder()
+                                    .term(i + 1)
+                                    .startDate(termStartDate)
+                                    .endDate(termEndDate)
+                                    .build();
+                        })
+                        .collect(Collectors.toList())
         );
     }
 
     @Override
     public String getCurrentTerm() {
-        LocalDate startDate = LocalDate.parse(START_DATE);
+        ActivityReportTermInfo activityReportTermInfo = activityReportTermInfoRepository.findFirstByOrderByStartDateAsc()
+                .orElseThrow(() -> new ResourceNotFound("활동보고서 기간이 존재하지 않습니다."));
+        LocalDate startDate = activityReportTermInfo.getStartDate();
         LocalDate currentDate = LocalDate.now();
 
         int gapOfDays = calculateGapOfDays(startDate, currentDate);
@@ -57,7 +59,7 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
 
     private int calculateGapOfDays(final LocalDate startDate, final LocalDate currentDate) {
         return (int) Duration.between(startDate.atStartOfDay(), currentDate.atStartOfDay())
-            .toDays();
+                .toDays();
     }
 
     private String calculateCurrentTerm(final int days) {

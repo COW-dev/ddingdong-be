@@ -16,6 +16,7 @@ spring:
     properties:
       hibernate:
     defer-datasource-initialization: false
+    open-in-view: false
 
   sql:
     init:

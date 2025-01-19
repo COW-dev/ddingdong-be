@@ -62,7 +62,7 @@ public class VodProcessingJob extends BaseEntity {
         return this.convertJobStatus == ConvertJobStatus.COMPLETE || this.convertJobStatus == ConvertJobStatus.ERROR;
     }
 
-    public boolean isCompleteNotification() {
-        return this.vodProcessingNotification.getVodNotificationStatus() == VodNotificationStatus.COMPLETED;
+    public boolean isCompleted() {
+        return this.convertJobStatus == ConvertJobStatus.COMPLETE;
     }
 }

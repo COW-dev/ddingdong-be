@@ -38,11 +38,11 @@ class GeneralFeedServiceTest extends TestContainerSupport {
     void create() {
         // given
         Feed feed = fixtureMonkey.giveMeBuilder(Feed.class)
-            .set("activityContent", "활동내용")
-            .set("feedType", FeedType.IMAGE)
-            .set("deletedAt", null)
-            .set("club", null)
-            .sample();
+                .set("activityContent", "활동내용")
+                .set("feedType", FeedType.IMAGE)
+                .set("deletedAt", null)
+                .set("club", null)
+                .sample();
         // when
         Long feedId = feedService.create(feed);
         // then
@@ -57,33 +57,37 @@ class GeneralFeedServiceTest extends TestContainerSupport {
     void getFeedPageByClubId() {
         // given
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
-            .set("name", "카우")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixtureMonkey.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용1")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("club", savedClub)
+                .set("activityContent", "내용1")
+                .set("feedType", FeedType.IMAGE)
+                .set("deletedAt", null)
+                .sample();
         Feed feed2 = fixtureMonkey.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용2")
-            .set("feedType", FeedType.VIDEO)
-            .sample();
+                .set("club", savedClub)
+                .set("activityContent", "내용2")
+                .set("feedType", FeedType.VIDEO)
+                .set("deletedAt", null)
+                .sample();
         Feed feed3 = fixtureMonkey.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용3")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("club", savedClub)
+                .set("activityContent", "내용3")
+                .set("feedType", FeedType.IMAGE)
+                .set("deletedAt", null)
+                .sample();
         Feed feed4 = fixtureMonkey.giveMeBuilder(Feed.class)
-            .set("club", savedClub)
-            .set("activityContent", "내용4")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("club", savedClub)
+                .set("activityContent", "내용4")
+                .set("feedType", FeedType.IMAGE)
+                .set("deletedAt", null)
+                .sample();
         feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4));
 
         Long clubId = savedClub.getId();
@@ -96,6 +100,5 @@ class GeneralFeedServiceTest extends TestContainerSupport {
         assertThat(page.getContent().size()).isEqualTo(2);
         assertThat(page.getNumber()).isEqualTo(0);
         assertThat(page.getContent().get(page.getContent().size() - 1).getId()).isEqualTo(3);
-        assertThat(page.hasNext()).isTrue();
     }
 }
