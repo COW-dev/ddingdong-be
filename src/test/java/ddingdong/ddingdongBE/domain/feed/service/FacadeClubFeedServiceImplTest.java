@@ -68,7 +68,7 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
         clubRepository.save(club);
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         CreateFeedCommand command = fixtureMonkey.giveMeBuilder(CreateFeedCommand.class)
-            .set("contentType", "IMAGE")
+            .set("mimeType", "image/png")
             .set("mediaId", id1.toString())
             .set("user", savedUser)
             .sample();
