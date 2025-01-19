@@ -27,14 +27,7 @@ public class FacadeFeedService {
 
   public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
-    List<Feed> completeFeeds = feedPage.getContent().stream()
-        .filter(feed -> {
-          if (feed.isVideo()) {
-            VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
-            return vodProcessingJob.isCompleteNotification();
-          }
-          return true;
-        }).toList();
+    List<Feed> completeFeeds = feedPage.getContent().stream().filter(this::isComplete).toList();
 
     List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
     PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds.get(completeFeeds.size() -1).getId(), feedPage.hasNext());
@@ -57,5 +50,17 @@ public class FacadeFeedService {
     ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
     FeedFileUrlQuery feedFileUrlQuery = feedFileService.extractFeedFileInfo(feed);
     return FeedQuery.of(feed, clubProfileQuery, feedFileUrlQuery);
+  }
+
+  private boolean isComplete(Feed feed) {
+    if (feed.isImage()) {
+      return true;
+    }
+
+    VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
+    if (vodProcessingJob == null) {
+      return false;
+    }
+    return vodProcessingJob.isCompleteNotification();
   }
 }

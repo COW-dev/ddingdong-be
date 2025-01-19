@@ -73,30 +73,37 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
         Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
-        List<Feed> completeFeeds = feedPage.getContent().stream()
-            .filter(feed -> {
-                if (feed.isVideo()) {
-                    VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
-                    return vodProcessingJob.isCompleteNotification();
-                }
-                return true;
-            }).toList();
+        List<Feed> completeFeeds = feedPage.getContent().stream().filter(this::isComplete).toList();
 
-        List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo).toList();
-        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds.get(completeFeeds.size() -1).getId(), feedPage.hasNext());
+        List<FeedListQuery> feedListQueries = completeFeeds.stream().map(feedFileService::extractFeedThumbnailInfo)
+            .toList();
+        PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds.get(completeFeeds.size() - 1).getId(),
+            feedPage.hasNext());
 
         return MyFeedPageQuery.of(feedListQueries, pagingQuery);
+    }
+
+    private boolean isComplete(Feed feed) {
+        if (feed.isImage()) {
+            return true;
+        }
+
+        VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
+        if (vodProcessingJob == null) {
+            return false;
+        }
+        return vodProcessingJob.isCompleteNotification();
     }
 
     private void checkVodProcessingJobAndNotify(Feed feed) {
         VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
         if (vodProcessingJob != null && vodProcessingJob.isPossibleNotify()) {
             SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
-                    "vod-processing",
-                    new SseVodProcessingNotificationDto(
-                            vodProcessingJob.getVodProcessingNotification().getId(),
-                            vodProcessingJob.getConvertJobStatus()),
-                    LocalDateTime.now()
+                "vod-processing",
+                new SseVodProcessingNotificationDto(
+                    vodProcessingJob.getVodProcessingNotification().getId(),
+                    vodProcessingJob.getConvertJobStatus()),
+                LocalDateTime.now()
             );
             sseConnectionService.sendVodProcessingNotification(vodProcessingJob, sseEvent);
         }
