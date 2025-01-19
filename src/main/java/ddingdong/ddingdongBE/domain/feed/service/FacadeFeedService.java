@@ -22,7 +22,6 @@ public class FacadeFeedService {
   private final FeedService feedService;
   private final FeedFileService feedFileService;
 
-
   public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
     Slice<Feed> feedPage = feedService.getFeedPageByClubId(clubId, size, currentCursorId);
     List<Feed> feeds = feedPage.getContent();
