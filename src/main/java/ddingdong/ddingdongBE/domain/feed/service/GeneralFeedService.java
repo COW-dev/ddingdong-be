@@ -58,7 +58,7 @@ public class GeneralFeedService implements FeedService {
     private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
         List<Feed> content = new ArrayList<>(originalSlice.getContent());
         if (content.isEmpty()) {
-            throw new ResourceNotFound("Feed 페이지 내 콘텐츠를 찾을 수 없습니다.");
+            return null;
         }
 
         boolean hasNext = content.size() > size;
