@@ -33,6 +33,7 @@ class FacadeUserQuestionServiceImplTest extends TestContainerSupport {
                 .setNotNull("question")
                 .setNotNull("reply")
                 .setNotNull("createdAt")
+                .setNotNull("deletedAt")
                 .sampleList(5);
         questionRepository.saveAll(questions);
 
