@@ -50,4 +50,14 @@ public enum ContentType {
         return OCTET_STREAM;
     }
 
+
+    public static ContentType fromMimeType(String mimeType) {
+        String lowerExtension = mimeType.substring(mimeType.lastIndexOf("/") + 1).toLowerCase();
+        for (ContentType contentType : values()) {
+            if (contentType.extensions.contains(lowerExtension)) {
+                return contentType;
+            }
+        }
+        return OCTET_STREAM;
+    }
 }

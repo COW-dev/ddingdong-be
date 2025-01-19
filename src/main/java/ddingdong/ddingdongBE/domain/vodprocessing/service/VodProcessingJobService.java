@@ -12,4 +12,5 @@ public interface VodProcessingJobService {
 
     VodProcessingJob getByVideoFeedId(Long videoFeedId);
 
+    VodProcessingJob findByVideoFeedId(Long id);
 }

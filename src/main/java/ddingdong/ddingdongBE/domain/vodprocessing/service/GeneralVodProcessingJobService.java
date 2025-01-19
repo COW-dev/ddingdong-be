@@ -44,4 +44,12 @@ public class GeneralVodProcessingJobService implements VodProcessingJobService {
                 .orElseThrow(() -> new ResourceNotFound(
                         "VodProcessingJob(videoFeedId=" + videoFeedId + ")를 찾을 수 없습니다."));
     }
+
+    @Override
+    public VodProcessingJob findByVideoFeedId(Long videoFeedId) {
+        return vodProcessingJobRepository.findFirstByFileMetaDataEntityIdAndDomainType(
+                videoFeedId,
+                DomainType.FEED_VIDEO)
+            .orElse(null);
+    }
 }

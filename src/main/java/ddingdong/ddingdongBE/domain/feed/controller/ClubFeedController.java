@@ -4,7 +4,9 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.feed.api.ClubFeedApi;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.request.CreateFeedRequest;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.request.UpdateFeedRequest;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.MyFeedPageResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FacadeClubFeedService;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.MyFeedPageQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,5 +37,12 @@ public class ClubFeedController implements ClubFeedApi {
     @Override
     public void deleteFeed(Long feedId) {
         facadeClubFeedService.delete(feedId);
+    }
+
+    @Override
+    public MyFeedPageResponse getMyFeedPage(PrincipalDetails principalDetails, int size, Long currentCursorId) {
+        User user = principalDetails.getUser();
+        MyFeedPageQuery query = facadeClubFeedService.getMyFeedPage(user, size, currentCursorId);
+        return MyFeedPageResponse.from(query);
     }
 }
