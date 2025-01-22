@@ -23,7 +23,7 @@ public record ClubScoreHistoryListResponse(
 
     public static ClubScoreHistoryListResponse from(ClubScoreHistoryListQuery query) {
         return new ClubScoreHistoryListResponse(
-                query.club().getScore().getValue(),
+                query.clubTotalScore(),
                 query.scoreHistories().stream()
                         .map(ScoreHistoryResponse::from)
                         .toList()

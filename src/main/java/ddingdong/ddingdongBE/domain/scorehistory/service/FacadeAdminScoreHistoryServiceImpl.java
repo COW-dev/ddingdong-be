@@ -34,7 +34,7 @@ public class FacadeAdminScoreHistoryServiceImpl implements FacadeAdminScoreHisto
     public AdminClubScoreHistoryListQuery findAllByClubId(Long clubId) {
         Club club = clubService.getById(clubId);
         List<ScoreHistory> scoreHistories = scoreHistoryService.findAllByClubId(clubId);
-        return AdminClubScoreHistoryListQuery.of(club, scoreHistories);
+        return AdminClubScoreHistoryListQuery.of(club.getScore().getValue(), scoreHistories);
     }
 
     private BigDecimal roundToThirdPoint(BigDecimal value) {
