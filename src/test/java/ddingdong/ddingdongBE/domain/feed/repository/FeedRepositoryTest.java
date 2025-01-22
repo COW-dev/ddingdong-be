@@ -9,9 +9,17 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
+import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
+import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
+import ddingdong.ddingdongBE.domain.vodprocessing.repository.VodProcessingJobRepository;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,6 +33,12 @@ class FeedRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
     private FeedRepository feedRepository;
+
+    @Autowired
+    private FileMetaDataRepository fileMetaDataRepository;
+
+    @Autowired
+    private VodProcessingJobRepository vodProcessingJobRepository;
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
@@ -41,57 +55,63 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void findNewestPerClubPage() {
         // given
         Club club1 = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우1")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우1")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club club2 = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우2")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우2")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club club3 = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우3")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우3")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club savedClub1 = clubRepository.save(club1);
         Club savedClub2 = clubRepository.save(club2);
         Club savedClub3 = clubRepository.save(club3);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 1L)
-            .set("club", savedClub1)
-            .set("activityContent", "내용 1 올드")
-            .sample();
+                .set("id", 1L)
+                .set("club", savedClub1)
+                .set("activityContent", "내용 1 올드")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 2L)
-            .set("club", savedClub1)
-            .set("activityContent", "내용 1 최신")
-            .sample();
+                .set("id", 2L)
+                .set("club", savedClub1)
+                .set("activityContent", "내용 1 최신")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 3L)
-            .set("club", savedClub2)
-            .set("activityContent", "내용 2 올드")
-            .sample();
+                .set("id", 3L)
+                .set("club", savedClub2)
+                .set("activityContent", "내용 2 올드")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 4L)
-            .set("club", savedClub2)
-            .set("activityContent", "내용 2 최신")
-            .sample();
+                .set("id", 4L)
+                .set("club", savedClub2)
+                .set("activityContent", "내용 2 최신")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed5 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 5L)
-            .set("club", savedClub3)
-            .set("activityContent", "내용 3 올드")
-            .sample();
+                .set("id", 5L)
+                .set("club", savedClub3)
+                .set("activityContent", "내용 3 올드")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed6 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 6L)
-            .set("club", savedClub3)
-            .set("activityContent", "내용 3 최신")
-            .sample();
+                .set("id", 6L)
+                .set("club", savedClub3)
+                .set("activityContent", "내용 3 최신")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
 
         int size = 2;
@@ -111,37 +131,37 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void 페이지네이션_남은_개수가_사이즈보다_적은경우() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 1L)
-            .set("club", savedClub)
-            .set("activityContent", "내용1")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 1L)
+                .set("club", savedClub)
+                .set("activityContent", "내용1")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 2L)
-            .set("club", savedClub)
-            .set("activityContent", "내용2")
-            .set("feedType", FeedType.VIDEO)
-            .sample();
+                .set("id", 2L)
+                .set("club", savedClub)
+                .set("activityContent", "내용2")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 3L)
-            .set("club", savedClub)
-            .set("activityContent", "내용3")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 3L)
+                .set("club", savedClub)
+                .set("activityContent", "내용3")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 4L)
-            .set("club", savedClub)
-            .set("activityContent", "내용4")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 4L)
+                .set("club", savedClub)
+                .set("activityContent", "내용4")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4));
 
         Long clubId = savedClub.getId();
@@ -161,37 +181,37 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void findPageByClubIdOrderById() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
-            .set("name", "카우")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .sample();
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 1L)
-            .set("club", savedClub)
-            .set("activityContent", "내용1")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 1L)
+                .set("club", savedClub)
+                .set("activityContent", "내용1")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 2L)
-            .set("club", savedClub)
-            .set("activityContent", "내용2")
-            .set("feedType", FeedType.VIDEO)
-            .sample();
+                .set("id", 2L)
+                .set("club", savedClub)
+                .set("activityContent", "내용2")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 3L)
-            .set("club", savedClub)
-            .set("activityContent", "내용3")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 3L)
+                .set("club", savedClub)
+                .set("activityContent", "내용3")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-            .set("id", 4L)
-            .set("club", savedClub)
-            .set("activityContent", "내용4")
-            .set("feedType", FeedType.IMAGE)
-            .sample();
+                .set("id", 4L)
+                .set("club", savedClub)
+                .set("activityContent", "내용4")
+                .set("feedType", FeedType.IMAGE)
+                .sample();
         feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4));
 
         Long clubId = savedClub.getId();
@@ -206,5 +226,149 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed3.getActivityContent());
         assertThat(feeds.get(1).getId()).isEqualTo(feed2.getId());
         assertThat(feeds.get(1).getActivityContent()).isEqualTo(feed2.getActivityContent());
+    }
+
+    @DisplayName("동아리 피드 목록 조회 - VIDEO 피드일 경우 vodJopProcessingJob 상태가 COMPLETE인것만 조회 ")
+    @Test
+    void 동아리_피드_목록_조회() {
+        // given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
+        Club savedClub = clubRepository.save(club);
+
+        Feed feed1 = fixture.giveMeBuilder(Feed.class)
+                .set("id", 1L)
+                .set("club", savedClub)
+                .set("activityContent", "내용1")
+                .set("feedType", FeedType.VIDEO)
+                .sample();
+        Feed feed2 = fixture.giveMeBuilder(Feed.class)
+                .set("id", 2L)
+                .set("club", savedClub)
+                .set("activityContent", "내용2")
+                .set("feedType", FeedType.VIDEO)
+                .sample();
+        feedRepository.saveAll(List.of(feed1, feed2));
+
+        UUID id = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        DomainType domainType = DomainType.FEED_VIDEO;
+        FileMetaData fileMetaData = FileMetaData.builder()
+                .id(id)
+                .fileKey("123")
+                .fileName("1234.png")
+                .domainType(domainType)
+                .entityId(feed1.getId())
+                .fileStatus(FileStatus.COUPLED)
+                .build();
+        FileMetaData fileMetaData2 = FileMetaData.builder()
+                .id(id2)
+                .fileKey("123")
+                .fileName("1234.png")
+                .domainType(domainType)
+                .entityId(feed2.getId())
+                .fileStatus(FileStatus.COUPLED)
+                .build();
+        fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
+
+        VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
+                .set("id", 1L)
+                .set("vodProcessingNotification", null)
+                .set("fileMetaData", fileMetaData)
+                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
+                .sample();
+        VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
+                .set("id", 2L)
+                .set("vodProcessingNotification", null)
+                .set("fileMetaData", fileMetaData2)
+                .set("convertJobStatus", ConvertJobStatus.PENDING)
+                .sample();
+        vodProcessingJobRepository.saveAll(List.of(vodProcessingJob1, vodProcessingJob2));
+        Long clubId = savedClub.getId();
+        int size = 2;
+        Long currentCursorId = -1L;
+        // when
+        Slice<Feed> findFeedsByClub = feedRepository.findPageByClubIdOrderById(clubId, size, currentCursorId);
+
+        // then
+        List<Feed> feeds = findFeedsByClub.getContent();
+        assertThat(feeds.size()).isEqualTo(1);
+        assertThat(feeds.get(0).getId()).isEqualTo(1);
+    }
+
+    @DisplayName("모든 동아리 최신 피드 조회 - VIDEO 피드일 경우 vodJopProcessingJob 상태가 COMPLETE인것만 조회 ")
+    @Test
+    void 모든_동아리_최신_피드_조회() {
+        // given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
+        Club savedClub = clubRepository.save(club);
+
+        Feed feed1 = fixture.giveMeBuilder(Feed.class)
+                .set("id", 1L)
+                .set("club", savedClub)
+                .set("activityContent", "내용1")
+                .set("feedType", FeedType.VIDEO)
+                .sample();
+        Feed feed2 = fixture.giveMeBuilder(Feed.class)
+                .set("id", 2L)
+                .set("club", savedClub)
+                .set("activityContent", "내용2")
+                .set("feedType", FeedType.VIDEO)
+                .sample();
+        feedRepository.saveAll(List.of(feed1, feed2));
+
+        UUID id = UUID.randomUUID();
+        UUID id2 = UUID.randomUUID();
+        DomainType domainType = DomainType.FEED_VIDEO;
+        FileMetaData fileMetaData = FileMetaData.builder()
+                .id(id)
+                .fileKey("123")
+                .fileName("1234.png")
+                .domainType(domainType)
+                .entityId(feed1.getId())
+                .fileStatus(FileStatus.COUPLED)
+                .build();
+        FileMetaData fileMetaData2 = FileMetaData.builder()
+                .id(id2)
+                .fileKey("123")
+                .fileName("1234.png")
+                .domainType(domainType)
+                .entityId(feed2.getId())
+                .fileStatus(FileStatus.COUPLED)
+                .build();
+        fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
+
+        VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
+                .set("id", 1L)
+                .set("vodProcessingNotification", null)
+                .set("fileMetaData", fileMetaData)
+                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
+                .sample();
+        VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
+                .set("id", 2L)
+                .set("vodProcessingNotification", null)
+                .set("fileMetaData", fileMetaData2)
+                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
+                .sample();
+        vodProcessingJobRepository.saveAll(List.of(vodProcessingJob1, vodProcessingJob2));
+
+        int size = 2;
+        Long currentCursorId = -1L;
+        // when
+        Slice<Feed> findFeedsByClub = feedRepository.findNewestPerClubPage(size, currentCursorId);
+
+        // then
+        List<Feed> feeds = findFeedsByClub.getContent();
+        assertThat(feeds.size()).isEqualTo(1);
+        assertThat(feeds.get(0).getId()).isEqualTo(2);
     }
 }
