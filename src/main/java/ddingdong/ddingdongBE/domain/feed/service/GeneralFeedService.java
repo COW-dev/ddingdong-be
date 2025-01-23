@@ -3,12 +3,9 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
-import ddingdong.ddingdongBE.domain.vodprocessing.service.VodProcessingJobService;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Slice;
@@ -22,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class GeneralFeedService implements FeedService {
 
     private final FeedRepository feedRepository;
-    private final VodProcessingJobService vodProcessingJobService;
 
     @Override
     public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {
@@ -61,9 +57,7 @@ public class GeneralFeedService implements FeedService {
     }
 
     private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
-        List<Feed> content = new ArrayList<>(originalSlice.getContent()).stream()
-                .filter(this::isComplete)
-                .collect(Collectors.toList());
+        List<Feed> content = new ArrayList<>(originalSlice.getContent());
         if (content.isEmpty()) {
             return null;
         }
@@ -75,17 +69,5 @@ public class GeneralFeedService implements FeedService {
         }
 
         return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
-    }
-
-    private boolean isComplete(Feed feed) {
-        if (feed.isImage()) {
-            return true;
-        }
-
-        VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
-        if (vodProcessingJob == null) {
-            return false;
-        }
-        return vodProcessingJob.isCompleted();
     }
 }
