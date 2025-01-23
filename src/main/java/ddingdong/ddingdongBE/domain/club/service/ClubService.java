@@ -17,6 +17,5 @@ public interface ClubService {
 
     void delete(Long clubId);
 
-
-
+    Club getByUserIdWithFetch(Long userId);
 }
