@@ -34,10 +34,8 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
 
     @Override
     public AllClubMemberInfoQuery getAllMyClubMember(Long userId) {
-        Club club = clubService.getByUserId(userId);
-        List<ClubMember> clubMembers = club.getClubMembers();
-        clubMembers.size(); //프록시 객체 초기화
-        return AllClubMemberInfoQuery.of(club.getName(), clubMembers);
+        Club club = clubService.getByUserIdWithFetch(userId);
+        return AllClubMemberInfoQuery.of(club.getName(), club.getClubMembers());
     }
 
     @Override
