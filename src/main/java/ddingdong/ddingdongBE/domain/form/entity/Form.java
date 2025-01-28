@@ -31,7 +31,7 @@ public class Form {
     private Club club;
 
     @Builder
-    public Form(String title, String description, Club club) {
+    private Form(String title, String description, Club club) {
         this.title = title;
         this.description = description;
         this.club = club;

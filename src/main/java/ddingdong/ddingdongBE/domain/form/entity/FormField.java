@@ -49,7 +49,7 @@ public class FormField {
     private Form form;
 
     @Builder
-    public FormField(String question, FieldType fieldType, boolean required, int order, String section,
+    private FormField(String question, FieldType fieldType, boolean required, int order, String section,
             List<String> options, Form form) {
         this.question = question;
         this.fieldType = fieldType;
