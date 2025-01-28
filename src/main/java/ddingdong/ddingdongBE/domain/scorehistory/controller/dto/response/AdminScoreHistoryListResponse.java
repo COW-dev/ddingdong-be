@@ -24,7 +24,7 @@ public record AdminScoreHistoryListResponse(
 
     public static AdminScoreHistoryListResponse from(AdminClubScoreHistoryListQuery query) {
         return new AdminScoreHistoryListResponse(
-                query.club().getScore().getValue(),
+                query.clubTotalScore(),
                 query.scoreHistories().stream()
                         .map(ScoreHistoryResponse::from)
                         .toList()

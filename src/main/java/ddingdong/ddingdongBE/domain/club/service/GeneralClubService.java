@@ -5,12 +5,14 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
+@Slf4j
 public class GeneralClubService implements ClubService {
 
     private final ClubRepository clubRepository;
@@ -35,6 +37,11 @@ public class GeneralClubService implements ClubService {
     }
 
     @Override
+    public Club getByUserIdWithFetch(Long userId) {
+        return clubRepository.findEntityGraphByUserId(userId)
+                .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + ")를 찾을 수 없습니다."));    }
+
+    @Override
     public List<Club> findAll() {
         return clubRepository.findAll();
     }
@@ -51,5 +58,4 @@ public class GeneralClubService implements ClubService {
         Club club = getById(clubId);
         clubRepository.delete(club);
     }
-
 }
