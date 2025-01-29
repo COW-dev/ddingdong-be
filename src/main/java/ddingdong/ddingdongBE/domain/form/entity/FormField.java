@@ -34,7 +34,7 @@ public class FormField extends BaseEntity {
     private boolean required;
 
     @Column(nullable = false)
-    private int order;
+    private int fieldOrder;
 
     @Column(nullable = false)
     private String section;
@@ -50,12 +50,12 @@ public class FormField extends BaseEntity {
     private Form form;
 
     @Builder
-    private FormField(String question, FieldType fieldType, boolean required, int order, String section,
+    private FormField(String question, FieldType fieldType, boolean required, int fieldOrder, String section,
             List<String> options, Form form) {
         this.question = question;
         this.fieldType = fieldType;
         this.required = required;
-        this.order = order;
+        this.fieldOrder = fieldOrder;
         this.section = section;
         this.options = options;
         this.form = form;

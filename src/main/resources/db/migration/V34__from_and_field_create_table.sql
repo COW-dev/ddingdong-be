@@ -18,7 +18,7 @@ CREATE TABLE form_field
     question   VARCHAR(255) NOT NULL,
     field_type VARCHAR(50)  NOT NULL,
     required   BOOLEAN      NOT NULL,
-    `order`    INT          NOT NULL,
+    field_order    INT          NOT NULL,
     section    VARCHAR(255) NOT NULL,
     options    TEXT,
     form_id    BIGINT,
