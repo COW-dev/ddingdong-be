@@ -1,9 +1,12 @@
 CREATE TABLE form
 (
-    id          BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    title       VARCHAR(255) NOT NULL,
-    description VARCHAR(255),
-    club_id     BIGINT,
+    id            BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    title         VARCHAR(255) NOT NULL,
+    description   VARCHAR(255),
+    start_date    DATE         NOT NULL,
+    end_date      DATE         NOT NULL,
+    has_interview BOOLEAN      NOT NULL,
+    club_id       BIGINT,
     CONSTRAINT fk_form_club FOREIGN KEY (club_id) REFERENCES club (id) ON DELETE CASCADE
 );
 
