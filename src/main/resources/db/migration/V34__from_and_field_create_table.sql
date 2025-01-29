@@ -7,6 +7,8 @@ CREATE TABLE form
     end_date      DATE         NOT NULL,
     has_interview BOOLEAN      NOT NULL,
     club_id       BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL,
     CONSTRAINT fk_form_club FOREIGN KEY (club_id) REFERENCES club (id) ON DELETE CASCADE
 );
 
@@ -20,5 +22,7 @@ CREATE TABLE form_field
     section    VARCHAR(255) NOT NULL,
     options    TEXT,
     form_id    BIGINT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL,
     CONSTRAINT fk_form_field_form FOREIGN KEY (form_id) REFERENCES form (id) ON DELETE CASCADE
 );
