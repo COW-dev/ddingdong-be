@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.entity;
 
+import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class FormField {
+public class FormField extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

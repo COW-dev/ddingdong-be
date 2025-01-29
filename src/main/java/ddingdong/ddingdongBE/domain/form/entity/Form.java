@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.entity;
 
+import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class Form {
+public class Form extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
