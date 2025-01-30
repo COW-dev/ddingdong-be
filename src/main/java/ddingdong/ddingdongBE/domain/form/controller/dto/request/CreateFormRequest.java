@@ -37,21 +37,26 @@ public record CreateFormRequest(
 
     record CreateFormFieldRequest(
             @Schema(description = "폼지 질문", example = "우리 동아리 들어올겁니까?")
+            @NotNull(message = "질문는 null이 될 수 없습니다.")
             String question,
 
             @Schema(description = "질문 종류", example = "CHECK_BOX")
+            @NotNull(message = "질문 종류는 null이 될 수 없습니다.")
             FieldType type,
 
             @Schema(description = "질문의 선택리스트", example = "[지문1이다., 지문2이다., 지문3이다.]")
             List<String> options,
 
             @Schema(description = "필수여부", example = "true")
+            @NotNull(message = "필수여부는 null이 될 수 없습니다.")
             boolean required,
 
             @Schema(description = "질문 순서", example = "1")
+            @NotNull(message = "질문 순서는 null이 될 수 없습니다.")
             int order,
 
             @Schema(description = "질문 섹션 종류", example = "공통")
+            @NotNull(message = "질문 섹션종류는 null이 될 수 없습니다.")
             String section
     ) {
 
