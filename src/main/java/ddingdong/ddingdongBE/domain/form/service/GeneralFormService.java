@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,5 +18,11 @@ public class GeneralFormService implements FormService{
     @Override
     public Form create(Form form) {
         return formRepository.save(form);
+    }
+
+    @Override
+    public Form getById(Long formId) {
+        return formRepository.findById(formId)
+                .orElseThrow(() -> new ResourceNotFound("Form(formId=" + formId + ")를 찾을 수 없습니다."));
     }
 }
