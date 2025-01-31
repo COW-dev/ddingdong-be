@@ -26,6 +26,7 @@ public class GeneralFormFieldService implements FormFieldService {
         return formFieldRepository.findAllByForm(form);
     }
 
+    @Transactional
     @Override
     public void deleteAll(List<FormField> originFormFields) {
         formFieldRepository.deleteAll(originFormFields);
