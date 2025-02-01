@@ -29,6 +29,7 @@ public record CreateFormResponseCommand(
                     .value(value)
                     .valueType(valueType)
                     .formField(formField)
+                    .formResponse(formResponse)
                     .build();
         }
     }
