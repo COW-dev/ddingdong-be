@@ -32,4 +32,10 @@ public class CentralFormController implements CentralFormApi {
     ) {
         facadeCentralFormService.updateForm(updateFormRequest.toCommand(formId));
     }
+
+    @Override
+    public void deleteForm(Long formId, PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        facadeCentralFormService.deleteForm(formId, user);
+    }
 }

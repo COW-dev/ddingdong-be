@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
@@ -8,7 +9,9 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +48,21 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService{
 
         List<FormField> updateFormFields = toUpdateFormFields(originform, updateFormCommand.formFieldCommands());
         formFieldService.createAll(updateFormFields);
+    }
+
+    @Transactional
+    @Override
+    public void deleteForm(Long formId, User user) {
+        Club club = clubService.getByUserId(user.getId());
+        Form form = formService.getById(formId);
+        validateEqualsClub(club, form);
+        formService.delete(form); //테이블 생성 시 외래 키에 cascade 설정하여 formField 삭제도 자동으로 됨.
+    }
+
+    private void validateEqualsClub(Club club, Form form) {
+        if (!Objects.equals(club.getId(), form.getClub().getId())) {
+            throw new NonHaveAuthority();
+        }
     }
 
     private List<FormField> toUpdateFormFields(Form originform, List<UpdateFormFieldCommand> updateFormFieldCommands) {
