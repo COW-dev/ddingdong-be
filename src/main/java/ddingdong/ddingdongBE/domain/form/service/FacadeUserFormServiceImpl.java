@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormResponse;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
     private final FormResponseService formResponseService;
     private final FormAnswerService formAnswerService;
     private final FormService formService;
+    private final FormFieldService formFieldService;
 
     @Transactional
     @Override
@@ -32,7 +34,11 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
 
     private List<FormAnswer> toFormAnswers(FormResponse savedFormResponse, List<CreateFormResponseCommand.CreateFormAnswerCommand> createFormAnswerCommands) {
         return createFormAnswerCommands.stream()
-                .map(formAnswerCommand -> formAnswerCommand.toEntity(savedFormResponse))
+                .map(formAnswerCommand -> {
+                    FormField formField = formFieldService.findById(formAnswerCommand.fieldId())
+                            .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + formAnswerCommand.fieldId()));
+                    return formAnswerCommand.toEntity(savedFormResponse, formField);
+                })
                 .toList();
     }
 }

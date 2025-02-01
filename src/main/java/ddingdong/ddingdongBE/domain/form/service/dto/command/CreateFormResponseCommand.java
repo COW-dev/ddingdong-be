@@ -20,15 +20,15 @@ public record CreateFormResponseCommand(
 ) {
     @Builder
     public record CreateFormAnswerCommand(
-            FormField formField,
+            Long fieldId,
             String value,
             String valueType
     ) {
-        public FormAnswer toEntity(FormResponse formResponse) {
+        public FormAnswer toEntity(FormResponse formResponse, FormField formField) {
             return FormAnswer.builder()
-                    .formField(formField)
                     .value(value)
                     .valueType(valueType)
+                    .formField(formField)
                     .build();
         }
     }

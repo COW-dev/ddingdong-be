@@ -33,7 +33,7 @@ public record CreateFormResponseRequest(
             record CreateFormAnswerRequest(
                     @NotNull(message = "질문 id는 null이 될 수 없습니다.")
                     @Schema(description = "질문 id", example = "1")
-                    FormField formField,
+                    Long fieldId,
 
                     @Schema(description = "답변 값")
                     String value,
@@ -45,7 +45,7 @@ public record CreateFormResponseRequest(
                     ) {
                 public CreateFormAnswerCommand toCommand() {
                     return CreateFormAnswerCommand.builder()
-                            .formField(formField)
+                            .fieldId(fieldId)
                             .value(value)
                             .valueType(valueType)
                             .build();

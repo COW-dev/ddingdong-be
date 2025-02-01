@@ -3,6 +3,8 @@ package ddingdong.ddingdongBE.domain.form.service;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,5 +20,11 @@ public class GeneralFormFieldService implements FormFieldService {
     @Override
     public void createAll(List<FormField> formFields) {
         formFieldRepository.saveAll(formFields);
+    }
+
+    @Transactional
+    @Override
+    public Optional<FormField> findById(Long id) {
+        return formFieldRepository.findById(id);
     }
 }
