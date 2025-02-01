@@ -32,13 +32,13 @@ public class FormResponse extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private ApplicationStatus status;
+    private FormResponseStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
 
     @Builder
-    private FormResponse(LocalDateTime submittedAt, String name, String studentNumber, String department, ApplicationStatus status, Form form) {
+    private FormResponse(LocalDateTime submittedAt, String name, String studentNumber, String department, FormResponseStatus status, Form form) {
         this.submittedAt = submittedAt;
         this.name = name;
         this.studentNumber = studentNumber;
