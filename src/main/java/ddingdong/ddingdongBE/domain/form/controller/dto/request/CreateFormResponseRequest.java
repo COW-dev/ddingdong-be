@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.form.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
