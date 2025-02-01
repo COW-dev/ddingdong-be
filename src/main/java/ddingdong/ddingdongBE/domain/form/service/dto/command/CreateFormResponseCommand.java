@@ -11,6 +11,7 @@ import java.util.List;
 
 @Builder
 public record CreateFormResponseCommand(
+        Form form,
         LocalDateTime submittedAt,
         String name,
         String studentNumber,

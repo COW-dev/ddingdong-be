@@ -18,4 +18,10 @@ public class GeneralFormService implements FormService{
     public Form create(Form form) {
         return formRepository.save(form);
     }
+
+    @Transactional
+    @Override
+    public Form getById(Long id) {
+        return formRepository.getById(id);
+    }
 }

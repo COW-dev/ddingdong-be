@@ -5,4 +5,6 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 public interface FormService {
 
     Form create(Form form);
+
+    Form getById(Long id);
 }
