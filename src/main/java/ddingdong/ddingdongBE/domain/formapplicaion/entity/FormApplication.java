@@ -27,7 +27,7 @@ public class FormApplication extends BaseEntity {
     private String department;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(nullable = false, name = "status")
     private FormApplicationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
