@@ -15,7 +15,7 @@ public class UserFormController implements UserFormApi {
     @Override
     public void createFormResponse(CreateFormApplicationRequest createFormApplicationRequest) {
 
-        facadeUserFormService.createFormResponse(createFormApplicationRequest.toCommand());
+        facadeUserFormService.createFormApplication(createFormApplicationRequest.toCommand());
 
     }
 }
