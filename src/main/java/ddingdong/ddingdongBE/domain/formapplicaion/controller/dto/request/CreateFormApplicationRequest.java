@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
 
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -35,7 +36,7 @@ public record CreateFormApplicationRequest(
 
                     @NotNull(message = "질문 타입은 null이 될 수 없습니다.")
                     @Schema(description = "질문 타입", example = "RADIO")
-                    String valueType
+                    FieldType valueType
 
                     ) {
                 public CreateFormAnswerCommand toCommand() {

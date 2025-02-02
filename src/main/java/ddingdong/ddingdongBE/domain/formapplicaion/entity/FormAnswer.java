@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -20,8 +21,9 @@ public class FormAnswer extends BaseEntity {
     @Column(nullable = false)
     private String value;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String valueType;
+    private FieldType valueType;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private FormApplication formApplication;
@@ -30,7 +32,7 @@ public class FormAnswer extends BaseEntity {
     private FormField formField;
 
     @Builder
-    private FormAnswer(String value, String valueType, FormApplication formApplication, FormField formField) {
+    private FormAnswer(String value, FieldType valueType, FormApplication formApplication, FormField formField) {
         this.value = value;
         this.valueType = valueType;
         this.formApplication = formApplication;

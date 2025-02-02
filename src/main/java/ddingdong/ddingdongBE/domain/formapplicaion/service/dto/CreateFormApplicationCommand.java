@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.service.dto;
 
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
@@ -20,7 +21,7 @@ public record CreateFormApplicationCommand(
     public record CreateFormAnswerCommand(
             Long fieldId,
             String value,
-            String valueType
+            FieldType valueType
     ) {
         public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
             return FormAnswer.builder()
