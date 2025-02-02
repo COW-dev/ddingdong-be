@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
 import lombok.Builder;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public record CreateFormApplicationCommand(
         String name,
         String studentNumber,
         String department,
+        FormApplicationStatus status,
         List<CreateFormAnswerCommand> formAnswerCommands
 ) {
     @Builder
@@ -38,6 +40,7 @@ public record CreateFormApplicationCommand(
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)
+                .status(status)
                 .form(form)
                 .build();
     }

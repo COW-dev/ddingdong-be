@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -56,6 +57,7 @@ public record CreateFormApplicationRequest(
                         .name(name)
                         .studentNumber(studentNumber)
                         .department(department)
+                        .status(FormApplicationStatus.SUBMITTED)
                         .formAnswerCommands(createFormAnswerCommands)
                         .build();
             }
