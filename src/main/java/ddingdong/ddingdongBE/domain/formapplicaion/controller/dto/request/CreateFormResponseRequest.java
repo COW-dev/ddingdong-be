@@ -1,18 +1,14 @@
-package ddingdong.ddingdongBE.domain.form.controller.dto.request;
+package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand.CreateFormAnswerCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormResponseCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormResponseCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 public record CreateFormResponseRequest(
-        @NotNull(message = "지원 일시는 null일 수 없습니다.")
-        @Schema(description = "지원 일시", example = "2025-01-01T00:00")
-        LocalDateTime submittedAt,
 
         @NotNull(message = "지원자 이름은 필수 입력 사항입니다.")
         @Schema(description = "지원자 이름", example = "김띵동")
@@ -56,7 +52,6 @@ public record CreateFormResponseRequest(
                         .map(CreateFormAnswerRequest::toCommand)
                         .toList();
                 return CreateFormResponseCommand.builder()
-                        .submittedAt(submittedAt)
                         .name(name)
                         .studentNumber(studentNumber)
                         .department(department)

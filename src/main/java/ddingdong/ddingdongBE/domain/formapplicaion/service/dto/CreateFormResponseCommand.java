@@ -1,18 +1,16 @@
-package ddingdong.ddingdongBE.domain.form.service.dto.command;
+package ddingdong.ddingdongBE.domain.formapplicaion.service.dto;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.form.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.form.entity.FormResponse;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormResponse;
 import lombok.Builder;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
 public record CreateFormResponseCommand(
         Form form,
-        LocalDateTime submittedAt,
         String name,
         String studentNumber,
         String department,
@@ -36,7 +34,6 @@ public record CreateFormResponseCommand(
 
     public FormResponse toEntity(Form form) {
         return FormResponse.builder()
-                .submittedAt(submittedAt)
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)

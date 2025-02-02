@@ -1,6 +1,6 @@
-package ddingdong.ddingdongBE.domain.form.repository;
+package ddingdong.ddingdongBE.domain.formapplicaion.repository;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {

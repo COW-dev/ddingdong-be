@@ -1,7 +1,7 @@
-package ddingdong.ddingdongBE.domain.form.service;
+package ddingdong.ddingdongBE.domain.formapplicaion.service;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormResponse;
-import ddingdong.ddingdongBE.domain.form.repository.FormResponseRepository;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormResponse;
+import ddingdong.ddingdongBE.domain.formapplicaion.repository.FormResponseRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,10 +1,12 @@
-package ddingdong.ddingdongBE.domain.form.service;
+package ddingdong.ddingdongBE.domain.formapplicaion.service;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.form.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.form.entity.FormResponse;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormResponseCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormResponse;
+import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
+import ddingdong.ddingdongBE.domain.form.service.FormService;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormResponseCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

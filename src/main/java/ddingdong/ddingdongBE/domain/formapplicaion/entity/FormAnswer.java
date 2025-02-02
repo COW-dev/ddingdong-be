@@ -1,6 +1,7 @@
-package ddingdong.ddingdongBE.domain.form.entity;
+package ddingdong.ddingdongBE.domain.formapplicaion.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
