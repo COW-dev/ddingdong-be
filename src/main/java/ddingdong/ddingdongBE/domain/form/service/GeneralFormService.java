@@ -19,7 +19,6 @@ public class GeneralFormService implements FormService{
         return formRepository.save(form);
     }
 
-    @Transactional
     @Override
     public Form getById(Long id) {
         return formRepository.getById(id);

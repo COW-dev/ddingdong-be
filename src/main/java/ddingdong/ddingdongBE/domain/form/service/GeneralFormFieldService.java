@@ -22,7 +22,6 @@ public class GeneralFormFieldService implements FormFieldService {
         formFieldRepository.saveAll(formFields);
     }
 
-    @Transactional
     @Override
     public Optional<FormField> findById(Long id) {
         return formFieldRepository.findById(id);

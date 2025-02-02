@@ -13,6 +13,7 @@ public class GeneralFormApplicationService implements FormApplicationService {
 
     private final FormApplicationRepository formApplicationRepository;
 
+    @Transactional
     @Override
     public FormApplication create(FormApplication formApplication) {
         return formApplicationRepository.save(formApplication);
