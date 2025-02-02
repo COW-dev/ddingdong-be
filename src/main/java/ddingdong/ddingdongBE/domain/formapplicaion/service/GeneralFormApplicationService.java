@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.service;
 
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplicaion.repository.FormResponseRepository;
+import ddingdong.ddingdongBE.domain.formapplicaion.repository.FormApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +11,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GeneralFormApplicationService implements FormApplicationService {
 
-    private final FormResponseRepository formResponseRepository;
+    private final FormApplicationRepository formApplicationRepository;
 
     @Override
     public FormApplication create(FormApplication formApplication) {
-        return formResponseRepository.save(formApplication);
+        return formApplicationRepository.save(formApplication);
     }
 
 }
