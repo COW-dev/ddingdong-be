@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.api;
 
-import ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request.CreateFormResponseRequest;
+import ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request.CreateFormApplicationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +19,6 @@ public interface UserFormApi {
     @ApiResponse(responseCode = "201", description = "지원하기 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/forms/{formId}/applications")
-    void createFormResponse(@Valid @RequestBody CreateFormResponseRequest request);
+    void createFormResponse(@Valid @RequestBody CreateFormApplicationRequest request);
 
 }

@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-public class FormResponse extends BaseEntity {
+public class FormApplication extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,13 +28,13 @@ public class FormResponse extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private FormResponseStatus status;
+    private FormApplicationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
 
     @Builder
-    private FormResponse(String name, String studentNumber, String department, FormResponseStatus status, Form form) {
+    private FormApplication(String name, String studentNumber, String department, FormApplicationStatus status, Form form) {
         this.name = name;
         this.studentNumber = studentNumber;
         this.department = department;

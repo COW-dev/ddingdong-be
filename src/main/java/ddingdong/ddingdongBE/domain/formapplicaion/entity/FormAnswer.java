@@ -24,16 +24,16 @@ public class FormAnswer extends BaseEntity {
     private String valueType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    private FormResponse formResponse;
+    private FormApplication formApplication;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private FormField formField;
 
     @Builder
-    private FormAnswer(String value, String valueType, FormResponse formResponse, FormField formField) {
+    private FormAnswer(String value, String valueType, FormApplication formApplication, FormField formField) {
         this.value = value;
         this.valueType = valueType;
-        this.formResponse = formResponse;
+        this.formApplication = formApplication;
         this.formField = formField;
     }
 

@@ -3,13 +3,13 @@ package ddingdong.ddingdongBE.domain.formapplicaion.service.dto;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormResponse;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
 import lombok.Builder;
 
 import java.util.List;
 
 @Builder
-public record CreateFormResponseCommand(
+public record CreateFormApplicationCommand(
         Form form,
         String name,
         String studentNumber,
@@ -22,18 +22,18 @@ public record CreateFormResponseCommand(
             String value,
             String valueType
     ) {
-        public FormAnswer toEntity(FormResponse formResponse, FormField formField) {
+        public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
             return FormAnswer.builder()
                     .value(value)
                     .valueType(valueType)
                     .formField(formField)
-                    .formResponse(formResponse)
+                    .formApplication(formApplication)
                     .build();
         }
     }
 
-    public FormResponse toEntity(Form form) {
-        return FormResponse.builder()
+    public FormApplication toEntity(Form form) {
+        return FormApplication.builder()
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)

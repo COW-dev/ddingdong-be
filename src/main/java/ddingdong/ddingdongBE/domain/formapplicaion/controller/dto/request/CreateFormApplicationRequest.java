@@ -1,14 +1,14 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormResponseCommand;
-import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormResponseCommand.CreateFormAnswerCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.List;
 
-public record CreateFormResponseRequest(
+public record CreateFormApplicationRequest(
 
         @NotNull(message = "지원자 이름은 필수 입력 사항입니다.")
         @Schema(description = "지원자 이름", example = "김띵동")
@@ -47,11 +47,11 @@ public record CreateFormResponseRequest(
                 }
             }
 
-            public CreateFormResponseCommand toCommand() {
+            public CreateFormApplicationCommand toCommand() {
                 List<CreateFormAnswerCommand> createFormAnswerCommands = formAnswers.stream()
                         .map(CreateFormAnswerRequest::toCommand)
                         .toList();
-                return CreateFormResponseCommand.builder()
+                return CreateFormApplicationCommand.builder()
                         .name(name)
                         .studentNumber(studentNumber)
                         .department(department)
