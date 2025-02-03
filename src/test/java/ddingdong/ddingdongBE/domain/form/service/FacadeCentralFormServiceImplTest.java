@@ -19,7 +19,9 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.U
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +48,15 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     @Autowired
     private FormFieldRepository formFieldRepository;
 
+    @Autowired
+    private EntityManager entityManager;
+
     private static final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+
+    @BeforeEach
+    void setUp() {
+        entityManager.clear();
+    }
 
     @DisplayName("폼지와 폼지 질문을 생성할 수 있다.")
     @Test
