@@ -26,35 +26,35 @@ public record CreateFormApplicationRequest(
         @ArraySchema(schema = @Schema(implementation = CreateFormAnswerRequest.class))
         List<CreateFormAnswerRequest> formAnswers
 ) {
-            record CreateFormAnswerRequest(
-                    @NotNull(message = "질문 id는 null이 될 수 없습니다.")
-                    @Schema(description = "질문 id", example = "1")
-                    Long fieldId,
+    record CreateFormAnswerRequest(
+            @NotNull(message = "질문 id는 null이 될 수 없습니다.")
+            @Schema(description = "질문 id", example = "1")
+            Long fieldId,
 
-                    @Schema(description = "답변 값")
-                    List<String> value
-                    ) {
-                public CreateFormAnswerCommand toCommand() {
-                    return CreateFormAnswerCommand.builder()
-                            .fieldId(fieldId)
-                            .value(value)
-                            .build();
-                }
-            }
-
-            public CreateFormApplicationCommand toCommand() {
-                List<CreateFormAnswerCommand> createFormAnswerCommands = formAnswers.stream()
-                        .map(CreateFormAnswerRequest::toCommand)
-                        .toList();
-                return CreateFormApplicationCommand.builder()
-                        .name(name)
-                        .studentNumber(studentNumber)
-                        .department(department)
-                        .status(FormApplicationStatus.SUBMITTED)
-                        .formAnswerCommands(createFormAnswerCommands)
-                        .build();
-            }
-
+            @Schema(description = "답변 값")
+            List<String> value
+    ) {
+        public CreateFormAnswerCommand toCommand() {
+            return CreateFormAnswerCommand.builder()
+                    .fieldId(fieldId)
+                    .value(value)
+                    .build();
+        }
     }
+
+    public CreateFormApplicationCommand toCommand() {
+        List<CreateFormAnswerCommand> createFormAnswerCommands = formAnswers.stream()
+                .map(CreateFormAnswerRequest::toCommand)
+                .toList();
+        return CreateFormApplicationCommand.builder()
+                .name(name)
+                .studentNumber(studentNumber)
+                .department(department)
+                .status(FormApplicationStatus.SUBMITTED)
+                .formAnswerCommands(createFormAnswerCommands)
+                .build();
+    }
+
+}
 
 
