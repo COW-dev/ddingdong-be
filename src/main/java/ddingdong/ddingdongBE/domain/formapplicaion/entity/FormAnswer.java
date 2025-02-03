@@ -24,10 +24,6 @@ public class FormAnswer extends BaseEntity {
     @Convert(converter = StringListConverter.class)
     private List<String> value;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private FieldType valueType;
-
     @ManyToOne(fetch = FetchType.LAZY)
     private FormApplication formApplication;
 
@@ -35,9 +31,8 @@ public class FormAnswer extends BaseEntity {
     private FormField formField;
 
     @Builder
-    private FormAnswer(List<String> value, FieldType valueType, FormApplication formApplication, FormField formField) {
+    private FormAnswer(List<String> value, FormApplication formApplication, FormField formField) {
         this.value = value;
-        this.valueType = valueType;
         this.formApplication = formApplication;
         this.formField = formField;
     }

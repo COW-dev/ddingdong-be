@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
@@ -33,18 +32,12 @@ public record CreateFormApplicationRequest(
                     Long fieldId,
 
                     @Schema(description = "답변 값")
-                    List<String> value,
-
-                    @NotNull(message = "질문 타입은 null이 될 수 없습니다.")
-                    @Schema(description = "질문 타입", example = "RADIO")
-                    FieldType valueType
-
+                    List<String> value
                     ) {
                 public CreateFormAnswerCommand toCommand() {
                     return CreateFormAnswerCommand.builder()
                             .fieldId(fieldId)
                             .value(value)
-                            .valueType(valueType)
                             .build();
                 }
             }

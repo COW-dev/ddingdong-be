@@ -28,7 +28,6 @@ public record CreateFormApplicationCommand(
         public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
             return FormAnswer.builder()
                     .value(value)
-                    .valueType(valueType)
                     .formField(formField)
                     .formApplication(formApplication)
                     .build();
