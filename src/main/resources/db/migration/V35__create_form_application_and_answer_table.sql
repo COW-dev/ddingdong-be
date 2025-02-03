@@ -4,6 +4,7 @@ CREATE TABLE form_application
     name           VARCHAR(50)  NOT NULL,
     student_number VARCHAR(50)  NOT NULL,
     status         VARCHAR(50)  NOT NULL,
+    department     VARCHAR(50)  NOT NULL,
     form_id        BIGINT,
     created_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
     updated_at     TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL,
