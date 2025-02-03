@@ -26,8 +26,8 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
 
     @Transactional
     @Override
-    public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
-        Form form = formService.getById(createFormApplicationCommand.form().getId());
+    public void createFormApplication(Long formId, CreateFormApplicationCommand createFormApplicationCommand) {
+        Form form = formService.getById(formId);
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
