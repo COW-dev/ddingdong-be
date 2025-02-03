@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import jakarta.persistence.*;
@@ -8,6 +9,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -19,7 +21,8 @@ public class FormAnswer extends BaseEntity {
     private Long id;
 
     @Column(nullable = false)
-    private String value;
+    @Convert(converter = StringListConverter.class)
+    private List<String> value;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -32,7 +35,7 @@ public class FormAnswer extends BaseEntity {
     private FormField formField;
 
     @Builder
-    private FormAnswer(String value, FieldType valueType, FormApplication formApplication, FormField formField) {
+    private FormAnswer(List<String> value, FieldType valueType, FormApplication formApplication, FormField formField) {
         this.value = value;
         this.valueType = valueType;
         this.formApplication = formApplication;

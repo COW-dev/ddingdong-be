@@ -33,7 +33,7 @@ public record CreateFormApplicationRequest(
                     Long fieldId,
 
                     @Schema(description = "답변 값")
-                    String value,
+                    List<String> value,
 
                     @NotNull(message = "질문 타입은 null이 될 수 없습니다.")
                     @Schema(description = "질문 타입", example = "RADIO")

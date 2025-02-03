@@ -22,7 +22,7 @@ public record CreateFormApplicationCommand(
     @Builder
     public record CreateFormAnswerCommand(
             Long fieldId,
-            String value,
+            List<String> value,
             FieldType valueType
     ) {
         public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
