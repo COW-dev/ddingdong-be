@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.service.dto;
+package ddingdong.ddingdongBE.domain.formapplicaion.service.dto.command;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
