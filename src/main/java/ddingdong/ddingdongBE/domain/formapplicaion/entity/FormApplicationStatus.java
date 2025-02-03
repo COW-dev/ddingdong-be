@@ -4,5 +4,6 @@ public enum FormApplicationStatus {
     SUBMITTED,
     FIRST_PASS,
     FINAL_PASS,
-    FAILURE
+    FIRST_FAIL,
+    FINAL_FAIL
 }
