@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import java.util.List;
@@ -18,5 +19,16 @@ public class GeneralFormFieldService implements FormFieldService {
     @Override
     public void createAll(List<FormField> formFields) {
         formFieldRepository.saveAll(formFields);
+    }
+
+    @Override
+    public List<FormField> findAllByForm(Form form) {
+        return formFieldRepository.findAllByForm(form);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAll(List<FormField> originFormFields) {
+        formFieldRepository.deleteAll(originFormFields);
     }
 }

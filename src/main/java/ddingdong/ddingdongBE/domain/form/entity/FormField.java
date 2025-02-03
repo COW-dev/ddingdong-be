@@ -50,8 +50,15 @@ public class FormField extends BaseEntity {
     private Form form;
 
     @Builder
-    private FormField(String question, FieldType fieldType, boolean required, int fieldOrder, String section,
-            List<String> options, Form form) {
+    private FormField(
+            String question,
+            FieldType fieldType,
+            boolean required,
+            int fieldOrder,
+            String section,
+            List<String> options,
+            Form form
+    ) {
         this.question = question;
         this.fieldType = fieldType;
         this.required = required;
