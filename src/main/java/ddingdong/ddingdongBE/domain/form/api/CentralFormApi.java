@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -27,7 +28,7 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms")
     void createForm(
-            @RequestBody CreateFormRequest createFormRequest,
+            @Valid @RequestBody CreateFormRequest createFormRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
@@ -37,7 +38,7 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PutMapping("/my/forms/{formId}")
     void updateForm(
-            @RequestBody UpdateFormRequest updateFormRequest,
+            @Valid @RequestBody UpdateFormRequest updateFormRequest,
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );

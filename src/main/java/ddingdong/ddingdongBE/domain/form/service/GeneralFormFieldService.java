@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
@@ -25,7 +26,7 @@ public class GeneralFormFieldService implements FormFieldService {
     @Override
     public FormField getById(Long id) {
         return formFieldRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + id));
+                .orElseThrow(() -> new ResourceNotFound("FormField(fieldId=" + id + ")를 찾을 수 없습니다."));
     }
 
     @Override

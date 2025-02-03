@@ -1,18 +1,16 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.service;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
-import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,8 +24,8 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
 
     @Transactional
     @Override
-    public void createFormApplication(Long formId, CreateFormApplicationCommand createFormApplicationCommand) {
-        Form form = formService.getById(formId);
+    public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
+        Form form = formService.getById(createFormApplicationCommand.formId());
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
@@ -35,12 +33,13 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
         formAnswerService.createAll(formAnswers);
     }
 
-    private List<FormAnswer> toFormAnswers(FormApplication savedFormApplication, List<CreateFormAnswerCommand> createFormAnswerCommands) {
+    private List<FormAnswer> toFormAnswers(
+            FormApplication savedFormApplication,
+            List<CreateFormAnswerCommand> createFormAnswerCommands
+    ) {
         return createFormAnswerCommands.stream()
-                .map(formAnswerCommand -> {
-                    FormField formField = formFieldService.getById(formAnswerCommand.fieldId());
-                    return formAnswerCommand.toEntity(savedFormApplication, formField);
-                })
+                .map(formAnswerCommand
+                        -> formAnswerCommand.toEntity(savedFormApplication, formFieldService.getById(formAnswerCommand.fieldId())))
                 .toList();
     }
 }

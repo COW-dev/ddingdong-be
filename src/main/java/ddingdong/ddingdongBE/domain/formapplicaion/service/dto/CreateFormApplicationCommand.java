@@ -1,18 +1,16 @@
 package ddingdong.ddingdongBE.domain.formapplicaion.service.dto;
 
-import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
-import lombok.Builder;
-
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record CreateFormApplicationCommand(
-        Form form,
+        Long formId,
         String name,
         String studentNumber,
         String department,
@@ -22,8 +20,7 @@ public record CreateFormApplicationCommand(
     @Builder
     public record CreateFormAnswerCommand(
             Long fieldId,
-            List<String> value,
-            FieldType valueType
+            List<String> value
     ) {
         public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
             return FormAnswer.builder()
