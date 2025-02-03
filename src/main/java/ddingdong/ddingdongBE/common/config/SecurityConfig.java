@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.common.config;
 
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.POST;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
 import ddingdong.ddingdongBE.common.filter.JwtAuthenticationFilter;
@@ -46,7 +47,13 @@ public class SecurityConfig {
                                 API_PREFIX + "/banners/**",
                                 API_PREFIX + "/documents/**",
                                 API_PREFIX + "/questions/**",
-                                API_PREFIX + "/feeds/**")
+                                API_PREFIX + "/feeds/**",
+                                API_PREFIX + "/forms/**"
+                                )
+                        .permitAll()
+                        .requestMatchers(POST,
+                                API_PREFIX + "/forms/{formId}/applications"
+                                )
                         .permitAll()
                         .requestMatchers(API_PREFIX + "/internal/**")
                         .permitAll()
