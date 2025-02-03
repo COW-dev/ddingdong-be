@@ -25,4 +25,10 @@ public class GeneralFormService implements FormService{
         return formRepository.findById(formId)
                 .orElseThrow(() -> new ResourceNotFound("Form(formId=" + formId + ")를 찾을 수 없습니다."));
     }
+
+    @Transactional
+    @Override
+    public void delete(Form form) {
+        formRepository.delete(form);
+    }
 }

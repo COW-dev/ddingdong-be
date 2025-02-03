@@ -2,14 +2,20 @@ package ddingdong.ddingdongBE.domain.formapplicaion.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
-import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import jakarta.persistence.*;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import java.util.List;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -20,13 +26,14 @@ public class FormAnswer extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     @Convert(converter = StringListConverter.class)
     private List<String> value;
 
+    @JoinColumn(name = "application_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private FormApplication formApplication;
 
+    @JoinColumn(name = "field_id")
     @ManyToOne(fetch = FetchType.LAZY)
     private FormField formField;
 

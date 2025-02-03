@@ -7,4 +7,6 @@ public interface FormService {
     Form create(Form form);
 
     Form getById(Long formId);
+
+    void delete(Form form);
 }

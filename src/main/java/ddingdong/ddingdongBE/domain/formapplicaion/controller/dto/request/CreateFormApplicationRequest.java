@@ -42,11 +42,12 @@ public record CreateFormApplicationRequest(
         }
     }
 
-    public CreateFormApplicationCommand toCommand() {
+    public CreateFormApplicationCommand toCommand(Long formId) {
         List<CreateFormAnswerCommand> createFormAnswerCommands = formAnswers.stream()
                 .map(CreateFormAnswerRequest::toCommand)
                 .toList();
         return CreateFormApplicationCommand.builder()
+                .formId(formId)
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)

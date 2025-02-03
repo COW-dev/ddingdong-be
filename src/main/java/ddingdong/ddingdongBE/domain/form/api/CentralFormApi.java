@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -26,7 +28,7 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms")
     void createForm(
-            @RequestBody CreateFormRequest createFormRequest,
+            @Valid @RequestBody CreateFormRequest createFormRequest,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
@@ -36,7 +38,17 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PutMapping("/my/forms/{formId}")
     void updateForm(
-            @RequestBody UpdateFormRequest updateFormRequest,
+            @Valid @RequestBody UpdateFormRequest updateFormRequest,
+            @PathVariable("formId") Long formId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    @Operation(summary = "동아리 지원 폼지 삭제 API")
+    @ApiResponse(responseCode = "204", description = "동아리 지원 폼지 삭제 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/my/forms/{formId}")
+    void deleteForm(
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
