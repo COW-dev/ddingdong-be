@@ -9,4 +9,7 @@ public interface FormFieldService {
     void createAll(List<FormField> formFields);
 
     Optional<FormField> findById(Long id);
+
+    FormField getById(Long id);
+
 }

@@ -37,8 +37,7 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
     private List<FormAnswer> toFormAnswers(FormApplication savedFormApplication, List<CreateFormApplicationCommand.CreateFormAnswerCommand> createFormAnswerCommands) {
         return createFormAnswerCommands.stream()
                 .map(formAnswerCommand -> {
-                    FormField formField = formFieldService.findById(formAnswerCommand.fieldId())
-                            .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + formAnswerCommand.fieldId()));
+                    FormField formField = formFieldService.getById(formAnswerCommand.fieldId());
                     return formAnswerCommand.toEntity(savedFormApplication, formField);
                 })
                 .toList();

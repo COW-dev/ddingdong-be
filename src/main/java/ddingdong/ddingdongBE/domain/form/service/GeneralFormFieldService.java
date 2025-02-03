@@ -26,4 +26,10 @@ public class GeneralFormFieldService implements FormFieldService {
     public Optional<FormField> findById(Long id) {
         return formFieldRepository.findById(id);
     }
+
+    @Override
+    public FormField getById(Long id) {
+        return formFieldRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + id));
+    }
 }
