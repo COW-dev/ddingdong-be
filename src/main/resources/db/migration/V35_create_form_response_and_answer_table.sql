@@ -14,7 +14,7 @@ CREATE TABLE form_response
 CREATE TABLE form_answer
 (
     id             BIGINT       NOT NULL AUTO_INCREMENT PRIMARY KEY,
-    value          VARCHAR(255) NULL,
+    value          VARCHAR(1500) NULL,
     value_type     VARCHAR(50)  NOT NULL,
     response_id    BIGINT,
     field_id       BIGINT,
