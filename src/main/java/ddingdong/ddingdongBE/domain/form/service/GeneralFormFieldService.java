@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import java.util.List;
@@ -22,14 +23,20 @@ public class GeneralFormFieldService implements FormFieldService {
         formFieldRepository.saveAll(formFields);
     }
 
-    @Override
-    public Optional<FormField> findById(Long id) {
-        return formFieldRepository.findById(id);
-    }
 
     @Override
     public FormField getById(Long id) {
         return formFieldRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + id));
+   
+    @Override
+    public List<FormField> findAllByForm(Form form) {
+        return formFieldRepository.findAllByForm(form);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAll(List<FormField> originFormFields) {
+        formFieldRepository.deleteAll(originFormFields);
     }
 }

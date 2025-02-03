@@ -6,5 +6,5 @@ public interface FormService {
 
     Form create(Form form);
 
-    Form getById(Long id);
+    Form getById(Long formId);
 }

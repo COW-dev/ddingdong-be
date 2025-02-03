@@ -42,13 +42,27 @@ public class Form extends BaseEntity {
     private Club club;
 
     @Builder
-    private Form(String title, String description, LocalDate startDate, LocalDate endDate, boolean hasInterview,
-            Club club) {
+    private Form(
+            String title,
+            String description,
+            LocalDate startDate,
+            LocalDate endDate,
+            boolean hasInterview,
+            Club club
+    ) {
         this.title = title;
         this.description = description;
         this.startDate = startDate;
         this.endDate = endDate;
         this.hasInterview = hasInterview;
         this.club = club;
+    }
+
+    public void update(Form updateForm) {
+        this.title = updateForm.getTitle();
+        this.description = updateForm.getDescription();
+        this.startDate = updateForm.getStartDate();
+        this.endDate = updateForm.getEndDate();
+        this.hasInterview = updateForm.isHasInterview();
     }
 }
