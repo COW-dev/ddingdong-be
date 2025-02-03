@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
+import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +35,7 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
         formAnswerService.createAll(formAnswers);
     }
 
-    private List<FormAnswer> toFormAnswers(FormApplication savedFormApplication, List<CreateFormApplicationCommand.CreateFormAnswerCommand> createFormAnswerCommands) {
+    private List<FormAnswer> toFormAnswers(FormApplication savedFormApplication, List<CreateFormAnswerCommand> createFormAnswerCommands) {
         return createFormAnswerCommands.stream()
                 .map(formAnswerCommand -> {
                     FormField formField = formFieldService.getById(formAnswerCommand.fieldId());
