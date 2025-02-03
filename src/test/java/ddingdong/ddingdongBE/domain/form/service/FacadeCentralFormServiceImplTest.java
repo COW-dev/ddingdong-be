@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -105,8 +107,8 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 .set("formId", savedForm.getId())
                 .set("formFieldCommands", List.of(
                         fixtureMonkey.giveMeBuilder(UpdateFormFieldCommand.class)
-                        .set("question", "수정된 질문")
-                        .sample())
+                                .set("question", "수정된 질문")
+                                .sample())
                 )
                 .sample();
         // when
@@ -120,5 +122,79 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(formFields).isNotEmpty();
         assertThat(formFields.get(0).getQuestion()).isEqualTo("수정된 질문");
 
+    }
+
+    @DisplayName("폼지를 삭제할 수 있다. 폼지를 삭제하면, 하위 폼지 필드도 모두 삭제된다.")
+    @Test
+    void deleteForm() {
+        // given
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", 1L)
+                .set("Role", Role.CLUB)
+                .set("deletedAt", null)
+                .sample();
+        User savedUser = userRepository.save(user);
+        Club club = fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", 1L)
+                .set("user", savedUser)
+                .set("score", null)
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        clubRepository.save(club);
+        Form form = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("club", club)
+                .sample();
+        Form savedForm = formService.create(form);
+        // when
+        facadeCentralFormService.deleteForm(savedForm.getId(), user);
+        // then
+        Form found = formRepository.findById(savedForm.getId()).orElse(null);
+        List<FormField> formFields = formFieldRepository.findAllByForm(savedForm);
+        assertThat(found).isNull();
+        assertThat(formFields).isEmpty();
+    }
+
+    @DisplayName("Club은 자신의 폼지가 아닌 폼지를 삭제할 수 없다.")
+    @Test
+    void validateEqualsClub() {
+        // given
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", 1L)
+                .set("Role", Role.CLUB)
+                .set("deletedAt", null)
+                .sample();
+        User savedUser = userRepository.save(user);
+        Club club = fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", 1L)
+                .set("user", savedUser)
+                .set("score", null)
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        clubRepository.save(club);
+        User user2 = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", 2L)
+                .set("Role", Role.CLUB)
+                .set("deletedAt", null)
+                .sample();
+        User savedUser2 = userRepository.save(user2);
+        Club club2 = fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", 2L)
+                .set("user", savedUser2)
+                .set("score", null)
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        clubRepository.save(club2);
+
+        Form form = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("club", club)
+                .sample();
+        Form savedForm = formService.create(form);
+        // when //then
+        assertThrows(NonHaveAuthority.class, () -> {
+            facadeCentralFormService.deleteForm(savedForm.getId(), user2);
+        });
     }
 }
