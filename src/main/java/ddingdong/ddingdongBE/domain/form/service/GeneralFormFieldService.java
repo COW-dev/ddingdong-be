@@ -4,6 +4,8 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import java.util.List;
+import java.util.Optional;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +23,12 @@ public class GeneralFormFieldService implements FormFieldService {
         formFieldRepository.saveAll(formFields);
     }
 
+
+    @Override
+    public FormField getById(Long id) {
+        return formFieldRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 field를 id로 찾을 수 없습니다: " + id));
+   
     @Override
     public List<FormField> findAllByForm(Form form) {
         return formFieldRepository.findAllByForm(form);
