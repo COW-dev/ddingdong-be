@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,5 +32,10 @@ public class GeneralFormService implements FormService{
     @Override
     public void delete(Form form) {
         formRepository.delete(form);
+    }
+
+    @Override
+    public List<Form> getAllByClub(Club club) {
+        return formRepository.findAllByClub(club);
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE form ADD COLUMN sections TEXT NOT NULL DEFAULT '[]';

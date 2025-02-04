@@ -16,12 +16,12 @@ import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,15 +48,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     @Autowired
     private FormFieldRepository formFieldRepository;
 
-    @Autowired
-    private EntityManager entityManager;
-
     private static final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
-
-    @BeforeEach
-    void setUp() {
-        entityManager.clear();
-    }
 
     @DisplayName("폼지와 폼지 질문을 생성할 수 있다.")
     @Test
@@ -206,5 +198,66 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThrows(NonHaveAuthority.class, () -> {
             facadeCentralFormService.deleteForm(savedForm.getId(), user2);
         });
+    }
+
+    @DisplayName("동아리는 자신의 폼지를 전부 조회할 수 있다.")
+    @Test
+    void getAllMyForm() {
+        // given
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", 1L)
+                .set("Role", Role.CLUB)
+                .set("deletedAt", null)
+                .sample();
+        User savedUser = userRepository.save(user);
+        Club club = fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", 1L)
+                .set("user", savedUser)
+                .set("score", null)
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        clubRepository.save(club);
+        Form form = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("title", "제목1")
+                .set("club", club)
+                .sample();
+        Form form2 = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("title", "제목2")
+                .set("club", club)
+                .sample();
+        formService.create(form);
+        formService.create(form2);
+
+        // when
+        List<FormListQuery> queries = facadeCentralFormService.getAllMyForm(savedUser);
+        // then
+        assertThat(queries).isNotEmpty();
+        assertThat(queries.size()).isEqualTo(2);
+        assertThat(queries.get(0).title()).isEqualTo("제목1");
+        assertThat(queries.get(1).title()).isEqualTo("제목2");
+
+    }
+
+    @DisplayName("동아리는 폼지를 상세조회 할 수 있다.")
+    @Test
+    void getForm() {
+      // given
+        Form form = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("id", 1L)
+                .set("title", "제목1")
+                .set("club", null)
+                .sample();
+        Form form2 = fixtureMonkey.giveMeBuilder(Form.class)
+                .set("id", 2L)
+                .set("title", "제목2")
+                .set("club", null)
+                .sample();
+        formService.create(form);
+        formService.create(form2);
+      // when
+        FormQuery formQuery = facadeCentralFormService.getForm(1L);
+        // then
+        assertThat(formQuery.title()).isEqualTo("제목1");
     }
 }

@@ -1,9 +1,10 @@
 package ddingdong.ddingdongBE.common.utils;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-public class TimeParser {
+public class TimeUtils {
 
   private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
@@ -26,4 +27,10 @@ public class TimeParser {
 
     return parseToLocalDateTime(dateString);
   }
+
+  public static boolean isDateInRange(LocalDate nowDate, LocalDate startDate, LocalDate endDate) {
+    if (nowDate == null || startDate == null || endDate == null) {
+      return false;
+    }
+    return !nowDate.isBefore(startDate) && !nowDate.isAfter(endDate);  }
 }
