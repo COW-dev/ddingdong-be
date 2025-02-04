@@ -23,7 +23,7 @@ public interface CentralFormApplicationApi {
             content = @Content(schema = @Schema(implementation = MyFormApplicationPageResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/{formId}/applications")
+    @GetMapping("/my/forms/{formId}/applications")
     MyFormApplicationPageResponse getMyFormApplicationPage(
             @PathVariable("formId") Long formId,
             @RequestParam(value = "size", defaultValue = "15") int size,
