@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Form - Club", description = "Form API")
 @RequestMapping("/server/central")
-public interface CentralFormApi {
+public interface CentralFormApplicationApi {
     @Operation(summary = "지원자 전체 조회 API")
     @ApiResponse(responseCode = "200", description = "지원자 전체 조회 성공",
             content = @Content(schema = @Schema(implementation = MyFormApplicationPageResponse.class)))

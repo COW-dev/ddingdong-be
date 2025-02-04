@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.formapplication.service.FacadeCentralFormApplicationService;
-import ddingdong.ddingdongBE.domain.formapplication.api.CentralFormApi;
+import ddingdong.ddingdongBE.domain.formapplication.api.CentralFormApplicationApi;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationPageResponse;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-public class CentralFormApplicationController implements CentralFormApi {
+public class CentralFormApplicationController implements CentralFormApplicationApi {
 
     private final FacadeCentralFormApplicationService facadeCentralFormService;
 
