@@ -11,6 +11,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.C
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -69,6 +70,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         return forms.stream()
                 .map(this::buildFormListQuery)
                 .toList();
+    }
+
+    @Override
+    public FormQuery getForm(Long formId) {
+        Form form = formService.getById(formId);
+        List<FormField> formFields = formFieldService.findAllByForm(form);
+        return FormQuery.of(form, formFields);
     }
 
     private FormListQuery buildFormListQuery(Form form) {

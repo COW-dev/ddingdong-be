@@ -8,4 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface FormFieldRepository extends JpaRepository<FormField, Long> {
 
     List<FormField> findAllByForm(Form form);
+
+    List<FormField> findAllByFormAndSection(Form form, String section);
 }
