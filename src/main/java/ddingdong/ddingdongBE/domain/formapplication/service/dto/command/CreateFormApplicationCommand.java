@@ -1,10 +1,10 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.service.dto.command;
+package ddingdong.ddingdongBE.domain.formapplication.service.dto.command;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormAnswer;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import java.util.List;
 import lombok.Builder;
 
