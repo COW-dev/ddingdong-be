@@ -1,6 +1,6 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.api;
+package ddingdong.ddingdongBE.domain.formapplication.api;
 
-import ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request.CreateFormApplicationRequest;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.CreateFormApplicationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
