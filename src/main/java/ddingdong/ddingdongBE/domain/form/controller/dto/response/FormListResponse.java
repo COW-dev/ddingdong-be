@@ -14,7 +14,7 @@ public record FormListResponse(
         @Schema(description = "지원 폼지 시작일", example = "2001-01-01")
         LocalDate startDate,
         @Schema(description = "지원 폼지 종료일", example = "2001-01-02")
-        LocalDate endData,
+        LocalDate endDate,
         @Schema(description = "활성화 여부", example = "true")
         boolean isActive
 ) {
@@ -24,7 +24,7 @@ public record FormListResponse(
                 .formId(query.formId())
                 .title(query.title())
                 .startDate(query.startDate())
-                .endData(query.endDate())
+                .endDate(query.endDate())
                 .isActive(query.isActive())
                 .build();
     }
