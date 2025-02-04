@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Form - User", description = "User Form API")
 @RequestMapping("/server")
-public interface UserFormApi {
+public interface UserFormApplicationApi {
 
     @Operation(summary = "지원하기 API")
     @ApiResponse(responseCode = "201", description = "지원하기 성공")
