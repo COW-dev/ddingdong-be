@@ -28,7 +28,7 @@ public record MyFormApplicationPageResponse (
             Long id,
 
             @Schema(description = "폼 id", example = "1")
-            Long templateId,
+            Long formId,
 
             @Schema(description = "지원 시각", example = "2025-01-01T00:00")
             LocalDateTime submittedAt,
@@ -46,7 +46,7 @@ public record MyFormApplicationPageResponse (
         public static MyFormApplicationPageResponse.MyFormApplicationListResponse from(FormApplicationListQuery formApplicationListQuery) {
             return MyFormApplicationPageResponse.MyFormApplicationListResponse.builder()
                     .id(formApplicationListQuery.id())
-                    .templateId(formApplicationListQuery.templateId())
+                    .formId(formApplicationListQuery.formId())
                     .submittedAt(formApplicationListQuery.submittedAt())
                     .name(formApplicationListQuery.name())
                     .studentNumber(formApplicationListQuery.studentNumber())

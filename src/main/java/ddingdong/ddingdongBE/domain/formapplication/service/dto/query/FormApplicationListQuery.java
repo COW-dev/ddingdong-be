@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Builder
 public record FormApplicationListQuery(
         Long id,
-        Long templateId,
+        Long formId,
         LocalDateTime submittedAt,
         String name,
         String studentNumber,
@@ -18,7 +18,7 @@ public record FormApplicationListQuery(
     public static FormApplicationListQuery of(FormApplication formApplication) {
         return FormApplicationListQuery.builder()
                 .id(formApplication.getId())
-                .templateId(formApplication.getForm().getId())
+                .formId(formApplication.getForm().getId())
                 .submittedAt(formApplication.getCreatedAt())
                 .name(formApplication.getName())
                 .studentNumber(formApplication.getStudentNumber())
