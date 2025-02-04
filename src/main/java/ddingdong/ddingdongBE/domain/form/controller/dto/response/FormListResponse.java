@@ -24,7 +24,7 @@ public record FormListResponse(
                 .formId(query.formId())
                 .title(query.title())
                 .startDate(query.startDate())
-                .endData(query.endData())
+                .endData(query.endDate())
                 .isActive(query.isActive())
                 .build();
     }
