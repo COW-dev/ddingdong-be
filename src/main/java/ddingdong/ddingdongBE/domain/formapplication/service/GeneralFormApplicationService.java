@@ -31,6 +31,11 @@ public class GeneralFormApplicationService implements FormApplicationService {
         return buildSlice(formApplicationPages, size);
     }
 
+    @Override
+    public FormApplication getById(Long applicationId) {
+        return formApplicationRepository.findById(applicationId).orElse(null);
+    }
+
     private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {
         List<FormApplication> content = new ArrayList<>(originalSlice.getContent());
         if (content.isEmpty()) {

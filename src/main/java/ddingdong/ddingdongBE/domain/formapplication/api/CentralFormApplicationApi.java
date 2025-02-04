@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,6 +29,18 @@ public interface CentralFormApplicationApi {
             @PathVariable("formId") Long formId,
             @RequestParam(value = "size", defaultValue = "15") int size,
             @RequestParam(value = "currentCursorId", defaultValue = "-1") Long currentCursorId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    @Operation(summary = "지원자 상세 조회 API")
+    @ApiResponse(responseCode = "200", description = "지원자 상세 조회 성공",
+            content = @Content(schema = @Schema(implementation = FormApplicationResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/applications/{applicationId}")
+    FormApplicationResponse getFormApplication(
+            @PathVariable("formId") Long formId,
+            @PathVariable("applicationId") Long applicationId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 

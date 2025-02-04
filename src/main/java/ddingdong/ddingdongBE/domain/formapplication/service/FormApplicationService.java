@@ -8,4 +8,6 @@ public interface FormApplicationService {
     FormApplication create(FormApplication formApplication);
 
     Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size, Long currentCursorId);
+
+    FormApplication getById(Long applicationId);
 }
