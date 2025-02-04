@@ -43,7 +43,7 @@ public record MyFormApplicationPageResponse (
             String status
     ) {
 
-        public static MyFormApplicationPageResponse.MyFormApplicationListResponse from(FormApplicationListQuery formApplicationListQuery) {
+        public static MyFormApplicationListResponse from(FormApplicationListQuery formApplicationListQuery) {
             return MyFormApplicationPageResponse.MyFormApplicationListResponse.builder()
                     .id(formApplicationListQuery.id())
                     .formId(formApplicationListQuery.formId())
