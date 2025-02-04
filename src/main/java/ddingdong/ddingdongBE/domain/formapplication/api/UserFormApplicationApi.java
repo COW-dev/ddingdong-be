@@ -1,6 +1,6 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.api;
+package ddingdong.ddingdongBE.domain.formapplication.api;
 
-import ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request.CreateFormApplicationRequest;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.CreateFormApplicationRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Form - User", description = "User Form API")
 @RequestMapping("/server")
-public interface UserFormApi {
+public interface UserFormApplicationApi {
 
     @Operation(summary = "지원하기 API")
     @ApiResponse(responseCode = "201", description = "지원하기 성공")

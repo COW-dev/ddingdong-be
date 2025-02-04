@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.entity;
+package ddingdong.ddingdongBE.domain.formapplication.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
