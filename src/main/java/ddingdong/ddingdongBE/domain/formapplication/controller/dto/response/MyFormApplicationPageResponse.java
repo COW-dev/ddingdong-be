@@ -44,7 +44,7 @@ public record MyFormApplicationPageResponse (
     ) {
 
         public static MyFormApplicationListResponse from(FormApplicationListQuery formApplicationListQuery) {
-            return MyFormApplicationPageResponse.MyFormApplicationListResponse.builder()
+            return MyFormApplicationListResponse.builder()
                     .id(formApplicationListQuery.id())
                     .formId(formApplicationListQuery.formId())
                     .submittedAt(formApplicationListQuery.submittedAt())
