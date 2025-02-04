@@ -9,7 +9,7 @@ public record FormListQuery(
         Long formId,
         String title,
         LocalDate startDate,
-        LocalDate endData,
+        LocalDate endDate,
         boolean isActive
 ) {
 
@@ -18,7 +18,7 @@ public record FormListQuery(
                 .formId(form.getId())
                 .title(form.getTitle())
                 .startDate(form.getStartDate())
-                .endData(form.getEndDate())
+                .endDate(form.getEndDate())
                 .isActive(isActive)
                 .build();
     }
