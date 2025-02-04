@@ -6,8 +6,8 @@ import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuer
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationListQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery.FormApplicationListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
