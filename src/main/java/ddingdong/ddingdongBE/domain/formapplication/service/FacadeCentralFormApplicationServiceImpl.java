@@ -30,12 +30,12 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
     public MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
+        if (!form.getClub().equals(club)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
         Slice<FormApplication> formApplicationPage = formApplicationService.getFormApplicationPageByFormId(formId, size, currentCursorId);
         if (formApplicationPage == null) {
             return MyFormApplicationPageQuery.createEmpty();
-        }
-        if (!form.getClub().equals(club)) {
-            throw new AccessDeniedException("권한이 없습니다.");
         }
         List<FormApplication> completeFormApplications = formApplicationPage.getContent();
         List<FormApplicationListQuery> formApplicationListQueries = completeFormApplications.stream()
