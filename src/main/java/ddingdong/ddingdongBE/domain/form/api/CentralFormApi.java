@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -68,9 +69,7 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms")
-    List<FormListResponse> getAllMyForm(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+    List<FormListResponse> getAllMyForm(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "동아리 지원 폼지 상세조회 API")
     @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 상세조회 성공",
@@ -78,7 +77,13 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}")
-    FormResponse getForm(
-            @PathVariable("formId") Long formId
-    );
+    FormResponse getForm(@PathVariable("formId") Long formId);
+
+    @Operation(summary = "동아리 지원 폼지 통계 전체조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 통계 전체조회 성공",
+            content = @Content(schema = @Schema(implementation = FormStatisticsResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/statistics")
+    FormStatisticsResponse getFormStatistics(@PathVariable("formId") Long formId);
 }

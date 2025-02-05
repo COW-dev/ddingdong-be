@@ -12,6 +12,10 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantRateQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentRankQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +32,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormService formService;
     private final FormFieldService formFieldService;
     private final ClubService clubService;
+    private final FormStatisticService formStatisTicService;
 
     @Transactional
     @Override
@@ -77,6 +82,16 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Form form = formService.getById(formId);
         List<FormField> formFields = formFieldService.findAllByForm(form);
         return FormQuery.of(form, formFields);
+    }
+
+    @Override
+    public FormStatisticsQuery getStatisticsByForm(Long formId) {
+        Form form = formService.getById(formId);
+        int totalCount = formStatisTicService.getTotalApplicationCountByForm(form);
+        List<DepartmentRankQuery> departmentRankQueries = formStatisTicService.createDepartmentRankByForm(form);
+        List<ApplicantRateQuery> applicantRateQueries = formStatisTicService.createApplicationRateByForm(form);
+        List<FieldStatisticsListQuery> fieldStatisticsListQueries = formStatisTicService.createFieldStatisticsListByForm(form);
+        return new FormStatisticsQuery(totalCount, departmentRankQueries, applicantRateQueries, fieldStatisticsListQueries);
     }
 
     private FormListQuery buildFormListQuery(Form form) {

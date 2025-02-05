@@ -6,9 +6,11 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,5 +59,11 @@ public class CentralFormController implements CentralFormApi {
     public FormResponse getForm(Long formId) {
         FormQuery query = facadeCentralFormService.getForm(formId);
         return FormResponse.from(query);
+    }
+
+    @Override
+    public FormStatisticsResponse getFormStatistics(Long formId) {
+        FormStatisticsQuery query = facadeCentralFormService.getStatisticsByForm(formId);
+        return FormStatisticsResponse.from(query);
     }
 }
