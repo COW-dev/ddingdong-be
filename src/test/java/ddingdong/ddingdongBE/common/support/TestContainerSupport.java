@@ -11,7 +11,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.MySQLContainer;
 
@@ -19,7 +18,6 @@ import org.testcontainers.containers.MySQLContainer;
 @NoArgsConstructor(access = PROTECTED)
 @ActiveProfiles("test")
 @Import(TestConfig.class)
-@Transactional
 public abstract class TestContainerSupport {
 
   private static final String MYSQL_IMAGE = "mysql:8";
