@@ -1,11 +1,14 @@
 package ddingdong.ddingdongBE.domain.form.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
@@ -13,17 +16,14 @@ import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Slice;
-
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class FormApplicationRepositoryTest extends DataJpaTestSupport {
 
@@ -148,5 +148,129 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         List<FormApplication> retrievedApplications = newestFormApplications.getContent();
         assertThat(retrievedApplications.size()).isEqualTo(2);
         assertThat(retrievedApplications.get(0).getId()).isGreaterThan(retrievedApplications.get(1).getId());
+    }
+
+
+    @DisplayName("지원자 수 상위 5개 학과와 그 개수를 반환한다.")
+    @Test
+    void findTopFiveDepartmentsByForm_ShouldReturnTopFiveDepartments() throws InterruptedException {
+        // given
+        Form form = fixture.giveMeBuilder(Form.class)
+                .set("club", null)
+                .set("sections", List.of("공통"))
+                .sample();
+        Form savedForm = formRepository.save(form);
+        FormApplication formApplication = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication2 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과2")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication3 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과2")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication4 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과3")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication5 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과3")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication6 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과3")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+
+        formApplicationRepository.saveAll(
+                List.of(formApplication, formApplication2, formApplication3, formApplication4, formApplication5,
+                        formApplication6)
+        );
+        // when
+        List<DepartmentInfo> topFive = formApplicationRepository.findTopFiveDepartmentsByForm(savedForm.getId());
+        // then
+
+        assertThat(topFive.size()).isEqualTo(3);
+        assertThat(topFive.get(0).getCount()).isEqualTo(3);
+        assertThat(topFive.get(0).getDepartment()).isEqualTo("학과3");
+        assertThat(topFive.get(1).getCount()).isEqualTo(2);
+        assertThat(topFive.get(1).getDepartment()).isEqualTo("학과2");
+        assertThat(topFive.get(2).getCount()).isEqualTo(1);
+        assertThat(topFive.get(2).getDepartment()).isEqualTo("학과1");
+    }
+
+    @DisplayName("해당 기간 내에 가장 지원자 수가 많았던 폼지의 지원자수를 반환한다.")
+    @Test
+    void findMaxApplicationCountByDateRange_ShouldReturnHighestCount() {
+        // given
+        Form form = fixture.giveMeBuilder(Form.class)
+                .set("id", 1L)
+                .set("club", null)
+                .set("startDate", LocalDate.of(2020, 3, 1))
+                .set("endDate", LocalDate.of(2020, 4, 1))
+                .set("sections", List.of("공통"))
+                .sample();
+        Form savedForm = formRepository.save(form);
+        FormApplication formApplication = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication formApplication2 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+
+        formApplicationRepository.saveAll(List.of(formApplication, formApplication2));
+
+        Form form2 = fixture.giveMeBuilder(Form.class)
+                .set("id", 2L)
+                .set("club", null)
+                .set("startDate", LocalDate.of(2020, 1, 1))
+                .set("endDate", LocalDate.of(2020, 2, 1))
+                .set("sections", List.of("공통"))
+                .sample();
+        Form savedForm2 = formRepository.save(form2);
+        FormApplication formApplication3 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("학번1")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm2)
+                .build();
+        formApplicationRepository.save(formApplication3);
+
+        LocalDate startDate = LocalDate.of(2020, 1, 1);
+        LocalDate endDate = LocalDate.of(2020, 6, 30);
+        // when
+        int count = formApplicationRepository.findMaxApplicationCountByDateRange(startDate, endDate);
+        // then
+        assertThat(count).isEqualTo(2);
     }
 }
