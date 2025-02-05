@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationPageResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -44,4 +46,15 @@ public interface CentralFormApplicationApi {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
+    @Operation(summary = "지원자 상태 수정 API")
+    @ApiResponse(responseCode = "204", description = "지원자 상태 수정 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PatchMapping("/my/forms/{formId}/applications/{applicationId}")
+    void updateFormApplicationStatus(
+            @PathVariable("formId") Long formId,
+            @PathVariable("applicationId") Long applicationId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody UpdateFormApplicationStatusRequest request
+    );
 }

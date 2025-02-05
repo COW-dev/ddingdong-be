@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuery;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
@@ -63,5 +64,17 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
         List<FormField> formFields = formFieldService.findAllByForm(form);
         List<FormAnswer> formAnswers = formAnswerService.getAllByApplication(formApplication);
         return FormApplicationQuery.of(formApplication, formFields, formAnswers);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatus(UpdateFormApplicationStatusCommand command) {
+        Club club = clubService.getByUserId(command.user().getId());
+        Form form = formService.getById(command.formId());
+        if (!form.getClub().equals(club)) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+        FormApplication formApplication = formApplicationService.getById(command.applicationId());
+        formApplicationService.updateStatus(command.applicationId(), command.status());
     }
 }

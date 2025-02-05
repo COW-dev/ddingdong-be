@@ -41,4 +41,8 @@ public class FormApplication extends BaseEntity {
         this.status = status;
         this.form = form;
     }
+
+    public void update(FormApplicationStatus status) {
+        this.status = status;
+    }
 }

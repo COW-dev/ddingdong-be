@@ -1,0 +1,22 @@
+package ddingdong.ddingdongBE.domain.formapplication.controller.dto.request;
+
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
+import ddingdong.ddingdongBE.domain.user.entity.User;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
+
+public record UpdateFormApplicationStatusRequest(
+        @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
+        @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
+        FormApplicationStatus status
+) {
+    public UpdateFormApplicationStatusCommand toCommand(Long formId, Long applicationId, User user) {
+        return UpdateFormApplicationStatusCommand.builder()
+                .formId(formId)
+                .applicationId(applicationId)
+                .status(status)
+                .user(user)
+                .build();
+    }
+}
