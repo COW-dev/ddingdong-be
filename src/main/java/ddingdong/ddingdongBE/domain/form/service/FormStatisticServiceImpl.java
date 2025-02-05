@@ -26,7 +26,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class FormStatisticServiceImpl implements FormStatisticService {
 
     private static final int APPLICATION_COMPARE_COUNT = 5;
-    private static final int FIRST_APPLICATION = 0;
     private static final int NOT_EXIST_APPLICATION = 0;
     private static final int DEFAULT_APPLICATION_RATE = 100;
 
