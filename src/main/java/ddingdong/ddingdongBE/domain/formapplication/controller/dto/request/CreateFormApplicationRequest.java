@@ -1,8 +1,8 @@
-package ddingdong.ddingdongBE.domain.formapplicaion.controller.dto.request;
+package ddingdong.ddingdongBE.domain.formapplication.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.formapplicaion.entity.FormApplicationStatus;
-import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand;
-import ddingdong.ddingdongBE.domain.formapplicaion.service.dto.CreateFormApplicationCommand.CreateFormAnswerCommand;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
