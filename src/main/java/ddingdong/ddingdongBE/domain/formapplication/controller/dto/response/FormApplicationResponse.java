@@ -48,6 +48,7 @@ public record FormApplicationResponse (
     ) {
         public static FormFieldAnswerListResponse from(FormFieldAnswerListQuery formFieldAnswerListQuery) {
             return FormFieldAnswerListResponse.builder()
+                    .fieldId(formFieldAnswerListQuery.fieldId())
                     .question(formFieldAnswerListQuery.question())
                     .type(formFieldAnswerListQuery.type())
                     .options(formFieldAnswerListQuery.options())
