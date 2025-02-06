@@ -1,12 +1,9 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
-import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
-import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuery;
-import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery.FormApplicationListQuery;
@@ -23,11 +20,8 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFormApplicationService {
 
-    private final FormService formService;
     private final FormApplicationService formApplicationService;
     private final FormAnswerService formAnswerService;
-    private final FormFieldService formFieldService;
-    private final FormApplicationRepository formApplicationRepository;
 
     @Override
     public MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size, Long currentCursorId) {
@@ -55,6 +49,6 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
     @Override
     public void updateStatus(UpdateFormApplicationStatusCommand command) {
         List<FormApplication> formApplications = formApplicationService.getAllById(command.applicationIds());
-        formApplications.forEach(formApplication -> formApplication.update(command.status()));
+        formApplications.forEach(formApplication -> formApplication.updateStatus(command.status()));
     }
 }
