@@ -9,8 +9,8 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record UpdateFormApplicationStatusRequest(
-        @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
-        @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
+        @NotNull(message = "지원자 id 리스트는 필수 입력 사항입니다.")
+        @Schema(description = "수정할 지원자 id 리스트", example = "[1, 2, 3]")
         List<Long> applicationIds,
 
         @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
