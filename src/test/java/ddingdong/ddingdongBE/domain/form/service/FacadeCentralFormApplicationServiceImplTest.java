@@ -7,7 +7,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FacadeCentralFormApplicationService;
@@ -22,8 +21,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class FacadeCentralFormApplicationServiceImplTest extends TestContainerSupport {
@@ -107,26 +108,38 @@ class FacadeCentralFormApplicationServiceImplTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .sample();
         Form savedForm = formRepository.saveAndFlush(form);
-        FormApplication formApplication = FormApplication.builder()
+        FormApplication formApplication1 = FormApplication.builder()
                 .name("지원자1")
                 .studentNumber("60201115")
                 .department("융합소프트웨어학부")
                 .status(FormApplicationStatus.SUBMITTED)
                 .form(savedForm)
                 .build();
-        FormApplication savedApplication = formApplicationService.create(formApplication);
+        FormApplication formApplication2 = FormApplication.builder()
+                .name("지원자2")
+                .studentNumber("602011156")
+                .department("디지털콘텐츠디자인학과")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm)
+                .build();
+        FormApplication savedApplication1 = formApplicationService.create(formApplication1);
+        FormApplication savedApplication2 = formApplicationService.create(formApplication2);
+        List<Long> applicationIds = new ArrayList<>();
+        applicationIds.add(savedApplication1.getId());
+        applicationIds.add(savedApplication2.getId());
         UpdateFormApplicationStatusCommand command = fixture.giveMeBuilder(UpdateFormApplicationStatusCommand.class)
                 .set("formId", savedForm.getId())
-                .set("applicationId", savedApplication.getId())
+                .set("applicationIds", applicationIds)
                 .set("status", FormApplicationStatus.FIRST_PASS)
                 .set("user", savedUser)
                 .sample();
         // when
         facadeCentralFormApplicationService.updateStatus(command);
         // then
-        assertThat(savedApplication.getName()).isEqualTo("지원자1");
-        assertThat(savedApplication.getStudentNumber()).isEqualTo("60201115");
-        assertThat(formApplication.getStatus()).isEqualTo(FormApplicationStatus.FIRST_PASS);
+        assertThat(formApplication1.getName()).isEqualTo("지원자1");
+        assertThat(formApplication1.getStatus()).isEqualTo(FormApplicationStatus.FIRST_PASS);
+        assertThat(formApplication2.getName()).isEqualTo("지원자2");
+        assertThat(formApplication2.getStatus()).isEqualTo(FormApplicationStatus.FIRST_PASS);
     }
 
 }
