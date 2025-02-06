@@ -15,6 +15,7 @@ public record UpdateFormCommand(
         LocalDate startDate,
         LocalDate endDate,
         boolean hasInterview,
+        List<String> sections,
         List<UpdateFormFieldCommand> formFieldCommands
 ) {
 
@@ -48,6 +49,7 @@ public record UpdateFormCommand(
                 .startDate(startDate)
                 .endDate(endDate)
                 .hasInterview(hasInterview)
+                .sections(sections)
                 .build();
     }
 }

@@ -17,6 +17,7 @@ public record CreateFormCommand(
         LocalDate startDate,
         LocalDate endDate,
         boolean hasInterview,
+        List<String> sections,
         List<CreateFormFieldCommand> formFieldCommands
 ) {
 
@@ -50,6 +51,7 @@ public record CreateFormCommand(
                 .startDate(startDate)
                 .endDate(endDate)
                 .hasInterview(hasInterview)
+                .sections(sections)
                 .club(club)
                 .build();
     }

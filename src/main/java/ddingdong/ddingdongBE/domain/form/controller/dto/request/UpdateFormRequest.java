@@ -29,6 +29,10 @@ public record UpdateFormRequest(
         @NotNull(message = "면접여부는 null이 될 수 없습니다.")
         boolean hasInterview,
 
+        @Schema(description = "섹션 종류", example = "['공통', '서버']")
+        @NotNull(message = "섹션 종류는 null이 될 수 없습니다.")
+        List<String> sections,
+
         @ArraySchema(schema = @Schema(implementation = UpdateFormFieldRequest.class))
         List<UpdateFormFieldRequest> formFields
 ) {
@@ -81,6 +85,7 @@ public record UpdateFormRequest(
                 .startDate(startDate)
                 .endDate(endDate)
                 .hasInterview(hasInterview)
+                .sections(sections)
                 .formFieldCommands(updateFormFieldCommands)
                 .build();
     }

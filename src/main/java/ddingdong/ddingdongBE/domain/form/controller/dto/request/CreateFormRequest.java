@@ -31,6 +31,10 @@ public record CreateFormRequest(
         @NotNull(message = "면접여부는 null이 될 수 없습니다.")
         boolean hasInterview,
 
+        @Schema(description = "섹션 종류", example = "['공통', '서버']")
+        @NotNull(message = "섹션 종류는 null이 될 수 없습니다.")
+        List<String> sections,
+
         @ArraySchema(schema = @Schema(implementation = CreateFormFieldRequest.class))
         List<CreateFormFieldRequest> formFields
 ) {
@@ -83,6 +87,7 @@ public record CreateFormRequest(
                 .startDate(startDate)
                 .endDate(endDate)
                 .hasInterview(hasInterview)
+                .sections(sections)
                 .formFieldCommands(createFormFieldCommands)
                 .build();
     }
