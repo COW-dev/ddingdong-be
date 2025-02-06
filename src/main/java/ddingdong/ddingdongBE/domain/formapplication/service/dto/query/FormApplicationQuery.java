@@ -2,19 +2,14 @@ package ddingdong.ddingdongBE.domain.formapplication.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery.FormFieldListQuery;
 
 import lombok.Builder;
 
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Map;
 
 @Builder
 public record FormApplicationQuery (
@@ -26,18 +21,6 @@ public record FormApplicationQuery (
         List<FormFieldAnswerListQuery> formFieldAnswers
 ) {
     @Builder
-    public record FormAnswerListQuery (
-            Long fieldId,
-            List<String> value
-    ) {
-        public static FormAnswerListQuery from(FormAnswer formAnswer) {
-            return FormAnswerListQuery.builder()
-                    .fieldId(formAnswer.getFormField().getId())
-                    .value(formAnswer.getValue())
-                    .build();
-        }
-    }
-    @Builder
     public record FormFieldAnswerListQuery (
             Long fieldId,
             String question,
@@ -48,40 +31,23 @@ public record FormApplicationQuery (
             String section,
             List<String> value
     ) {
-        public static FormFieldAnswerListQuery from(FormFieldListQuery formFieldListQuery, FormAnswerListQuery formAnswerListQuery) {
+        public static FormFieldAnswerListQuery from(FormAnswer formAnswer) {
             return FormFieldAnswerListQuery.builder()
-                    .fieldId(formFieldListQuery.id())
-                    .question(formFieldListQuery.question())
-                    .type(formFieldListQuery.type())
-                    .options(formFieldListQuery.options())
-                    .required(formFieldListQuery.required())
-                    .order(formFieldListQuery.order())
-                    .section(formFieldListQuery.section())
-                    .value(formAnswerListQuery.value())
+                    .fieldId(formAnswer.getFormField().getId())
+                    .question(formAnswer.getFormField().getQuestion())
+                    .type(formAnswer.getFormField().getFieldType())
+                    .options(formAnswer.getFormField().getOptions())
+                    .required(formAnswer.getFormField().isRequired())
+                    .order(formAnswer.getFormField().getFieldOrder())
+                    .section(formAnswer.getFormField().getSection())
+                    .value(formAnswer.getValue())
                     .build();
         }
     }
-    public static FormApplicationQuery of(FormApplication formApplication, List<FormField> formFields, List<FormAnswer> formAnswers) {
-        List<FormFieldListQuery> formFieldListQueries = formFields.stream()
-                .map(FormFieldListQuery::from)
+    public static FormApplicationQuery of(FormApplication formApplication, List<FormAnswer> formAnswers) {
+        List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formAnswers.stream()
+                .map(FormFieldAnswerListQuery::from)
                 .toList();
-        List<FormAnswerListQuery> formAnswerListQueries = formAnswers.stream()
-                .map(FormAnswerListQuery::from)
-                .toList();
-        Map<Long, FormAnswerListQuery> answerMap = formAnswerListQueries.stream()
-                .collect(Collectors.toMap(FormAnswerListQuery::fieldId, Function.identity()));
-        List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formFieldListQueries.stream()
-                .map(fieldQuery -> {
-                    FormAnswerListQuery answerQuery = answerMap.get(fieldQuery.id());
-                    if (answerQuery == null) {
-                        answerQuery = FormAnswerListQuery.builder()
-                                .fieldId(fieldQuery.id())
-                                .value(null)
-                                .build();
-                    }
-                    return FormFieldAnswerListQuery.from(fieldQuery, answerQuery);
-                })
-                .collect(Collectors.toList());
         return FormApplicationQuery.builder()
                 .createdAt(formApplication.getCreatedAt())
                 .name(formApplication.getName())

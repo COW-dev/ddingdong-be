@@ -1,13 +1,11 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuery;
-import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
@@ -48,11 +46,9 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
 
     @Override
     public FormApplicationQuery getFormApplication(Long formId, Long applicationId, User user) {
-        Form form = formService.getById(formId);
         FormApplication formApplication = formApplicationService.getById(applicationId);
-        List<FormField> formFields = formFieldService.findAllByForm(form);
         List<FormAnswer> formAnswers = formAnswerService.getAllByApplication(formApplication);
-        return FormApplicationQuery.of(formApplication, formFields, formAnswers);
+        return FormApplicationQuery.of(formApplication, formAnswers);
     }
 
     @Transactional
