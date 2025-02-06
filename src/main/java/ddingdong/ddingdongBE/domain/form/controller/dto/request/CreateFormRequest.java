@@ -46,7 +46,7 @@ public record CreateFormRequest(
 
             @Schema(description = "질문 종류", example = "CHECK_BOX")
             @NotNull(message = "질문 종류는 null이 될 수 없습니다.")
-            FieldType type,
+            String type,
 
             @Schema(description = "질문의 선택리스트", example = "[지문1이다., 지문2이다., 지문3이다.]")
             List<String> options,
@@ -67,7 +67,7 @@ public record CreateFormRequest(
         public CreateFormFieldCommand toCommand() {
             return CreateFormFieldCommand.builder()
                     .question(question)
-                    .type(type)
+                    .type(FieldType.findType(type))
                     .options(options)
                     .required(required)
                     .order(order)

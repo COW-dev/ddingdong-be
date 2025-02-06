@@ -3,12 +3,14 @@ package ddingdong.ddingdongBE.domain.form.service.dto.command;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record UpdateFormCommand(
+        User user,
         Long formId,
         String title,
         String description,
