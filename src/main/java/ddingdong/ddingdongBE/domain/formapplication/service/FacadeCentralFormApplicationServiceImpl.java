@@ -56,6 +56,5 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
     public void updateStatus(UpdateFormApplicationStatusCommand command) {
         List<FormApplication> formApplications = formApplicationService.getAllById(command.applicationIds());
         formApplications.forEach(formApplication -> formApplication.update(command.status()));
-        formApplicationRepository.saveAll(formApplications);
     }
 }
