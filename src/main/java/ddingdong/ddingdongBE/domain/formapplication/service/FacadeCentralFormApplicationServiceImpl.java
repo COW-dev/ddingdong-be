@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.formapplication.service;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuery;
@@ -28,6 +29,7 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
     private final FormApplicationService formApplicationService;
     private final FormAnswerService formAnswerService;
     private final FormFieldService formFieldService;
+    private final FormApplicationRepository formApplicationRepository;
 
     @Override
     public MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size, Long currentCursorId) {
@@ -56,6 +58,8 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
     @Transactional
     @Override
     public void updateStatus(UpdateFormApplicationStatusCommand command) {
-        formApplicationService.updateStatus(command.applicationId(), command.status());
+        List<FormApplication> formApplications = formApplicationService.getAllById(command.applicationIds());
+        formApplications.forEach(formApplication -> formApplication.update(command.status()));
+        formApplicationRepository.saveAll(formApplications);
     }
 }

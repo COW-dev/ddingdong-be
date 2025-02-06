@@ -6,10 +6,12 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.Builder;
 
+import java.util.List;
+
 @Builder
 public record UpdateFormApplicationStatusCommand(
         Long formId,
-        Long applicationId,
+        List<Long> applicationIds,
         FormApplicationStatus status,
         User user
 ) {

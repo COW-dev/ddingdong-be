@@ -6,15 +6,21 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
+import java.util.List;
+
 public record UpdateFormApplicationStatusRequest(
+        @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
+        @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
+        List<Long> applicationIds,
+
         @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
         @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
         FormApplicationStatus status
 ) {
-    public UpdateFormApplicationStatusCommand toCommand(Long formId, Long applicationId, User user) {
+    public UpdateFormApplicationStatusCommand toCommand(Long formId, User user) {
         return UpdateFormApplicationStatusCommand.builder()
                 .formId(formId)
-                .applicationId(applicationId)
+                .applicationIds(applicationIds)
                 .status(status)
                 .user(user)
                 .build();

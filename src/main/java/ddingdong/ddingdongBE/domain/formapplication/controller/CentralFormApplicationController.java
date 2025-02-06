@@ -33,8 +33,8 @@ public class CentralFormApplicationController implements CentralFormApplicationA
     }
 
     @Override
-    public void updateFormApplicationStatus(Long formId, Long applicationId, PrincipalDetails principalDetails, UpdateFormApplicationStatusRequest request) {
+    public void updateFormApplicationStatus(Long formId, PrincipalDetails principalDetails, UpdateFormApplicationStatusRequest request) {
         User user = principalDetails.getUser();
-        facadeCentralFormApplicationService.updateStatus(request.toCommand(formId, applicationId, user));
+        facadeCentralFormApplicationService.updateStatus(request.toCommand(formId, user));
     }
 }

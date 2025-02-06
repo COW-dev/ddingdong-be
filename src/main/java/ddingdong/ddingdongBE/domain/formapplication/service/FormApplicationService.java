@@ -1,8 +1,9 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import org.springframework.data.domain.Slice;
+
+import java.util.List;
 
 public interface FormApplicationService {
 
@@ -12,5 +13,5 @@ public interface FormApplicationService {
 
     FormApplication getById(Long applicationId);
 
-    void updateStatus(Long applicationId, FormApplicationStatus formApplicationStatus);
+    List<FormApplication> getAllById(List<Long> applicationIds);
 }

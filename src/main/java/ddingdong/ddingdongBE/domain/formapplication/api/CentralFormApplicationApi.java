@@ -46,14 +46,13 @@ public interface CentralFormApplicationApi {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
-    @Operation(summary = "지원자 개인 상태 수정 API")
+    @Operation(summary = "지원자 상태 수정 API")
     @ApiResponse(responseCode = "204", description = "지원자 상태 수정 성공")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
-    @PatchMapping("/my/forms/{formId}/applications/{applicationId}")
+    @PatchMapping("/my/forms/{formId}/applications")
     void updateFormApplicationStatus(
             @PathVariable("formId") Long formId,
-            @PathVariable("applicationId") Long applicationId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Valid @RequestBody UpdateFormApplicationStatusRequest request
     );

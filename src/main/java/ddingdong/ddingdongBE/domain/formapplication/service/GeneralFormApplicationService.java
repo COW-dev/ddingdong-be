@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
@@ -38,9 +37,8 @@ public class GeneralFormApplicationService implements FormApplicationService {
     }
 
     @Override
-    public void updateStatus(Long applicationId, FormApplicationStatus status) {
-        FormApplication formApplication = formApplicationRepository.findById(applicationId).orElse(null);
-        formApplication.update(status);
+    public List<FormApplication> getAllById(List<Long> applicationIds) {
+        return formApplicationRepository.findAllById(applicationIds);
     }
 
     private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {
