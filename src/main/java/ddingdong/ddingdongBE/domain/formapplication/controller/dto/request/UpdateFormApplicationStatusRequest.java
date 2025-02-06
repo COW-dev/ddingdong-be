@@ -15,13 +15,13 @@ public record UpdateFormApplicationStatusRequest(
 
         @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
         @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
-        FormApplicationStatus status
+        String status
 ) {
     public UpdateFormApplicationStatusCommand toCommand(Long formId, User user) {
         return UpdateFormApplicationStatusCommand.builder()
                 .formId(formId)
                 .applicationIds(applicationIds)
-                .status(status)
+                .status(FormApplicationStatus.findStatus(status))
                 .user(user)
                 .build();
     }
