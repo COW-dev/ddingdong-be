@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -21,4 +22,8 @@ public class GeneralFormAnswerService implements FormAnswerService {
         formAnswerRepository.saveAll(formAnswers);
     }
 
+    @Override
+    public List<FormAnswer> getAllByApplication(FormApplication formApplication) {
+        return formAnswerRepository.findAllByFormApplication(formApplication);
+    }
 }
