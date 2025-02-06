@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.controller.dto.request;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -44,7 +45,7 @@ public record UpdateFormRequest(
 
             @Schema(description = "질문 종류", example = "CHECK_BOX")
             @NotNull(message = "질문 종류는 null이 될 수 없습니다.")
-            FieldType type,
+            String type,
 
             @Schema(description = "질문의 선택리스트", example = "[지문1이다., 지문2이다., 지문3이다.]")
             List<String> options,
@@ -65,7 +66,7 @@ public record UpdateFormRequest(
         public UpdateFormFieldCommand toCommand() {
             return UpdateFormFieldCommand.builder()
                     .question(question)
-                    .type(type)
+                    .type(FieldType.findType(type))
                     .options(options)
                     .required(required)
                     .order(order)
@@ -74,11 +75,12 @@ public record UpdateFormRequest(
         }
     }
 
-    public UpdateFormCommand toCommand(Long formId) {
+    public UpdateFormCommand toCommand(User user, Long formId) {
         List<UpdateFormFieldCommand> updateFormFieldCommands = formFields.stream()
                 .map(UpdateFormFieldRequest::toCommand)
                 .toList();
         return UpdateFormCommand.builder()
+                .user(user)
                 .formId(formId)
                 .title(title)
                 .description(description)

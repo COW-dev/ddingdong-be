@@ -38,6 +38,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public void createForm(CreateFormCommand createFormCommand) {
         Club club = clubService.getByUserId(createFormCommand.user().getId());
+        formService.validateDuplicationDate(club, createFormCommand.startDate(), createFormCommand.endDate());
+
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
 
@@ -48,6 +50,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Transactional
     @Override
     public void updateForm(UpdateFormCommand updateFormCommand) {
+        Club club = clubService.getByUserId(updateFormCommand.user().getId());
+        formService.validateDuplicationDate(club, updateFormCommand.startDate(), updateFormCommand.endDate());
+
         Form originform = formService.getById(updateFormCommand.formId());
         Form updateForm = updateFormCommand.toEntity();
         originform.update(updateForm);
