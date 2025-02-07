@@ -68,9 +68,7 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms")
-    List<FormListResponse> getAllMyForm(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+    List<FormListResponse> getAllMyForm(@AuthenticationPrincipal PrincipalDetails principalDetails);
 
     @Operation(summary = "동아리 지원 폼지 상세조회 API")
     @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 상세조회 성공",
@@ -78,7 +76,12 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}")
-    FormResponse getForm(
-            @PathVariable("formId") Long formId
-    );
+    FormResponse getForm(@PathVariable("formId") Long formId);
+
+    @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API")
+    @ApiResponse(responseCode = "200", description = "최종 합격 지원자 동아리원 명단 등록 성공")
+    @ResponseStatus(HttpStatus.CREATED)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/members/register-applicants")
+    void registerMember(@PathVariable("formId") Long formId);
 }
