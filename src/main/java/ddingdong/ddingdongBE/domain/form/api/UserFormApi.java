@@ -1,0 +1,21 @@
+package ddingdong.ddingdongBE.domain.form.api;
+
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormSectionResponse;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Tag(name = "Form - User", description = "User Form API")
+@RequestMapping("/server")
+public interface UserFormApi {
+
+  @Operation(summary = "폼지 섹션 조회 API")
+  @ApiResponse(responseCode = "200", description = "폼지 섹션 조회 성공")
+  @GetMapping("/forms/{formId}/sections")
+  FormSectionResponse getFormSections(
+      @PathVariable("formId") Long formId
+  );
+}
