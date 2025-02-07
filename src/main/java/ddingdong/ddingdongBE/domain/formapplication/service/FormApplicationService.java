@@ -14,4 +14,6 @@ public interface FormApplicationService {
     FormApplication getById(Long applicationId);
 
     List<FormApplication> getAllById(List<Long> applicationIds);
+
+    List<FormApplication> getAllFinalPassedByFormId(Long formId);
 }

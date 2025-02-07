@@ -1,9 +1,13 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
+
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.service.ClubMemberService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
@@ -12,6 +16,8 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -28,6 +34,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormService formService;
     private final FormFieldService formFieldService;
     private final ClubService clubService;
+    private final FormApplicationService formApplicationService;
+    private final ClubMemberService clubMemberService;
 
     @Transactional
     @Override
@@ -77,6 +85,26 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Form form = formService.getById(formId);
         List<FormField> formFields = formFieldService.findAllByForm(form);
         return FormQuery.of(form, formFields);
+    }
+
+    @Override
+    @Transactional
+    public void registerApplicantAsMember(Long formId) {
+        List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
+        if(!finalPassedFormApplications.isEmpty()) {
+            finalPassedFormApplications.forEach(formApplication -> {
+                Club club = formApplication.getForm().getClub();
+                ClubMember clubMember = ClubMember.builder()
+                        .name(formApplication.getName())
+                        .studentNumber(formApplication.getStudentNumber())
+                        .department(formApplication.getDepartment())
+                        .phoneNumber(formApplication.getPhoneNumber())
+                        .position(MEMBER)
+                        .build();
+
+                club.addClubMember(clubMember);
+            });
+        }
     }
 
     private FormListQuery buildFormListQuery(Form form) {

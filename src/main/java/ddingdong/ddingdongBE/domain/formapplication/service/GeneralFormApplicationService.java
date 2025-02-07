@@ -38,6 +38,11 @@ public class GeneralFormApplicationService implements FormApplicationService {
     }
 
     @Override
+    public List<FormApplication> getAllFinalPassedByFormId(Long formId) {
+        return formApplicationRepository.findAllFinalPassedByFormId(formId);
+    }
+
+    @Override
     public FormApplication getById(Long applicationId) {
         return formApplicationRepository.findById(applicationId)
             .orElseThrow(() -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:"+applicationId));

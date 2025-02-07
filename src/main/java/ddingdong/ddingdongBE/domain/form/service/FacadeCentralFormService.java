@@ -18,4 +18,6 @@ public interface FacadeCentralFormService {
     List<FormListQuery> getAllMyForm(User user);
 
     FormQuery getForm(Long formId);
+
+    void registerApplicantAsMember(Long formId);
 }

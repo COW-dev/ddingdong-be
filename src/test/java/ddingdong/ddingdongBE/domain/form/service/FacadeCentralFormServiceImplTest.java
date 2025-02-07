@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
@@ -8,7 +9,9 @@ import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAut
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.entity.Position;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
@@ -18,10 +21,17 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import org.assertj.core.api.Assertions;
+import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +57,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
 
     @Autowired
     private FormFieldRepository formFieldRepository;
+
+    @Autowired
+    private FormApplicationRepository formApplicationRepository;
 
     private static final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
 
@@ -242,7 +255,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     @DisplayName("동아리는 폼지를 상세조회 할 수 있다.")
     @Test
     void getForm() {
-      // given
+        // given
         Form form = fixtureMonkey.giveMeBuilder(Form.class)
                 .set("id", 1L)
                 .set("title", "제목1")
@@ -255,9 +268,78 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 .sample();
         formService.create(form);
         formService.create(form2);
-      // when
+        // when
         FormQuery formQuery = facadeCentralFormService.getForm(1L);
         // then
         assertThat(formQuery.title()).isEqualTo("제목1");
+    }
+
+    @DisplayName("폼지의 최종 합격 지원자를 동아리원 명단에 등록한다.")
+    @Test
+    void registerApplicantAsMember() {
+        //given
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", 1L)
+                .set("Role", Role.CLUB)
+                .set("deletedAt", null)
+                .sample();
+        User savedUser = userRepository.save(user);
+        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", 1L)
+                .set("user", savedUser)
+                .set("score", null)
+                .set("clubMembers", new ArrayList<>())
+                .set("deletedAt", null)
+                .sample());
+        Form formA = formRepository.save(Form.builder()
+                .club(savedClub)
+                .title("formA")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .hasInterview(false)
+                .sections(List.of())
+                .build());
+        FormApplication applicationA = FormApplication.builder()
+                .name("nameA")
+                .studentNumber("test")
+                .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
+                .status(FormApplicationStatus.FINAL_PASS)
+                .form(formA)
+                .build();
+        FormApplication applicationB = FormApplication.builder()
+                .name("nameB")
+                .studentNumber("test")
+                .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(formA)
+                .build();
+        FormApplication applicationC = FormApplication.builder()
+                .name("nameC")
+                .studentNumber("test")
+                .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
+                .status(FormApplicationStatus.FINAL_PASS)
+                .form(formA)
+                .build();
+        formApplicationRepository.saveAll(List.of(applicationA, applicationB, applicationC));
+
+        //when
+        facadeCentralFormService.registerApplicantAsMember(formA.getId());
+
+        //then
+        Club club = clubRepository.findById(savedClub.getId()).orElseThrow(RuntimeException::new);
+        List<ClubMember> clubMembers = club.getClubMembers();
+        Assertions.assertThat(clubMembers).hasSize(2)
+                .extracting(ClubMember::getName, ClubMember::getStudentNumber, ClubMember::getDepartment,
+                        ClubMember::getPosition)
+                .containsExactlyInAnyOrder(
+                        tuple("nameA", "test", "test", Position.MEMBER),
+                        tuple("nameC", "test", "test", Position.MEMBER)
+                );
     }
 }
