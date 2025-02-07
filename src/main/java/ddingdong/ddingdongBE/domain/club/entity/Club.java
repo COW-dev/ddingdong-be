@@ -122,4 +122,9 @@ public class Club extends BaseEntity {
         this.score = score;
         return this.score.getValue();
     }
+
+    public void addClubMember(ClubMember clubMember) {
+        this.clubMembers.add(clubMember);
+        clubMember.setClubFormConvenience(this);
+    }
 }

@@ -26,6 +26,12 @@ public class FormApplication extends BaseEntity {
     @Column(nullable = false)
     private String department;
 
+    @Column(nullable = false)
+    private String phoneNumber;
+
+    @Column(nullable = false)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "status")
     private FormApplicationStatus status;
@@ -34,10 +40,13 @@ public class FormApplication extends BaseEntity {
     private Form form;
 
     @Builder
-    private FormApplication(String name, String studentNumber, String department, FormApplicationStatus status, Form form) {
+    private FormApplication(String name, String studentNumber, String department, String phoneNumber, String email,
+                            FormApplicationStatus status, Form form) {
         this.name = name;
         this.studentNumber = studentNumber;
         this.department = department;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
         this.status = status;
         this.form = form;
     }

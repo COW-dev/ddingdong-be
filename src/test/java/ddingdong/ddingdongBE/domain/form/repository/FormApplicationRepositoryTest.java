@@ -176,6 +176,8 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .name("nameA")
                 .studentNumber("test")
                 .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
                 .status(FormApplicationStatus.FINAL_PASS)
                 .form(formA)
                 .build();
@@ -184,6 +186,8 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .name("nameB")
                 .studentNumber("test")
                 .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
                 .status(FormApplicationStatus.SUBMITTED)
                 .form(formA)
                 .build();
@@ -192,6 +196,8 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .name("nameC")
                 .studentNumber("test")
                 .department("test")
+                .phoneNumber("test")
+                .email("test@test.com")
                 .status(FormApplicationStatus.FINAL_PASS)
                 .form(formB)
                 .build();
