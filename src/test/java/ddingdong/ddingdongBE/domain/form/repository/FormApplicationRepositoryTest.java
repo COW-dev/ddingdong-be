@@ -13,6 +13,7 @@ import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class FormApplicationRepositoryTest extends DataJpaTestSupport {
@@ -98,7 +100,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         Form savedForm1 = formRepository.save(form1);
         Form savedForm2 = formRepository.save(form2);
 
-
         FormApplication formApplication1 = FormApplication.builder()
                 .name("지원자1")
                 .studentNumber("60201111")
@@ -138,15 +139,72 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .status(FormApplicationStatus.SUBMITTED)
                 .form(savedForm1)
                 .build();
-        formApplicationRepository.saveAll(List.of(formApplication1, formApplication2, formApplication3, formApplication4, formApplication5));
+        formApplicationRepository.saveAll(
+                List.of(formApplication1, formApplication2, formApplication3, formApplication4, formApplication5));
 
         int size = 2;
         Long currentCursorId = -1L;
         // when
-        Slice<FormApplication> newestFormApplications = formApplicationRepository.findPageByFormIdOrderById(savedForm1.getId(), size, currentCursorId);
+        Slice<FormApplication> newestFormApplications = formApplicationRepository.findPageByFormIdOrderById(
+                savedForm1.getId(), size, currentCursorId);
         // then
         List<FormApplication> retrievedApplications = newestFormApplications.getContent();
         assertThat(retrievedApplications.size()).isEqualTo(2);
         assertThat(retrievedApplications.get(0).getId()).isGreaterThan(retrievedApplications.get(1).getId());
+    }
+
+    @DisplayName("최종 합격한 지원서를 폼 ID로 조회한다")
+    @Test
+    void findFinalPassApplicationsByFormId() {
+        //given
+        Form formA = formRepository.save(Form.builder()
+                .title("formA")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .hasInterview(false)
+                .sections(List.of())
+                .build());
+        Form formB = formRepository.save(Form.builder()
+                .title("formB")
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now())
+                .hasInterview(false)
+                .sections(List.of())
+                .build());
+
+        FormApplication applicationA = FormApplication.builder()
+                .name("nameA")
+                .studentNumber("test")
+                .department("test")
+                .status(FormApplicationStatus.FINAL_PASS)
+                .form(formA)
+                .build();
+
+        FormApplication applicationB = FormApplication.builder()
+                .name("nameB")
+                .studentNumber("test")
+                .department("test")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(formA)
+                .build();
+
+        FormApplication applicationC = FormApplication.builder()
+                .name("nameC")
+                .studentNumber("test")
+                .department("test")
+                .status(FormApplicationStatus.FINAL_PASS)
+                .form(formB)
+                .build();
+
+        formApplicationRepository.saveAll(List.of(applicationA, applicationB, applicationC));
+
+        //when
+        List<FormApplication> result = formApplicationRepository.findAllFinalPassedByFormId(
+                formA.getId());
+
+        //then
+        assertThat(result).hasSize(1)
+                .extracting(FormApplication::getName)
+                .containsExactly("nameA");
     }
 }
