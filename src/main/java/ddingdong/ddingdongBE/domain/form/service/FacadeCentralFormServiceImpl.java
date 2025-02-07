@@ -35,7 +35,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormFieldService formFieldService;
     private final ClubService clubService;
     private final FormApplicationService formApplicationService;
-    private final ClubMemberService clubMemberService;
 
     @Transactional
     @Override
@@ -91,20 +90,17 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Transactional
     public void registerApplicantAsMember(Long formId) {
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
-        if(!finalPassedFormApplications.isEmpty()) {
-            finalPassedFormApplications.forEach(formApplication -> {
-                Club club = formApplication.getForm().getClub();
-                ClubMember clubMember = ClubMember.builder()
-                        .name(formApplication.getName())
-                        .studentNumber(formApplication.getStudentNumber())
-                        .department(formApplication.getDepartment())
-                        .phoneNumber(formApplication.getPhoneNumber())
-                        .position(MEMBER)
-                        .build();
-
-                club.addClubMember(clubMember);
-            });
-        }
+        finalPassedFormApplications.forEach(formApplication -> {
+            Club club = formApplication.getForm().getClub();
+            ClubMember clubMember = ClubMember.builder()
+                    .name(formApplication.getName())
+                    .studentNumber(formApplication.getStudentNumber())
+                    .department(formApplication.getDepartment())
+                    .phoneNumber(formApplication.getPhoneNumber())
+                    .position(MEMBER)
+                    .build();
+            club.addClubMember(clubMember);
+        });
     }
 
     private FormListQuery buildFormListQuery(Form form) {

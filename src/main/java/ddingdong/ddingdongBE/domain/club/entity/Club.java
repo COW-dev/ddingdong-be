@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -40,7 +41,7 @@ public class Club extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "club")
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<ClubMember> clubMembers = new ArrayList<>();
 
     private String name;
