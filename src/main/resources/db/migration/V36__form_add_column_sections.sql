@@ -1,1 +1,1 @@
-ALTER TABLE form ADD COLUMN sections TEXT NOT NULL DEFAULT '[]';
+ALTER TABLE form ADD COLUMN sections varchar(500) NOT NULL default '[]';
