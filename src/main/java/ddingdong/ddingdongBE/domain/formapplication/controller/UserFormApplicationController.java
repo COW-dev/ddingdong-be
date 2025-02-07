@@ -13,7 +13,7 @@ public class UserFormApplicationController implements UserFormApplicationApi {
     private final FacadeUserFormService facadeUserFormService;
 
     @Override
-    public void createFormResponse(Long formId, CreateFormApplicationRequest createFormApplicationRequest) {
+    public void createFormApplication(Long formId, CreateFormApplicationRequest createFormApplicationRequest) {
         facadeUserFormService.createFormApplication(createFormApplicationRequest.toCommand(formId));
     }
 }

@@ -1,12 +1,9 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.PagingQuery;
-import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery.FormApplicationListQuery;
@@ -46,5 +43,12 @@ public class FacadeCentralFormApplicationServiceImpl implements FacadeCentralFor
         FormApplication formApplication = formApplicationService.getById(applicationId);
         List<FormAnswer> formAnswers = formAnswerService.getAllByApplication(formApplication);
         return FormApplicationQuery.of(formApplication, formAnswers);
+    }
+
+    @Transactional
+    @Override
+    public void updateStatus(UpdateFormApplicationStatusCommand command) {
+        List<FormApplication> formApplications = formApplicationService.getAllById(command.applicationIds());
+        formApplications.forEach(formApplication -> formApplication.updateStatus(command.status()));
     }
 }

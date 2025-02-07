@@ -16,7 +16,7 @@ public interface UserFormApplicationApi {
     @ApiResponse(responseCode = "201", description = "지원하기 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/forms/{formId}/applications")
-    void createFormResponse(
+    void createFormApplication(
             @PathVariable Long formId,
             @Valid @RequestBody CreateFormApplicationRequest request
     );

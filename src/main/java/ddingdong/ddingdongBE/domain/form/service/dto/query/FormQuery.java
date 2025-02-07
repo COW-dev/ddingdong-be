@@ -20,6 +20,7 @@ public record FormQuery(
 
     @Builder
     public record FormFieldListQuery(
+            Long id,
             String question,
             FieldType type,
             List<String> options,
@@ -29,6 +30,7 @@ public record FormQuery(
     ) {
         public static FormFieldListQuery from(FormField formField) {
             return FormFieldListQuery.builder()
+                    .id(formField.getId())
                     .question(formField.getQuestion())
                     .type(formField.getFieldType())
                     .options(formField.getOptions())
