@@ -31,7 +31,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.assertj.core.api.Assertions;
-import org.assertj.core.groups.Tuple;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -208,9 +207,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 .sample();
         Form savedForm = formService.create(form);
         // when //then
-        assertThrows(NonHaveAuthority.class, () -> {
-            facadeCentralFormService.deleteForm(savedForm.getId(), user2);
-        });
+        assertThrows(NonHaveAuthority.class, () -> facadeCentralFormService.deleteForm(savedForm.getId(), user2));
     }
 
     @DisplayName("동아리는 자신의 폼지를 전부 조회할 수 있다.")
