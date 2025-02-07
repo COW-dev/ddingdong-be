@@ -16,7 +16,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
-import ddingdong.ddingdongBE.domain.formapplication.service.FacadeUserFormService;
+import ddingdong.ddingdongBE.domain.formapplication.service.FacadeUserFormApplicationService;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand.CreateFormAnswerCommand;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
@@ -30,10 +30,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FacadeUserFormServiceImplTest extends TestContainerSupport {
+class FacadeUserFormApplicationServiceImplTest extends TestContainerSupport {
 
     @Autowired
-    private FacadeUserFormService facadeUserFormService;
+    private FacadeUserFormApplicationService facadeUserFormApplicationService;
 
     @Autowired
     private FormApplicationRepository formApplicationRepository;
@@ -99,7 +99,7 @@ class FacadeUserFormServiceImplTest extends TestContainerSupport {
                 .set("formAnswerCommands", List.of(new CreateFormAnswerCommand(savedFormField.getId(), List.of("답변"))))
                 .sample();
         // when
-        facadeUserFormService.createFormApplication(createFormApplicationCommand);
+        facadeUserFormApplicationService.createFormApplication(createFormApplicationCommand);
         // then
         List<FormApplication> formApplications = formApplicationRepository.findAll();
         List<FormAnswer> formAnswers  = formAnswerRepository.findAll();

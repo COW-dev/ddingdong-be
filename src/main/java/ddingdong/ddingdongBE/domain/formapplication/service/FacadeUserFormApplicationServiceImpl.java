@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-public class FacadeUserFormServiceImpl implements FacadeUserFormService {
+public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormApplicationService {
 
     private final FormApplicationService formApplicationService;
     private final FormAnswerService formAnswerService;
