@@ -10,10 +10,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserFormApplicationController implements UserFormApplicationApi {
 
-    private final FacadeUserFormService facadeUserFormService;
+  private final FacadeUserFormService facadeUserFormService;
 
-    @Override
-    public void createFormApplication(Long formId, CreateFormApplicationRequest createFormApplicationRequest) {
-        facadeUserFormService.createFormApplication(createFormApplicationRequest.toCommand(formId));
-    }
+  @Override
+  public void createFormApplication(Long formId,
+      CreateFormApplicationRequest createFormApplicationRequest) {
+    facadeUserFormService.createFormApplication(createFormApplicationRequest.toCommand(formId));
+  }
 }

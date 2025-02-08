@@ -29,56 +29,56 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping("/server/central")
 public interface CentralFormApi {
 
-    @Operation(summary = "동아리 지원 폼지 생성 API")
-    @ApiResponse(responseCode = "201", description = "동아리 지원 폼지 생성 성공")
-    @ResponseStatus(HttpStatus.CREATED)
-    @SecurityRequirement(name = "AccessToken")
-    @PostMapping("/my/forms")
-    void createForm(
-            @Valid @RequestBody CreateFormRequest createFormRequest,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+  @Operation(summary = "동아리 지원 폼지 생성 API")
+  @ApiResponse(responseCode = "201", description = "동아리 지원 폼지 생성 성공")
+  @ResponseStatus(HttpStatus.CREATED)
+  @SecurityRequirement(name = "AccessToken")
+  @PostMapping("/my/forms")
+  void createForm(
+      @Valid @RequestBody CreateFormRequest createFormRequest,
+      @AuthenticationPrincipal PrincipalDetails principalDetails
+  );
 
-    @Operation(summary = "동아리 지원 폼지 수정 API")
-    @ApiResponse(responseCode = "204", description = "동아리 지원 폼지 수정 성공")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @SecurityRequirement(name = "AccessToken")
-    @PutMapping("/my/forms/{formId}")
-    void updateForm(
-            @Valid @RequestBody UpdateFormRequest updateFormRequest,
-            @PathVariable("formId") Long formId,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+  @Operation(summary = "동아리 지원 폼지 수정 API")
+  @ApiResponse(responseCode = "204", description = "동아리 지원 폼지 수정 성공")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @SecurityRequirement(name = "AccessToken")
+  @PutMapping("/my/forms/{formId}")
+  void updateForm(
+      @Valid @RequestBody UpdateFormRequest updateFormRequest,
+      @PathVariable("formId") Long formId,
+      @AuthenticationPrincipal PrincipalDetails principalDetails
+  );
 
-    @Operation(summary = "동아리 지원 폼지 삭제 API")
-    @ApiResponse(responseCode = "204", description = "동아리 지원 폼지 삭제 성공")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
-    @SecurityRequirement(name = "AccessToken")
-    @DeleteMapping("/my/forms/{formId}")
-    void deleteForm(
-            @PathVariable("formId") Long formId,
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+  @Operation(summary = "동아리 지원 폼지 삭제 API")
+  @ApiResponse(responseCode = "204", description = "동아리 지원 폼지 삭제 성공")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  @SecurityRequirement(name = "AccessToken")
+  @DeleteMapping("/my/forms/{formId}")
+  void deleteForm(
+      @PathVariable("formId") Long formId,
+      @AuthenticationPrincipal PrincipalDetails principalDetails
+  );
 
-    @Operation(summary = "동아리 지원 폼지 전체조회 API")
-    @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 전체조회 성공",
-            content = @Content(
-                    array = @ArraySchema(schema = @Schema(implementation = FormListResponse.class))
-            ))
-    @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/forms")
-    List<FormListResponse> getAllMyForm(
-            @AuthenticationPrincipal PrincipalDetails principalDetails
-    );
+  @Operation(summary = "동아리 지원 폼지 전체조회 API")
+  @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 전체조회 성공",
+      content = @Content(
+          array = @ArraySchema(schema = @Schema(implementation = FormListResponse.class))
+      ))
+  @ResponseStatus(HttpStatus.OK)
+  @SecurityRequirement(name = "AccessToken")
+  @GetMapping("/my/forms")
+  List<FormListResponse> getAllMyForm(
+      @AuthenticationPrincipal PrincipalDetails principalDetails
+  );
 
-    @Operation(summary = "동아리 지원 폼지 상세조회 API")
-    @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 상세조회 성공",
-            content = @Content(schema = @Schema(implementation = FormResponse.class)))
-    @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/forms/{formId}")
-    FormResponse getForm(
-            @PathVariable("formId") Long formId
-    );
+  @Operation(summary = "동아리 지원 폼지 상세조회 API")
+  @ApiResponse(responseCode = "200", description = "동아리 지원 폼지 상세조회 성공",
+      content = @Content(schema = @Schema(implementation = FormResponse.class)))
+  @ResponseStatus(HttpStatus.OK)
+  @SecurityRequirement(name = "AccessToken")
+  @GetMapping("/my/forms/{formId}")
+  FormResponse getForm(
+      @PathVariable("formId") Long formId
+  );
 }

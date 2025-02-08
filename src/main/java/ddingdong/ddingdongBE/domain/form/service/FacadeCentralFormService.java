@@ -9,13 +9,13 @@ import java.util.List;
 
 public interface FacadeCentralFormService {
 
-    void createForm(CreateFormCommand command);
+  void createForm(CreateFormCommand command);
 
-    void updateForm(UpdateFormCommand command);
+  void updateForm(UpdateFormCommand command);
 
-    void deleteForm(Long formId, User user);
+  void deleteForm(Long formId, User user);
 
-    List<FormListQuery> getAllMyForm(User user);
+  List<FormListQuery> getAllMyForm(User user);
 
-    FormQuery getForm(Long formId);
+  FormQuery getForm(Long formId);
 }

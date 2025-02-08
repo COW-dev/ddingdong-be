@@ -10,35 +10,37 @@ import lombok.Builder;
 
 @Builder
 public record CreateFormApplicationCommand(
-        Long formId,
-        String name,
-        String studentNumber,
-        String department,
-        FormApplicationStatus status,
-        List<CreateFormAnswerCommand> formAnswerCommands
+    Long formId,
+    String name,
+    String studentNumber,
+    String department,
+    FormApplicationStatus status,
+    List<CreateFormAnswerCommand> formAnswerCommands
 ) {
-    @Builder
-    public record CreateFormAnswerCommand(
-            Long fieldId,
-            List<String> value
-    ) {
-        public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
-            return FormAnswer.builder()
-                    .value(value)
-                    .formField(formField)
-                    .formApplication(formApplication)
-                    .build();
-        }
-    }
 
-    public FormApplication toEntity(Form form) {
-        return FormApplication.builder()
-                .name(name)
-                .studentNumber(studentNumber)
-                .department(department)
-                .status(status)
-                .form(form)
-                .build();
+  @Builder
+  public record CreateFormAnswerCommand(
+      Long fieldId,
+      List<String> value
+  ) {
+
+    public FormAnswer toEntity(FormApplication formApplication, FormField formField) {
+      return FormAnswer.builder()
+          .value(value)
+          .formField(formField)
+          .formApplication(formApplication)
+          .build();
     }
+  }
+
+  public FormApplication toEntity(Form form) {
+    return FormApplication.builder()
+        .name(name)
+        .studentNumber(studentNumber)
+        .department(department)
+        .status(status)
+        .form(form)
+        .build();
+  }
 
 }

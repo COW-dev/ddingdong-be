@@ -4,6 +4,6 @@ import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFo
 
 public interface FacadeUserFormService {
 
-    void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand);
+  void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand);
 
 }
