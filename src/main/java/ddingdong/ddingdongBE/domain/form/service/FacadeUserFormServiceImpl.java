@@ -16,6 +16,6 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
   @Override
   public FormSectionQuery getFormSection(Long formId) {
     Form form = formService.getById(formId);
-    return FormSectionQuery.of(form.getTitle(), form.getDescription(), form.getSections());
+    return FormSectionQuery.from(form);
   }
 }
