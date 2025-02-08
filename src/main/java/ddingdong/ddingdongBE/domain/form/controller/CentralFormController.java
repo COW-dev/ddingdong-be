@@ -18,44 +18,44 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CentralFormController implements CentralFormApi {
 
-    private final FacadeCentralFormService facadeCentralFormService;
+  private final FacadeCentralFormService facadeCentralFormService;
 
-    @Override
-    public void createForm(
-            CreateFormRequest createFormRequest,
-            PrincipalDetails principalDetails
-    ) {
-        User user = principalDetails.getUser();
-        facadeCentralFormService.createForm(createFormRequest.toCommand(user));
-    }
+  @Override
+  public void createForm(
+      CreateFormRequest createFormRequest,
+      PrincipalDetails principalDetails
+  ) {
+    User user = principalDetails.getUser();
+    facadeCentralFormService.createForm(createFormRequest.toCommand(user));
+  }
 
-    @Override
-    public void updateForm(
-            UpdateFormRequest updateFormRequest,
-            Long formId,
-            PrincipalDetails principalDetails
-    ) {
-        facadeCentralFormService.updateForm(updateFormRequest.toCommand(formId));
-    }
+  @Override
+  public void updateForm(
+      UpdateFormRequest updateFormRequest,
+      Long formId,
+      PrincipalDetails principalDetails
+  ) {
+    facadeCentralFormService.updateForm(updateFormRequest.toCommand(formId));
+  }
 
-    @Override
-    public void deleteForm(Long formId, PrincipalDetails principalDetails) {
-        User user = principalDetails.getUser();
-        facadeCentralFormService.deleteForm(formId, user);
-    }
+  @Override
+  public void deleteForm(Long formId, PrincipalDetails principalDetails) {
+    User user = principalDetails.getUser();
+    facadeCentralFormService.deleteForm(formId, user);
+  }
 
-    @Override
-    public List<FormListResponse> getAllMyForm(PrincipalDetails principalDetails) {
-        User user = principalDetails.getUser();
-        List<FormListQuery> queries = facadeCentralFormService.getAllMyForm(user);
-        return queries.stream()
-                .map(FormListResponse::from)
-                .toList();
-    }
+  @Override
+  public List<FormListResponse> getAllMyForm(PrincipalDetails principalDetails) {
+    User user = principalDetails.getUser();
+    List<FormListQuery> queries = facadeCentralFormService.getAllMyForm(user);
+    return queries.stream()
+        .map(FormListResponse::from)
+        .toList();
+  }
 
-    @Override
-    public FormResponse getForm(Long formId) {
-        FormQuery query = facadeCentralFormService.getForm(formId);
-        return FormResponse.from(query);
-    }
+  @Override
+  public FormResponse getForm(Long formId) {
+    FormQuery query = facadeCentralFormService.getForm(formId);
+    return FormResponse.from(query);
+  }
 }

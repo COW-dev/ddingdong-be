@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FormRepository extends JpaRepository<Form, Long> {
 
-    List<Form> findAllByClub(Club club);
+  List<Form> findAllByClub(Club club);
 }
