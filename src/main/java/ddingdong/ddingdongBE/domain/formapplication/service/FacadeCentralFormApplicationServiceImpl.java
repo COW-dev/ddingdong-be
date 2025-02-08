@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
@@ -21,12 +23,13 @@ import java.util.List;
 public class FacadeCentralFormApplicationServiceImpl implements
     FacadeCentralFormApplicationService {
 
+  private final FormService formService;
   private final FormApplicationService formApplicationService;
   private final FormAnswerService formAnswerService;
 
   @Override
-  public MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size,
-      Long currentCursorId) {
+  public MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size, Long currentCursorId) {
+    Form form = formService.getById(formId);
     Slice<FormApplication> formApplicationPage = formApplicationService.getFormApplicationPageByFormId(
         formId, size, currentCursorId);
     if (formApplicationPage == null) {
@@ -39,7 +42,7 @@ public class FacadeCentralFormApplicationServiceImpl implements
     PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFormApplications,
         formApplicationPage.hasNext());
 
-    return MyFormApplicationPageQuery.of(formApplicationListQueries, pagingQuery);
+    return MyFormApplicationPageQuery.of(form, formApplicationListQueries, pagingQuery);
   }
 
   @Override

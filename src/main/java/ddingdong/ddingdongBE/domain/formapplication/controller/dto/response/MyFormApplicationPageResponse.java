@@ -4,12 +4,22 @@ import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormAppl
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery.FormApplicationListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import lombok.Builder;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Builder
 public record MyFormApplicationPageResponse(
+    @Schema(description = "폼지 제목", example = "카우 1기 지원 폼")
+    String title,
+    @Schema(description = "폼지 시작 일자", example = "2025-01-01")
+    LocalDate startDate,
+    @Schema(description = "폼지 마감 일자", example = "2025-02-01")
+    LocalDate endDate,
+    @Schema(description = "면접 여부", example = "true")
+    boolean hasInterview,
     @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyFormApplicationPageResponse.MyFormApplicationListResponse.class))
     List<MyFormApplicationListResponse> formApplications,
     @Schema(name = "지원자 전체 조회 페이지 정보", implementation = PagingResponse.class)
@@ -22,10 +32,14 @@ public record MyFormApplicationPageResponse(
         .stream()
         .map(MyFormApplicationListResponse::from)
         .toList();
-    return new MyFormApplicationPageResponse(formApplications,
-        PagingResponse.from(myFormApplicationPageQuery.pagingQuery()));
+    return MyFormApplicationPageResponse.builder()
+        .title(myFormApplicationPageQuery.title())
+        .startDate(myFormApplicationPageQuery.startDate())
+        .endDate(myFormApplicationPageQuery.endDate())
+        .hasInterview(myFormApplicationPageQuery.hasInterview())
+        .formApplications(formApplications)
+        .build();
   }
-
   @Builder
   record MyFormApplicationListResponse(
       @Schema(description = "지원자 id", example = "1")
