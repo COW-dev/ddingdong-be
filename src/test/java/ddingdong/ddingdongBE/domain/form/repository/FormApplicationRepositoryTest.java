@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInf
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -208,7 +209,7 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                         formApplication6)
         );
         // when
-        List<DepartmentInfo> topFive = formApplicationRepository.findTopFiveDepartmentsByForm(savedForm.getId());
+        List<DepartmentInfo> topFive = formApplicationRepository.findTopDepartmentsByFormId(savedForm.getId(),5);
         // then
 
         assertThat(topFive.size()).isEqualTo(3);
@@ -220,13 +221,20 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         assertThat(topFive.get(2).getDepartment()).isEqualTo("학과1");
     }
 
-    @DisplayName("해당 기간 내에 가장 지원자 수가 많았던 폼지의 지원자수를 반환한다.")
+    @DisplayName("주어진 날짜를 기준으로 주어진 개수만큼 최신 폼지의 시작일과 지원 수를 반환한다.")
     @Test
-    void findMaxApplicationCountByDateRange_ShouldReturnHighestCount() {
+    void findRecentFormByDateWithApplicationCount() {
         // given
+        Club club1 = fixture.giveMeBuilder(Club.class)
+                .set("id", 1L)
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .sample();
+        Club savedClub = clubRepository.save(club1);
         Form form = fixture.giveMeBuilder(Form.class)
                 .set("id", 1L)
-                .set("club", null)
+                .set("club", savedClub)
                 .set("startDate", LocalDate.of(2020, 3, 1))
                 .set("endDate", LocalDate.of(2020, 4, 1))
                 .set("sections", List.of("공통"))
@@ -251,7 +259,7 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
 
         Form form2 = fixture.giveMeBuilder(Form.class)
                 .set("id", 2L)
-                .set("club", null)
+                .set("club", savedClub)
                 .set("startDate", LocalDate.of(2020, 1, 1))
                 .set("endDate", LocalDate.of(2020, 2, 1))
                 .set("sections", List.of("공통"))
@@ -266,11 +274,27 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .build();
         formApplicationRepository.save(formApplication3);
 
-        LocalDate startDate = LocalDate.of(2020, 1, 1);
-        LocalDate endDate = LocalDate.of(2020, 6, 30);
+        Form form3 = fixture.giveMeBuilder(Form.class)
+                .set("id", 1L)
+                .set("club", savedClub)
+                .set("startDate", LocalDate.of(2020, 5, 1))
+                .set("endDate", LocalDate.of(2020, 6, 1))
+                .set("sections", List.of("공통"))
+                .sample();
+        formRepository.save(form3);
         // when
-        int count = formApplicationRepository.findMaxApplicationCountByDateRange(startDate, endDate);
+        List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
+                savedClub.getId(),
+                savedForm.getEndDate(),
+                3
+        );
         // then
-        assertThat(count).isEqualTo(2);
+        assertThat(recentFormInfos.size()).isEqualTo(2);
+        assertThat(recentFormInfos.get(0).getCount()).isEqualTo(1);
+        assertThat(recentFormInfos.get(0).getDate()).isEqualTo(LocalDate.of(2020, 1, 1));
+        assertThat(recentFormInfos.get(1).getCount()).isEqualTo(2);
+        assertThat(recentFormInfos.get(1).getDate()).isEqualTo(LocalDate.of(2020, 3, 1));
+
+
     }
 }
