@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.formapplication.repository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import java.time.LocalDate;
 import java.util.List;
 import org.springframework.data.domain.Slice;
@@ -35,21 +36,30 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
                 WHERE f.form_id = :formId
                 GROUP BY f.department
                 ORDER BY count DESC
-                LIMIT 5
+                LIMIT :size
             """, nativeQuery = true)
-    List<DepartmentInfo> findTopFiveDepartmentsByForm(@Param("formId") Long formId);
+    List<DepartmentInfo> findTopDepartmentsByFormId(
+            @Param("formId") Long formId,
+            @Param("size") int size
+    );
 
     @Query(value = """
-            SELECT COUNT(fa.id) AS count
-            FROM form_application fa
-            JOIN form f ON fa.form_id = f.id
-            WHERE f.end_date BETWEEN :startDate AND :endDate
-            GROUP BY f.id
-            ORDER BY count DESC
-            LIMIT 1
+            SELECT recent_forms.start_date AS date, COUNT(fa.id) AS count
+                        FROM (
+                            SELECT *
+                            FROM form
+                            WHERE club_id = :clubId
+                            AND start_date <= :date
+                            ORDER BY start_date
+                            LIMIT :size
+                        ) AS recent_forms
+                        LEFT JOIN form_application fa
+                        ON recent_forms.id = fa.form_id
+                        GROUP BY recent_forms.id
             """, nativeQuery = true)
-    Integer findMaxApplicationCountByDateRange(
-            @Param("startDate") LocalDate startDate,
-            @Param("endDate") LocalDate endDate
+    List<RecentFormInfo> findRecentFormByDateWithApplicationCount(
+            @Param("clubId") Long clubId,
+            @Param("date") LocalDate date,
+            @Param("size") int size
     );
 }

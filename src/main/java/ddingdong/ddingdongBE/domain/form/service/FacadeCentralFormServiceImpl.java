@@ -13,9 +13,9 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.U
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantRateQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentRankQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsListQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -85,13 +85,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
-    public FormStatisticsQuery getStatisticsByForm(Long formId) {
+    public FormStatisticsQuery getStatisticsByForm(User user, Long formId) {
+        Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         int totalCount = formStatisTicService.getTotalApplicationCountByForm(form);
-        List<DepartmentRankQuery> departmentRankQueries = formStatisTicService.createDepartmentRankByForm(form);
-        List<ApplicantRateQuery> applicantRateQueries = formStatisTicService.createApplicationRateByForm(form);
-        List<FieldStatisticsListQuery> fieldStatisticsListQueries = formStatisTicService.createFieldStatisticsListByForm(form);
-        return new FormStatisticsQuery(totalCount, departmentRankQueries, applicantRateQueries, fieldStatisticsListQueries);
+        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisTicService.createDepartmentStatistics(totalCount, form);
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisTicService.createApplicationStatistics(club, form);
+        FieldStatisticsQuery fieldStatisticsQuery = formStatisTicService.createFieldStatisticsByForm(form);
+
+        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
     }
 
     private FormListQuery buildFormListQuery(Form form) {

@@ -35,7 +35,7 @@ public class TimeUtils {
         return !nowDate.isBefore(startDate) && !nowDate.isAfter(endDate);
     }
 
-    public static boolean isFirstHalf(int month) {
-        return month >= 1 && month <= 6;
+    public static String getYearAndMonth(LocalDate date) {
+        return date.getYear() + "-" + date.getMonthValue();
     }
 }

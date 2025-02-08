@@ -20,5 +20,5 @@ public interface FacadeCentralFormService {
 
     FormQuery getForm(Long formId);
 
-    FormStatisticsQuery getStatisticsByForm(Long formId);
+    FormStatisticsQuery getStatisticsByForm(User user, Long formId);
 }
