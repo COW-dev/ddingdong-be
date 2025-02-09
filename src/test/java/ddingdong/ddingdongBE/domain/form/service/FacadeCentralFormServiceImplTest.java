@@ -54,19 +54,13 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     @Test
     void createForm() {
         // given
-        User user = fixtureMonkey.giveMeBuilder(User.class)
-                .set("id", 1L)
-                .set("Role", Role.CLUB)
-                .set("deletedAt", null)
-                .sample();
+        User user = User.builder()
+                .role(Role.CLUB)
+                .build();
         User savedUser = userRepository.save(user);
-        Club club = fixtureMonkey.giveMeBuilder(Club.class)
-                .set("id", 1L)
-                .set("user", savedUser)
-                .set("score", null)
-                .set("clubMembers", null)
-                .set("deletedAt", null)
-                .sample();
+        Club club = Club.builder()
+                .user(savedUser)
+                .build();
         clubRepository.save(club);
         CreateFormCommand createFormCommand = fixtureMonkey.giveMeBuilder(CreateFormCommand.class)
                 .set("user", savedUser)
@@ -85,22 +79,16 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     @Test
     void updateForm() {
         // given
-        User user = fixtureMonkey.giveMeBuilder(User.class)
-                .set("id", 1L)
-                .set("Role", Role.CLUB)
-                .set("deletedAt", null)
-                .sample();
+        User user = User.builder()
+                .role(Role.CLUB)
+                .build();
         User savedUser = userRepository.save(user);
-        Club club = fixtureMonkey.giveMeBuilder(Club.class)
-                .set("id", 1L)
-                .set("user", savedUser)
-                .set("score", null)
-                .set("clubMembers", null)
-                .set("deletedAt", null)
-                .sample();
-        clubRepository.save(club);
+        Club club = Club.builder()
+                .user(savedUser)
+                .build();
+        Club savedClub = clubRepository.save(club);
         Form form = fixtureMonkey.giveMeBuilder(Form.class)
-                .set("club", club)
+                .set("club", savedClub)
                 .sample();
         Form savedForm = formService.create(form);
         UpdateFormCommand updateFormCommand = fixtureMonkey.giveMeBuilder(UpdateFormCommand.class)
