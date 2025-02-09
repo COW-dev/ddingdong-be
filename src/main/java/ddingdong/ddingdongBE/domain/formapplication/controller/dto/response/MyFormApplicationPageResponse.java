@@ -38,6 +38,7 @@ public record MyFormApplicationPageResponse(
         .endDate(myFormApplicationPageQuery.endDate())
         .hasInterview(myFormApplicationPageQuery.hasInterview())
         .formApplications(formApplications)
+        .pagingInfo(PagingResponse.from(myFormApplicationPageQuery.pagingQuery()))
         .build();
   }
   @Builder
