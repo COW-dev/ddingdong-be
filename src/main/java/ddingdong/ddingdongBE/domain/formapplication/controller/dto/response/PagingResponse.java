@@ -12,8 +12,9 @@ public record PagingResponse(
     boolean hasNext
 ) {
 
-    public static PagingResponse from(PagingQuery pagingQuery) {
-        return new PagingResponse(pagingQuery.currentCursorId(), pagingQuery.nextCursorId(), pagingQuery.hasNext());
-    }
+  public static PagingResponse from(PagingQuery pagingQuery) {
+    return new PagingResponse(pagingQuery.currentCursorId(), pagingQuery.nextCursorId(),
+        pagingQuery.hasNext());
+  }
 
 }

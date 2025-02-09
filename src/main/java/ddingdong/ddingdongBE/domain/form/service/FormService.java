@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface FormService {
 
-    Form create(Form form);
+  Form create(Form form);
 
-    Form getById(Long formId);
+  Form getById(Long formId);
 
-    void delete(Form form);
+  void delete(Form form);
 
-    List<Form> getAllByClub(Club club);
+  List<Form> getAllByClub(Club club);
 }

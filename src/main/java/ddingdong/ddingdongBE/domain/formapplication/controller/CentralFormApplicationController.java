@@ -16,25 +16,30 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CentralFormApplicationController implements CentralFormApplicationApi {
 
-    private final FacadeCentralFormApplicationService facadeCentralFormApplicationService;
+  private final FacadeCentralFormApplicationService facadeCentralFormApplicationService;
 
-    @Override
-    public MyFormApplicationPageResponse getMyFormApplicationPage(Long formId, int size, Long currentCursorId, PrincipalDetails principalDetails) {
-        User user = principalDetails.getUser();
-        MyFormApplicationPageQuery query = facadeCentralFormApplicationService.getMyFormApplicationPage(formId, user, size, currentCursorId);
-        return MyFormApplicationPageResponse.from(query);
-    }
+  @Override
+  public MyFormApplicationPageResponse getMyFormApplicationPage(Long formId, int size,
+      Long currentCursorId, PrincipalDetails principalDetails) {
+    User user = principalDetails.getUser();
+    MyFormApplicationPageQuery query = facadeCentralFormApplicationService.getMyFormApplicationPage(
+        formId, user, size, currentCursorId);
+    return MyFormApplicationPageResponse.from(query);
+  }
 
-    @Override
-    public FormApplicationResponse getFormApplication(Long formId, Long applicationId, PrincipalDetails principalDetails) {
-        User user = principalDetails.getUser();
-        FormApplicationQuery query = facadeCentralFormApplicationService.getFormApplication(formId, applicationId, user);
-        return FormApplicationResponse.from(query);
-    }
+  @Override
+  public FormApplicationResponse getFormApplication(Long formId, Long applicationId,
+      PrincipalDetails principalDetails) {
+    User user = principalDetails.getUser();
+    FormApplicationQuery query = facadeCentralFormApplicationService.getFormApplication(formId,
+        applicationId, user);
+    return FormApplicationResponse.from(query);
+  }
 
-    @Override
-    public void updateFormApplicationStatus(Long formId, PrincipalDetails principalDetails, UpdateFormApplicationStatusRequest request) {
-        User user = principalDetails.getUser();
-        facadeCentralFormApplicationService.updateStatus(request.toCommand(formId, user));
-    }
+  @Override
+  public void updateFormApplicationStatus(Long formId, PrincipalDetails principalDetails,
+      UpdateFormApplicationStatusRequest request) {
+    User user = principalDetails.getUser();
+    facadeCentralFormApplicationService.updateStatus(request.toCommand(formId, user));
+  }
 }
