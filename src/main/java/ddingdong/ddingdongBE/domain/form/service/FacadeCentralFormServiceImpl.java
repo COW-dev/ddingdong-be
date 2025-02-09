@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
-import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -107,6 +107,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId) {
         FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isMultipleChoice()) {
+            throw new InvalidFieldTypeException();
+        }
         String type = formField.getFieldType().name();
         List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(formField);
         return new MultipleFieldStatisticsQuery(type, optionStatisticQueries);
@@ -127,7 +130,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
 
         if (!overlappingForms.isEmpty()) {
-            throw new InvalidFormPeriodException();
+            throw new InvalidFieldTypeException();
         }
     }
 

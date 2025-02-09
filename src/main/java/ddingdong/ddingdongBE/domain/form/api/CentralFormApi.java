@@ -94,7 +94,7 @@ public interface CentralFormApi {
 
     @Operation(summary = "동아리 폼지 통계 객관식 상세조회 API")
     @ApiResponse(responseCode = "200", description = "동아리 폼지 통계 객관식 상세조회 성공",
-            content = @Content(schema = @Schema(implementation = FormStatisticsResponse.class)))
+            content = @Content(schema = @Schema(implementation = MultipleFieldStatisticsResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/statistics/multiple-choice")
