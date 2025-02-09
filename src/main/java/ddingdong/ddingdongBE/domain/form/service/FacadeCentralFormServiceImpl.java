@@ -17,6 +17,8 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -100,6 +102,14 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
 
         return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
+    }
+
+    @Override
+    public MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        String type = formField.getFieldType().name();
+        List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(formField);
+        return new MultipleFieldStatisticsQuery(type, optionStatisticQueries);
     }
 
     private FormListQuery buildFormListQuery(Form form) {
