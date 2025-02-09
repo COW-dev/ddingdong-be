@@ -37,7 +37,8 @@ public class CentralFormController implements CentralFormApi {
             Long formId,
             PrincipalDetails principalDetails
     ) {
-        facadeCentralFormService.updateForm(updateFormRequest.toCommand(formId));
+        User user = principalDetails.getUser();
+        facadeCentralFormService.updateForm(updateFormRequest.toCommand(user, formId));
     }
 
     @Override

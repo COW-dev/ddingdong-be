@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -38,6 +39,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public void createForm(CreateFormCommand createFormCommand) {
         Club club = clubService.getByUserId(createFormCommand.user().getId());
+        validateDuplicationDate(club, createFormCommand.startDate(), createFormCommand.endDate());
+
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
 
@@ -48,6 +51,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Transactional
     @Override
     public void updateForm(UpdateFormCommand updateFormCommand) {
+        Club club = clubService.getByUserId(updateFormCommand.user().getId());
+        validateDuplicationDate(club, updateFormCommand.startDate(), updateFormCommand.endDate());
+
         Form originform = formService.getById(updateFormCommand.formId());
         Form updateForm = updateFormCommand.toEntity();
         originform.update(updateForm);
@@ -104,6 +110,14 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private void validateEqualsClub(Club club, Form form) {
         if (!Objects.equals(club.getId(), form.getClub().getId())) {
             throw new NonHaveAuthority();
+        }
+    }
+
+    public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
+        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
+
+        if (!overlappingForms.isEmpty()) {
+            throw new InvalidFormPeriodException();
         }
     }
 
