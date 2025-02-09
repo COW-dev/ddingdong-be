@@ -47,9 +47,10 @@ public class FacadeCentralFormApplicationServiceImpl implements
 
   @Override
   public FormApplicationQuery getFormApplication(Long formId, Long applicationId, User user) {
+    Form form = formService.getById(formId);
     FormApplication formApplication = formApplicationService.getById(applicationId);
     List<FormAnswer> formAnswers = formAnswerService.getAllByApplication(formApplication);
-    return FormApplicationQuery.of(formApplication, formAnswers);
+    return FormApplicationQuery.of(form, formApplication, formAnswers);
   }
 
   @Transactional
