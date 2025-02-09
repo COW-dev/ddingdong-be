@@ -32,7 +32,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormService formService;
     private final FormFieldService formFieldService;
     private final ClubService clubService;
-    private final FormStatisticService formStatisTicService;
+    private final FormStatisticService formStatisticService;
 
     @Transactional
     @Override
@@ -88,10 +88,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public FormStatisticsQuery getStatisticsByForm(User user, Long formId) {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
-        int totalCount = formStatisTicService.getTotalApplicationCountByForm(form);
-        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisTicService.createDepartmentStatistics(totalCount, form);
-        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisTicService.createApplicationStatistics(club, form);
-        FieldStatisticsQuery fieldStatisticsQuery = formStatisTicService.createFieldStatisticsByForm(form);
+        int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
+        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(totalCount, form);
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club, form);
+        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
 
         return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
     }

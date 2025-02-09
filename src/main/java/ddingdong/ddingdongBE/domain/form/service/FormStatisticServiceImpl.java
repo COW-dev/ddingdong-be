@@ -81,7 +81,8 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                     int compareValue = CalculationUtils.calculateDifference(beforeCount, count);
 
                     return new ApplicantStatisticQuery(label, count, compareRatio, compareValue);
-                }).toList();
+                })
+                .toList();
     }
 
     @Override
