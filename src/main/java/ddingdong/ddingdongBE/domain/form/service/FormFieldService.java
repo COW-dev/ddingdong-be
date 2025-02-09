@@ -13,4 +13,6 @@ public interface FormFieldService {
   List<FormField> findAllByForm(Form form);
 
   void deleteAll(List<FormField> originFormFields);
+
+  List<FormField> getAllByFormAndSection(Form form, String section);
 }
