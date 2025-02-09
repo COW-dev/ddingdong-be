@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
@@ -13,6 +14,7 @@ import java.util.List;
 
 @Builder
 public record FormApplicationQuery(
+    boolean hasInterview,
     LocalDateTime createdAt,
     String name,
     String studentNumber,
@@ -47,12 +49,13 @@ public record FormApplicationQuery(
     }
   }
 
-  public static FormApplicationQuery of(FormApplication formApplication,
+  public static FormApplicationQuery of(Form form, FormApplication formApplication,
       List<FormAnswer> formAnswers) {
     List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formAnswers.stream()
         .map(FormFieldAnswerListQuery::from)
         .toList();
     return FormApplicationQuery.builder()
+        .hasInterview(form.isHasInterview())
         .createdAt(formApplication.getCreatedAt())
         .name(formApplication.getName())
         .studentNumber(formApplication.getStudentNumber())

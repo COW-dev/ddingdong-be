@@ -14,6 +14,8 @@ import java.util.List;
 
 @Builder
 public record FormApplicationResponse(
+    @Schema(description = "폼지 면접 여부", example = "true")
+    boolean hasInterview,
     @Schema(description = "제출일시", example = "2025-01-01T00:00")
     LocalDateTime submittedAt,
     @Schema(description = "지원자 이름", example = "김띵동")
