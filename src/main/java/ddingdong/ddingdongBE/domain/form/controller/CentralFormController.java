@@ -37,8 +37,7 @@ public class CentralFormController implements CentralFormApi {
             Long formId,
             PrincipalDetails principalDetails
     ) {
-        User user = principalDetails.getUser();
-        facadeCentralFormService.updateForm(updateFormRequest.toCommand(user, formId));
+        facadeCentralFormService.updateForm(updateFormRequest.toCommand(formId));
     }
 
     @Override
@@ -63,8 +62,12 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public FormStatisticsResponse getFormStatistics(Long formId) {
-        FormStatisticsQuery query = facadeCentralFormService.getStatisticsByForm(formId);
+    public FormStatisticsResponse getFormStatistics(
+            Long formId,
+            PrincipalDetails principalDetails
+    ) {
+        User user = principalDetails.getUser();
+        FormStatisticsQuery query = facadeCentralFormService.getStatisticsByForm(user, formId);
         return FormStatisticsResponse.from(query);
     }
 }

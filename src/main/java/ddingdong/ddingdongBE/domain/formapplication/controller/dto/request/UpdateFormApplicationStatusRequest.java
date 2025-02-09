@@ -9,20 +9,21 @@ import jakarta.validation.constraints.NotNull;
 import java.util.List;
 
 public record UpdateFormApplicationStatusRequest(
-        @NotNull(message = "지원자 id 리스트는 필수 입력 사항입니다.")
-        @Schema(description = "수정할 지원자 id 리스트", example = "[1, 2, 3]")
-        List<Long> applicationIds,
+    @NotNull(message = "지원자 id 리스트는 필수 입력 사항입니다.")
+    @Schema(description = "수정할 지원자 id 리스트", example = "[1, 2, 3]")
+    List<Long> applicationIds,
 
-        @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
-        @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
-        String status
+    @NotNull(message = "지원자 상태는 필수 입력 사항입니다.")
+    @Schema(description = "수정할 지원자 상태", example = "FIRST_PASS")
+    String status
 ) {
-    public UpdateFormApplicationStatusCommand toCommand(Long formId, User user) {
-        return UpdateFormApplicationStatusCommand.builder()
-                .formId(formId)
-                .applicationIds(applicationIds)
-                .status(FormApplicationStatus.findStatus(status))
-                .user(user)
-                .build();
-    }
+
+  public UpdateFormApplicationStatusCommand toCommand(Long formId, User user) {
+    return UpdateFormApplicationStatusCommand.builder()
+        .formId(formId)
+        .applicationIds(applicationIds)
+        .status(FormApplicationStatus.findStatus(status))
+        .user(user)
+        .build();
+  }
 }

@@ -85,5 +85,8 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}/statistics")
-    FormStatisticsResponse getFormStatistics(@PathVariable("formId") Long formId);
+    FormStatisticsResponse getFormStatistics(
+            @PathVariable("formId") Long formId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
 }

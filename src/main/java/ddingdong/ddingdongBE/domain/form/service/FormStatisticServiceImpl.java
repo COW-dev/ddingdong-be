@@ -1,19 +1,20 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
+import ddingdong.ddingdongBE.common.utils.TimeUtils;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantRateQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentRankQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsListQuery;
-import ddingdong.ddingdongBE.domain.form.service.vo.ApplicationRates;
-import ddingdong.ddingdongBE.domain.form.service.vo.ApplicationRates.ApplicationRate;
-import ddingdong.ddingdongBE.domain.form.service.vo.HalfYear;
+import ddingdong.ddingdongBE.domain.form.repository.dto.FieldListInfo;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
-import java.util.ArrayList;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +26,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FormStatisticServiceImpl implements FormStatisticService {
 
-    private static final int APPLICATION_COMPARE_COUNT = 5;
-    private static final int NOT_EXIST_APPLICATION = 0;
+    private static final int DEPARTMENT_INFORMATION_SIZE = 5;
+    private static final int APPLICANT_RATIO_INFORMATION_SIZE = 3;
     private static final int DEFAULT_APPLICATION_RATE = 100;
 
     private final FormApplicationRepository formApplicationRepository;
@@ -39,9 +40,11 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     }
 
     @Override
-    public List<DepartmentRankQuery> createDepartmentRankByForm(Form form) {
-        List<DepartmentInfo> departmentInfos = formApplicationRepository.findTopFiveDepartmentsByForm(form.getId());
-        int totalCount = getTotalApplicationCountByForm(form);
+    public List<DepartmentStatisticQuery> createDepartmentStatistics(int totalCount, Form form) {
+        List<DepartmentInfo> departmentInfos = formApplicationRepository.findTopDepartmentsByFormId(
+                form.getId(),
+                DEPARTMENT_INFORMATION_SIZE
+        );
 
         return IntStream.range(0, departmentInfos.size())
                 .mapToObj(index -> {
@@ -49,48 +52,51 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                     int rank = index + 1;
                     String department = departmentInfo.getDepartment();
                     int count = parseToInt(departmentInfo.getCount());
-                    int rate = CalculationUtils.calculateRate(count, totalCount);
-                    return new DepartmentRankQuery(rank, department, count, rate);
+                    int ratio = CalculationUtils.calculateRatio(count, totalCount);
+                    return new DepartmentStatisticQuery(rank, department, count, ratio);
                 })
                 .toList();
     }
 
     @Override
-    public List<ApplicantRateQuery> createApplicationRateByForm(Form form) {
-        List<ApplicantRateQuery> results = new ArrayList<>();
+    public List<ApplicantStatisticQuery> createApplicationStatistics(Club club, Form form) {
+        LocalDate endDate = form.getEndDate();
+        List<RecentFormInfo> recentForms = formApplicationRepository.findRecentFormByDateWithApplicationCount(
+                club.getId(),
+                endDate,
+                APPLICANT_RATIO_INFORMATION_SIZE
+        );
 
-        HalfYear halfYear = HalfYear.from(form.getEndDate());
-        ApplicationRates applicationRates = new ApplicationRates();
-        for (int count = 0; count < APPLICATION_COMPARE_COUNT; count++) {
-            int maxCount = parseToInt(formApplicationRepository.findMaxApplicationCountByDateRange(
-                    halfYear.getHalfStartDate(),
-                    halfYear.getHalfEndDate()
-            ));
-            if (maxCount == NOT_EXIST_APPLICATION) {
-                break;
-            }
-            int rate = (applicationRates.getPrevious() == null) ? DEFAULT_APPLICATION_RATE :
-                    CalculationUtils.calculateRate(maxCount, applicationRates.getPrevious().getCount());
-            applicationRates.add(halfYear.getLabel(), maxCount, rate);
-            halfYear.minusHalves();
-        }
-        return applicationRates.getApplicationRates().stream()
-                .map(ApplicationRate::toQuery)
+        return IntStream.range(0, recentForms.size())
+                .mapToObj(index -> {
+                    RecentFormInfo recentFormInfo = recentForms.get(index);
+
+                    String label = TimeUtils.getYearAndMonth(recentFormInfo.getDate());
+                    int count = parseToInt(recentFormInfo.getCount());
+                    if (index == 0) {
+                        return new ApplicantStatisticQuery(label, count, 0, 0);
+                    }
+                    int beforeCount = parseToInt(recentForms.get(index - 1).getCount());
+                    int compareRatio = CalculationUtils.calculateDifferenceRatio(beforeCount, count);
+                    int compareValue = CalculationUtils.calculateDifference(beforeCount, count);
+
+                    return new ApplicantStatisticQuery(label, count, compareRatio, compareValue);
+                })
                 .toList();
     }
 
     @Override
-    public List<FieldStatisticsListQuery> createFieldStatisticsListByForm(Form form) {
-        List<FormField> formFields = formFieldRepository.findAllByForm(form);
-        return formFields.stream()
-                .map(this::buildFieldStatisticsList)
-                .toList();
+    public FieldStatisticsQuery createFieldStatisticsByForm(Form form) {
+        List<String> sections = form.getSections();
+        List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(form.getId());
+        List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(fieldListInfos);
+        return new FieldStatisticsQuery(sections, fieldStatisticsListQueries);
     }
 
-    private FieldStatisticsListQuery buildFieldStatisticsList(FormField formField) {
-        int answerCount = formAnswerRepository.countByFormField(formField);
-        return new FieldStatisticsListQuery(formField.getId(), formField.getQuestion(), answerCount,
-                formField.getFieldType());
+    private List<FieldStatisticsListQuery> toFieldListQueries(List<FieldListInfo> fieldListInfos) {
+        return fieldListInfos.stream()
+                .map(FieldStatisticsListQuery::from)
+                .toList();
     }
 
     private int parseToInt(Integer count) {

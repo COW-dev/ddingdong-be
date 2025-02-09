@@ -1,40 +1,55 @@
 package ddingdong.ddingdongBE.domain.form.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
+import ddingdong.ddingdongBE.domain.form.repository.dto.FieldListInfo;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
 public record FormStatisticsQuery(
         int totalCount,
-        List<DepartmentRankQuery> departmentRanks,
-        List<ApplicantRateQuery> applicantRates,
-        List<FieldStatisticsListQuery> fields
+        List<DepartmentStatisticQuery> departmentStatisticQueries,
+        List<ApplicantStatisticQuery> applicantStatisticQueries,
+        FieldStatisticsQuery fieldStatisticsQuery
 ) {
 
-    public record  DepartmentRankQuery(
+    public record DepartmentStatisticQuery(
             int rank,
             String label,
             int count,
-            int rate
+            int ratio
     ) {
     }
 
-    public record ApplicantRateQuery(
+    public record ApplicantStatisticQuery(
             String label,
             int count,
-            int comparedToLastSemester
+            int compareRatio,
+            int compareValue
     ) {
-
-
     }
 
-    public record FieldStatisticsListQuery(
-            Long id,
-            String question,
-            int count,
-            FieldType fieldType
+    public record FieldStatisticsQuery(
+            List<String> sections,
+            List<FieldStatisticsListQuery> fieldStatisticsListQueries
     ) {
 
+        public record FieldStatisticsListQuery(
+                Long id,
+                String question,
+                int count,
+                FieldType fieldType,
+                String section
+        ) {
+            public static FieldStatisticsListQuery from(FieldListInfo fieldListInfo) {
+                return new FieldStatisticsListQuery(
+                        fieldListInfo.getId(),
+                        fieldListInfo.getQuestion(),
+                        fieldListInfo.getCount(),
+                        fieldListInfo.getType(),
+                        fieldListInfo.getSection()
+                );
+            }
+        }
     }
 }

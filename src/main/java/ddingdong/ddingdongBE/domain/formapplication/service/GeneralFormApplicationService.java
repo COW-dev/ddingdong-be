@@ -18,43 +18,45 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class GeneralFormApplicationService implements FormApplicationService {
 
-    private final FormApplicationRepository formApplicationRepository;
+  private final FormApplicationRepository formApplicationRepository;
 
-    @Transactional
-    @Override
-    public FormApplication create(FormApplication formApplication) {
-        return formApplicationRepository.save(formApplication);
+  @Transactional
+  @Override
+  public FormApplication create(FormApplication formApplication) {
+    return formApplicationRepository.save(formApplication);
+  }
+
+  @Override
+  public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
+      Long currentCursorId) {
+    Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
+        formId, size + 1, currentCursorId);
+    return buildSlice(formApplicationPages, size);
+  }
+
+  @Override
+  public List<FormApplication> getAllById(List<Long> applicationIds) {
+    return formApplicationRepository.findAllById(applicationIds);
+  }
+
+  @Override
+  public FormApplication getById(Long applicationId) {
+    return formApplicationRepository.findById(applicationId)
+        .orElseThrow(() -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:" + applicationId));
+  }
+
+  private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {
+    List<FormApplication> content = new ArrayList<>(originalSlice.getContent());
+    if (content.isEmpty()) {
+      return null;
     }
 
-    @Override
-    public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size, Long currentCursorId) {
-        Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(formId, size + 1, currentCursorId);
-        return buildSlice(formApplicationPages, size);
+    boolean hasNext = content.size() > size;
+
+    if (hasNext) {
+      content.remove(content.size() - 1);
     }
 
-    @Override
-    public List<FormApplication> getAllById(List<Long> applicationIds) {
-        return formApplicationRepository.findAllById(applicationIds);
-    }
-
-    @Override
-    public FormApplication getById(Long applicationId) {
-        return formApplicationRepository.findById(applicationId)
-            .orElseThrow(() -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:"+applicationId));
-    }
-
-    private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {
-        List<FormApplication> content = new ArrayList<>(originalSlice.getContent());
-        if (content.isEmpty()) {
-            return null;
-        }
-
-        boolean hasNext = content.size() > size;
-
-        if (hasNext) {
-            content.remove(content.size() - 1);
-        }
-
-        return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
-    }
+    return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
+  }
 }
