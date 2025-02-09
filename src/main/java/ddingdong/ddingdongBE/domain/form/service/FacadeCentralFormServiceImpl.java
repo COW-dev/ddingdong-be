@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -130,7 +131,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
 
         if (!overlappingForms.isEmpty()) {
-            throw new InvalidFieldTypeException();
+            throw new InvalidFormPeriodException();
         }
     }
 
