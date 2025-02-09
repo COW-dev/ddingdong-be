@@ -86,9 +86,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         Club club = Club.builder()
                 .user(savedUser)
                 .build();
-        clubRepository.save(club);
+        Club savedClub = clubRepository.save(club);
         Form form = fixtureMonkey.giveMeBuilder(Form.class)
-                .set("club", club)
+                .set("club", savedClub)
                 .sample();
         Form savedForm = formService.create(form);
         UpdateFormCommand updateFormCommand = fixtureMonkey.giveMeBuilder(UpdateFormCommand.class)

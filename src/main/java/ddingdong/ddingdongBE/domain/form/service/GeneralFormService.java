@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
-import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
@@ -42,11 +41,7 @@ public class GeneralFormService implements FormService{
     }
 
     @Override
-    public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
-        List<Form> overlappingForms = formRepository.findOverlappingForms(club.getId(), startDate, endDate);
-
-        if (!overlappingForms.isEmpty()) {
-            throw new InvalidFormPeriodException();
-        }
+    public List<Form> findOverlappingForms(Long id, LocalDate startDate, LocalDate endDate) {
+        return formRepository.findOverlappingForms(id, startDate, endDate);
     }
 }

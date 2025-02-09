@@ -15,5 +15,5 @@ public interface FormService {
 
     List<Form> getAllByClub(Club club);
 
-    void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate);
+    List<Form> findOverlappingForms(Long id, LocalDate startDate, LocalDate endDate);
 }
