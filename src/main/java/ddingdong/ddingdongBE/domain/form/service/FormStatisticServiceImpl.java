@@ -13,10 +13,12 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.D
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -31,7 +33,6 @@ public class FormStatisticServiceImpl implements FormStatisticService {
 
     private static final int DEPARTMENT_INFORMATION_SIZE = 5;
     private static final int APPLICANT_RATIO_INFORMATION_SIZE = 3;
-    private static final int DEFAULT_APPLICATION_RATE = 100;
 
     private final FormApplicationRepository formApplicationRepository;
     private final FormFieldRepository formFieldRepository;
@@ -101,7 +102,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     public List<OptionStatisticQuery> createOptionStatistics(FormField formField) {
         List<String> options = formField.getOptions();
         int answerCount = formAnswerRepository.countByFormField(formField);
-        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(formField.getId())
+        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormFieldId(formField.getId())
                 .stream()
                 .map(stringListConverter::convertToEntityAttribute)
                 .toList();
@@ -111,6 +112,27 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                     return new OptionStatisticQuery(option, count, ratio);
                 })
                 .toList();
+    }
+
+    @Override
+    public List<TextStatisticsQuery> createTextStatistics(FormField formField) {
+        List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
+        return textAnswerInfos.stream()
+                .map(textAnswerInfo -> {
+                    Long id = textAnswerInfo.getId();
+                    String name = textAnswerInfo.getName();
+                    String answer = getAnswer(textAnswerInfo.getValue());
+                    return new TextStatisticsQuery(id, name, answer);
+                })
+                .toList();
+    }
+
+    private String getAnswer(String value) {
+        List<String> answer = stringListConverter.convertToEntityAttribute(value);
+        if(answer.isEmpty()) {
+            return null;
+        }
+        return answer.get(0);
     }
 
     private int compareAnswerCount(String option, List<List<String>> formFieldAnswerValues) {

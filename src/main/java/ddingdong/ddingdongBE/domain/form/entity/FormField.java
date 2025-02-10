@@ -71,4 +71,9 @@ public class FormField extends BaseEntity {
   public boolean isMultipleChoice() {
     return this.fieldType == FieldType.CHECK_BOX || this.fieldType == FieldType.RADIO;
   }
+
+  public boolean isTextType() {
+    return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
+            || this.fieldType == FieldType.FILE;
+  }
 }
