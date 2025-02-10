@@ -7,10 +7,12 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -70,6 +72,12 @@ public class CentralFormController implements CentralFormApi {
         User user = principalDetails.getUser();
         FormStatisticsQuery query = facadeCentralFormService.getStatisticsByForm(user, formId);
         return FormStatisticsResponse.from(query);
+    }
+
+    @Override
+    public MultipleFieldStatisticsResponse getMultipleFieldStatistics(Long fieldId) {
+        MultipleFieldStatisticsQuery query = facadeCentralFormService.getMultipleFieldStatistics(fieldId);
+        return MultipleFieldStatisticsResponse.from(query);
     }
 
     @Override

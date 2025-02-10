@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -22,6 +23,8 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.D
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -106,6 +109,17 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
 
         return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
+    }
+
+    @Override
+    public MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isMultipleChoice()) {
+            throw new InvalidFieldTypeException();
+        }
+        String type = formField.getFieldType().name();
+        List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(formField);
+        return new MultipleFieldStatisticsQuery(type, optionStatisticQueries);
     }
 
     @Override

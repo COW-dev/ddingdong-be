@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Form - Club", description = "Form API")
@@ -89,6 +91,14 @@ public interface CentralFormApi {
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
+
+    @Operation(summary = "동아리 폼지 통계 객관식 상세조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리 폼지 통계 객관식 상세조회 성공",
+            content = @Content(schema = @Schema(implementation = MultipleFieldStatisticsResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/statistics/multiple-choice")
+    MultipleFieldStatisticsResponse getMultipleFieldStatistics(@RequestParam Long fieldId);
 
     @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API")
     @ApiResponse(responseCode = "201", description = "최종 합격 지원자 동아리원 명단 등록 성공")

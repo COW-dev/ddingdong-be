@@ -1,15 +1,18 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import ddingdong.ddingdongBE.domain.form.repository.dto.FieldListInfo;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
@@ -33,6 +36,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     private final FormApplicationRepository formApplicationRepository;
     private final FormFieldRepository formFieldRepository;
     private final FormAnswerRepository formAnswerRepository;
+    private final StringListConverter stringListConverter;
 
     @Override
     public int getTotalApplicationCountByForm(Form form) {
@@ -91,6 +95,28 @@ public class FormStatisticServiceImpl implements FormStatisticService {
         List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(form.getId());
         List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(fieldListInfos);
         return new FieldStatisticsQuery(sections, fieldStatisticsListQueries);
+    }
+
+    @Override
+    public List<OptionStatisticQuery> createOptionStatistics(FormField formField) {
+        List<String> options = formField.getOptions();
+        int answerCount = formAnswerRepository.countByFormField(formField);
+        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(formField.getId())
+                .stream()
+                .map(stringListConverter::convertToEntityAttribute)
+                .toList();
+        return options.stream().map(option -> {
+                    int count = compareAnswerCount(option, formFieldAnswerValues);
+                    int ratio = CalculationUtils.calculateRatio(count, answerCount);
+                    return new OptionStatisticQuery(option, count, ratio);
+                })
+                .toList();
+    }
+
+    private int compareAnswerCount(String option, List<List<String>> formFieldAnswerValues) {
+        return (int) formFieldAnswerValues.stream()
+                .filter(value -> value.contains(option))
+                .count();
     }
 
     private List<FieldStatisticsListQuery> toFieldListQueries(List<FieldListInfo> fieldListInfos) {
