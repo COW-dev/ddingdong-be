@@ -91,9 +91,9 @@ public interface CentralFormApi {
     );
 
     @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API")
-    @ApiResponse(responseCode = "200", description = "최종 합격 지원자 동아리원 명단 등록 성공")
+    @ApiResponse(responseCode = "201", description = "최종 합격 지원자 동아리원 명단 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/forms/{formId}/members/register-applicants")
-    void registerMember(@PathVariable("formId") Long formId);
+    @PostMapping("/my/forms/{formId}/members/register-applicants")
+    void registerMembers(@PathVariable("formId") Long formId);
 }

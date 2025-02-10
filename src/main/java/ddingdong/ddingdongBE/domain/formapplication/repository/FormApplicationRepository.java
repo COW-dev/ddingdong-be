@@ -63,7 +63,11 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             @Param("date") LocalDate date,
             @Param("size") int size
     );
-    @Query(value = "select fa from FormApplication fa where fa.form.id = :formId and fa.status = 'FINAL_PASS'")
+    @Query(value = """
+            select fa
+            from FormApplication fa
+            where fa.form.id = :formId and (fa.status = 'FINAL_PASS' or (fa.status = 'FIRST_PASS' and fa.form.hasInterview = false))
+            """)
     List<FormApplication> findAllFinalPassedByFormId(@Param("formId") Long formId);
 
 }

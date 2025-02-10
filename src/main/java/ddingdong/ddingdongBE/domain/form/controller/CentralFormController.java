@@ -73,7 +73,7 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void registerMember(Long formId) {
+    public void registerMembers(Long formId) {
         facadeCentralFormService.registerApplicantAsMember(formId);
     }
 }
