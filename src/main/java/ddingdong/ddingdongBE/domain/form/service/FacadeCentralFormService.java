@@ -21,4 +21,6 @@ public interface FacadeCentralFormService {
     FormQuery getForm(Long formId);
 
     FormStatisticsQuery getStatisticsByForm(User user, Long formId);
+
+    void registerApplicantAsMember(Long formId);
 }

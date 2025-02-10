@@ -69,4 +69,8 @@ public class ClubMember extends BaseEntity {
         this.position = updateClubMember.getPosition();
         this.department = updateClubMember.getDepartment();
     }
+
+    public void setClubFormConvenience(Club club) {
+        this.club = club;
+    }
 }

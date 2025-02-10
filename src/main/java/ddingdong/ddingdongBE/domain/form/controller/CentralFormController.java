@@ -71,4 +71,9 @@ public class CentralFormController implements CentralFormApi {
         FormStatisticsQuery query = facadeCentralFormService.getStatisticsByForm(user, formId);
         return FormStatisticsResponse.from(query);
     }
+
+    @Override
+    public void registerMembers(Long formId) {
+        facadeCentralFormService.registerApplicantAsMember(formId);
+    }
 }

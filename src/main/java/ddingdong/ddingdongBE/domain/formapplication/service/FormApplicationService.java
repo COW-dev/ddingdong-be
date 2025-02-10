@@ -7,12 +7,13 @@ import java.util.List;
 
 public interface FormApplicationService {
 
-  FormApplication create(FormApplication formApplication);
+    FormApplication create(FormApplication formApplication);
 
-  Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
-      Long currentCursorId);
+    Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size, Long currentCursorId);
 
-  FormApplication getById(Long applicationId);
+    FormApplication getById(Long applicationId);
 
-  List<FormApplication> getAllById(List<Long> applicationIds);
+    List<FormApplication> getAllById(List<Long> applicationIds);
+
+    List<FormApplication> getAllFinalPassedByFormId(Long formId);
 }

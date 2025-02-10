@@ -13,6 +13,7 @@ import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,7 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
                 .set("id", null)
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", new ArrayList<>())
                 .set("deletedAt", null)
                 .sampleList(3);
         clubRepository.saveAll(clubs);
