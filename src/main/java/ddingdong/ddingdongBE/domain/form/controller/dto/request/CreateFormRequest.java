@@ -31,6 +31,10 @@ public record CreateFormRequest(
         @NotNull(message = "면접여부는 null이 될 수 없습니다.")
         boolean hasInterview,
 
+        @Schema(description = "섹션 종류", example = "['공통', '서버']")
+        @NotNull(message = "섹션 종류는 null이 될 수 없습니다.")
+        List<String> sections,
+
         @ArraySchema(schema = @Schema(implementation = CreateFormFieldRequest.class))
         List<CreateFormFieldRequest> formFields
 ) {
@@ -42,7 +46,7 @@ public record CreateFormRequest(
 
             @Schema(description = "질문 종류", example = "CHECK_BOX")
             @NotNull(message = "질문 종류는 null이 될 수 없습니다.")
-            FieldType type,
+            String type,
 
             @Schema(description = "질문의 선택리스트", example = "[지문1이다., 지문2이다., 지문3이다.]")
             List<String> options,
@@ -63,7 +67,7 @@ public record CreateFormRequest(
         public CreateFormFieldCommand toCommand() {
             return CreateFormFieldCommand.builder()
                     .question(question)
-                    .type(type)
+                    .type(FieldType.findType(type))
                     .options(options)
                     .required(required)
                     .order(order)
@@ -83,6 +87,7 @@ public record CreateFormRequest(
                 .startDate(startDate)
                 .endDate(endDate)
                 .hasInterview(hasInterview)
+                .sections(sections)
                 .formFieldCommands(createFormFieldCommands)
                 .build();
     }

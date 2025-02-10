@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -37,5 +38,10 @@ public class GeneralFormService implements FormService{
     @Override
     public List<Form> getAllByClub(Club club) {
         return formRepository.findAllByClub(club);
+    }
+
+    @Override
+    public List<Form> findOverlappingForms(Long id, LocalDate startDate, LocalDate endDate) {
+        return formRepository.findOverlappingForms(id, startDate, endDate);
     }
 }

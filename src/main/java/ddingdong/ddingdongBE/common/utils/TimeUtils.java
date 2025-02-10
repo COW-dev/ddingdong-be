@@ -6,31 +6,36 @@ import java.time.format.DateTimeFormatter;
 
 public class TimeUtils {
 
-  private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
+    private static final String DATE_FORMAT = "yyyy-MM-dd HH:mm";
 
-  public static LocalDateTime parseToLocalDateTime(String dateString) {
-    if (dateString == null || dateString.isBlank()) {
-      return null;
+    public static LocalDateTime parseToLocalDateTime(String dateString) {
+        if (dateString == null || dateString.isBlank()) {
+            return null;
+        }
+
+        return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
     }
 
-    return LocalDateTime.parse(dateString, DateTimeFormatter.ofPattern(DATE_FORMAT));
-  }
+    public static LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
+        if (dateString == null) {
+            return null;
+        }
 
-  public static LocalDateTime processDate(String dateString, LocalDateTime currentDate) {
-    if (dateString == null) {
-      return null;
+        if (dateString.isBlank()) {
+            return null;
+        }
+
+        return parseToLocalDateTime(dateString);
     }
 
-    if (dateString.isBlank()) {
-      return null;
+    public static boolean isDateInRange(LocalDate nowDate, LocalDate startDate, LocalDate endDate) {
+        if (nowDate == null || startDate == null || endDate == null) {
+            return false;
+        }
+        return !nowDate.isBefore(startDate) && !nowDate.isAfter(endDate);
     }
 
-    return parseToLocalDateTime(dateString);
-  }
-
-  public static boolean isDateInRange(LocalDate nowDate, LocalDate startDate, LocalDate endDate) {
-    if (nowDate == null || startDate == null || endDate == null) {
-      return false;
+    public static String getYearAndMonth(LocalDate date) {
+        return date.getYear() + "-" + date.getMonthValue();
     }
-    return !nowDate.isBefore(startDate) && !nowDate.isAfter(endDate);  }
 }

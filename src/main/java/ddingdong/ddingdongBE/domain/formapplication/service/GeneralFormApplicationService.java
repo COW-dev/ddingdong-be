@@ -26,11 +26,13 @@ public class GeneralFormApplicationService implements FormApplicationService {
         return formApplicationRepository.save(formApplication);
     }
 
-    @Override
-    public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size, Long currentCursorId) {
-        Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(formId, size + 1, currentCursorId);
-        return buildSlice(formApplicationPages, size);
-    }
+  @Override
+  public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
+      Long currentCursorId) {
+    Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
+        formId, size + 1, currentCursorId);
+    return buildSlice(formApplicationPages, size);
+  }
 
     @Override
     public List<FormApplication> getAllById(List<Long> applicationIds) {

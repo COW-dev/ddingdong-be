@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -15,6 +16,10 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -33,12 +38,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormService formService;
     private final FormFieldService formFieldService;
     private final ClubService clubService;
+    private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
 
     @Transactional
     @Override
     public void createForm(CreateFormCommand createFormCommand) {
         Club club = clubService.getByUserId(createFormCommand.user().getId());
+        validateDuplicationDate(club, createFormCommand.startDate(), createFormCommand.endDate());
+
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
 
@@ -49,6 +57,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Transactional
     @Override
     public void updateForm(UpdateFormCommand updateFormCommand) {
+        Club club = clubService.getByUserId(updateFormCommand.user().getId());
+        validateDuplicationDate(club, updateFormCommand.startDate(), updateFormCommand.endDate());
+
         Form originform = formService.getById(updateFormCommand.formId());
         Form updateForm = updateFormCommand.toEntity();
         originform.update(updateForm);
@@ -86,6 +97,18 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
+    public FormStatisticsQuery getStatisticsByForm(User user, Long formId) {
+        Club club = clubService.getByUserId(user.getId());
+        Form form = formService.getById(formId);
+        int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
+        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(totalCount, form);
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club, form);
+        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
+
+        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
+    }
+
+    @Override
     @Transactional
     public void registerApplicantAsMember(Long formId) {
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
@@ -110,6 +133,14 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private void validateEqualsClub(Club club, Form form) {
         if (!Objects.equals(club.getId(), form.getClub().getId())) {
             throw new NonHaveAuthority();
+        }
+    }
+
+    public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
+        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
+
+        if (!overlappingForms.isEmpty()) {
+            throw new InvalidFormPeriodException();
         }
     }
 

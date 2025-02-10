@@ -14,29 +14,29 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GeneralFormFieldService implements FormFieldService {
 
-    private final FormFieldRepository formFieldRepository;
+  private final FormFieldRepository formFieldRepository;
 
-    @Transactional
-    @Override
-    public void createAll(List<FormField> formFields) {
-        formFieldRepository.saveAll(formFields);
-    }
+  @Transactional
+  @Override
+  public void createAll(List<FormField> formFields) {
+    formFieldRepository.saveAll(formFields);
+  }
 
 
-    @Override
-    public FormField getById(Long id) {
-        return formFieldRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFound("FormField(fieldId=" + id + ")를 찾을 수 없습니다."));
-    }
+  @Override
+  public FormField getById(Long id) {
+    return formFieldRepository.findById(id)
+        .orElseThrow(() -> new ResourceNotFound("FormField(fieldId=" + id + ")를 찾을 수 없습니다."));
+  }
 
-    @Override
-    public List<FormField> findAllByForm(Form form) {
-        return formFieldRepository.findAllByForm(form);
-    }
+  @Override
+  public List<FormField> findAllByForm(Form form) {
+    return formFieldRepository.findAllByForm(form);
+  }
 
-    @Transactional
-    @Override
-    public void deleteAll(List<FormField> originFormFields) {
-        formFieldRepository.deleteAll(originFormFields);
-    }
+  @Transactional
+  @Override
+  public void deleteAll(List<FormField> originFormFields) {
+    formFieldRepository.deleteAll(originFormFields);
+  }
 }
