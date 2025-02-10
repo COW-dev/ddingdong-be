@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -35,6 +36,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     private final FormApplicationRepository formApplicationRepository;
     private final FormFieldRepository formFieldRepository;
     private final FormAnswerRepository formAnswerRepository;
+    private final StringListConverter stringListConverter;
 
     @Override
     public int getTotalApplicationCountByForm(Form form) {
@@ -99,12 +101,22 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     public List<OptionStatisticQuery> createOptionStatistics(FormField formField) {
         List<String> options = formField.getOptions();
         int answerCount = formAnswerRepository.countByFormField(formField);
+        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(formField.getId())
+                .stream()
+                .map(stringListConverter::convertToEntityAttribute)
+                .toList();
         return options.stream().map(option -> {
-                    int count = parseToInt(formAnswerRepository.countAnswerByOption(option));
+                    int count = compareAnswerCount(option, formFieldAnswerValues);
                     int ratio = CalculationUtils.calculateRatio(count, answerCount);
                     return new OptionStatisticQuery(option, count, ratio);
                 })
                 .toList();
+    }
+
+    private int compareAnswerCount(String option, List<List<String>> formFieldAnswerValues) {
+        return (int) formFieldAnswerValues.stream()
+                .filter(value -> value.contains(option))
+                .count();
     }
 
     private List<FieldStatisticsListQuery> toFieldListQueries(List<FieldListInfo> fieldListInfos) {

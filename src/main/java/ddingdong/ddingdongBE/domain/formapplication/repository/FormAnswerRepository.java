@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
 
@@ -15,9 +16,9 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
     List<FormAnswer> findAllByFormApplication(FormApplication formApplication);
 
     @Query(value = """
-            SELECT COUNT(*)
-            FROM form_answer
-            WHERE value LIKE CONCAT('%"', :option, '"%')
+            SELECT fa.value
+            FROM form_answer fa
+            WHERE fa.field_id = :fieldId
             """, nativeQuery = true)
-    Integer countAnswerByOption(String option);
+    List<String> findAllValueByFormField(@Param("fieldId") Long fieldId);
 }
