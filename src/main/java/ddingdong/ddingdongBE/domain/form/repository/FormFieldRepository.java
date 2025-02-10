@@ -27,13 +27,14 @@ public interface FormFieldRepository extends JpaRepository<FormField, Long> {
     List<FieldListInfo> findFieldWithAnswerCountByFormId(@Param("formId") Long formId);
 
     @Query(value = """
-        SELECT *
-          FROM form_field f
-          WHERE f.form_id = :formId 
-            AND (f.section = :section OR f.section = '공통')
-        """, nativeQuery = true)
+            SELECT *
+              FROM form_field f
+              WHERE f.form_id = :formId 
+                AND (f.section = :section OR f.section = :defaultSection)
+            """, nativeQuery = true)
     List<FormField> findAllByFormAndSection(
-        @Param("formId") Long formId,
-        @Param("section") String section
+            @Param("formId") Long formId,
+            @Param("section") String section,
+            @Param("defaultSection") String defaultSection
     );
 }
