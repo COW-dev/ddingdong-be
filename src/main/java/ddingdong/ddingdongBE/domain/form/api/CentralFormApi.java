@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
@@ -96,4 +97,12 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/members/register-applicants")
     void registerMembers(@PathVariable("formId") Long formId);
+
+    @Operation(summary = "동아리 지원 결과 이메일 전송 API")
+    @ApiResponse(responseCode = "201", description = "동아리 지원 결과 이메일 전송 성공")
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @PostMapping("/my/forms/{formId}/results/email")
+    void sendApplicationResultEmail(@PathVariable("formId") Long formId,
+                                    @RequestBody SendApplicationResultEmailRequest request);
 }

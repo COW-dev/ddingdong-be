@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
@@ -21,18 +22,25 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.A
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.email.SesEmailService;
+import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private final FormService formService;
@@ -40,6 +48,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
+    private final SesEmailService sesEmailService;
 
     @Transactional
     @Override
@@ -101,11 +110,14 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
-        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(totalCount, form);
-        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club, form);
+        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(
+                totalCount, form);
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club,
+                form);
         FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
 
-        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
+        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries,
+                fieldStatisticsQuery);
     }
 
     @Override
@@ -123,6 +135,23 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                     .build();
             club.addClubMember(clubMember);
         });
+    }
+
+    @Override
+    public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
+        List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
+                command.formId(),
+                FormApplicationStatus.findStatus(command.target())
+        );
+        EmailContent emailContent = EmailContent.of(command.title(), command.message());
+        CompletableFuture<Void> future = sesEmailService.sendBulkResultEmails(formApplications, emailContent);
+
+        try {
+            future.get(5, TimeUnit.MINUTES);  // 최대 5분 대기
+        } catch (Exception e) {
+            log.error("Failed to send bulk emails", e);
+            throw new RuntimeException("이메일 전송 중 오류가 발생했습니다.", e);
+        }
     }
 
     private FormListQuery buildFormListQuery(Form form) {

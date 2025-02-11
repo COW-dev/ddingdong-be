@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
@@ -23,4 +24,6 @@ public interface FacadeCentralFormService {
     FormStatisticsQuery getStatisticsByForm(User user, Long formId);
 
     void registerApplicantAsMember(Long formId);
+
+    void sendApplicationResultEmail(SendApplicationResultEmailCommand command);
 }

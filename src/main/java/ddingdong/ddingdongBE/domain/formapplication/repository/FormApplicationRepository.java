@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.repository;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import java.time.LocalDate;
@@ -15,19 +16,19 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FormApplicationRepository extends JpaRepository<FormApplication, Long> {
 
-  @Query(value = """
-      select *
-        from form_application f
-        where (:currentCursorId = -1 or id < :currentCursorId)
-        and f.form_id = :formId
-        order by f.id DESC
-        limit :size
-      """, nativeQuery = true)
-  Slice<FormApplication> findPageByFormIdOrderById(
-      @Param("formId") Long formId,
-      @Param("size") int size,
-      @Param("currentCursorId") Long currentCursorId
-  );
+    @Query(value = """
+            select *
+              from form_application f
+              where (:currentCursorId = -1 or id < :currentCursorId)
+              and f.form_id = :formId
+              order by f.id DESC
+              limit :size
+            """, nativeQuery = true)
+    Slice<FormApplication> findPageByFormIdOrderById(
+            @Param("formId") Long formId,
+            @Param("size") int size,
+            @Param("currentCursorId") Long currentCursorId
+    );
 
     Long countByForm(Form form);
 
@@ -63,11 +64,14 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             @Param("date") LocalDate date,
             @Param("size") int size
     );
+
     @Query(value = """
             select fa
             from FormApplication fa
             where fa.form.id = :formId and (fa.status = 'FINAL_PASS' or (fa.status = 'FIRST_PASS' and fa.form.hasInterview = false))
             """)
     List<FormApplication> findAllFinalPassedByFormId(@Param("formId") Long formId);
+
+    List<FormApplication> getAllByFormIdAndStatus(Long formId, FormApplicationStatus status);
 
 }

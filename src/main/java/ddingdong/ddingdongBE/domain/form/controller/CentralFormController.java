@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.controller;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.api.CentralFormApi;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
@@ -75,5 +76,10 @@ public class CentralFormController implements CentralFormApi {
     @Override
     public void registerMembers(Long formId) {
         facadeCentralFormService.registerApplicantAsMember(formId);
+    }
+
+    @Override
+    public void sendApplicationResultEmail(Long formId, SendApplicationResultEmailRequest request) {
+        facadeCentralFormService.sendApplicationResultEmail(request.toCommand(formId));
     }
 }
