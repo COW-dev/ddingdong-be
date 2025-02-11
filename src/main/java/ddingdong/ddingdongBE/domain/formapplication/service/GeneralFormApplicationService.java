@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,14 +28,6 @@ public class GeneralFormApplicationService implements FormApplicationService {
     }
 
     @Override
-    public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
-            Long currentCursorId) {
-        Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
-                formId, size + 1, currentCursorId);
-        return buildSlice(formApplicationPages, size);
-    }
-
-    @Override
     public List<FormApplication> getAllById(List<Long> applicationIds) {
         return formApplicationRepository.findAllById(applicationIds);
     }
@@ -42,6 +35,11 @@ public class GeneralFormApplicationService implements FormApplicationService {
     @Override
     public List<FormApplication> getAllFinalPassedByFormId(Long formId) {
         return formApplicationRepository.findAllFinalPassedByFormId(formId);
+    }
+
+    @Override
+    public List<FormApplication> getAllByForm(Form form) {
+        return formApplicationRepository.findAllByForm(form);
     }
 
     @Override
