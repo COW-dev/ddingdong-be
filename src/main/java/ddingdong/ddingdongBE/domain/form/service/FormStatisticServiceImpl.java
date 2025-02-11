@@ -139,9 +139,8 @@ public class FormStatisticServiceImpl implements FormStatisticService {
             return null;
         }
         if(fieldType == FieldType.FILE) {
-            String fileKey = answer.get(0);
-            String fileMetDataId = s3FileService.getUploadedFileUrl(fileKey).id();
-            FileMetaData fileMetaData = fileMetaDataService.getById(fileMetDataId);
+            String fileId = answer.get(0);
+            FileMetaData fileMetaData = fileMetaDataService.getById(fileId);
             return fileMetaData.getFileName();
         }
         return answer.get(0);
