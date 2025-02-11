@@ -81,7 +81,8 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                         return new ApplicantStatisticQuery(label, count, 0, 0);
                     }
                     int beforeCount = parseToInt(recentForms.get(index - 1).getCount());
-                    int compareRatio = CalculationUtils.calculateDifferenceRatio(beforeCount, count);
+                    int compareRatio = CalculationUtils.calculateDifferenceRatio(beforeCount,
+                            count);
                     int compareValue = CalculationUtils.calculateDifference(beforeCount, count);
 
                     return new ApplicantStatisticQuery(label, count, compareRatio, compareValue);
@@ -92,8 +93,10 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     @Override
     public FieldStatisticsQuery createFieldStatisticsByForm(Form form) {
         List<String> sections = form.getSections();
-        List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(form.getId());
-        List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(fieldListInfos);
+        List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(
+                form.getId());
+        List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(
+                fieldListInfos);
         return new FieldStatisticsQuery(sections, fieldStatisticsListQueries);
     }
 
@@ -101,7 +104,8 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     public List<OptionStatisticQuery> createOptionStatistics(FormField formField) {
         List<String> options = formField.getOptions();
         int answerCount = formAnswerRepository.countByFormField(formField);
-        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(formField.getId())
+        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(
+                        formField.getId())
                 .stream()
                 .map(stringListConverter::convertToEntityAttribute)
                 .toList();

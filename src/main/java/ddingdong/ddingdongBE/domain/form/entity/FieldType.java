@@ -14,6 +14,7 @@ public enum FieldType {
         return Arrays.stream(values())
                 .filter(fieldType -> fieldType.name().equals(type))
                 .findFirst()
-                .orElseThrow(() -> new InvalidatedEnumValue("FieldType(type=" + type + ")를 찾을 수 없습니다."));
+                .orElseThrow(
+                        () -> new InvalidatedEnumValue("FieldType(type=" + type + ")를 찾을 수 없습니다."));
     }
 }

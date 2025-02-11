@@ -13,17 +13,17 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class UserFormController implements UserFormApi {
 
-  private final FacadeUserFormService facadeUserFormService;
+    private final FacadeUserFormService facadeUserFormService;
 
-  @Override
-  public FormSectionResponse getFormSections(Long formId) {
-    FormSectionQuery query = facadeUserFormService.getFormSection(formId);
-    return FormSectionResponse.from(query);
-  }
+    @Override
+    public FormSectionResponse getFormSections(Long formId) {
+        FormSectionQuery query = facadeUserFormService.getFormSection(formId);
+        return FormSectionResponse.from(query);
+    }
 
-  @Override
-  public UserFormResponse getForm(Long formId, String section) {
-    UserFormQuery query = facadeUserFormService.getUserForm(formId, section);
-    return UserFormResponse.from(query);
-  }
+    @Override
+    public UserFormResponse getForm(Long formId, String section) {
+        UserFormQuery query = facadeUserFormService.getUserForm(formId, section);
+        return UserFormResponse.from(query);
+    }
 }

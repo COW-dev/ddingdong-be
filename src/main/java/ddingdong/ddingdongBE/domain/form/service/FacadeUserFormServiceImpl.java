@@ -14,19 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeUserFormServiceImpl implements FacadeUserFormService {
 
-  private final FormService formService;
-  private final FormFieldService formFieldService;
+    private final FormService formService;
+    private final FormFieldService formFieldService;
 
-  @Override
-  public FormSectionQuery getFormSection(Long formId) {
-    Form form = formService.getById(formId);
-    return FormSectionQuery.from(form);
-  }
+    @Override
+    public FormSectionQuery getFormSection(Long formId) {
+        Form form = formService.getById(formId);
+        return FormSectionQuery.from(form);
+    }
 
-  @Override
-  public UserFormQuery getUserForm(Long formId, String section) {
-    Form form = formService.getById(formId);
-    List<FormField> formFieldList = formFieldService.getAllByFormAndSection(form, section);
-    return UserFormQuery.from(form, formFieldList);
-  }
+    @Override
+    public UserFormQuery getUserForm(Long formId, String section) {
+        Form form = formService.getById(formId);
+        List<FormField> formFieldList = formFieldService.getAllByFormAndSection(form, section);
+        return UserFormQuery.from(form, formFieldList);
+    }
 }

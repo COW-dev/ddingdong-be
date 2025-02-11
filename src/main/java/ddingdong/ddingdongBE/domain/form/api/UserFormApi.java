@@ -18,21 +18,21 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @RequestMapping("/server")
 public interface UserFormApi {
 
-  @Operation(summary = "폼지 섹션 조회 API")
-  @ApiResponse(responseCode = "200", description = "폼지 섹션 조회 성공",
-      content = @Content(schema = @Schema(implementation = FormSectionResponse.class)))
-  @ResponseStatus(HttpStatus.OK)
-  @GetMapping("/forms/{formId}/sections")
-  FormSectionResponse getFormSections(
-      @PathVariable("formId") Long formId
-  );
+    @Operation(summary = "폼지 섹션 조회 API")
+    @ApiResponse(responseCode = "200", description = "폼지 섹션 조회 성공",
+            content = @Content(schema = @Schema(implementation = FormSectionResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/forms/{formId}/sections")
+    FormSectionResponse getFormSections(
+            @PathVariable("formId") Long formId
+    );
 
-  @Operation(summary = "폼지 상세 조회 API")
-  @ApiResponse(responseCode = "200", description = "폼지 상세 조회 성공",
-      content = @Content(schema = @Schema(implementation = UserFormResponse.class)))
-  @GetMapping("/forms/{formId}")
-  UserFormResponse getForm(
-      @PathVariable("formId") Long formId,
-      @RequestParam(value = "section") String section
-  );
+    @Operation(summary = "폼지 상세 조회 API")
+    @ApiResponse(responseCode = "200", description = "폼지 상세 조회 성공",
+            content = @Content(schema = @Schema(implementation = UserFormResponse.class)))
+    @GetMapping("/forms/{formId}")
+    UserFormResponse getForm(
+            @PathVariable("formId") Long formId,
+            @RequestParam(value = "section") String section
+    );
 }

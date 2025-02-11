@@ -7,10 +7,10 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 
 public interface FacadeCentralFormApplicationService {
 
-  MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size,
-      Long currentCursorId);
+    MyFormApplicationPageQuery getMyFormApplicationPage(Long formId, User user, int size,
+            Long currentCursorId);
 
-  FormApplicationQuery getFormApplication(Long formId, Long applicationId, User user);
+    FormApplicationQuery getFormApplication(Long formId, Long applicationId, User user);
 
-  void updateStatus(UpdateFormApplicationStatusCommand command);
+    void updateStatus(UpdateFormApplicationStatusCommand command);
 }

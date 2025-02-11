@@ -5,7 +5,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery;
 
 public interface FacadeUserFormService {
 
-  FormSectionQuery getFormSection(Long formId);
+    FormSectionQuery getFormSection(Long formId);
 
-  UserFormQuery getUserForm(Long formId, String section);
+    UserFormQuery getUserForm(Long formId, String section);
 }

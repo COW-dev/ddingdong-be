@@ -14,16 +14,16 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class GeneralFormAnswerService implements FormAnswerService {
 
-  private final FormAnswerRepository formAnswerRepository;
+    private final FormAnswerRepository formAnswerRepository;
 
-  @Transactional
-  @Override
-  public void createAll(List<FormAnswer> formAnswers) {
-    formAnswerRepository.saveAll(formAnswers);
-  }
+    @Transactional
+    @Override
+    public void createAll(List<FormAnswer> formAnswers) {
+        formAnswerRepository.saveAll(formAnswers);
+    }
 
-  @Override
-  public List<FormAnswer> getAllByApplication(FormApplication formApplication) {
-    return formAnswerRepository.findAllByFormApplication(formApplication);
-  }
+    @Override
+    public List<FormAnswer> getAllByApplication(FormApplication formApplication) {
+        return formAnswerRepository.findAllByFormApplication(formApplication);
+    }
 }
