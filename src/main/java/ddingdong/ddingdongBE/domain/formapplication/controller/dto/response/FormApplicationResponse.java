@@ -36,7 +36,8 @@ public record FormApplicationResponse(
             Long fieldId,
             @Schema(description = "폼지 질문", example = "성별이 무엇입니까??")
             String question,
-            @Schema(description = "폼지 질문 유형", example = "RADIO", allowableValues = {"CHECK_BOX", "RADIO",
+            @Schema(description = "폼지 질문 유형", example = "RADIO", allowableValues = {"CHECK_BOX",
+                    "RADIO",
                     "TEXT", "LONG_TEXT", "FILE"})
             FieldType type,
             @Schema(description = "폼지 지문", example = "[\"여성\", \"남성\"]")
@@ -67,7 +68,8 @@ public record FormApplicationResponse(
     }
 
     public static FormApplicationResponse from(FormApplicationQuery formApplicationQuery) {
-        List<FormFieldAnswerListResponse> responses = formApplicationQuery.formFieldAnswers().stream()
+        List<FormFieldAnswerListResponse> responses = formApplicationQuery.formFieldAnswers()
+                .stream()
                 .map(FormFieldAnswerListResponse::from)
                 .toList();
 

@@ -40,8 +40,9 @@ public class FormApplication extends BaseEntity {
     private Form form;
 
     @Builder
-    private FormApplication(String name, String studentNumber, String department, String phoneNumber, String email,
-                            FormApplicationStatus status, Form form) {
+    private FormApplication(String name, String studentNumber, String department,
+            String phoneNumber, String email,
+            FormApplicationStatus status, Form form) {
         this.name = name;
         this.studentNumber = studentNumber;
         this.department = department;

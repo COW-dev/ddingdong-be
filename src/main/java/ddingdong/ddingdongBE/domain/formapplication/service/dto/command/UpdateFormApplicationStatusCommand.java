@@ -8,10 +8,10 @@ import java.util.List;
 
 @Builder
 public record UpdateFormApplicationStatusCommand(
-    Long formId,
-    List<Long> applicationIds,
-    FormApplicationStatus status,
-    User user
+        Long formId,
+        List<Long> applicationIds,
+        FormApplicationStatus status,
+        User user
 ) {
 
 }

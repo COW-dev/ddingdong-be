@@ -14,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GeneralFormFieldService implements FormFieldService {
 
+  private static final String FORM_DEFAULT_SECTION = "공통";
+
   private final FormFieldRepository formFieldRepository;
 
   @Transactional
@@ -34,9 +36,14 @@ public class GeneralFormFieldService implements FormFieldService {
     return formFieldRepository.findAllByForm(form);
   }
 
-  @Transactional
-  @Override
-  public void deleteAll(List<FormField> originFormFields) {
-    formFieldRepository.deleteAll(originFormFields);
-  }
+    @Transactional
+    @Override
+    public void deleteAll(List<FormField> originFormFields) {
+        formFieldRepository.deleteAll(originFormFields);
+    }
+
+    @Override
+    public List<FormField> getAllByFormAndSection(Form form, String section) {
+        return formFieldRepository.findAllByFormAndSection(form.getId(), section, FORM_DEFAULT_SECTION);
+    }
 }
