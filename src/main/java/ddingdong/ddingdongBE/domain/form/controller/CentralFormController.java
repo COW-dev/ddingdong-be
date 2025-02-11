@@ -8,11 +8,13 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListRespons
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.TextFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -79,6 +81,12 @@ public class CentralFormController implements CentralFormApi {
         MultipleFieldStatisticsQuery query = facadeCentralFormService.getMultipleFieldStatistics(
                 fieldId);
         return MultipleFieldStatisticsResponse.from(query);
+    }
+
+    @Override
+    public TextFieldStatisticsResponse getTextFieldStatistics(Long fieldId) {
+        TextFieldStatisticsQuery query = facadeCentralFormService.getTextFieldStatistics(fieldId);
+        return TextFieldStatisticsResponse.from(query);
     }
 
     @Override

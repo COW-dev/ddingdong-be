@@ -21,10 +21,12 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -140,6 +142,17 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                     .phoneNumber(formApplication.getPhoneNumber()).position(MEMBER).build();
             club.addClubMember(clubMember);
         });
+    }
+
+    @Override
+    public TextFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isTextType()) {
+            throw new InvalidFieldTypeException();
+        }
+        String type = formField.getFieldType().name();
+        List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
+        return new TextFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
     private FormListQuery buildFormListQuery(Form form) {

@@ -4,6 +4,9 @@ import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
@@ -13,10 +16,13 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.D
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
+import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -31,12 +37,13 @@ public class FormStatisticServiceImpl implements FormStatisticService {
 
     private static final int DEPARTMENT_INFORMATION_SIZE = 5;
     private static final int APPLICANT_RATIO_INFORMATION_SIZE = 3;
-    private static final int DEFAULT_APPLICATION_RATE = 100;
 
     private final FormApplicationRepository formApplicationRepository;
     private final FormFieldRepository formFieldRepository;
     private final FormAnswerRepository formAnswerRepository;
     private final StringListConverter stringListConverter;
+    private final S3FileService s3FileService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Override
     public int getTotalApplicationCountByForm(Form form) {
@@ -81,8 +88,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                         return new ApplicantStatisticQuery(label, count, 0, 0);
                     }
                     int beforeCount = parseToInt(recentForms.get(index - 1).getCount());
-                    int compareRatio = CalculationUtils.calculateDifferenceRatio(beforeCount,
-                            count);
+                    int compareRatio = CalculationUtils.calculateDifferenceRatio(beforeCount, count);
                     int compareValue = CalculationUtils.calculateDifference(beforeCount, count);
 
                     return new ApplicantStatisticQuery(label, count, compareRatio, compareValue);
@@ -93,10 +99,8 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     @Override
     public FieldStatisticsQuery createFieldStatisticsByForm(Form form) {
         List<String> sections = form.getSections();
-        List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(
-                form.getId());
-        List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(
-                fieldListInfos);
+        List<FieldListInfo> fieldListInfos = formFieldRepository.findFieldWithAnswerCountByFormId(form.getId());
+        List<FieldStatisticsListQuery> fieldStatisticsListQueries = toFieldListQueries(fieldListInfos);
         return new FieldStatisticsQuery(sections, fieldStatisticsListQueries);
     }
 
@@ -104,8 +108,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     public List<OptionStatisticQuery> createOptionStatistics(FormField formField) {
         List<String> options = formField.getOptions();
         int answerCount = formAnswerRepository.countByFormField(formField);
-        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormField(
-                        formField.getId())
+        List<List<String>> formFieldAnswerValues = formAnswerRepository.findAllValueByFormFieldId(formField.getId())
                 .stream()
                 .map(stringListConverter::convertToEntityAttribute)
                 .toList();
@@ -115,6 +118,32 @@ public class FormStatisticServiceImpl implements FormStatisticService {
                     return new OptionStatisticQuery(option, count, ratio);
                 })
                 .toList();
+    }
+
+    @Override
+    public List<TextStatisticsQuery> createTextStatistics(FormField formField) {
+        List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
+        return textAnswerInfos.stream()
+                .map(textAnswerInfo -> {
+                    Long id = textAnswerInfo.getId();
+                    String name = textAnswerInfo.getName();
+                    String answer = getAnswer(textAnswerInfo.getValue(), formField.getFieldType());
+                    return new TextStatisticsQuery(id, name, answer);
+                })
+                .toList();
+    }
+
+    private String getAnswer(String value, FieldType fieldType) {
+        List<String> answer = stringListConverter.convertToEntityAttribute(value);
+        if(answer.isEmpty()) {
+            return null;
+        }
+        if(fieldType == FieldType.FILE) {
+            String fileId = answer.get(0);
+            FileMetaData fileMetaData = fileMetaDataService.getById(fileId);
+            return fileMetaData.getFileName();
+        }
+        return answer.get(0);
     }
 
     private int compareAnswerCount(String option, List<List<String>> formFieldAnswerValues) {

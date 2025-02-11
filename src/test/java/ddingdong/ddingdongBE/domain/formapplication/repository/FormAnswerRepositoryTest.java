@@ -20,7 +20,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
 
     @DisplayName("주어진 FormField와 연관된 FormAnswer의 value를 모두 반환한다.")
     @Test
-    void findAllValueByFormField() {
+    void findAllValueByFormFieldId() {
         // given
         FormField formField = FormField.builder()
                 .question("질문입니다")
@@ -42,7 +42,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
                 .build();
         formAnswerRepository.saveAll(List.of(formAnswer, formAnswer2));
         // when
-        List<String> allValueByFormField = formAnswerRepository.findAllValueByFormField(savedField.getId());
+        List<String> allValueByFormField = formAnswerRepository.findAllValueByFormFieldId(savedField.getId());
         // then
         Assertions.assertThat(allValueByFormField).hasSize(2);
         Assertions.assertThat(allValueByFormField.get(0)).isEqualTo("[\"서버\",\"웹\"]");
