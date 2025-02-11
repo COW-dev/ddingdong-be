@@ -22,26 +22,26 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FormAnswer extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Convert(converter = StringListConverter.class)
-  private List<String> value;
+    @Convert(converter = StringListConverter.class)
+    private List<String> value;
 
-  @JoinColumn(name = "application_id")
-  @ManyToOne(fetch = FetchType.LAZY)
-  private FormApplication formApplication;
+    @JoinColumn(name = "application_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private FormApplication formApplication;
 
-  @JoinColumn(name = "field_id")
-  @ManyToOne(fetch = FetchType.LAZY)
-  private FormField formField;
+    @JoinColumn(name = "field_id")
+    @ManyToOne(fetch = FetchType.LAZY)
+    private FormField formField;
 
-  @Builder
-  private FormAnswer(List<String> value, FormApplication formApplication, FormField formField) {
-    this.value = value;
-    this.formApplication = formApplication;
-    this.formField = formField;
-  }
+    @Builder
+    private FormAnswer(List<String> value, FormApplication formApplication, FormField formField) {
+        this.value = value;
+        this.formApplication = formApplication;
+        this.formField = formField;
+    }
 
 }

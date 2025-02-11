@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -24,23 +25,19 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.F
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.email.SesEmailService;
-import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
-@Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private final FormService formService;
@@ -48,7 +45,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
-    private final SesEmailService sesEmailService;
 
     @Transactional
     @Override
@@ -112,12 +108,25 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
         List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(
                 totalCount, form);
-        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club,
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(
+                club, form);
+        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(
                 form);
-        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
 
-        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries,
-                fieldStatisticsQuery);
+        return new FormStatisticsQuery(totalCount, departmentStatisticQueries,
+                applicantStatisticQueries, fieldStatisticsQuery);
+    }
+
+    @Override
+    public MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isMultipleChoice()) {
+            throw new InvalidFieldTypeException();
+        }
+        String type = formField.getFieldType().name();
+        List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(
+                formField);
+        return new MultipleFieldStatisticsQuery(type, optionStatisticQueries);
     }
 
     @Override

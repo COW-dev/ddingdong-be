@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 
@@ -22,6 +23,8 @@ public interface FacadeCentralFormService {
     FormQuery getForm(Long formId);
 
     FormStatisticsQuery getStatisticsByForm(User user, Long formId);
+
+    MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId);
 
     void registerApplicantAsMember(Long formId);
 
