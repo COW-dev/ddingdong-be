@@ -27,6 +27,10 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -55,7 +59,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
 
-        List<FormField> formFields = toCreateFormFields(savedForm, createFormCommand.formFieldCommands());
+        List<FormField> formFields = toCreateFormFields(savedForm,
+                createFormCommand.formFieldCommands());
         formFieldService.createAll(formFields);
     }
 
@@ -72,7 +77,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         List<FormField> originFormFields = formFieldService.findAllByForm(originform);
         formFieldService.deleteAll(originFormFields);
 
-        List<FormField> updateFormFields = toUpdateFormFields(originform, updateFormCommand.formFieldCommands());
+        List<FormField> updateFormFields = toUpdateFormFields(originform,
+                updateFormCommand.formFieldCommands());
         formFieldService.createAll(updateFormFields);
     }
 
@@ -89,9 +95,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public List<FormListQuery> getAllMyForm(User user) {
         Club club = clubService.getByUserId(user.getId());
         List<Form> forms = formService.getAllByClub(club);
-        return forms.stream()
-                .map(this::buildFormListQuery)
-                .toList();
+        return forms.stream().map(this::buildFormListQuery).toList();
     }
 
     @Override
@@ -147,6 +151,17 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
+    public TextFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isTextType()) {
+            throw new InvalidFieldTypeException();
+        }
+        String type = formField.getFieldType().name();
+        List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
+        return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+    }
+
+    @Override
     public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
         List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
                 command.formId(),
@@ -164,7 +179,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private FormListQuery buildFormListQuery(Form form) {
-        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(), form.getEndDate());
+        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(),
+                form.getEndDate());
         return FormListQuery.from(form, isActive);
     }
 
@@ -175,22 +191,23 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
-        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
+        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate,
+                endDate);
 
         if (!overlappingForms.isEmpty()) {
             throw new InvalidFormPeriodException();
         }
     }
 
-    private List<FormField> toUpdateFormFields(Form originform, List<UpdateFormFieldCommand> updateFormFieldCommands) {
+    private List<FormField> toUpdateFormFields(Form originform,
+            List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(originform))
-                .toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
-    private List<FormField> toCreateFormFields(Form savedForm, List<CreateFormFieldCommand> createFormFieldCommands) {
+    private List<FormField> toCreateFormFields(Form savedForm,
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
-                .toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }
 }
