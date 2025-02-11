@@ -1,5 +1,9 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_ANSWER_FILE;
+
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
@@ -21,6 +25,7 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     private final FormAnswerService formAnswerService;
     private final FormService formService;
     private final FormFieldService formFieldService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     @Override
@@ -39,9 +44,18 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
             List<CreateFormAnswerCommand> createFormAnswerCommands
     ) {
         return createFormAnswerCommands.stream()
-                .map(formAnswerCommand
-                        -> formAnswerCommand.toEntity(savedFormApplication,
-                        formFieldService.getById(formAnswerCommand.fieldId())))
+                .map(formAnswerCommand -> {
+                    FormAnswer formAnswer = formAnswerCommand.toEntity(savedFormApplication,
+                            formFieldService.getById(formAnswerCommand.fieldId()));
+                    if (formAnswer.getFormField().getFieldType() == FieldType.FILE) {
+                        fileMetaDataService.updateStatusToCoupled(
+                                formAnswer.getValue(),
+                                FORM_ANSWER_FILE,
+                                formAnswer.getId()
+                        );
+                    }
+                    return formAnswer;
+                })
                 .toList();
     }
 }
