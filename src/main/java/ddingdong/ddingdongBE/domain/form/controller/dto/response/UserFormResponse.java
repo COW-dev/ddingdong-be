@@ -1,34 +1,25 @@
 package ddingdong.ddingdongBE.domain.form.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery.FormFieldListQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery.UserFormFieldListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record FormResponse(
+public record UserFormResponse(
         @Schema(description = "폼지 제목", example = "카우 1기 폼지")
         String title,
         @Schema(description = "폼지 설명", example = "폼지 설명입니다")
         String description,
-        @Schema(description = "폼지 시작일", example = "2001-01-01")
-        LocalDate startDate,
-        @Schema(description = "폼지 종료일", example = "2001-01-02")
-        LocalDate endDate,
-        @Schema(description = "면접 여부", example = "true")
-        boolean hasInterview,
-        @Schema(description = "생성한 섹션들", example = "[공통,서버,웹]")
-        List<String> sections,
-        @ArraySchema(schema = @Schema(implementation = FormFieldListResponse.class))
-        List<FormFieldListResponse> formFields
+        @ArraySchema(schema = @Schema(implementation = UserFormFieldListResponse.class))
+        List<UserFormFieldListResponse> formFields
 ) {
 
     @Builder
-    record FormFieldListResponse(
+    record UserFormFieldListResponse(
             @Schema(description = "폼지 질문", example = "당신의 이름은?")
             String question,
             @Schema(description = "폼지 질문 유형", example = "CHECK_BOX")
@@ -43,8 +34,8 @@ public record FormResponse(
             String section
     ) {
 
-        public static FormFieldListResponse from(FormFieldListQuery formFieldListQuery) {
-            return FormFieldListResponse.builder()
+        public static UserFormFieldListResponse from(UserFormFieldListQuery formFieldListQuery) {
+            return UserFormFieldListResponse.builder()
                     .question(formFieldListQuery.question())
                     .type(formFieldListQuery.type())
                     .options(formFieldListQuery.options())
@@ -55,19 +46,15 @@ public record FormResponse(
         }
     }
 
-    public static FormResponse from(FormQuery formQuery) {
-        List<FormFieldListResponse> responses = formQuery.formFields().stream()
-                .map(FormFieldListResponse::from)
+    public static UserFormResponse from(UserFormQuery userFormQuery) {
+        List<UserFormFieldListResponse> responses = userFormQuery.formFields().stream()
+                .map(UserFormFieldListResponse::from)
                 .toList();
-
-        return FormResponse.builder()
-                .title(formQuery.title())
-                .description(formQuery.description())
-                .startDate(formQuery.startDate())
-                .endDate(formQuery.endDate())
-                .hasInterview(formQuery.hasInterview())
-                .sections(formQuery.sections())
+        return UserFormResponse.builder()
+                .title(userFormQuery.title())
+                .description(userFormQuery.description())
                 .formFields(responses)
                 .build();
     }
+
 }

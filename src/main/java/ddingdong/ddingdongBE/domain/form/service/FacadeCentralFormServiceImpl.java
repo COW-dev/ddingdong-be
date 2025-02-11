@@ -53,7 +53,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
 
-        List<FormField> formFields = toCreateFormFields(savedForm, createFormCommand.formFieldCommands());
+        List<FormField> formFields = toCreateFormFields(savedForm,
+                createFormCommand.formFieldCommands());
         formFieldService.createAll(formFields);
     }
 
@@ -70,7 +71,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         List<FormField> originFormFields = formFieldService.findAllByForm(originform);
         formFieldService.deleteAll(originFormFields);
 
-        List<FormField> updateFormFields = toUpdateFormFields(originform, updateFormCommand.formFieldCommands());
+        List<FormField> updateFormFields = toUpdateFormFields(originform,
+                updateFormCommand.formFieldCommands());
         formFieldService.createAll(updateFormFields);
     }
 
@@ -87,9 +89,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public List<FormListQuery> getAllMyForm(User user) {
         Club club = clubService.getByUserId(user.getId());
         List<Form> forms = formService.getAllByClub(club);
-        return forms.stream()
-                .map(this::buildFormListQuery)
-                .toList();
+        return forms.stream().map(this::buildFormListQuery).toList();
     }
 
     @Override
@@ -104,11 +104,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
-        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(totalCount, form);
-        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(club, form);
-        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(form);
+        List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(
+                totalCount, form);
+        List<ApplicantStatisticQuery> applicantStatisticQueries = formStatisticService.createApplicationStatistics(
+                club, form);
+        FieldStatisticsQuery fieldStatisticsQuery = formStatisticService.createFieldStatisticsByForm(
+                form);
 
-        return new FormStatisticsQuery(totalCount, departmentStatisticQueries, applicantStatisticQueries, fieldStatisticsQuery);
+        return new FormStatisticsQuery(totalCount, departmentStatisticQueries,
+                applicantStatisticQueries, fieldStatisticsQuery);
     }
 
     @Override
@@ -118,29 +122,29 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
             throw new InvalidFieldTypeException();
         }
         String type = formField.getFieldType().name();
-        List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(formField);
+        List<OptionStatisticQuery> optionStatisticQueries = formStatisticService.createOptionStatistics(
+                formField);
         return new MultipleFieldStatisticsQuery(type, optionStatisticQueries);
     }
 
     @Override
     @Transactional
     public void registerApplicantAsMember(Long formId) {
-        List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
+        List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(
+                formId);
         finalPassedFormApplications.forEach(formApplication -> {
             Club club = formApplication.getForm().getClub();
-            ClubMember clubMember = ClubMember.builder()
-                    .name(formApplication.getName())
+            ClubMember clubMember = ClubMember.builder().name(formApplication.getName())
                     .studentNumber(formApplication.getStudentNumber())
                     .department(formApplication.getDepartment())
-                    .phoneNumber(formApplication.getPhoneNumber())
-                    .position(MEMBER)
-                    .build();
+                    .phoneNumber(formApplication.getPhoneNumber()).position(MEMBER).build();
             club.addClubMember(clubMember);
         });
     }
 
     private FormListQuery buildFormListQuery(Form form) {
-        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(), form.getEndDate());
+        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(),
+                form.getEndDate());
         return FormListQuery.from(form, isActive);
     }
 
@@ -151,22 +155,23 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
-        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate);
+        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate,
+                endDate);
 
         if (!overlappingForms.isEmpty()) {
             throw new InvalidFormPeriodException();
         }
     }
 
-    private List<FormField> toUpdateFormFields(Form originform, List<UpdateFormFieldCommand> updateFormFieldCommands) {
+    private List<FormField> toUpdateFormFields(Form originform,
+            List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(originform))
-                .toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
-    private List<FormField> toCreateFormFields(Form savedForm, List<CreateFormFieldCommand> createFormFieldCommands) {
+    private List<FormField> toCreateFormFields(Form savedForm,
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
-                .toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }
 }

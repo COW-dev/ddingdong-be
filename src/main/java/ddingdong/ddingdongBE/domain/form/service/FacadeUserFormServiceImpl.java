@@ -1,7 +1,10 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormSectionQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,11 +14,19 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class FacadeUserFormServiceImpl implements FacadeUserFormService {
 
-  private final FormService formService;
+    private final FormService formService;
+    private final FormFieldService formFieldService;
 
-  @Override
-  public FormSectionQuery getFormSection(Long formId) {
-    Form form = formService.getById(formId);
-    return FormSectionQuery.from(form);
-  }
+    @Override
+    public FormSectionQuery getFormSection(Long formId) {
+        Form form = formService.getById(formId);
+        return FormSectionQuery.from(form);
+    }
+
+    @Override
+    public UserFormQuery getUserForm(Long formId, String section) {
+        Form form = formService.getById(formId);
+        List<FormField> formFieldList = formFieldService.getAllByFormAndSection(form, section);
+        return UserFormQuery.from(form, formFieldList);
+    }
 }

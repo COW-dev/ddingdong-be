@@ -54,6 +54,7 @@ public record FormStatisticsResponse(
             @Schema(description = "전 폼지 대비 증감 값", example = "150")
             CompareToBefore comparedToBefore
     ) {
+
         record CompareToBefore(
                 @Schema(description = "증감율 %", example = "50")
                 int ratio,
@@ -62,11 +63,13 @@ public record FormStatisticsResponse(
         ) {
 
         }
+
         public static ApplicantStatisticResponse from(ApplicantStatisticQuery query) {
             return ApplicantStatisticResponse.builder()
                     .label(query.label())
                     .count(query.count())
-                    .comparedToBefore(new CompareToBefore(query.compareRatio(), query.compareValue()))
+                    .comparedToBefore(
+                            new CompareToBefore(query.compareRatio(), query.compareValue()))
                     .build();
         }
     }
@@ -78,6 +81,7 @@ public record FormStatisticsResponse(
             @ArraySchema(schema = @Schema(implementation = FieldStatisticsListResponse.class))
             List<FieldStatisticsListResponse> fields
     ) {
+
         record FieldStatisticsListResponse(
                 @Schema(description = "폼지 질문 id", example = "1")
                 Long id,
@@ -90,14 +94,17 @@ public record FormStatisticsResponse(
                 @Schema(description = "섹션", example = "공통")
                 String section
         ) {
+
             public static FieldStatisticsListResponse from(FieldStatisticsListQuery query) {
-                return new FieldStatisticsListResponse(query.id(), query.question(), query.count(), query.fieldType(),
+                return new FieldStatisticsListResponse(query.id(), query.question(), query.count(),
+                        query.fieldType(),
                         query.section());
             }
         }
 
         public static FieldStatisticsResponse from(FieldStatisticsQuery query) {
-            List<FieldStatisticsListResponse> fieldStatisticsListResponses = query.fieldStatisticsListQueries().stream()
+            List<FieldStatisticsListResponse> fieldStatisticsListResponses = query.fieldStatisticsListQueries()
+                    .stream()
                     .map(FieldStatisticsListResponse::from)
                     .toList();
             return FieldStatisticsResponse.builder()
@@ -108,10 +115,12 @@ public record FormStatisticsResponse(
     }
 
     public static FormStatisticsResponse from(FormStatisticsQuery query) {
-        List<DepartmentStatisticResponse> departmentStatisticResponse = query.departmentStatisticQueries().stream()
+        List<DepartmentStatisticResponse> departmentStatisticResponse = query.departmentStatisticQueries()
+                .stream()
                 .map(DepartmentStatisticResponse::from)
                 .toList();
-        List<ApplicantStatisticResponse> applicantStatisticResponse = query.applicantStatisticQueries().stream()
+        List<ApplicantStatisticResponse> applicantStatisticResponse = query.applicantStatisticQueries()
+                .stream()
                 .map(ApplicantStatisticResponse::from)
                 .toList();
         return FormStatisticsResponse.builder()

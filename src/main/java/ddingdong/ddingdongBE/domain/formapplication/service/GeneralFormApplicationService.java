@@ -26,13 +26,13 @@ public class GeneralFormApplicationService implements FormApplicationService {
         return formApplicationRepository.save(formApplication);
     }
 
-  @Override
-  public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
-      Long currentCursorId) {
-    Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
-        formId, size + 1, currentCursorId);
-    return buildSlice(formApplicationPages, size);
-  }
+    @Override
+    public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
+            Long currentCursorId) {
+        Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
+                formId, size + 1, currentCursorId);
+        return buildSlice(formApplicationPages, size);
+    }
 
     @Override
     public List<FormApplication> getAllById(List<Long> applicationIds) {
@@ -47,7 +47,8 @@ public class GeneralFormApplicationService implements FormApplicationService {
     @Override
     public FormApplication getById(Long applicationId) {
         return formApplicationRepository.findById(applicationId)
-            .orElseThrow(() -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:"+applicationId));
+                .orElseThrow(
+                        () -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:" + applicationId));
     }
 
     private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {

@@ -76,7 +76,8 @@ public class CentralFormController implements CentralFormApi {
 
     @Override
     public MultipleFieldStatisticsResponse getMultipleFieldStatistics(Long fieldId) {
-        MultipleFieldStatisticsQuery query = facadeCentralFormService.getMultipleFieldStatistics(fieldId);
+        MultipleFieldStatisticsQuery query = facadeCentralFormService.getMultipleFieldStatistics(
+                fieldId);
         return MultipleFieldStatisticsResponse.from(query);
     }
 
