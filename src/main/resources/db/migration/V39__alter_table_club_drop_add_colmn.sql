@@ -1,0 +1,7 @@
+ALTER TABLE club ADD form_id BIGINT NULL;
+
+ALTER TABLE club
+    ADD CONSTRAINT fk_form_id
+        FOREIGN KEY (form_id) REFERENCES form(id) ON DELETE SET NULL;
+
+ALTER TABLE club DROP COLUMN form_url;
