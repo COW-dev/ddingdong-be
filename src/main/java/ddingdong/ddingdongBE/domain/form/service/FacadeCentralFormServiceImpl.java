@@ -29,19 +29,23 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.email.SesEmailService;
+import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private final FormService formService;
@@ -49,6 +53,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
+    private final SesEmailService sesEmailService;
 
     @Transactional
     @Override
@@ -200,13 +205,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
-            List<UpdateFormFieldCommand> updateFormFieldCommands) {
+                                               List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
-            List<CreateFormFieldCommand> createFormFieldCommands) {
+                                               List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }
