@@ -33,7 +33,7 @@ public class FacadeCentralFormApplicationServiceImpl implements
     Slice<FormApplication> formApplicationPage = formApplicationService.getFormApplicationPageByFormId(
         formId, size, currentCursorId);
     if (formApplicationPage == null) {
-      return MyFormApplicationPageQuery.createEmpty();
+      return MyFormApplicationPageQuery.createEmpty(form);
     }
     List<FormApplication> completeFormApplications = formApplicationPage.getContent();
     List<FormApplicationListQuery> formApplicationListQueries = completeFormApplications.stream()
