@@ -42,8 +42,8 @@ public record UpdateClubInfoRequest(
         String activity,
         @Schema(description = "인재상", example = "인재상")
         String ideal,
-        @Schema(description = "모집 Url", example = "Url")
-        String formUrl,
+        @Schema(description = "모집 폼 아이디", example = "6")
+        Long formId,
         @Schema(description = "동아리 프로필 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         String profileImageId,
         @Schema(description = "동아리 소개 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
@@ -66,7 +66,7 @@ public record UpdateClubInfoRequest(
                 introduction,
                 activity,
                 ideal,
-                formUrl,
+                formId,
                 profileImageId,
                 introductionImageId
         );

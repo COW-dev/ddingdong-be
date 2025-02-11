@@ -20,7 +20,7 @@ public record UpdateClubInfoCommand(
         String introduction,
         String activity,
         String ideal,
-        String formUrl,
+        Long formId,
         String profileImageId,
         String introductionImageId
 ) {
@@ -39,7 +39,7 @@ public record UpdateClubInfoCommand(
                 .introduction(introduction)
                 .activity(activity)
                 .ideal(ideal)
-                .formUrl(formUrl)
+                .formId(formId)
                 .build();
     }
 

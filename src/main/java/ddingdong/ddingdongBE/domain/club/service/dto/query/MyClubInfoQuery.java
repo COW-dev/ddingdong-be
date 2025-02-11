@@ -17,7 +17,7 @@ public record MyClubInfoQuery(
         String introduction,
         String activity,
         String ideal,
-        String formUrl,
+        Long formId,
         UploadedFileUrlQuery profileImageUrlQuery,
         UploadedFileUrlQuery introductionImageUrlQuery
 ) {
@@ -40,7 +40,7 @@ public record MyClubInfoQuery(
                 club.getIntroduction(),
                 club.getActivity(),
                 club.getIdeal(),
-                club.getFormUrl(),
+                club.getFormId(),
                 profileImageUrlQuery,
                 introductionImageUrlQuery
         );

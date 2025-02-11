@@ -37,8 +37,8 @@ public record UserClubResponse(
         String activity,
         @Schema(description = "인재상", example = "인재상")
         String ideal,
-        @Schema(description = "모집Url", example = "url")
-        String formUrl,
+        @Schema(description = "모집 폼 ID", example = "6")
+        Long formId,
         UserClubImageUrlResponse profileImage,
         UserClubImageUrlResponse introductionImage
 ) {
@@ -57,7 +57,7 @@ public record UserClubResponse(
                 query.introduction(),
                 query.activity(),
                 query.ideal(),
-                query.formUrl(),
+                query.formId(),
                 UserClubImageUrlResponse.from(query.profileImageUrlQuery()),
                 UserClubImageUrlResponse.from(query.introductionImageUrlQuery())
         );
