@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListRespons
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.TextFieldStatisticsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -99,6 +100,14 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/statistics/multiple-choice")
     MultipleFieldStatisticsResponse getMultipleFieldStatistics(@RequestParam Long fieldId);
+
+    @Operation(summary = "동아리 폼지 통계 주관식 상세조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리 폼지 통계 주관식 상세조회 성공",
+            content = @Content(schema = @Schema(implementation = TextFieldStatisticsResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/statistics/text")
+    TextFieldStatisticsResponse getTextFieldStatistics(@RequestParam Long fieldId);
 
     @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API")
     @ApiResponse(responseCode = "201", description = "최종 합격 지원자 동아리원 명단 등록 성공")
