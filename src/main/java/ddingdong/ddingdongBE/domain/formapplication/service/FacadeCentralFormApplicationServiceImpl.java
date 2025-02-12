@@ -8,8 +8,8 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationsQuery.FormApplicationListQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery.FormApplicationListQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery.FormFieldAnswerListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
@@ -31,17 +31,17 @@ public class FacadeCentralFormApplicationServiceImpl implements
     private final S3FileService s3FileService;
 
     @Override
-    public MyFormApplicationsQuery getMyFormApplicationPage(Long formId, User user) {
+    public MyAllFormApplicationsQuery getAllFormApplication(Long formId, User user) {
         Form form = formService.getById(formId);
         List<FormApplication> formApplications = formApplicationService.getAllByForm(form);
         if (formApplications == null) {
-            return MyFormApplicationsQuery.createEmpty(form);
+            return MyAllFormApplicationsQuery.createEmpty(form);
         }
         List<FormApplicationListQuery> formApplicationListQueries = formApplications.stream()
                 .map(FormApplicationListQuery::of)
                 .toList();
 
-        return MyFormApplicationsQuery.of(form, formApplicationListQueries);
+        return MyAllFormApplicationsQuery.of(form, formApplicationListQueries);
     }
 
     @Override
