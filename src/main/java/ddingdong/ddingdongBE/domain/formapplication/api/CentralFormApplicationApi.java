@@ -3,8 +3,7 @@ package ddingdong.ddingdongBE.domain.formapplication.api;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationPageResponse;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationsResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,17 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/server/central")
 public interface CentralFormApplicationApi {
     @Operation(summary = "지원자 전체 조회 API")
-    @Parameter(name = "size", description = "한 페이지당 조회할 지원자 수 (기본값: 15)")
-    @Parameter(name = "currentCursorId", description = "현재 커서 위치 (첫 페이지: -1)")
     @ApiResponse(responseCode = "200", description = "지원자 전체 조회 성공",
-            content = @Content(schema = @Schema(implementation = MyFormApplicationPageResponse.class)))
+            content = @Content(schema = @Schema(implementation = MyFormApplicationsResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}/applications")
-    MyFormApplicationPageResponse getMyFormApplicationPage(
+    MyFormApplicationsResponse getMyFormApplicationPage(
             @PathVariable("formId") Long formId,
-            @RequestParam(value = "size", defaultValue = "15") int size,
-            @RequestParam(value = "currentCursorId", defaultValue = "-1") Long currentCursorId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 

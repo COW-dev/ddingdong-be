@@ -15,20 +15,6 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FormApplicationRepository extends JpaRepository<FormApplication, Long> {
 
-  @Query(value = """
-      select *
-        from form_application f
-        where (:currentCursorId = -1 or id < :currentCursorId)
-        and f.form_id = :formId
-        order by f.id DESC
-        limit :size
-      """, nativeQuery = true)
-  Slice<FormApplication> findPageByFormIdOrderById(
-      @Param("formId") Long formId,
-      @Param("size") int size,
-      @Param("currentCursorId") Long currentCursorId
-  );
-
     Long countByForm(Form form);
 
     @Query(value = """
@@ -70,4 +56,5 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             """)
     List<FormApplication> findAllFinalPassedByFormId(@Param("formId") Long formId);
 
+  List<FormApplication> findAllByForm(Form form);
 }
