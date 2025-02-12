@@ -9,6 +9,8 @@ import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
@@ -45,6 +47,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     @Override
@@ -84,6 +87,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         validateEqualsClub(club, form);
+        fileMetaDataService.updateStatusToDelete(DomainType.FORM_FILE, formId);
         formService.delete(form); //테이블 생성 시 외래 키에 cascade 설정하여 formField 삭제도 자동으로 됨.
     }
 
