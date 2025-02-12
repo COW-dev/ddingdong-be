@@ -28,7 +28,6 @@ public record FormApplicationResponse(
         String phoneNumber,
         @Schema(description = "지원자 이메일", example = "ddingdong@mju.ac.kr")
         String email,
-
         @Schema(description = "status", example = "SUBMITTED")
         FormApplicationStatus status,
         @ArraySchema(schema = @Schema(implementation = FormFieldAnswerListResponse.class))
