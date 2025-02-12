@@ -56,6 +56,7 @@ public record FormApplicationQuery(
         List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formAnswers.stream()
                 .map(FormFieldAnswerListQuery::from)
                 .toList();
+
         return FormApplicationQuery.builder()
                 .hasInterview(form.isHasInterview())
                 .createdAt(formApplication.getCreatedAt())
