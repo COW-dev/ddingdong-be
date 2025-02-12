@@ -17,5 +17,5 @@ public enum DomainType {
     BANNER_MOBILE_IMAGE,
     FEED_IMAGE,
     FEED_VIDEO,
-    FORM_ANSWER_FILE
+    FORM_FILE
 }
