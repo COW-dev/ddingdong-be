@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-public record MyFormApplicationsQuery(
+public record MyAllFormApplicationsQuery(
         String title,
         LocalDate startDate,
         LocalDate endDate,
@@ -17,9 +17,9 @@ public record MyFormApplicationsQuery(
         List<FormApplicationListQuery> formApplicationListQueries
 ) {
 
-    public static MyFormApplicationsQuery of(Form form,
+    public static MyAllFormApplicationsQuery of(Form form,
             List<FormApplicationListQuery> formApplicationListQueries) {
-        return new MyFormApplicationsQuery(
+        return new MyAllFormApplicationsQuery(
                 form.getTitle(),
                 form.getStartDate(),
                 form.getEndDate(),
@@ -28,8 +28,8 @@ public record MyFormApplicationsQuery(
         );
     }
 
-    public static MyFormApplicationsQuery createEmpty(Form form) {
-        return new MyFormApplicationsQuery(
+    public static MyAllFormApplicationsQuery createEmpty(Form form) {
+        return new MyAllFormApplicationsQuery(
                 form.getTitle(), // title
                 form.getStartDate(), // startDate
                 form.getEndDate(), // endDate

@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationsQuery.FormApplicationListQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery.FormApplicationListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record MyFormApplicationsResponse(
+public record MyAllFormApplicationsResponse(
         @Schema(description = "폼지 제목", example = "카우 1기 지원 폼")
         String title,
         @Schema(description = "폼지 시작 일자", example = "2025-01-01")
@@ -20,21 +20,21 @@ public record MyFormApplicationsResponse(
         LocalDate endDate,
         @Schema(description = "면접 여부", example = "true")
         boolean hasInterview,
-        @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyFormApplicationsResponse.MyFormApplicationListResponse.class))
+        @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyAllFormApplicationsResponse.MyFormApplicationListResponse.class))
         List<MyFormApplicationListResponse> formApplications
 ) {
 
-    public static MyFormApplicationsResponse from(
-            MyFormApplicationsQuery myFormApplicationsQuery) {
-        List<MyFormApplicationListResponse> formApplications = myFormApplicationsQuery.formApplicationListQueries()
+    public static MyAllFormApplicationsResponse from(
+            MyAllFormApplicationsQuery myAllFormApplicationsQuery) {
+        List<MyFormApplicationListResponse> formApplications = myAllFormApplicationsQuery.formApplicationListQueries()
                 .stream()
                 .map(MyFormApplicationListResponse::from)
                 .toList();
-        return MyFormApplicationsResponse.builder()
-                .title(myFormApplicationsQuery.title())
-                .startDate(myFormApplicationsQuery.startDate())
-                .endDate(myFormApplicationsQuery.endDate())
-                .hasInterview(myFormApplicationsQuery.hasInterview())
+        return MyAllFormApplicationsResponse.builder()
+                .title(myAllFormApplicationsQuery.title())
+                .startDate(myAllFormApplicationsQuery.startDate())
+                .endDate(myAllFormApplicationsQuery.endDate())
+                .hasInterview(myAllFormApplicationsQuery.hasInterview())
                 .formApplications(formApplications)
                 .build();
     }

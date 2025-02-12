@@ -3,9 +3,8 @@ package ddingdong.ddingdongBE.domain.formapplication.api;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationsResponse;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyAllFormApplicationsResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,11 +20,11 @@ import org.springframework.web.bind.annotation.*;
 public interface CentralFormApplicationApi {
     @Operation(summary = "지원자 전체 조회 API")
     @ApiResponse(responseCode = "200", description = "지원자 전체 조회 성공",
-            content = @Content(schema = @Schema(implementation = MyFormApplicationsResponse.class)))
+            content = @Content(schema = @Schema(implementation = MyAllFormApplicationsResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}/applications")
-    MyFormApplicationsResponse getMyFormApplicationPage(
+    MyAllFormApplicationsResponse getAllFormApplication(
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
