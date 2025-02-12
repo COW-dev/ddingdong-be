@@ -19,6 +19,8 @@ public record FormApplicationQuery(
         String name,
         String studentNumber,
         String department,
+        String phoneNumber,
+        String email,
         FormApplicationStatus status,
         List<FormFieldAnswerListQuery> formFieldAnswers
 ) {
@@ -60,6 +62,8 @@ public record FormApplicationQuery(
                 .name(formApplication.getName())
                 .studentNumber(formApplication.getStudentNumber())
                 .department(formApplication.getDepartment())
+                .phoneNumber(formApplication.getPhoneNumber())
+                .email(formApplication.getEmail())
                 .status(formApplication.getStatus())
                 .formFieldAnswers(formFieldAnswerListQueries)
                 .build();
