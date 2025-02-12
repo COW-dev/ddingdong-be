@@ -5,9 +5,9 @@ import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.Updat
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.service.FacadeCentralFormApplicationService;
 import ddingdong.ddingdongBE.domain.formapplication.api.CentralFormApplicationApi;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationsResponse;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyAllFormApplicationsResponse;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,12 +19,12 @@ public class CentralFormApplicationController implements CentralFormApplicationA
     private final FacadeCentralFormApplicationService facadeCentralFormApplicationService;
 
     @Override
-    public MyFormApplicationsResponse getMyFormApplicationPage(Long formId,
+    public MyAllFormApplicationsResponse getAllFormApplication(Long formId,
             PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        MyFormApplicationsQuery query = facadeCentralFormApplicationService.getMyFormApplicationPage(
+        MyAllFormApplicationsQuery query = facadeCentralFormApplicationService.getAllFormApplication(
                 formId, user);
-        return MyFormApplicationsResponse.from(query);
+        return MyAllFormApplicationsResponse.from(query);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
+import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -44,4 +45,7 @@ public class FormAnswer extends BaseEntity {
         this.formField = formField;
     }
 
+    public boolean isFile() {
+        return this.formField.getFieldType() == FieldType.FILE;
+    }
 }
