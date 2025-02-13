@@ -14,26 +14,29 @@ public record MyAllFormApplicationsQuery(
         LocalDate startDate,
         LocalDate endDate,
         boolean hasInterview,
+        String formStatus,
         List<FormApplicationListQuery> formApplicationListQueries
 ) {
 
     public static MyAllFormApplicationsQuery of(Form form,
-            List<FormApplicationListQuery> formApplicationListQueries) {
+            List<FormApplicationListQuery> formApplicationListQueries, String formStatus) {
         return new MyAllFormApplicationsQuery(
                 form.getTitle(),
                 form.getStartDate(),
                 form.getEndDate(),
                 form.isHasInterview(),
+                formStatus,
                 formApplicationListQueries
         );
     }
 
-    public static MyAllFormApplicationsQuery createEmpty(Form form) {
+    public static MyAllFormApplicationsQuery createEmpty(Form form, String formStatus) {
         return new MyAllFormApplicationsQuery(
                 form.getTitle(), // title
                 form.getStartDate(), // startDate
                 form.getEndDate(), // endDate
                 form.isHasInterview(), // hasInterview
+                formStatus,
                 Collections.emptyList() // formApplicationListQueries
         );
     }

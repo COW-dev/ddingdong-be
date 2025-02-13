@@ -5,7 +5,6 @@ import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
-import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
@@ -13,6 +12,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
@@ -95,7 +95,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public List<FormListQuery> getAllMyForm(User user) {
         Club club = clubService.getByUserId(user.getId());
         List<Form> forms = formService.getAllByClub(club);
-        return forms.stream().map(this::buildFormListQuery).toList();
+        return forms.stream()
+                .map(this::buildFormListQuery)
+                .toList();
     }
 
     @Override
@@ -160,9 +162,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private FormListQuery buildFormListQuery(Form form) {
-        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(),
+        FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(),
                 form.getEndDate());
-        return FormListQuery.from(form, isActive);
+        return FormListQuery.from(form, formStatus);
     }
 
     private void validateEqualsClub(Club club, Form form) {
