@@ -20,6 +20,8 @@ public record UserFormResponse(
 
     @Builder
     record UserFormFieldListResponse(
+            @Schema(description = "폼지 질문 id", example = "6")
+            Long id,
             @Schema(description = "폼지 질문", example = "당신의 이름은?")
             String question,
             @Schema(description = "폼지 질문 유형", example = "CHECK_BOX")
@@ -36,6 +38,7 @@ public record UserFormResponse(
 
         public static UserFormFieldListResponse from(UserFormFieldListQuery formFieldListQuery) {
             return UserFormFieldListResponse.builder()
+                    .id(formFieldListQuery.id())
                     .question(formFieldListQuery.question())
                     .type(formFieldListQuery.type())
                     .options(formFieldListQuery.options())
