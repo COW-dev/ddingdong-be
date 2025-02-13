@@ -20,12 +20,13 @@ public record MyAllFormApplicationsResponse(
         LocalDate endDate,
         @Schema(description = "면접 여부", example = "true")
         boolean hasInterview,
+        @Schema(description = "폼 현재 진행상태", example = "진행 중")
+        String formStatus,
         @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyAllFormApplicationsResponse.MyFormApplicationListResponse.class))
         List<MyFormApplicationListResponse> formApplications
 ) {
 
-    public static MyAllFormApplicationsResponse from(
-            MyAllFormApplicationsQuery myAllFormApplicationsQuery) {
+    public static MyAllFormApplicationsResponse from(MyAllFormApplicationsQuery myAllFormApplicationsQuery) {
         List<MyFormApplicationListResponse> formApplications = myAllFormApplicationsQuery.formApplicationListQueries()
                 .stream()
                 .map(MyFormApplicationListResponse::from)
@@ -35,6 +36,7 @@ public record MyAllFormApplicationsResponse(
                 .startDate(myAllFormApplicationsQuery.startDate())
                 .endDate(myAllFormApplicationsQuery.endDate())
                 .hasInterview(myAllFormApplicationsQuery.hasInterview())
+                .formStatus(myAllFormApplicationsQuery.formStatus())
                 .formApplications(formApplications)
                 .build();
     }

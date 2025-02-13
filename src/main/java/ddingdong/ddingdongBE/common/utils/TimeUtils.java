@@ -28,13 +28,6 @@ public class TimeUtils {
         return parseToLocalDateTime(dateString);
     }
 
-    public static boolean isDateInRange(LocalDate nowDate, LocalDate startDate, LocalDate endDate) {
-        if (nowDate == null || startDate == null || endDate == null) {
-            return false;
-        }
-        return !nowDate.isBefore(startDate) && !nowDate.isAfter(endDate);
-    }
-
     public static String getYearAndMonth(LocalDate date) {
         return date.getYear() + "-" + date.getMonthValue();
     }
