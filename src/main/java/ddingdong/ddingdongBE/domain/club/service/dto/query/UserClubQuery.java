@@ -1,8 +1,9 @@
 package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record UserClubQuery(
         String name,
@@ -11,8 +12,8 @@ public record UserClubQuery(
         String leader,
         String phoneNumber,
         String location,
-        LocalDateTime startRecruitPeriod,
-        LocalDateTime endRecruitPeriod,
+        LocalDate startDate,
+        LocalDate endDate,
         String regularMeeting,
         String introduction,
         String activity,
@@ -24,6 +25,7 @@ public record UserClubQuery(
 
     public static UserClubQuery of(
             Club club,
+            Form form,
             UploadedFileUrlQuery profileImageUrlQuery,
             UploadedFileUrlQuery introductionImageUrlQuery) {
         return new UserClubQuery(
@@ -33,13 +35,13 @@ public record UserClubQuery(
                 club.getLeader(),
                 club.getPhoneNumber().getNumber(),
                 club.getLocation().getValue(),
-                club.getStartRecruitPeriod(),
-                club.getEndRecruitPeriod(),
+                form.getStartDate(),
+                form.getEndDate(),
                 club.getRegularMeeting(),
                 club.getIntroduction(),
                 club.getActivity(),
                 club.getIdeal(),
-                club.getFormId(),
+                form.getId(),
                 profileImageUrlQuery,
                 introductionImageUrlQuery
         );

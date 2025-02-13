@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Schema(
         name = "UserClubResponse",
@@ -25,10 +25,10 @@ public record UserClubResponse(
         String location,
         @Schema(description = "모집시작날짜", example = "2024-01-01 00:00")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-        LocalDateTime startRecruitPeriod,
+        LocalDate startDate,
         @Schema(description = "모집마감날짜", example = "2024-01-01 00:00")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-        LocalDateTime endRecruitPeriod,
+        LocalDate endDate,
         @Schema(description = "정기활동", example = "정기활동")
         String regularMeeting,
         @Schema(description = "동아리 소개", example = "소개")
@@ -51,8 +51,8 @@ public record UserClubResponse(
                 query.leader(),
                 query.phoneNumber(),
                 query.location(),
-                query.startRecruitPeriod(),
-                query.endRecruitPeriod(),
+                query.startDate(),
+                query.endDate(),
                 query.regularMeeting(),
                 query.introduction(),
                 query.activity(),
