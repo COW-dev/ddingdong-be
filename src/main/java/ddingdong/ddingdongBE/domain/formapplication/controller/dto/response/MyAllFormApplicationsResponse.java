@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.controller.dto.response;
 
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery;
-import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyFormApplicationPageQuery.FormApplicationListQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery.FormApplicationListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Builder
-public record MyFormApplicationPageResponse(
+public record MyAllFormApplicationsResponse(
         @Schema(description = "폼지 제목", example = "카우 1기 지원 폼")
         String title,
         @Schema(description = "폼지 시작 일자", example = "2025-01-01")
@@ -20,25 +20,24 @@ public record MyFormApplicationPageResponse(
         LocalDate endDate,
         @Schema(description = "면접 여부", example = "true")
         boolean hasInterview,
-        @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyFormApplicationPageResponse.MyFormApplicationListResponse.class))
-        List<MyFormApplicationListResponse> formApplications,
-        @Schema(name = "지원자 전체 조회 페이지 정보", implementation = PagingResponse.class)
-        PagingResponse pagingInfo
+        @Schema(description = "폼 현재 진행상태", example = "진행 중")
+        String formStatus,
+        @ArraySchema(schema = @Schema(name = "지원자 전체 조회 페이지", implementation = MyAllFormApplicationsResponse.MyFormApplicationListResponse.class))
+        List<MyFormApplicationListResponse> formApplications
 ) {
 
-    public static MyFormApplicationPageResponse from(
-            MyFormApplicationPageQuery myFormApplicationPageQuery) {
-        List<MyFormApplicationListResponse> formApplications = myFormApplicationPageQuery.formApplicationListQueries()
+    public static MyAllFormApplicationsResponse from(MyAllFormApplicationsQuery myAllFormApplicationsQuery) {
+        List<MyFormApplicationListResponse> formApplications = myAllFormApplicationsQuery.formApplicationListQueries()
                 .stream()
                 .map(MyFormApplicationListResponse::from)
                 .toList();
-        return MyFormApplicationPageResponse.builder()
-                .title(myFormApplicationPageQuery.title())
-                .startDate(myFormApplicationPageQuery.startDate())
-                .endDate(myFormApplicationPageQuery.endDate())
-                .hasInterview(myFormApplicationPageQuery.hasInterview())
+        return MyAllFormApplicationsResponse.builder()
+                .title(myAllFormApplicationsQuery.title())
+                .startDate(myAllFormApplicationsQuery.startDate())
+                .endDate(myAllFormApplicationsQuery.endDate())
+                .hasInterview(myAllFormApplicationsQuery.hasInterview())
+                .formStatus(myAllFormApplicationsQuery.formStatus())
                 .formApplications(formApplications)
-                .pagingInfo(PagingResponse.from(myFormApplicationPageQuery.pagingQuery()))
                 .build();
     }
 

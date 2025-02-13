@@ -5,12 +5,14 @@ import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidFormPeriodException;
-import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
@@ -21,10 +23,12 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDate;
 import java.util.List;
@@ -43,6 +47,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     @Override
@@ -82,6 +87,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         validateEqualsClub(club, form);
+        fileMetaDataService.updateStatusToDelete(DomainType.FORM_FILE, formId);
         formService.delete(form); //테이블 생성 시 외래 키에 cascade 설정하여 formField 삭제도 자동으로 됨.
     }
 
@@ -89,7 +95,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public List<FormListQuery> getAllMyForm(User user) {
         Club club = clubService.getByUserId(user.getId());
         List<Form> forms = formService.getAllByClub(club);
-        return forms.stream().map(this::buildFormListQuery).toList();
+        return forms.stream()
+                .map(this::buildFormListQuery)
+                .toList();
     }
 
     @Override
@@ -142,10 +150,21 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         });
     }
 
+    @Override
+    public TextFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
+        FormField formField = formFieldService.getById(fieldId);
+        if (!formField.isTextType()) {
+            throw new InvalidFieldTypeException();
+        }
+        String type = formField.getFieldType().name();
+        List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
+        return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+    }
+
     private FormListQuery buildFormListQuery(Form form) {
-        boolean isActive = TimeUtils.isDateInRange(LocalDate.now(), form.getStartDate(),
+        FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(),
                 form.getEndDate());
-        return FormListQuery.from(form, isActive);
+        return FormListQuery.from(form, formStatus);
     }
 
     private void validateEqualsClub(Club club, Form form) {

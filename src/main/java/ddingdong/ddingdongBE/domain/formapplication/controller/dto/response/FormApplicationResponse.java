@@ -24,8 +24,14 @@ public record FormApplicationResponse(
         String studentNumber,
         @Schema(description = "지원자 학과", example = "융합소프트웨어학부")
         String department,
+        @Schema(description = "지원자 전화번호", example = "010-xxxx-xxxx")
+        String phoneNumber,
+        @Schema(description = "지원자 이메일", example = "ddingdong@mju.ac.kr")
+        String email,
         @Schema(description = "status", example = "SUBMITTED")
         FormApplicationStatus status,
+        @Schema(description = "메모", example = "좋은 지원자였습니다.")
+        String note,
         @ArraySchema(schema = @Schema(implementation = FormFieldAnswerListResponse.class))
         List<FormFieldAnswerListResponse> formFieldAnswers
 ) {
@@ -79,7 +85,10 @@ public record FormApplicationResponse(
                 .name(formApplicationQuery.name())
                 .studentNumber(formApplicationQuery.studentNumber())
                 .department(formApplicationQuery.department())
+                .phoneNumber(formApplicationQuery.phoneNumber())
+                .email(formApplicationQuery.email())
                 .status(formApplicationQuery.status())
+                .note(formApplicationQuery.note())
                 .formFieldAnswers(responses)
                 .build();
     }

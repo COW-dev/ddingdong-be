@@ -1,12 +1,11 @@
 package ddingdong.ddingdongBE.domain.formapplication.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationNoteRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
-import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyFormApplicationPageResponse;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyAllFormApplicationsResponse;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,17 +20,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/server/central")
 public interface CentralFormApplicationApi {
     @Operation(summary = "지원자 전체 조회 API")
-    @Parameter(name = "size", description = "한 페이지당 조회할 지원자 수 (기본값: 15)")
-    @Parameter(name = "currentCursorId", description = "현재 커서 위치 (첫 페이지: -1)")
     @ApiResponse(responseCode = "200", description = "지원자 전체 조회 성공",
-            content = @Content(schema = @Schema(implementation = MyFormApplicationPageResponse.class)))
+            content = @Content(schema = @Schema(implementation = MyAllFormApplicationsResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}/applications")
-    MyFormApplicationPageResponse getMyFormApplicationPage(
+    MyAllFormApplicationsResponse getAllFormApplication(
             @PathVariable("formId") Long formId,
-            @RequestParam(value = "size", defaultValue = "15") int size,
-            @RequestParam(value = "currentCursorId", defaultValue = "-1") Long currentCursorId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
@@ -56,5 +51,17 @@ public interface CentralFormApplicationApi {
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Valid @RequestBody UpdateFormApplicationStatusRequest request
+    );
+
+    @Operation(summary = "지원자 메모하기 API")
+    @ApiResponse(responseCode = "204", description = "지원자 메모하기 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PatchMapping("/my/forms/{formId}/applications/{applicationId}")
+    void updateFormApplicationNote(
+            @PathVariable("formId") Long formId,
+            @PathVariable("applicationId") Long applicationId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody UpdateFormApplicationNoteRequest request
     );
 }
