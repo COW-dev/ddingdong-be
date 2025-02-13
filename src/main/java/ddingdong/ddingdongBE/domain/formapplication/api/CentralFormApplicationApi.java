@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationNoteRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.MyAllFormApplicationsResponse;
@@ -50,5 +51,17 @@ public interface CentralFormApplicationApi {
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Valid @RequestBody UpdateFormApplicationStatusRequest request
+    );
+
+    @Operation(summary = "지원자 메모하기 API")
+    @ApiResponse(responseCode = "204", description = "지원자 메모하기 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PatchMapping("/my/forms/{formId}/applications/{applicationId}")
+    void updateFormApplicationNote(
+            @PathVariable("formId") Long formId,
+            @PathVariable("applicationId") Long applicationId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody UpdateFormApplicationNoteRequest request
     );
 }

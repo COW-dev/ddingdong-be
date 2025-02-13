@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationNoteRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.request.UpdateFormApplicationStatusRequest;
 import ddingdong.ddingdongBE.domain.formapplication.controller.dto.response.FormApplicationResponse;
 import ddingdong.ddingdongBE.domain.formapplication.service.FacadeCentralFormApplicationService;
@@ -41,5 +42,11 @@ public class CentralFormApplicationController implements CentralFormApplicationA
             UpdateFormApplicationStatusRequest request) {
         User user = principalDetails.getUser();
         facadeCentralFormApplicationService.updateStatus(request.toCommand(formId, user));
+    }
+
+    @Override
+    public void updateFormApplicationNote(Long formId, Long applicationId,
+            PrincipalDetails principalDetails, UpdateFormApplicationNoteRequest request) {
+        facadeCentralFormApplicationService.updateNote(request.toCommand(applicationId));
     }
 }

@@ -30,6 +30,8 @@ public record FormApplicationResponse(
         String email,
         @Schema(description = "status", example = "SUBMITTED")
         FormApplicationStatus status,
+        @Schema(description = "메모", example = "좋은 지원자였습니다.")
+        String note,
         @ArraySchema(schema = @Schema(implementation = FormFieldAnswerListResponse.class))
         List<FormFieldAnswerListResponse> formFieldAnswers
 ) {
@@ -86,6 +88,7 @@ public record FormApplicationResponse(
                 .phoneNumber(formApplicationQuery.phoneNumber())
                 .email(formApplicationQuery.email())
                 .status(formApplicationQuery.status())
+                .note(formApplicationQuery.note())
                 .formFieldAnswers(responses)
                 .build();
     }

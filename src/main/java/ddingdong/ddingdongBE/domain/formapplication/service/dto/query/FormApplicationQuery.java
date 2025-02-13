@@ -22,6 +22,7 @@ public record FormApplicationQuery(
         String phoneNumber,
         String email,
         FormApplicationStatus status,
+        String note,
         List<FormFieldAnswerListQuery> formFieldAnswers
 ) {
 
@@ -75,6 +76,7 @@ public record FormApplicationQuery(
                 .phoneNumber(formApplication.getPhoneNumber())
                 .email(formApplication.getEmail())
                 .status(formApplication.getStatus())
+                .note(formApplication.getNote())
                 .formFieldAnswers(formFieldAnswerListQueries)
                 .build();
     }
