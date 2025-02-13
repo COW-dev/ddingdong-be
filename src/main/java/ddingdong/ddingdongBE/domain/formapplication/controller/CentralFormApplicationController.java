@@ -47,7 +47,6 @@ public class CentralFormApplicationController implements CentralFormApplicationA
     @Override
     public void updateFormApplicationNote(Long formId, Long applicationId,
             PrincipalDetails principalDetails, UpdateFormApplicationNoteRequest request) {
-        User user = principalDetails.getUser();
-        facadeCentralFormApplicationService.updateNote(request.toCommand(formId, applicationId, user));
+        facadeCentralFormApplicationService.updateNote(request.toCommand(applicationId));
     }
 }
