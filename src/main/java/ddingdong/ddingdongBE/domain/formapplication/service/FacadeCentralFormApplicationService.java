@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationNoteCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
@@ -12,4 +13,6 @@ public interface FacadeCentralFormApplicationService {
     FormApplicationQuery getFormApplication(Long formId, Long applicationId, User user);
 
     void updateStatus(UpdateFormApplicationStatusCommand command);
+
+    void updateNote(UpdateFormApplicationNoteCommand command);
 }

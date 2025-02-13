@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationNoteCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
@@ -59,6 +60,13 @@ public class FacadeCentralFormApplicationServiceImpl implements
         List<FormApplication> formApplications = formApplicationService.getAllById(
                 command.applicationIds());
         formApplications.forEach(formApplication -> formApplication.updateStatus(command.status()));
+    }
+
+    @Transactional
+    @Override
+    public void updateNote(UpdateFormApplicationNoteCommand command) {
+        FormApplication formApplication = formApplicationService.getById(command.applicationId());
+        formApplication.updateNote(command.note());
     }
 
     private List<FormFieldAnswerListQuery> buildFormFieldAnswerQueries(List<FormAnswer> formAnswers) {
