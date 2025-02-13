@@ -27,10 +27,6 @@ public record UpdateClubInfoRequest(
         @Schema(description = "동아리방 위치", example = "S1111")
         @NotNull(message = "동아리방 위치는 필수로 입력해야 합니다.")
         String location,
-        @Schema(description = "모집시작 날짜", example = "2024-01-01 00:00")
-        String startRecruitPeriod,
-        @Schema(description = "모집마감 날짜", example = "2024-01-01 00:00")
-        String endRecruitPeriod,
         @Schema(description = "정기활동", example = "정기활동")
         @NotNull(message = "정기활동은 필수로 입력해야 합니다.")
         String regularMeeting,
@@ -58,8 +54,6 @@ public record UpdateClubInfoRequest(
                 clubLeader,
                 phoneNumber,
                 location,
-                startRecruitPeriod,
-                endRecruitPeriod,
                 regularMeeting,
                 introduction,
                 activity,

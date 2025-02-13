@@ -14,8 +14,6 @@ public record UpdateClubInfoCommand(
         String clubLeader,
         String phoneNumber,
         String location,
-        String startRecruitPeriod,
-        String endRecruitPeriod,
         String regularMeeting,
         String introduction,
         String activity,
@@ -32,17 +30,10 @@ public record UpdateClubInfoCommand(
                 .leader(clubLeader)
                 .phoneNumber(PhoneNumber.from(phoneNumber))
                 .location(Location.from(location))
-                .startRecruitPeriod(parseLocalDateTime(startRecruitPeriod))
-                .endRecruitPeriod(parseLocalDateTime(endRecruitPeriod))
                 .regularMeeting(regularMeeting)
                 .introduction(introduction)
                 .activity(activity)
                 .ideal(ideal)
                 .build();
-    }
-
-    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }
