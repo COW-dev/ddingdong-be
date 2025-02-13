@@ -1,1 +1,0 @@
-ALTER TABLE club DROP COLUMN form_url;
