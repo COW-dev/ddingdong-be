@@ -15,8 +15,8 @@ public record FormListResponse(
         LocalDate startDate,
         @Schema(description = "지원 폼지 종료일", example = "2001-01-02")
         LocalDate endDate,
-        @Schema(description = "활성화 여부", example = "true")
-        boolean isActive
+        @Schema(description = "폼 현재 진행상태", example = "진행 중")
+        String formStatus
 ) {
 
     public static FormListResponse from(FormListQuery query) {
@@ -25,7 +25,7 @@ public record FormListResponse(
                 .title(query.title())
                 .startDate(query.startDate())
                 .endDate(query.endDate())
-                .isActive(query.isActive())
+                .formStatus(query.formStatus())
                 .build();
     }
 }

@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
@@ -17,6 +18,7 @@ import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormA
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery.FormApplicationListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +44,15 @@ public class FacadeCentralFormApplicationServiceImpl implements
         Form form = formService.getById(formId);
         validateAuthority(club, form);
         List<FormApplication> formApplications = formApplicationService.getAllByForm(form);
+        FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(), form.getEndDate());
+        if (formApplications == null) {
+            return MyAllFormApplicationsQuery.createEmpty(form, formStatus.getDescription());
+        }
         List<FormApplicationListQuery> formApplicationListQueries = formApplications.stream()
                 .map(FormApplicationListQuery::of)
                 .toList();
 
-        return MyAllFormApplicationsQuery.of(form, formApplicationListQueries);
+        return MyAllFormApplicationsQuery.of(form, formApplicationListQueries, formStatus.getDescription());
     }
 
     @Override
