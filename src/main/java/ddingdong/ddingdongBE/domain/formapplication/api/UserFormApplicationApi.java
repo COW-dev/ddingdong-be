@@ -30,7 +30,7 @@ public interface UserFormApplicationApi {
     @ApiResponse(responseCode = "200", description = "지원자 수 조회 성공",
             content = @Content(schema = @Schema(implementation = FormApplicationCountResponse.class)))
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/forms/{formId}/applications")
+    @GetMapping("/forms/{formId}/applications/count")
     FormApplicationCountResponse getNumberOfFormApplication(
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails

@@ -6,7 +6,7 @@ import lombok.Builder;
 public record FormApplicationCountQuery(
         int formApplicationCount
 ) {
-    public static FormApplicationCountQuery of(int formApplicationCount) {
+    public static FormApplicationCountQuery from(int formApplicationCount) {
         return FormApplicationCountQuery.builder()
                 .formApplicationCount(formApplicationCount)
                 .build();

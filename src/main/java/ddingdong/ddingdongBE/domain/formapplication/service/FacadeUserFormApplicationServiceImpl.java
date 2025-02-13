@@ -45,7 +45,7 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     @Override
     public FormApplicationCountQuery getFormApplicationCount(Long formId) {
         Form form = formService.getById(formId);
-        return FormApplicationCountQuery.of(formStatisticService.getTotalApplicationCountByForm(form));
+        return FormApplicationCountQuery.from(formStatisticService.getTotalApplicationCountByForm(form));
     }
 
     private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, Form form) {
