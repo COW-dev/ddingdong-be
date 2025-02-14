@@ -75,4 +75,8 @@ public class Form extends BaseEntity {
         this.sections = updateForm.getSections();
         this.hasInterview = updateForm.isHasInterview();
     }
+
+    public boolean isEqualsById(Long formId) {
+        return this.id.equals(formId);
+    }
 }
