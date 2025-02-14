@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -23,11 +22,9 @@ public record UserClubResponse(
         String phoneNumber,
         @Schema(description = "동아리방 위치", example = "S1111")
         String location,
-        @Schema(description = "모집시작날짜", example = "2024-01-01 00:00")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+        @Schema(description = "모집시작날짜", example = "2024-01-01")
         LocalDate startDate,
-        @Schema(description = "모집마감날짜", example = "2024-01-01 00:00")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
+        @Schema(description = "모집마감날짜", example = "2024-01-01")
         LocalDate endDate,
         @Schema(description = "정기활동", example = "정기활동")
         String regularMeeting,

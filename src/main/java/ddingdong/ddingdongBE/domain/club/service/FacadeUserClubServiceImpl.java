@@ -10,9 +10,11 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,30 +28,42 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     private final ClubService clubService;
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
+    private final FormService formService;
 
     @Override
-    public List<UserClubListQuery> findAllWithRecruitTimeCheckPoint(LocalDateTime now) {
+    public List<UserClubListQuery> findAllWithRecruitTimeCheckPoint(LocalDate now) {
         return clubService.findAll().stream()
-                .map(club -> UserClubListQuery.of(club, checkRecruit(now, club).getText()))
+                .map(club -> {
+                    List<Form> forms = formService.getAllByClub(club);
+                    Form form = formService.findActiveForm(forms) != null
+                            ? formService.findActiveForm(forms)
+                            : formService.getNewestForm(forms);
+                    return UserClubListQuery.of(club, checkRecruit(now, form).getText());
+                })
                 .toList();
     }
 
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
+        List<Form> forms = formService.getAllByClub(club);
+        Form form = formService.findActiveForm(forms) != null
+                ? formService.findActiveForm(forms)
+                : formService.getNewestForm(forms);
         return UserClubQuery.of(
                 club,
+                form,
                 getFileKey(DomainType.CLUB_PROFILE, clubId),
                 getFileKey(DomainType.CLUB_INTRODUCTION, clubId)
         );
     }
 
-    private RecruitmentStatus checkRecruit(LocalDateTime now, Club club) {
-        if (club.getStartRecruitPeriod() == null || club.getEndRecruitPeriod() == null
-                || club.getStartRecruitPeriod().isAfter(now)) {
+    private RecruitmentStatus checkRecruit(LocalDate now, Form form) {
+        if (form == null
+                || form.getStartDate().isAfter(now)) {
             return BEFORE_RECRUIT;
         }
-        return club.getEndRecruitPeriod().isAfter(now) ? RECRUITING : END_RECRUIT;
+        return form.getEndDate().isAfter(now) ? RECRUITING : END_RECRUIT;
     }
 
     private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {

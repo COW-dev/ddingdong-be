@@ -35,13 +35,13 @@ public record UserClubQuery(
                 club.getLeader(),
                 club.getPhoneNumber().getNumber(),
                 club.getLocation().getValue(),
-                form.getStartDate(),
-                form.getEndDate(),
+                form != null ? form.getStartDate() : null,
+                form != null ? form.getEndDate() : null,
                 club.getRegularMeeting(),
                 club.getIntroduction(),
                 club.getActivity(),
                 club.getIdeal(),
-                form.getId(),
+                form != null ? form.getId() : null,
                 profileImageUrlQuery,
                 introductionImageUrlQuery
         );
