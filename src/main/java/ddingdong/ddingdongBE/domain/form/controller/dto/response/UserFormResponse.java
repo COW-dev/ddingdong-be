@@ -14,6 +14,8 @@ public record UserFormResponse(
         String title,
         @Schema(description = "폼지 설명", example = "폼지 설명입니다")
         String description,
+        @Schema(description = "폼지 지원자 수", example = "20")
+        int applicationCount,
         @ArraySchema(schema = @Schema(implementation = UserFormFieldListResponse.class))
         List<UserFormFieldListResponse> formFields
 ) {
@@ -56,6 +58,7 @@ public record UserFormResponse(
         return UserFormResponse.builder()
                 .title(userFormQuery.title())
                 .description(userFormQuery.description())
+                .applicationCount(userFormQuery.applicationCount())
                 .formFields(responses)
                 .build();
     }
