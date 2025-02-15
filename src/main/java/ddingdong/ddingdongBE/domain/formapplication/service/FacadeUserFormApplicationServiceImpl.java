@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ILLEGAL_FORM_STATUS;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_FILE;
 
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
@@ -10,6 +11,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand.CreateFormAnswerCommand;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,7 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     @Override
     public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
         Form form = formService.getById(createFormApplicationCommand.formId());
+        validateFormStatus(form);
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
@@ -37,6 +40,13 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
                 createFormApplicationCommand.formAnswerCommands());
         updateFileMetaDataStatusToCoupled(formAnswers, form);
         formAnswerService.createAll(formAnswers);
+    }
+
+    private void validateFormStatus(Form form) {
+        LocalDate now = LocalDate.now();
+        if (form.getStartDate().isAfter(now) || form.getEndDate().isBefore(now)) {
+            throw new IllegalStateException(ILLEGAL_FORM_STATUS.getText());
+        }
     }
 
     private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, Form form) {
