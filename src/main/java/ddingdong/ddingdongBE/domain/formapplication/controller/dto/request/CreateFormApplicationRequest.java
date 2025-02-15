@@ -23,6 +23,14 @@ public record CreateFormApplicationRequest(
         @Schema(description = "학과", example = "융합소프트웨어학부 응용소프트웨어전공")
         String department,
 
+        @NotNull(message = "지원자 이메일은 필수 입력 사항입니다.")
+        @Schema(description = "이메일", example = "ddingdong@mju.ac.kr")
+        String email,
+
+        @NotNull(message = "지원자 전화번호는 필수 입력 사항입니다.")
+        @Schema(description = "전화번호", example = "010-0000-0000")
+        String phoneNumber,
+
         @ArraySchema(schema = @Schema(implementation = CreateFormAnswerRequest.class))
         List<CreateFormAnswerRequest> formAnswers
 ) {
@@ -53,6 +61,8 @@ public record CreateFormApplicationRequest(
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)
+                .email(email)
+                .phoneNumber(phoneNumber)
                 .status(FormApplicationStatus.SUBMITTED)
                 .formAnswerCommands(createFormAnswerCommands)
                 .build();
