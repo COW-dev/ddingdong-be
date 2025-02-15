@@ -14,6 +14,8 @@ public record CreateFormApplicationCommand(
         String name,
         String studentNumber,
         String department,
+        String email,
+        String phoneNumber,
         FormApplicationStatus status,
         List<CreateFormAnswerCommand> formAnswerCommands
 ) {
@@ -38,6 +40,8 @@ public record CreateFormApplicationCommand(
                 .name(name)
                 .studentNumber(studentNumber)
                 .department(department)
+                .email(email)
+                .phoneNumber(phoneNumber)
                 .status(status)
                 .form(form)
                 .build();

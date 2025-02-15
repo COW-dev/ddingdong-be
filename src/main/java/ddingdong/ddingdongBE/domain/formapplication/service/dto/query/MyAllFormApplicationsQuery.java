@@ -9,35 +9,35 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 
-public record MyFormApplicationPageQuery(
+public record MyAllFormApplicationsQuery(
         String title,
         LocalDate startDate,
         LocalDate endDate,
         boolean hasInterview,
-        List<FormApplicationListQuery> formApplicationListQueries,
-        PagingQuery pagingQuery
+        String formStatus,
+        List<FormApplicationListQuery> formApplicationListQueries
 ) {
 
-    public static MyFormApplicationPageQuery of(Form form,
-            List<FormApplicationListQuery> formApplicationListQueries, PagingQuery pagingQuery) {
-        return new MyFormApplicationPageQuery(
+    public static MyAllFormApplicationsQuery of(Form form,
+            List<FormApplicationListQuery> formApplicationListQueries, String formStatus) {
+        return new MyAllFormApplicationsQuery(
                 form.getTitle(),
                 form.getStartDate(),
                 form.getEndDate(),
                 form.isHasInterview(),
-                formApplicationListQueries,
-                pagingQuery
+                formStatus,
+                formApplicationListQueries
         );
     }
 
-    public static MyFormApplicationPageQuery createEmpty(Form form) {
-        return new MyFormApplicationPageQuery(
+    public static MyAllFormApplicationsQuery createEmpty(Form form, String formStatus) {
+        return new MyAllFormApplicationsQuery(
                 form.getTitle(), // title
                 form.getStartDate(), // startDate
                 form.getEndDate(), // endDate
                 form.isHasInterview(), // hasInterview
-                Collections.emptyList(), // formApplicationListQueries
-                PagingQuery.createEmpty() // pagingQuery
+                formStatus,
+                Collections.emptyList() // formApplicationListQueries
         );
     }
 

@@ -39,6 +39,8 @@ public class FormApplication extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
 
+    private String note;
+
     @Builder
     private FormApplication(String name, String studentNumber, String department,
             String phoneNumber, String email,
@@ -54,5 +56,9 @@ public class FormApplication extends BaseEntity {
 
     public void updateStatus(FormApplicationStatus status) {
         this.status = status;
+    }
+
+    public void updateNote(String note) {
+        this.note = note;
     }
 }

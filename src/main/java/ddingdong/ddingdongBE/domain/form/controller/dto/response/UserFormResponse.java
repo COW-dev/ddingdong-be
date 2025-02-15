@@ -14,12 +14,16 @@ public record UserFormResponse(
         String title,
         @Schema(description = "폼지 설명", example = "폼지 설명입니다")
         String description,
+        @Schema(description = "폼지 지원자 수", example = "20")
+        int applicationCount,
         @ArraySchema(schema = @Schema(implementation = UserFormFieldListResponse.class))
         List<UserFormFieldListResponse> formFields
 ) {
 
     @Builder
     record UserFormFieldListResponse(
+            @Schema(description = "폼지 질문 id", example = "6")
+            Long id,
             @Schema(description = "폼지 질문", example = "당신의 이름은?")
             String question,
             @Schema(description = "폼지 질문 유형", example = "CHECK_BOX")
@@ -36,6 +40,7 @@ public record UserFormResponse(
 
         public static UserFormFieldListResponse from(UserFormFieldListQuery formFieldListQuery) {
             return UserFormFieldListResponse.builder()
+                    .id(formFieldListQuery.id())
                     .question(formFieldListQuery.question())
                     .type(formFieldListQuery.type())
                     .options(formFieldListQuery.options())
@@ -53,6 +58,7 @@ public record UserFormResponse(
         return UserFormResponse.builder()
                 .title(userFormQuery.title())
                 .description(userFormQuery.description())
+                .applicationCount(userFormQuery.applicationCount())
                 .formFields(responses)
                 .build();
     }

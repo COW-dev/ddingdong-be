@@ -1,17 +1,14 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Slice;
-import org.springframework.data.domain.SliceImpl;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -28,14 +25,6 @@ public class GeneralFormApplicationService implements FormApplicationService {
     }
 
     @Override
-    public Slice<FormApplication> getFormApplicationPageByFormId(Long formId, int size,
-            Long currentCursorId) {
-        Slice<FormApplication> formApplicationPages = formApplicationRepository.findPageByFormIdOrderById(
-                formId, size + 1, currentCursorId);
-        return buildSlice(formApplicationPages, size);
-    }
-
-    @Override
     public List<FormApplication> getAllById(List<Long> applicationIds) {
         return formApplicationRepository.findAllById(applicationIds);
     }
@@ -43,6 +32,11 @@ public class GeneralFormApplicationService implements FormApplicationService {
     @Override
     public List<FormApplication> getAllFinalPassedByFormId(Long formId) {
         return formApplicationRepository.findAllFinalPassedByFormId(formId);
+    }
+
+    @Override
+    public List<FormApplication> getAllByForm(Form form) {
+        return formApplicationRepository.findAllByForm(form);
     }
 
     @Override
@@ -55,20 +49,5 @@ public class GeneralFormApplicationService implements FormApplicationService {
         return formApplicationRepository.findById(applicationId)
                 .orElseThrow(
                         () -> new ResourceNotFound("주어진 id로 해당 지원자를 찾을 수 없습니다.:" + applicationId));
-    }
-
-    private Slice<FormApplication> buildSlice(Slice<FormApplication> originalSlice, int size) {
-        List<FormApplication> content = new ArrayList<>(originalSlice.getContent());
-        if (content.isEmpty()) {
-            return null;
-        }
-
-        boolean hasNext = content.size() > size;
-
-        if (hasNext) {
-            content.remove(content.size() - 1);
-        }
-
-        return new SliceImpl<>(content, PageRequest.of(originalSlice.getNumber(), size), hasNext);
     }
 }

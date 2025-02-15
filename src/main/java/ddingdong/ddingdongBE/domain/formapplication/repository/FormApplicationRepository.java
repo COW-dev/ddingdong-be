@@ -72,6 +72,8 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             """)
     List<FormApplication> findAllFinalPassedByFormId(@Param("formId") Long formId);
 
+    List<FormApplication> findAllByForm(Form form);
+
     List<FormApplication> getAllByFormIdAndStatus(Long formId, FormApplicationStatus status);
 
 }

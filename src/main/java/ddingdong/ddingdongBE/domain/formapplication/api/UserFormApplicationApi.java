@@ -20,5 +20,4 @@ public interface UserFormApplicationApi {
             @PathVariable Long formId,
             @Valid @RequestBody CreateFormApplicationRequest request
     );
-
 }

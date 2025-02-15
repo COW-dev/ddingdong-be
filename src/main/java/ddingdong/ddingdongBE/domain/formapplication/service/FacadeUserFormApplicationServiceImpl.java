@@ -1,5 +1,8 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_FILE;
+
+import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
@@ -21,6 +24,7 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     private final FormAnswerService formAnswerService;
     private final FormService formService;
     private final FormFieldService formFieldService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     @Override
@@ -31,7 +35,20 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
 
         List<FormAnswer> formAnswers = toFormAnswers(savedFormApplication,
                 createFormApplicationCommand.formAnswerCommands());
+        updateFileMetaDataStatusToCoupled(formAnswers, form);
         formAnswerService.createAll(formAnswers);
+    }
+
+    private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, Form form) {
+        formAnswers.forEach(formAnswer -> {
+            if (formAnswer.isFile()) {
+                fileMetaDataService.updateStatusToCoupled(
+                        formAnswer.getValue(),
+                        FORM_FILE,
+                        form.getId()
+                );
+            }
+        });
     }
 
     private List<FormAnswer> toFormAnswers(
@@ -39,9 +56,10 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
             List<CreateFormAnswerCommand> createFormAnswerCommands
     ) {
         return createFormAnswerCommands.stream()
-                .map(formAnswerCommand
-                        -> formAnswerCommand.toEntity(savedFormApplication,
-                        formFieldService.getById(formAnswerCommand.fieldId())))
+                .map(formAnswerCommand -> formAnswerCommand.toEntity(
+                        savedFormApplication,
+                        formFieldService.getById(formAnswerCommand.fieldId())
+                ))
                 .toList();
     }
 }

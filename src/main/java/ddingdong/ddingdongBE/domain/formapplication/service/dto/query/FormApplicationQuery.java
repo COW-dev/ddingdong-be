@@ -19,7 +19,10 @@ public record FormApplicationQuery(
         String name,
         String studentNumber,
         String department,
+        String phoneNumber,
+        String email,
         FormApplicationStatus status,
+        String note,
         List<FormFieldAnswerListQuery> formFieldAnswers
 ) {
 
@@ -47,20 +50,33 @@ public record FormApplicationQuery(
                     .value(formAnswer.getValue())
                     .build();
         }
+
+        public static FormFieldAnswerListQuery of(FormAnswer formAnswer, List<String> value) {
+            return FormFieldAnswerListQuery.builder()
+                    .fieldId(formAnswer.getFormField().getId())
+                    .question(formAnswer.getFormField().getQuestion())
+                    .type(formAnswer.getFormField().getFieldType())
+                    .options(formAnswer.getFormField().getOptions())
+                    .required(formAnswer.getFormField().isRequired())
+                    .order(formAnswer.getFormField().getFieldOrder())
+                    .section(formAnswer.getFormField().getSection())
+                    .value(value)
+                    .build();
+        }
     }
 
     public static FormApplicationQuery of(Form form, FormApplication formApplication,
-            List<FormAnswer> formAnswers) {
-        List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formAnswers.stream()
-                .map(FormFieldAnswerListQuery::from)
-                .toList();
+            List<FormFieldAnswerListQuery> formFieldAnswerListQueries) {
         return FormApplicationQuery.builder()
                 .hasInterview(form.isHasInterview())
                 .createdAt(formApplication.getCreatedAt())
                 .name(formApplication.getName())
                 .studentNumber(formApplication.getStudentNumber())
                 .department(formApplication.getDepartment())
+                .phoneNumber(formApplication.getPhoneNumber())
+                .email(formApplication.getEmail())
                 .status(formApplication.getStatus())
+                .note(formApplication.getNote())
                 .formFieldAnswers(formFieldAnswerListQueries)
                 .build();
     }
