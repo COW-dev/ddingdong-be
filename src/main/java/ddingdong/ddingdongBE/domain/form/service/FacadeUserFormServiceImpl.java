@@ -27,8 +27,8 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
     @Override
     public UserFormQuery getUserForm(Long formId, String section) {
         Form form = formService.getById(formId);
-        List<FormField> formFieldList = formFieldService.getAllByFormAndSection(form, section);
+        List<FormField> formFields = formFieldService.getAllByFormAndSection(form, section);
         int applicationCount = formStatisticService.getTotalApplicationCountByForm(form);
-        return UserFormQuery.from(form, applicationCount, formFieldList);
+        return UserFormQuery.from(form, applicationCount, formFields);
     }
 }
