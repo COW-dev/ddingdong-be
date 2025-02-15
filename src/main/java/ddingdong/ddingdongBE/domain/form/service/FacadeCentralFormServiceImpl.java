@@ -65,19 +65,19 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void updateForm(UpdateFormCommand updateFormCommand) {
-        Club club = clubService.getByUserId(updateFormCommand.user().getId());
-        validateDuplicationDate(club, updateFormCommand.startDate(), updateFormCommand.endDate());
+    public void updateForm(UpdateFormCommand command) {
+        Club club = clubService.getByUserId(command.user().getId());
+        validateDuplicationDateExcludingSelf(club, command.startDate(), command.endDate(), command.formId());
 
-        Form originform = formService.getById(updateFormCommand.formId());
-        Form updateForm = updateFormCommand.toEntity();
+        Form originform = formService.getById(command.formId());
+        Form updateForm = command.toEntity();
         originform.update(updateForm);
 
         List<FormField> originFormFields = formFieldService.findAllByForm(originform);
         formFieldService.deleteAll(originFormFields);
 
         List<FormField> updateFormFields = toUpdateFormFields(originform,
-                updateFormCommand.formFieldCommands());
+                command.formFieldCommands());
         formFieldService.createAll(updateFormFields);
     }
 
@@ -173,9 +173,29 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         }
     }
 
-    public void validateDuplicationDate(Club club, LocalDate startDate, LocalDate endDate) {
+    private void validateDuplicationDate(
+            Club club,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
         List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate,
                 endDate);
+
+        if (!overlappingForms.isEmpty()) {
+            throw new InvalidFormPeriodException();
+        }
+    }
+
+    private void validateDuplicationDateExcludingSelf(
+            Club club,
+            LocalDate startDate,
+            LocalDate endDate,
+            Long formId
+    ) {
+        List<Form> overlappingForms = formService.findOverlappingForms(club.getId(), startDate, endDate)
+                .stream()
+                .filter(form -> !form.isEqualsById(formId))
+                .toList();
 
         if (!overlappingForms.isEmpty()) {
             throw new InvalidFormPeriodException();
