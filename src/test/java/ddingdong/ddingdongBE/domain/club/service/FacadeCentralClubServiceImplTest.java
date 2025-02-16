@@ -108,7 +108,7 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testintroduction",
                 "testactivity",
                 "testideal",
-               null,
+                null,
                 null
         );
 

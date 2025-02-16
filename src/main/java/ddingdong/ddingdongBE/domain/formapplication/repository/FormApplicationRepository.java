@@ -2,11 +2,11 @@ package ddingdong.ddingdongBE.domain.formapplication.repository;
 
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import java.time.LocalDate;
 import java.util.List;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -49,6 +49,7 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             @Param("date") LocalDate date,
             @Param("size") int size
     );
+
     @Query(value = """
             select fa
             from FormApplication fa
@@ -56,5 +57,8 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
             """)
     List<FormApplication> findAllFinalPassedByFormId(@Param("formId") Long formId);
 
-  List<FormApplication> findAllByForm(Form form);
+    List<FormApplication> findAllByForm(Form form);
+
+    List<FormApplication> getAllByFormIdAndStatus(Long formId, FormApplicationStatus status);
+
 }
