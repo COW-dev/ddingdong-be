@@ -3,8 +3,6 @@ package ddingdong.ddingdongBE.domain.club.service.dto.command;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public record UpdateClubInfoCommand(
         Long userId,
