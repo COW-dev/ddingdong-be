@@ -56,6 +56,39 @@ public interface S3FileAPi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/upload-url")
     UploadUrlResponse getPreSignedUrl(@AuthenticationPrincipal PrincipalDetails principalDetails,
-                                      @RequestParam("fileName") String fileName);
+                                                     @RequestParam("fileName") String fileName);
+
+    @Operation(summary = "폼 응답 - AWS S3 presignedUrl 발급 API")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "폼 응답 presignedUrl 발급 성공"),
+            @ApiResponse(responseCode = "400",
+                    description = "AWS 오류(서버 오류)",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = ErrorResponse.class),
+                            examples = {
+                                    @ExampleObject(name = "AWS 서비스 오류(서버 오류)",
+                                            value = """
+                                                    {
+                                                      "status": 500,
+                                                      "message": "AWS 서비스 오류로 인해 Presigned URL 생성에 실패했습니다.",
+                                                      "timestamp": "2024-08-22T00:08:46.990585"
+                                                    }
+                                                    """
+                                    ),
+                                    @ExampleObject(name = "AWS 클라이언트 오류(서버 오류)",
+                                            value = """
+                                                    {
+                                                      "status": 500,
+                                                      "message": "AWS 클라이언트 오류로 인해 Presigned URL 생성에 실패했습니다.",
+                                                      "timestamp": "2024-08-22T00:08:46.990585"
+                                                    }
+                                                    """
+                                    )
+                            })
+            )
+    })
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/upload-url/form-application")
+    UploadUrlResponse getFormApplicationPreSignedUrl(@RequestParam("fileName") String fileName);
 
 }
