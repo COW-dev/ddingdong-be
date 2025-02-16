@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.formapplication.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -36,6 +37,11 @@ public class GeneralFormApplicationService implements FormApplicationService {
     @Override
     public List<FormApplication> getAllByForm(Form form) {
         return formApplicationRepository.findAllByForm(form);
+    }
+
+    @Override
+    public List<FormApplication> getAllByFormIdAndFormApplicationStatus(Long formId, FormApplicationStatus status) {
+        return formApplicationRepository.getAllByFormIdAndStatus(formId, status);
     }
 
     @Override

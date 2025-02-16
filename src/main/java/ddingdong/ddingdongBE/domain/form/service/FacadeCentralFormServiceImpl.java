@@ -15,6 +15,7 @@ import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
@@ -23,23 +24,30 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.email.SesEmailService;
+import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private final FormService formService;
@@ -48,6 +56,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
     private final FileMetaDataService fileMetaDataService;
+    private final SesEmailService sesEmailService;
 
     @Transactional
     @Override
@@ -138,14 +147,16 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     @Transactional
     public void registerApplicantAsMember(Long formId) {
-        List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(
-                formId);
+        List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
         finalPassedFormApplications.forEach(formApplication -> {
             Club club = formApplication.getForm().getClub();
-            ClubMember clubMember = ClubMember.builder().name(formApplication.getName())
+            ClubMember clubMember = ClubMember.builder()
+                    .name(formApplication.getName())
                     .studentNumber(formApplication.getStudentNumber())
                     .department(formApplication.getDepartment())
-                    .phoneNumber(formApplication.getPhoneNumber()).position(MEMBER).build();
+                    .phoneNumber(formApplication.getPhoneNumber())
+                    .position(MEMBER)
+                    .build();
             club.addClubMember(clubMember);
         });
     }
@@ -159,6 +170,23 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         String type = formField.getFieldType().name();
         List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
         return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+    }
+
+    @Override
+    public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
+        List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
+                command.formId(),
+                FormApplicationStatus.findStatus(command.target())
+        );
+        EmailContent emailContent = EmailContent.of(command.title(), command.message());
+        CompletableFuture<Void> future = sesEmailService.sendBulkResultEmails(formApplications, emailContent);
+
+        try {
+            future.get(5, TimeUnit.MINUTES);  // 최대 5분 대기
+        } catch (Exception e) {
+            log.error("Failed to send bulk emails", e);
+            throw new RuntimeException("이메일 전송 중 오류가 발생했습니다.", e);
+        }
     }
 
     private FormListQuery buildFormListQuery(Form form) {
@@ -203,13 +231,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
-            List<UpdateFormFieldCommand> updateFormFieldCommands) {
+                                               List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
-            List<CreateFormFieldCommand> createFormFieldCommands) {
+                                               List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }
