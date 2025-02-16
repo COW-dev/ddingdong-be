@@ -31,4 +31,15 @@ public class S3FileController implements S3FileAPi {
         URL presingedUrl = s3FileService.getPresignedUrl(query.generatePresignedUrlRequest());
         return UploadUrlResponse.of(query, presingedUrl);
     }
+
+    @Override
+    public UploadUrlResponse getFormApplicationPreSignedUrl(String fileName) {
+        LocalDateTime now = LocalDateTime.now();
+        String decodedFileName = URLDecoder.decode(fileName, StandardCharsets.UTF_8);
+        GeneratePreSignedUrlRequestQuery query =
+                s3FileService.generatePresignedUrlRequest(
+                        new GeneratePreSignedUrlRequestCommand(now, 9999L, decodedFileName));
+        URL presingedUrl = s3FileService.getPresignedUrl(query.generatePresignedUrlRequest());
+        return UploadUrlResponse.of(query, presingedUrl);
+    }
 }
