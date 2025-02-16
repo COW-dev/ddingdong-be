@@ -1,10 +1,9 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Schema(
         name = "UserClubResponse",
@@ -23,12 +22,10 @@ public record UserClubResponse(
         String phoneNumber,
         @Schema(description = "동아리방 위치", example = "S1111")
         String location,
-        @Schema(description = "모집시작날짜", example = "2024-01-01 00:00")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-        LocalDateTime startRecruitPeriod,
-        @Schema(description = "모집마감날짜", example = "2024-01-01 00:00")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "Asia/Seoul")
-        LocalDateTime endRecruitPeriod,
+        @Schema(description = "모집시작날짜", example = "2024-01-01")
+        LocalDate startDate,
+        @Schema(description = "모집마감날짜", example = "2024-01-01")
+        LocalDate endDate,
         @Schema(description = "정기활동", example = "정기활동")
         String regularMeeting,
         @Schema(description = "동아리 소개", example = "소개")
@@ -37,8 +34,8 @@ public record UserClubResponse(
         String activity,
         @Schema(description = "인재상", example = "인재상")
         String ideal,
-        @Schema(description = "모집Url", example = "url")
-        String formUrl,
+        @Schema(description = "모집 폼 ID", example = "6")
+        Long formId,
         UserClubImageUrlResponse profileImage,
         UserClubImageUrlResponse introductionImage
 ) {
@@ -51,13 +48,13 @@ public record UserClubResponse(
                 query.leader(),
                 query.phoneNumber(),
                 query.location(),
-                query.startRecruitPeriod(),
-                query.endRecruitPeriod(),
+                query.startDate(),
+                query.endDate(),
                 query.regularMeeting(),
                 query.introduction(),
                 query.activity(),
                 query.ideal(),
-                query.formUrl(),
+                query.formId(),
                 UserClubImageUrlResponse.from(query.profileImageUrlQuery()),
                 UserClubImageUrlResponse.from(query.introductionImageUrlQuery())
         );

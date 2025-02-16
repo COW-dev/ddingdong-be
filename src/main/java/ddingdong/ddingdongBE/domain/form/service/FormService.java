@@ -16,4 +16,8 @@ public interface FormService {
     List<Form> getAllByClub(Club club);
 
     List<Form> findOverlappingForms(Long id, LocalDate startDate, LocalDate endDate);
+
+    Form findActiveForm(List<Form> forms);
+
+    Form getNewestForm(List<Form> forms);
 }
