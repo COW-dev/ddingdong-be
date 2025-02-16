@@ -32,6 +32,8 @@ spring:
 
 cloud:
   aws:
+    ses:
+      sender-email: "test@email.com"
     region:
       static: "ap-northeast-2"
     stack:
