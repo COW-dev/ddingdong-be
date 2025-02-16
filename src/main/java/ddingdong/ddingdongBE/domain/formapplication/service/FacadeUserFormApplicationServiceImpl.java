@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_FILE;
 
+import ddingdong.ddingdongBE.common.exception.FormException.FormPeriodException;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
@@ -10,6 +11,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.CreateFormApplicationCommand.CreateFormAnswerCommand;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -30,6 +32,8 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     @Override
     public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
         Form form = formService.getById(createFormApplicationCommand.formId());
+        LocalDate now = LocalDate.now();
+        validateFormPeriod(form.getStartDate(), form.getEndDate(), now);
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
@@ -37,6 +41,13 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
                 createFormApplicationCommand.formAnswerCommands());
         updateFileMetaDataStatusToCoupled(formAnswers, form);
         formAnswerService.createAll(formAnswers);
+    }
+
+    private void validateFormPeriod(LocalDate startDate,
+            LocalDate endDate, LocalDate now) {
+        if (startDate.isAfter(now) || endDate.isBefore(now)) {
+            throw new FormPeriodException();
+        }
     }
 
     private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, Form form) {

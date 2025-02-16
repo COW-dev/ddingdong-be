@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service.dto.query;
 
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
@@ -8,18 +9,20 @@ import lombok.Builder;
 
 @Builder
 public record UserFormQuery(
+        String clubName,
         String title,
         String description,
         int applicationCount,
         List<UserFormFieldListQuery> formFields
 ) {
 
-    public static UserFormQuery from(Form form, int applicationCount, List<FormField> formFields) {
+    public static UserFormQuery from(Club club, Form form, int applicationCount, List<FormField> formFields) {
         List<UserFormFieldListQuery> formFieldListQueries = formFields.stream()
                 .map(UserFormFieldListQuery::from)
                 .toList();
 
         return UserFormQuery.builder()
+                .clubName(club.getName())
                 .title(form.getTitle())
                 .description(form.getDescription())
                 .applicationCount(applicationCount)
