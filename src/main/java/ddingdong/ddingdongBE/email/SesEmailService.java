@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.email;
 
+import com.google.common.util.concurrent.RateLimiter;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.util.List;
@@ -22,6 +23,8 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 public class SesEmailService {
 
     private final SesClient sesClient;
+    private final RateLimiter rateLimiter = RateLimiter.create(14.0); // 초당 14개로 제한
+
 
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;
@@ -33,6 +36,7 @@ public class SesEmailService {
                 formApplications.stream()
                         .map(application -> CompletableFuture.runAsync(() -> {
                             try {
+                                rateLimiter.acquire();
                                 SendEmailRequest request = SendEmailRequest.builder()
                                         .source(senderEmail)
                                         .destination(Destination.builder()
