@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
-import static ddingdong.ddingdongBE.common.exception.ErrorMessage.ILLEGAL_FORM_STATUS;
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_FILE;
 
+import ddingdong.ddingdongBE.common.exception.FormApplicationException.FormPeriodException;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
@@ -32,7 +32,8 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     @Override
     public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
         Form form = formService.getById(createFormApplicationCommand.formId());
-        validateFormStatus(form);
+        LocalDate now = LocalDate.now();
+        validateFormPeriod(form.getStartDate(), form.getEndDate(), now);
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
@@ -42,10 +43,10 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
         formAnswerService.createAll(formAnswers);
     }
 
-    private void validateFormStatus(Form form) {
-        LocalDate now = LocalDate.now();
-        if (form.getStartDate().isAfter(now) || form.getEndDate().isBefore(now)) {
-            throw new IllegalStateException(ILLEGAL_FORM_STATUS.getText());
+    private void validateFormPeriod(LocalDate startDate,
+            LocalDate endDate, LocalDate now) {
+        if (startDate.isAfter(now) || endDate.isBefore(now)) {
+            throw new FormPeriodException();
         }
     }
 
