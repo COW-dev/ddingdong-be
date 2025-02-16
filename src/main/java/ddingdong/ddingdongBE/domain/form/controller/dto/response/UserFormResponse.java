@@ -10,6 +10,8 @@ import lombok.Builder;
 
 @Builder
 public record UserFormResponse(
+        @Schema(description = "동아리 이름", example = "카우")
+        String clubName,
         @Schema(description = "폼지 제목", example = "카우 1기 폼지")
         String title,
         @Schema(description = "폼지 설명", example = "폼지 설명입니다")
@@ -56,6 +58,7 @@ public record UserFormResponse(
                 .map(UserFormFieldListResponse::from)
                 .toList();
         return UserFormResponse.builder()
+                .clubName(userFormQuery.clubName())
                 .title(userFormQuery.title())
                 .description(userFormQuery.description())
                 .applicationCount(userFormQuery.applicationCount())

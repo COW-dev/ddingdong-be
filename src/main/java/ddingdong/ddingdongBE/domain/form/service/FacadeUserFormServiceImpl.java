@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormSectionQuery;
@@ -27,8 +28,9 @@ public class FacadeUserFormServiceImpl implements FacadeUserFormService {
     @Override
     public UserFormQuery getUserForm(Long formId, String section) {
         Form form = formService.getById(formId);
+        Club club = form.getClub();
         List<FormField> formFields = formFieldService.getAllByFormAndSection(form, section);
         int applicationCount = formStatisticService.getTotalApplicationCountByForm(form);
-        return UserFormQuery.from(form, applicationCount, formFields);
+        return UserFormQuery.from(club, form, applicationCount, formFields);
     }
 }
