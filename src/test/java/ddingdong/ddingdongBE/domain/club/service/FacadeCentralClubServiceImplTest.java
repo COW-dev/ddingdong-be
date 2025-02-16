@@ -104,16 +104,14 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
                 "testclubLeader",
                 "010-1234-5678",
                 "S1111",
-                "2024-01-01 01:00",
-                "2024-01-01 01:00",
                 "testregularMeeting",
                 "testintroduction",
                 "testactivity",
                 "testideal",
-                "testformUrl",
                null,
                 null
         );
+
 
         //when
         facadeCentralClubService.updateClubInfo(command);
