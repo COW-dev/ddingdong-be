@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.service;
 
 import static ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType.FORM_FILE;
 
-import ddingdong.ddingdongBE.common.exception.FormApplicationException.FormPeriodException;
+import ddingdong.ddingdongBE.common.exception.FormException.FormPeriodException;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.service.FormFieldService;
