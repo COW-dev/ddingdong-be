@@ -48,7 +48,8 @@ public class SecurityConfig {
                                 API_PREFIX + "/documents/**",
                                 API_PREFIX + "/questions/**",
                                 API_PREFIX + "/feeds/**",
-                                API_PREFIX + "/forms/**"
+                                API_PREFIX + "/forms/**",
+                                API_PREFIX + "/file/upload-url/form-application"
                                 )
                         .permitAll()
                         .requestMatchers(POST,
