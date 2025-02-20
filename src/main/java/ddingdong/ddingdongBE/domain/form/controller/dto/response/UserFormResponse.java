@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery.UserFormFieldListQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
@@ -18,6 +19,10 @@ public record UserFormResponse(
         String description,
         @Schema(description = "폼지 지원자 수", example = "20")
         int applicationCount,
+        @Schema(description = "폼지 시작일", example = "2001-01-01")
+        LocalDate startDate,
+        @Schema(description = "폼지 종료일", example = "2001-01-02")
+        LocalDate endDate,
         @ArraySchema(schema = @Schema(implementation = UserFormFieldListResponse.class))
         List<UserFormFieldListResponse> formFields
 ) {
@@ -62,6 +67,8 @@ public record UserFormResponse(
                 .title(userFormQuery.title())
                 .description(userFormQuery.description())
                 .applicationCount(userFormQuery.applicationCount())
+                .startDate(userFormQuery.startDate())
+                .endDate(userFormQuery.endDate())
                 .formFields(responses)
                 .build();
     }

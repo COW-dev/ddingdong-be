@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.Builder;
 
@@ -13,6 +14,8 @@ public record UserFormQuery(
         String title,
         String description,
         int applicationCount,
+        LocalDate startDate,
+        LocalDate endDate,
         List<UserFormFieldListQuery> formFields
 ) {
 
@@ -26,6 +29,8 @@ public record UserFormQuery(
                 .title(form.getTitle())
                 .description(form.getDescription())
                 .applicationCount(applicationCount)
+                .startDate(form.getStartDate())
+                .endDate(form.getEndDate())
                 .formFields(formFieldListQueries)
                 .build();
     }
