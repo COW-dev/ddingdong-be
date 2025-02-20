@@ -45,15 +45,13 @@ public class S3FileService {
     private final FileMetaDataService fileMetaDataService;
 
     public GeneratePreSignedUrlRequestQuery generatePresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
-        UUID id = UuidCreator.getTimeOrderedEpoch();
         ContentType contentType = ContentType.fromExtension(extractFileExtension(command.fileName()));
-        String key = generateKey(contentType, command, id);
-        Date expiration = getExpirationTime();
+        return buildPresignedUrlRequest(command, contentType);
+    }
 
-        fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
-
-        GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
-        return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
+    public GeneratePreSignedUrlRequestQuery generateDownloadPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
+        ContentType contentType = ContentType.OCTET_STREAM;
+        return buildPresignedUrlRequest(command, contentType);
     }
 
     public URL getPresignedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
@@ -100,6 +98,17 @@ public class S3FileService {
         String videoCdnUrl = generateCdnUrl("hls/", fileId, "_720.m3u8");
 
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
+    }
+
+    private GeneratePreSignedUrlRequestQuery buildPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command, ContentType contentType) {
+        UUID id = UuidCreator.getTimeOrderedEpoch();
+        String key = generateKey(contentType, command, id);
+        Date expiration = getExpirationTime();
+
+        fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
+
+        GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
+        return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
     }
 
     private GeneratePresignedUrlRequest createPresignedUrlRequest(String key, ContentType contentType,
