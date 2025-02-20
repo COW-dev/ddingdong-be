@@ -90,5 +90,4 @@ public interface S3FileAPi {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/upload-url/form-application")
     UploadUrlResponse getFormApplicationPreSignedUrl(@RequestParam("fileName") String fileName);
-
 }
