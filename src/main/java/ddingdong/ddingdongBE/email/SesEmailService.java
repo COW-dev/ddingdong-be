@@ -14,6 +14,7 @@ import software.amazon.awssdk.services.ses.SesClient;
 import software.amazon.awssdk.services.ses.model.Body;
 import software.amazon.awssdk.services.ses.model.Content;
 import software.amazon.awssdk.services.ses.model.Destination;
+import software.amazon.awssdk.services.ses.model.LimitExceededException;
 import software.amazon.awssdk.services.ses.model.Message;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 
@@ -23,8 +24,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 public class SesEmailService {
 
     private final SesClient sesClient;
-    private final RateLimiter rateLimiter = RateLimiter.create(14.0); // 초당 14개로 제한
-
+    private final RateLimiter rateLimiter = RateLimiter.create(8.0); // 초당 8개로 제한
 
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;
@@ -35,40 +35,71 @@ public class SesEmailService {
         return CompletableFuture.allOf(
                 formApplications.stream()
                         .map(application -> CompletableFuture.runAsync(() -> {
-                            try {
-                                rateLimiter.acquire();
-                                SendEmailRequest request = SendEmailRequest.builder()
-                                        .source(senderEmail)
-                                        .destination(Destination.builder()
-                                                .toAddresses(application.getEmail())
-                                                .build())
-                                        .message(Message.builder()
-                                                .subject(Content.builder()
-                                                        .charset("UTF-8")
-                                                        .data(emailContent.subject())
-                                                        .build())
-                                                .body(Body.builder()
-                                                        .html(Content.builder()
-                                                                .charset("UTF-8")
-                                                                .data(emailContent.htmlContent()
-                                                                        .replace("{지원자명}", application.getName()))
-                                                                .build())
-                                                        .text(Content.builder()
-                                                                .charset("UTF-8")
-                                                                .data(emailContent.textContent()
-                                                                        .replace("{지원자명}", application.getName()))
-                                                                .build())
-                                                        .build())
-                                                .build())
-                                        .build();
+                            int maxRetries = 5;
+                            long retryDelayMs = 200; // 200ms 고정 대기
 
-                                sesClient.sendEmail(request);
-                            } catch (Exception e) {
-                                log.error("Failed to send email to {}: {}", application.getEmail(), e.getMessage());
-                                throw new RuntimeException("이메일 전송에 실패했습니다: " + application.getEmail(), e);
+                            for (int attempt = 0; attempt <= maxRetries; attempt++) {
+                                try {
+                                    sendEmail(emailContent, application);
+                                    break;
+                                } catch (LimitExceededException e) {
+                                    retryFixedInterval(application, e, attempt, maxRetries, retryDelayMs);
+                                } catch (Exception e) {
+                                    log.error("이메일 전송 실패 - {}: {}", application.getEmail(), e.getMessage());
+                                    throw new RuntimeException("이메일 전송에 실패했습니다: " + application.getEmail(), e);
+                                }
                             }
                         }))
                         .toArray(CompletableFuture[]::new)
         );
+    }
+
+    private void sendEmail(EmailContent emailContent, FormApplication application) {
+        rateLimiter.acquire();
+        SendEmailRequest request = SendEmailRequest.builder()
+                .source(senderEmail)
+                .destination(Destination.builder()
+                        .toAddresses(application.getEmail())
+                        .build())
+                .message(Message.builder()
+                        .subject(Content.builder()
+                                .charset("UTF-8")
+                                .data(emailContent.subject())
+                                .build())
+                        .body(Body.builder()
+                                .html(Content.builder()
+                                        .charset("UTF-8")
+                                        .data(emailContent.htmlContent()
+                                                .replace("{지원자명}", application.getName()))
+                                        .build())
+                                .text(Content.builder()
+                                        .charset("UTF-8")
+                                        .data(emailContent.textContent()
+                                                .replace("{지원자명}", application.getName()))
+                                        .build())
+                                .build())
+                        .build())
+                .build();
+
+        sesClient.sendEmail(request);
+    }
+
+    private void retryFixedInterval(FormApplication application,
+                                    LimitExceededException e,
+                                    int attempt,
+                                    int maxRetries,
+                                    long retryDelayMs) {
+        if (attempt == maxRetries) {
+            log.error("최대 재시도 횟수 초과. 이메일 전송 실패 - {}", application.getEmail());
+            throw new RuntimeException("이메일 전송 최대 재시도 횟수 초과: " + application.getEmail(), e);
+        }
+        log.warn("Rate limit 발생. {}ms 후 재시도 ({}/{}): {}",
+                retryDelayMs, attempt + 1, maxRetries, application.getEmail());
+        try {
+            Thread.sleep(retryDelayMs);
+        } catch (InterruptedException ie) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("재시도 대기 중 인터럽트 발생", ie);
+        }
     }
 }
