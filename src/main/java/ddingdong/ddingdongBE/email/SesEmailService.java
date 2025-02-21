@@ -23,8 +23,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 public class SesEmailService {
 
     private final SesClient sesClient;
-    private final RateLimiter rateLimiter = RateLimiter.create(14.0); // 초당 14개로 제한
-
+    private final RateLimiter rateLimiter = RateLimiter.create(8.0); // 초당 8개로 제한
 
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;
