@@ -4,13 +4,11 @@ import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery.FormFieldAnswerListQuery;
-
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record FormApplicationResponse(
@@ -55,11 +53,24 @@ public record FormApplicationResponse(
             @Schema(description = "섹션", example = "공통")
             String section,
             @Schema(description = "질문 답변 값", example = "[\"지문1\"]")
-            List<String> value
+            List<String> value,
+            @ArraySchema(schema = @Schema(implementation = FileResponse.class))
+            List<FileResponse> files
     ) {
+
+        record FileResponse(
+                @Schema(description = "파일 이름", example = "제출용 파일.zip")
+                String name,
+                @Schema(description = "파일 다운로드 cdn url", example = "url")
+                String cdnUrl
+        ) {
+        }
 
         public static FormFieldAnswerListResponse from(
                 FormFieldAnswerListQuery formFieldAnswerListQuery) {
+            List<FileResponse> fileResponses = formFieldAnswerListQuery.fileQueries().stream()
+                    .map(fileQuery -> new FileResponse(fileQuery.name(), fileQuery.cdnUrl()))
+                    .toList();
             return FormFieldAnswerListResponse.builder()
                     .fieldId(formFieldAnswerListQuery.fieldId())
                     .question(formFieldAnswerListQuery.question())
@@ -69,6 +80,7 @@ public record FormApplicationResponse(
                     .order(formFieldAnswerListQuery.order())
                     .section(formFieldAnswerListQuery.section())
                     .value(formFieldAnswerListQuery.value())
+                    .files(fileResponses)
                     .build();
         }
     }

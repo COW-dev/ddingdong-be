@@ -1,16 +1,13 @@
 package ddingdong.ddingdongBE.domain.formapplication.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
-
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
-
-import lombok.Builder;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
 
 @Builder
 public record FormApplicationQuery(
@@ -35,10 +32,18 @@ public record FormApplicationQuery(
             Boolean required,
             Integer order,
             String section,
-            List<String> value
+            List<String> value,
+            List<FileQuery> fileQueries
     ) {
 
-        public static FormFieldAnswerListQuery from(FormAnswer formAnswer) {
+        public record FileQuery(
+                String name,
+                String cdnUrl
+        ) {
+
+        }
+
+        public static FormFieldAnswerListQuery of(FormAnswer formAnswer, List<FileQuery> fieldQueries) {
             return FormFieldAnswerListQuery.builder()
                     .fieldId(formAnswer.getFormField().getId())
                     .question(formAnswer.getFormField().getQuestion())
@@ -48,19 +53,7 @@ public record FormApplicationQuery(
                     .order(formAnswer.getFormField().getFieldOrder())
                     .section(formAnswer.getFormField().getSection())
                     .value(formAnswer.getValue())
-                    .build();
-        }
-
-        public static FormFieldAnswerListQuery of(FormAnswer formAnswer, List<String> value) {
-            return FormFieldAnswerListQuery.builder()
-                    .fieldId(formAnswer.getFormField().getId())
-                    .question(formAnswer.getFormField().getQuestion())
-                    .type(formAnswer.getFormField().getFieldType())
-                    .options(formAnswer.getFormField().getOptions())
-                    .required(formAnswer.getFormField().isRequired())
-                    .order(formAnswer.getFormField().getFieldOrder())
-                    .section(formAnswer.getFormField().getSection())
-                    .value(value)
+                    .fileQueries(fieldQueries)
                     .build();
         }
     }

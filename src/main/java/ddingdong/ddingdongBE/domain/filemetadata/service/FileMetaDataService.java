@@ -12,6 +12,8 @@ public interface FileMetaDataService {
 
     FileMetaData getById(String id);
 
+    List<FileMetaData> getAllByIds(List<String> ids);
+
     List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId);
 
     List<FileMetaData> getCoupledAllByEntityId(Long entityId);

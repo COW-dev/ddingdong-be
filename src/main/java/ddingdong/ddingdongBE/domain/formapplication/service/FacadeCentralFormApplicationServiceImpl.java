@@ -14,11 +14,13 @@ import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFo
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.command.UpdateFormApplicationStatusCommand;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery.FormFieldAnswerListQuery;
+import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.FormApplicationQuery.FormFieldAnswerListQuery.FileQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.service.dto.query.MyAllFormApplicationsQuery.FormApplicationListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
@@ -62,7 +64,9 @@ public class FacadeCentralFormApplicationServiceImpl implements
         validateAuthority(club, form);
         FormApplication formApplication = formApplicationService.getById(applicationId);
         List<FormAnswer> formAnswers = formAnswerService.getAllByApplication(formApplication);
-        List<FormFieldAnswerListQuery> formFieldAnswerListQueries = buildFormFieldAnswerQueries(formAnswers);
+        List<FormFieldAnswerListQuery> formFieldAnswerListQueries = formAnswers.stream()
+                .map(this::buildFormFieldAnswerQuery)
+                .toList();
         return FormApplicationQuery.of(form, formApplication, formFieldAnswerListQueries);
     }
 
@@ -87,17 +91,24 @@ public class FacadeCentralFormApplicationServiceImpl implements
         }
     }
 
-    private List<FormFieldAnswerListQuery> buildFormFieldAnswerQueries(List<FormAnswer> formAnswers) {
-        return formAnswers.stream()
-                .map(formAnswer -> {
-                    if (formAnswer.isFile()) {
-                        String fileId = formAnswer.getValue().get(0);
-                        FileMetaData fileMetaData = fileMetaDataService.getById(fileId);
-                        String cdnUrl = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()).cdnUrl();
-                        return FormFieldAnswerListQuery.of(formAnswer, List.of(cdnUrl));
-                    }
-                    return FormFieldAnswerListQuery.from(formAnswer);
+    private FormFieldAnswerListQuery buildFormFieldAnswerQuery(FormAnswer formAnswer) {
+        if (!formAnswer.isFile()) {
+            return FormFieldAnswerListQuery.of(formAnswer, Collections.emptyList());
+        }
+        List<FileQuery> fileQueries = buildFileQuery(formAnswer);
+        return FormFieldAnswerListQuery.of(formAnswer, fileQueries);
+    }
+
+    private List<FileQuery> buildFileQuery(FormAnswer formAnswer) {
+        List<String> fileMetaDataIds = formAnswer.getValue();
+        List<FileMetaData> fileMetaDatas = fileMetaDataService.getAllByIds(fileMetaDataIds);
+        return fileMetaDatas.stream()
+                .map(fileMetaData -> {
+                    String fileName = fileMetaData.getFileName();
+                    String cdnUrl = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()).cdnUrl();
+                    return new FileQuery(fileName, cdnUrl);
                 })
                 .toList();
     }
 }
+
