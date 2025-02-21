@@ -40,6 +40,12 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
     }
 
     @Override
+    public List<FileMetaData> getAllByIds(List<String> ids) {
+        List<UUID> uuids = toUUIDs(ids);
+        return fileMetaDataRepository.findByIdIn(uuids);
+    }
+
+    @Override
     public List<FileMetaData> getCoupledAllByDomainTypeAndEntityId(DomainType domainType, Long entityId) {
         return fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(domainType, entityId, COUPLED);
     }
