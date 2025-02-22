@@ -22,8 +22,8 @@ public record SendApplicationResultEmailRequest(
         String message
 ) {
 
-    public SendApplicationResultEmailCommand toCommand(Long formId) {
-        return new SendApplicationResultEmailCommand(formId, title, target, message);
+    public SendApplicationResultEmailCommand toCommand(Long userId, Long formId) {
+        return new SendApplicationResultEmailCommand(userId, formId, title, target, message);
     }
 
 
