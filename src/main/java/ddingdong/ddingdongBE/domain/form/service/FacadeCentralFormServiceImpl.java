@@ -174,11 +174,12 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
+        Club club = clubService.getByUserId(command.userId());
         List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
                 command.formId(),
                 FormApplicationStatus.findStatus(command.target())
         );
-        EmailContent emailContent = EmailContent.of(command.title(), command.message());
+        EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
         CompletableFuture<Void> future = sesEmailService.sendBulkResultEmails(formApplications, emailContent);
 
         try {

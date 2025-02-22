@@ -96,7 +96,12 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void sendApplicationResultEmail(Long formId, SendApplicationResultEmailRequest request) {
-        facadeCentralFormService.sendApplicationResultEmail(request.toCommand(formId));
+    public void sendApplicationResultEmail(
+            Long formId,
+            PrincipalDetails principalDetails,
+            SendApplicationResultEmailRequest request
+    ) {
+        User user = principalDetails.getUser();
+        facadeCentralFormService.sendApplicationResultEmail(request.toCommand(user.getId(), formId));
     }
 }
