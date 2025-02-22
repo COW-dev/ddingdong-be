@@ -33,6 +33,8 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted_at IS NULL")
 public class Club extends BaseEntity {
 
+    private static final String DDINDONG_SERVICE_CLUB_URL = "https://ddingdong.mju.ac.kr/club/";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -74,10 +76,10 @@ public class Club extends BaseEntity {
 
     @Builder
     private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category,
-            String tag,
-            String leader, PhoneNumber phoneNumber, Location location, String regularMeeting,
-            String introduction, String activity,
-            String ideal, Score score, LocalDateTime deletedAt) {
+                 String tag,
+                 String leader, PhoneNumber phoneNumber, Location location, String regularMeeting,
+                 String introduction, String activity,
+                 String ideal, Score score, LocalDateTime deletedAt) {
         this.id = id;
         this.user = user;
         this.clubMembers = clubMembers;
@@ -116,5 +118,9 @@ public class Club extends BaseEntity {
     public void addClubMember(ClubMember clubMember) {
         this.clubMembers.add(clubMember);
         clubMember.setClubFormConvenience(this);
+    }
+
+    public String getClubUrl() {
+        return DDINDONG_SERVICE_CLUB_URL + id;
     }
 }

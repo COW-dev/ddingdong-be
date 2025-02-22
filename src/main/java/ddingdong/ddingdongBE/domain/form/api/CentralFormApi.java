@@ -123,5 +123,6 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/results/email")
     void sendApplicationResultEmail(@PathVariable("formId") Long formId,
+                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
                                     @RequestBody SendApplicationResultEmailRequest request);
 }
