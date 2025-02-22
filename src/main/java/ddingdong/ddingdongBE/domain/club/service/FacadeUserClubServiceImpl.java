@@ -59,11 +59,10 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     }
 
     private RecruitmentStatus checkRecruit(LocalDate now, Form form) {
-        if (form == null
-                || form.getStartDate().isAfter(now)) {
+        if (form == null || form.getStartDate().isAfter(now)) {
             return BEFORE_RECRUIT;
         }
-        return form.getEndDate().isAfter(now) ? RECRUITING : END_RECRUIT;
+        return form.getEndDate().isAfter(now) || form.getEndDate().isEqual(now) ? RECRUITING : END_RECRUIT;
     }
 
     private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
