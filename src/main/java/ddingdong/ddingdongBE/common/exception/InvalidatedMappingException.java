@@ -14,4 +14,5 @@ sealed public class InvalidatedMappingException extends CustomException {
             super(message, BAD_REQUEST.value());
         }
     }
+
 }

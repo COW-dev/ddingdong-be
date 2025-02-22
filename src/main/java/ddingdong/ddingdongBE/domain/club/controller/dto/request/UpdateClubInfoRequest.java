@@ -27,10 +27,6 @@ public record UpdateClubInfoRequest(
         @Schema(description = "동아리방 위치", example = "S1111")
         @NotNull(message = "동아리방 위치는 필수로 입력해야 합니다.")
         String location,
-        @Schema(description = "모집시작 날짜", example = "2024-01-01 00:00")
-        String startRecruitPeriod,
-        @Schema(description = "모집마감 날짜", example = "2024-01-01 00:00")
-        String endRecruitPeriod,
         @Schema(description = "정기활동", example = "정기활동")
         @NotNull(message = "정기활동은 필수로 입력해야 합니다.")
         String regularMeeting,
@@ -42,8 +38,6 @@ public record UpdateClubInfoRequest(
         String activity,
         @Schema(description = "인재상", example = "인재상")
         String ideal,
-        @Schema(description = "모집 Url", example = "Url")
-        String formUrl,
         @Schema(description = "동아리 프로필 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
         String profileImageId,
         @Schema(description = "동아리 소개 이미지 식별자", example = "0192c828-ffce-7ee8-94a8-d9d4c8cdec00")
@@ -60,13 +54,10 @@ public record UpdateClubInfoRequest(
                 clubLeader,
                 phoneNumber,
                 location,
-                startRecruitPeriod,
-                endRecruitPeriod,
                 regularMeeting,
                 introduction,
                 activity,
                 ideal,
-                formUrl,
                 profileImageId,
                 introductionImageId
         );

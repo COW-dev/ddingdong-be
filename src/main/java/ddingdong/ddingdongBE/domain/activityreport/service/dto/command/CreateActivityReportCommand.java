@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.command;
 
-import ddingdong.ddingdongBE.common.utils.TimeParser;
+import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -23,8 +23,8 @@ public record CreateActivityReportCommand(
             .term(term)
             .content(content)
             .place(place)
-            .startDate(TimeParser.parseToLocalDateTime(startDate))
-            .endDate(TimeParser.parseToLocalDateTime(endDate))
+            .startDate(TimeUtils.parseToLocalDateTime(startDate))
+            .endDate(TimeUtils.parseToLocalDateTime(endDate))
             .participants(participants)
             .club(club)
             .build();

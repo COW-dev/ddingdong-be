@@ -3,8 +3,6 @@ package ddingdong.ddingdongBE.domain.club.service.dto.command;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Location;
 import ddingdong.ddingdongBE.domain.club.entity.PhoneNumber;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 
 public record UpdateClubInfoCommand(
         Long userId,
@@ -14,13 +12,10 @@ public record UpdateClubInfoCommand(
         String clubLeader,
         String phoneNumber,
         String location,
-        String startRecruitPeriod,
-        String endRecruitPeriod,
         String regularMeeting,
         String introduction,
         String activity,
         String ideal,
-        String formUrl,
         String profileImageId,
         String introductionImageId
 ) {
@@ -33,18 +28,10 @@ public record UpdateClubInfoCommand(
                 .leader(clubLeader)
                 .phoneNumber(PhoneNumber.from(phoneNumber))
                 .location(Location.from(location))
-                .startRecruitPeriod(parseLocalDateTime(startRecruitPeriod))
-                .endRecruitPeriod(parseLocalDateTime(endRecruitPeriod))
                 .regularMeeting(regularMeeting)
                 .introduction(introduction)
                 .activity(activity)
                 .ideal(ideal)
-                .formUrl(formUrl)
                 .build();
-    }
-
-    private LocalDateTime parseLocalDateTime(String inputLocalDateTimeFormat) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-        return LocalDateTime.parse(inputLocalDateTimeFormat, formatter);
     }
 }
