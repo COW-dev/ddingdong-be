@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -40,7 +41,7 @@ public class Club extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @OneToMany(mappedBy = "club")
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
     private List<ClubMember> clubMembers = new ArrayList<>();
 
     private String name;
@@ -57,10 +58,6 @@ public class Club extends BaseEntity {
     @Embedded
     private Location location;
 
-    private LocalDateTime startRecruitPeriod;
-
-    private LocalDateTime endRecruitPeriod;
-
     private String regularMeeting;
 
     private String introduction;
@@ -69,8 +66,6 @@ public class Club extends BaseEntity {
 
     private String ideal;
 
-    private String formUrl;
-
     @Embedded
     private Score score;
 
@@ -78,10 +73,11 @@ public class Club extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category, String tag,
-                 String leader, PhoneNumber phoneNumber, Location location, LocalDateTime startRecruitPeriod,
-                 LocalDateTime endRecruitPeriod, String regularMeeting, String introduction, String activity,
-                 String ideal, String formUrl, Score score, LocalDateTime deletedAt) {
+    private Club(Long id, User user, List<ClubMember> clubMembers, String name, String category,
+            String tag,
+            String leader, PhoneNumber phoneNumber, Location location, String regularMeeting,
+            String introduction, String activity,
+            String ideal, Score score, LocalDateTime deletedAt) {
         this.id = id;
         this.user = user;
         this.clubMembers = clubMembers;
@@ -91,13 +87,10 @@ public class Club extends BaseEntity {
         this.leader = leader;
         this.phoneNumber = phoneNumber;
         this.location = location;
-        this.startRecruitPeriod = startRecruitPeriod;
-        this.endRecruitPeriod = endRecruitPeriod;
         this.regularMeeting = regularMeeting;
         this.introduction = introduction;
         this.activity = activity;
         this.ideal = ideal;
-        this.formUrl = formUrl;
         this.score = score;
         this.deletedAt = deletedAt;
     }
@@ -109,17 +102,19 @@ public class Club extends BaseEntity {
         this.leader = club.getLeader();
         this.phoneNumber = club.getPhoneNumber();
         this.location = club.getLocation();
-        this.startRecruitPeriod = club.getStartRecruitPeriod();
-        this.endRecruitPeriod = club.getEndRecruitPeriod();
         this.regularMeeting = club.getRegularMeeting();
         this.introduction = club.getIntroduction();
         this.activity = club.getActivity();
         this.ideal = club.getIdeal();
-        this.formUrl = club.getFormUrl();
     }
 
     public BigDecimal editScore(Score score) {
         this.score = score;
         return this.score.getValue();
+    }
+
+    public void addClubMember(ClubMember clubMember) {
+        this.clubMembers.add(clubMember);
+        clubMember.setClubFormConvenience(this);
     }
 }

@@ -39,7 +39,8 @@ public class GeneralClubService implements ClubService {
     @Override
     public Club getByUserIdWithFetch(Long userId) {
         return clubRepository.findEntityGraphByUserId(userId)
-                .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + ")를 찾을 수 없습니다."));    }
+                .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + ")를 찾을 수 없습니다."));
+    }
 
     @Override
     public List<Club> findAll() {

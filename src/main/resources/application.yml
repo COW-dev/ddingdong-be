@@ -32,6 +32,8 @@ jwt:
 
 cloud:
   aws:
+    ses:
+      sender-email: ${SENDER_EMAIL}
     region:
       static: ${AWS_DEFAULT_REGION}
     stack:
