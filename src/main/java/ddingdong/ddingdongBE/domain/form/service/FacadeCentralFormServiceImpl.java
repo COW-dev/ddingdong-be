@@ -168,6 +168,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
             throw new InvalidFieldTypeException();
         }
         String type = formField.getFieldType().name();
+        if (formField.isFile()) {
+            List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createFileStatistics(formField);
+            return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+        }
         List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
         return new TextFieldStatisticsQuery(type, textStatisticsQueries);
     }

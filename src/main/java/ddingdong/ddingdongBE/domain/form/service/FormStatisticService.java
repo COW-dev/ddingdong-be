@@ -23,4 +23,6 @@ public interface FormStatisticService {
     List<OptionStatisticQuery> createOptionStatistics(FormField formField);
 
     List<TextStatisticsQuery> createTextStatistics(FormField formField);
+
+    List<TextStatisticsQuery> createFileStatistics(FormField formField);
 }
