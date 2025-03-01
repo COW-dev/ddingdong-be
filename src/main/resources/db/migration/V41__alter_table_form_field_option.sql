@@ -1,0 +1,2 @@
+ALTER TABLE form_field
+    MODIFY COLUMN options LONGTEXT;
