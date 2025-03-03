@@ -14,7 +14,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.D
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
@@ -120,28 +120,28 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     }
 
     @Override
-    public List<TextStatisticsQuery> createTextStatistics(FormField formField) {
+    public List<SingleStatisticsQuery> createTextStatistics(FormField formField) {
         List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
         return textAnswerInfos.stream()
                 .map(textAnswerInfo -> {
                     Long id = textAnswerInfo.getId();
                     String name = textAnswerInfo.getName();
                     String answer = getAnswer(textAnswerInfo.getValue());
-                    return new TextStatisticsQuery(id, name, answer);
+                    return new SingleStatisticsQuery(id, name, answer);
                 })
                 .toList();
     }
 
     @Override
-    public List<TextStatisticsQuery> createFileStatistics(FormField formField) {
+    public List<SingleStatisticsQuery> createFileStatistics(FormField formField) {
         List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
-        List<TextStatisticsQuery> textStatisticsQueries = new ArrayList<>();
+        List<SingleStatisticsQuery> textStatisticsQueries = new ArrayList<>();
         for(TextAnswerInfo textAnswerInfo : textAnswerInfos) {
             Long id = textAnswerInfo.getId();
             String name = textAnswerInfo.getName();
             List<String> answers = stringListConverter.convertToEntityAttribute(textAnswerInfo.getValue());
             for (String answer : answers) {
-                textStatisticsQueries.add(new TextStatisticsQuery(id, name, answer));
+                textStatisticsQueries.add(new SingleStatisticsQuery(id, name, answer));
             }
         }
         return textStatisticsQueries;

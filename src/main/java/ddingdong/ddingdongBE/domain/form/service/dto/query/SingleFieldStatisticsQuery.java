@@ -2,12 +2,12 @@ package ddingdong.ddingdongBE.domain.form.service.dto.query;
 
 import java.util.List;
 
-public record TextFieldStatisticsQuery(
+public record SingleFieldStatisticsQuery(
         String type,
-        List<TextStatisticsQuery> answers
+        List<SingleStatisticsQuery> answers
 ) {
 
-    public record TextStatisticsQuery(
+    public record SingleStatisticsQuery(
             Long applicationId,
             String name,
             String answer

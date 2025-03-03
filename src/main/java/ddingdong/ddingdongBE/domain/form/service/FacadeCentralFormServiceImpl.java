@@ -29,8 +29,8 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.email.SesEmailService;
 import ddingdong.ddingdongBE.email.dto.EmailContent;
@@ -162,18 +162,18 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
-    public TextFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
+    public SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
         FormField formField = formFieldService.getById(fieldId);
         if (!formField.isTextType()) {
             throw new InvalidFieldTypeException();
         }
         String type = formField.getFieldType().name();
         if (formField.isFile()) {
-            List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createFileStatistics(formField);
-            return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+            List<SingleStatisticsQuery> textStatisticsQueries = formStatisticService.createFileStatistics(formField);
+            return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
         }
-        List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
-        return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+        List<SingleStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
+        return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
     @Override
