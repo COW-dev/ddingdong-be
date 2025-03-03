@@ -17,6 +17,7 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,7 +30,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
 
     @Override
     public CurrentTermResponse getCurrentTerm() {
-        String currentTerm = facadeClubActivityReportService.getCurrentTerm();
+        LocalDateTime now = LocalDateTime.now();
+        String currentTerm = facadeClubActivityReportService.getCurrentTerm(now);
         return CurrentTermResponse.from(currentTerm);
     }
 
