@@ -7,7 +7,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.A
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import java.util.List;
 
 public interface FormStatisticService {
@@ -22,5 +22,7 @@ public interface FormStatisticService {
 
     List<OptionStatisticQuery> createOptionStatistics(FormField formField);
 
-    List<TextStatisticsQuery> createTextStatistics(FormField formField);
+    List<SingleStatisticsQuery> createTextStatistics(FormField formField);
+
+    List<SingleStatisticsQuery> createFileStatistics(FormField formField);
 }

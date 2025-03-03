@@ -4,9 +4,7 @@ import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
-import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
@@ -16,7 +14,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.D
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery.FieldStatisticsListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
@@ -24,6 +22,7 @@ import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInf
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
@@ -121,27 +120,37 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     }
 
     @Override
-    public List<TextStatisticsQuery> createTextStatistics(FormField formField) {
+    public List<SingleStatisticsQuery> createTextStatistics(FormField formField) {
         List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
         return textAnswerInfos.stream()
                 .map(textAnswerInfo -> {
                     Long id = textAnswerInfo.getId();
                     String name = textAnswerInfo.getName();
-                    String answer = getAnswer(textAnswerInfo.getValue(), formField.getFieldType());
-                    return new TextStatisticsQuery(id, name, answer);
+                    String answer = getAnswer(textAnswerInfo.getValue());
+                    return new SingleStatisticsQuery(id, name, answer);
                 })
                 .toList();
     }
 
-    private String getAnswer(String value, FieldType fieldType) {
+    @Override
+    public List<SingleStatisticsQuery> createFileStatistics(FormField formField) {
+        List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
+        List<SingleStatisticsQuery> textStatisticsQueries = new ArrayList<>();
+        for(TextAnswerInfo textAnswerInfo : textAnswerInfos) {
+            Long id = textAnswerInfo.getId();
+            String name = textAnswerInfo.getName();
+            List<String> answers = stringListConverter.convertToEntityAttribute(textAnswerInfo.getValue());
+            for (String answer : answers) {
+                textStatisticsQueries.add(new SingleStatisticsQuery(id, name, answer));
+            }
+        }
+        return textStatisticsQueries;
+    }
+
+    private String getAnswer(String value) {
         List<String> answer = stringListConverter.convertToEntityAttribute(value);
         if(answer.isEmpty()) {
             return null;
-        }
-        if(fieldType == FieldType.FILE) {
-            String fileId = answer.get(0);
-            FileMetaData fileMetaData = fileMetaDataService.getById(fileId);
-            return fileMetaData.getFileName();
         }
         return answer.get(0);
     }
