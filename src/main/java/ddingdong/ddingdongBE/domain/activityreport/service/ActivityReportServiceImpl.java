@@ -28,7 +28,7 @@ public class ActivityReportServiceImpl implements ActivityReportService {
     }
 
     @Override
-    public List<ActivityReport> getActivityReport(Club club, int year, String term) {
+    public List<ActivityReport> getActivityReport(Club club, int year, int term) {
         return activityReportRepository.findByClubAndTerm(club, year, term);
     }
 
@@ -55,7 +55,7 @@ public class ActivityReportServiceImpl implements ActivityReportService {
     }
 
     @Override
-    public List<ActivityReport> getActivityReportOrThrow(Club club, int year, String term) {
+    public List<ActivityReport> getActivityReportOrThrow(Club club, int year, int term) {
         List<ActivityReport> activityReports = getActivityReport(club, year, term);
         if (activityReports.isEmpty()) {
             throw new ResourceNotFound("해당 ActivityReports(clubName: " + club.getName() + ", term: " + term + ")"

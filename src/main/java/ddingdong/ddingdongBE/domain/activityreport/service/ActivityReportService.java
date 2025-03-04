@@ -10,7 +10,7 @@ public interface ActivityReportService {
 
     List<ActivityReport> getActivityReportsByClub(Club club, int year);
 
-    List<ActivityReport> getActivityReport(Club club, int year, String term);
+    List<ActivityReport> getActivityReport(Club club, int year, int term);
 
     Long create(final ActivityReport activityReport);
 
@@ -18,5 +18,5 @@ public interface ActivityReportService {
 
     void deleteAll(List<ActivityReport> activityReports);
 
-    List<ActivityReport> getActivityReportOrThrow(Club club, int year, String term);
+    List<ActivityReport> getActivityReportOrThrow(Club club, int year, int term);
 }

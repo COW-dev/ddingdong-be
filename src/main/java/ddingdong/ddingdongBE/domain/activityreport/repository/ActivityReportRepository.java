@@ -32,7 +32,7 @@ public interface ActivityReportRepository extends JpaRepository<ActivityReport, 
     List<ActivityReport> findByClubAndTerm(
             @Param("club") Club club,
             @Param("currentYear") int currentYear,
-            @Param("term") String term
+            @Param("term") int term
     );
 
     @Query(value = """

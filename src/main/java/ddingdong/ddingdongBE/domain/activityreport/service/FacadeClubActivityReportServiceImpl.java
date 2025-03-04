@@ -37,7 +37,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     private final S3FileService s3FileService;
 
     @Override
-    public List<ActivityReportQuery> getActivityReport(User user, LocalDateTime now, String term) {
+    public List<ActivityReportQuery> getActivityReport(User user, LocalDateTime now, int term) {
         Club club = clubService.getByUserId(user.getId());
         int currentYear = now.getYear();
         List<ActivityReport> activityReports = activityReportService.getActivityReport(club, currentYear, term);
@@ -87,8 +87,8 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     @Override
     public void update(
             User user,
-            String term,
             LocalDateTime now,
+            int term,
             List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
@@ -111,7 +111,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
 
     @Transactional
     @Override
-    public void delete(User user, String term, LocalDateTime now) {
+    public void delete(User user, LocalDateTime now, int term) {
         Club club = clubService.getByUserId(user.getId());
         int currentYear = now.getYear();
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
@@ -131,7 +131,8 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
         return ActivityReportQuery.of(activityReport, image);
     }
 
-    private List<CentralActivityReportListQuery> parseToListQuery(String clubName, List<ActivityReport> activityReports) {
+    private List<CentralActivityReportListQuery> parseToListQuery(String clubName,
+            List<ActivityReport> activityReports) {
         Map<String, List<ActivityReport>> activityReportsGroupedByTerm = activityReports.stream()
                 .collect(Collectors.groupingBy(ActivityReport::getTerm));
 

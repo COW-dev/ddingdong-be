@@ -47,7 +47,7 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     }
 
     @Override
-    public List<ActivityReportResponse> getActivityReport(PrincipalDetails principalDetails, String term) {
+    public List<ActivityReportResponse> getActivityReport(PrincipalDetails principalDetails, int term) {
         User user = principalDetails.getUser();
         LocalDateTime now = LocalDateTime.now();
         List<ActivityReportQuery> queries = facadeClubActivityReportService.getActivityReport(user, now, term);
@@ -71,25 +71,22 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public void updateActivityReport(
             PrincipalDetails principalDetails,
-            String term,
+            int term,
             UpdateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
         LocalDateTime now = LocalDateTime.now();
         List<UpdateActivityReportCommand> commands = requests.activityReportRequests().stream()
-            .map(UpdateActivityReportRequest::toCommand)
-            .toList();
-        facadeClubActivityReportService.update(user, term, now, commands);
+                .map(UpdateActivityReportRequest::toCommand)
+                .toList();
+        facadeClubActivityReportService.update(user, now, term, commands);
     }
 
     @Override
-    public void deleteActivityReport(
-            PrincipalDetails principalDetails,
-            String term
-    ) {
+    public void deleteActivityReport(PrincipalDetails principalDetails, int term) {
         User user = principalDetails.getUser();
         LocalDateTime now = LocalDateTime.now();
-        facadeClubActivityReportService.delete(user, term, now);
+        facadeClubActivityReportService.delete(user, now, term);
     }
 
     @Override

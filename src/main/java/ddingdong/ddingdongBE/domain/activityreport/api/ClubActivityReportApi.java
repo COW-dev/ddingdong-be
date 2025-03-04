@@ -56,7 +56,7 @@ public interface ClubActivityReportApi {
     @GetMapping("/activity-reports")
     List<ActivityReportResponse> getActivityReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam("term") String term
+            @RequestParam("term") int term
     );
 
     @Operation(summary = "활동보고서 등록")
@@ -76,7 +76,7 @@ public interface ClubActivityReportApi {
     @PatchMapping(value = "/my/activity-reports")
     void updateActivityReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(value = "term") String term,
+            @RequestParam(value = "term") int term,
             @RequestBody UpdateActivityReportRequests requests
     );
 
@@ -87,7 +87,7 @@ public interface ClubActivityReportApi {
     @DeleteMapping("/my/activity-reports")
     void deleteActivityReport(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestParam(value = "term") String term
+            @RequestParam(value = "term") int term
     );
 
     @Operation(summary = "활동 보고서 회차별 기간 조회 API")
