@@ -9,22 +9,23 @@ import lombok.Builder;
 
 @Builder
 public record UpdateActivityReportCommand(
-    String content,
-    String place,
-    String startDate,
-    String endDate,
-    String imageId,
-    List<Participant> participants
+        LocalDateTime now,
+        String content,
+        String place,
+        String startDate,
+        String endDate,
+        String imageId,
+        List<Participant> participants
 ) {
 
 
     public ActivityReport toEntity() {
         return ActivityReport.builder()
-            .content(content)
-            .place(place)
-            .startDate(TimeUtils.processDate(startDate, LocalDateTime.now()))
-            .endDate(TimeUtils.processDate(endDate, LocalDateTime.now()))
-            .participants(participants)
-            .build();
+                .content(content)
+                .place(place)
+                .startDate(TimeUtils.processDate(startDate, LocalDateTime.now()))
+                .endDate(TimeUtils.processDate(endDate, LocalDateTime.now()))
+                .participants(participants)
+                .build();
     }
 }

@@ -5,9 +5,10 @@ import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.AdminActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.CentralActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -36,11 +37,10 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     private final S3FileService s3FileService;
 
     @Override
-    public List<ActivityReportQuery> getActivityReport(
-            String term,
-            String clubName
-    ) {
-        List<ActivityReport> activityReports = activityReportService.getActivityReport(clubName, term);
+    public List<ActivityReportQuery> getActivityReport(User user, LocalDateTime now, String term) {
+        Club club = clubService.getByUserId(user.getId());
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReport(club, currentYear, term);
 
         return activityReports.stream()
                 .map(this::parseToQuery)
@@ -48,10 +48,11 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     }
 
     @Override
-    public List<ActivityReportListQuery> getMyActivityReports(User user) {
+    public List<CentralActivityReportListQuery> getMyActivityReports(User user, LocalDateTime now) {
         Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReportsByClub(club);
-        return parseToListQuery(activityReports);
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReportsByClub(club, currentYear);
+        return parseToListQuery(club.getName(), activityReports);
     }
 
     @Override
@@ -87,10 +88,12 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     public void update(
             User user,
             String term,
+            LocalDateTime now,
             List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
 
         IntStream.range(0, commands.size())
                 .forEach(index -> {
@@ -108,13 +111,14 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
 
     @Transactional
     @Override
-    public void delete(User user, String term) {
+    public void delete(User user, String term, LocalDateTime now) {
         Club club = clubService.getByUserId(user.getId());
-        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
         activityReportService.deleteAll(activityReports);
-        activityReports.forEach(activityReport -> {
-            fileMetaDataService.updateStatusToDelete(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
-        });
+        activityReports.forEach(
+                activityReport -> fileMetaDataService.updateStatusToDelete(DomainType.ACTIVITY_REPORT_IMAGE,
+                        activityReport.getId()));
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
@@ -127,24 +131,17 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
         return ActivityReportQuery.of(activityReport, image);
     }
 
-    private List<ActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {
-        Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
-                Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
-                        Collectors.groupingBy(ActivityReport::getTerm,
-                                Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
+    private List<CentralActivityReportListQuery> parseToListQuery(String clubName, List<ActivityReport> activityReports) {
+        Map<String, List<ActivityReport>> activityReportsGroupedByTerm = activityReports.stream()
+                .collect(Collectors.groupingBy(ActivityReport::getTerm));
 
-        return groupedData.entrySet().stream().flatMap(entry -> {
-            String clubName = entry.getKey();
-            Map<String, List<Long>> termMap = entry.getValue();
-
-            return termMap.entrySet().stream().map(termEntry -> {
-                String term = termEntry.getKey();
-                List<ActivityReportInfo> activityReportInfos = termEntry.getValue().stream()
-                        .map(ActivityReportInfo::new)
-                        .toList();
-                return ActivityReportListQuery.of(clubName, term, activityReportInfos);
-            });
-
-        }).toList();
+        return activityReportsGroupedByTerm.entrySet().stream()
+                .map(entry -> {
+                    List<ActivityReportInfo> activityReportInfos = entry.getValue().stream()
+                            .map(ActivityReportInfo::from)
+                            .toList();
+                    return CentralActivityReportListQuery.of(clubName, entry.getKey(), activityReportInfos);
+                })
+                .toList();
     }
 }

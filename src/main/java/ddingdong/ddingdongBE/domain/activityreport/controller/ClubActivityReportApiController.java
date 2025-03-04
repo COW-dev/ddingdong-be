@@ -6,16 +6,17 @@ import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.Create
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AdminActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CentralActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.FacadeClubActivityReportService;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.CentralActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -36,66 +37,66 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     }
 
     @Override
-    public List<ActivityReportListResponse> getMyActivityReports(PrincipalDetails principalDetails) {
+    public List<CentralActivityReportListResponse> getMyActivityReports(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        List<ActivityReportListQuery> queries = facadeClubActivityReportService.getMyActivityReports(
-            user);
+        LocalDateTime now = LocalDateTime.now();
+        List<CentralActivityReportListQuery> queries = facadeClubActivityReportService.getMyActivityReports(user, now);
         return queries.stream()
-            .map(ActivityReportListResponse::from)
-            .toList();
+                .map(CentralActivityReportListResponse::from)
+                .toList();
     }
 
     @Override
-    public List<ActivityReportResponse> getActivityReport(
-        String term,
-        String clubName
-    ) {
-        List<ActivityReportQuery> queries = facadeClubActivityReportService.getActivityReport(term,
-            clubName);
+    public List<ActivityReportResponse> getActivityReport(PrincipalDetails principalDetails, String term) {
+        User user = principalDetails.getUser();
+        LocalDateTime now = LocalDateTime.now();
+        List<ActivityReportQuery> queries = facadeClubActivityReportService.getActivityReport(user, now, term);
         return queries.stream()
-            .map(ActivityReportResponse::from)
-            .toList();
+                .map(ActivityReportResponse::from)
+                .toList();
     }
 
     @Override
     public void createActivityReport(
-        PrincipalDetails principalDetails,
-        CreateActivityReportRequests requests
+            PrincipalDetails principalDetails,
+            CreateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
         List<CreateActivityReportCommand> commands = requests.activityReportRequests().stream()
-            .map(CreateActivityReportRequest::toCommand)
-            .toList();
+                .map(CreateActivityReportRequest::toCommand)
+                .toList();
         facadeClubActivityReportService.create(user, commands);
     }
 
     @Override
     public void updateActivityReport(
-        PrincipalDetails principalDetails,
-        String term,
-        UpdateActivityReportRequests requests
+            PrincipalDetails principalDetails,
+            String term,
+            UpdateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
+        LocalDateTime now = LocalDateTime.now();
         List<UpdateActivityReportCommand> commands = requests.activityReportRequests().stream()
             .map(UpdateActivityReportRequest::toCommand)
             .toList();
-        facadeClubActivityReportService.update(user, term, commands);
+        facadeClubActivityReportService.update(user, term, now, commands);
     }
 
     @Override
     public void deleteActivityReport(
-        PrincipalDetails principalDetails,
-        String term
+            PrincipalDetails principalDetails,
+            String term
     ) {
         User user = principalDetails.getUser();
-        facadeClubActivityReportService.delete(user, term);
+        LocalDateTime now = LocalDateTime.now();
+        facadeClubActivityReportService.delete(user, term, now);
     }
 
     @Override
     public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
         List<ActivityReportTermInfoQuery> queries = facadeClubActivityReportService.getActivityReportTermInfos();
         return queries.stream()
-            .map(ActivityReportTermInfoResponse::from)
-            .toList();
+                .map(ActivityReportTermInfoResponse::from)
+                .toList();
     }
 }
