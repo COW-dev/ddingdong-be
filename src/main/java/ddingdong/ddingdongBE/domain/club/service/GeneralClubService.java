@@ -3,6 +3,8 @@ package ddingdong.ddingdongBE.domain.club.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.club.repository.dto.UserClubListInfo;
+import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -40,6 +42,11 @@ public class GeneralClubService implements ClubService {
     public Club getByUserIdWithFetch(Long userId) {
         return clubRepository.findEntityGraphByUserId(userId)
                 .orElseThrow(() -> new ResourceNotFound("Club(userId=" + userId + ")를 찾을 수 없습니다."));
+    }
+
+    @Override
+    public List<UserClubListInfo> findAllClubListInfo() {
+        return clubRepository.findAllClubListInfo(LocalDate.now());
     }
 
     @Override
