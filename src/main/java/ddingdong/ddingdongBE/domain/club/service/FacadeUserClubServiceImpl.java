@@ -36,10 +36,7 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
 
         List<UserClubListInfo> userClubListInfos = clubService.findAllClubListInfo();
         return userClubListInfos.stream()
-                .map(info -> {
-                    System.out.println("날짜 : " + info.getStart() + " " + info.getEnd());
-                    return UserClubListQuery.of(info, checkRecruit(now, info.getStart(), info.getEnd()).getText());
-                })
+                .map(info -> UserClubListQuery.of(info, checkRecruit(now, info.getStart(), info.getEnd()).getText()))
                 .toList();
     }
 
