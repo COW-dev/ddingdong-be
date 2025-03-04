@@ -17,8 +17,8 @@ public class ActivityReportServiceImpl implements ActivityReportService{
     private final ActivityReportRepository activityReportRepository;
 
     @Override
-    public List<ActivityReport> getActivityReports() {
-        return activityReportRepository.findAll();
+    public List<ActivityReport> getActivityReports(int year, int term) {
+        return activityReportRepository.findAllByCurrentYearAndTerm(year, term);
     }
 
     @Override

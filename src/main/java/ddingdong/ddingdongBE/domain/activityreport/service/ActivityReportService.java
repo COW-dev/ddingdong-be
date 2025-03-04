@@ -6,7 +6,7 @@ import java.util.List;
 
 public interface ActivityReportService {
 
-    List<ActivityReport> getActivityReports();
+    List<ActivityReport> getActivityReports(int year, int term);
 
     List<ActivityReport> getActivityReportsByClub(final Club club);
 
