@@ -1,10 +1,9 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
-import java.time.Duration;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -17,9 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfoService {
 
-    private static final int DEFAULT_TERM = 8;
-    private static final int CORRECTION_VALUE = 8;
-    private static final int TERM_LENGTH_OF_DAYS = 14;
+    private static final int NON_ACTIVITY_REPORT_TERM = 0;
 
     private final ActivityReportTermInfoRepository activityReportTermInfoRepository;
 
@@ -47,28 +44,20 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     }
 
     @Override
-    public String getCurrentTerm() {
-        ActivityReportTermInfo activityReportTermInfo = activityReportTermInfoRepository.findFirstByOrderByStartDateAsc()
-                .orElseThrow(() -> new ResourceNotFound("활동보고서 기간이 존재하지 않습니다."));
-        LocalDate startDate = activityReportTermInfo.getStartDate();
-        LocalDate currentDate = LocalDate.now();
-
-        int gapOfDays = calculateGapOfDays(startDate, currentDate);
-        return calculateCurrentTerm(gapOfDays);
+    public String getCurrentTerm(LocalDateTime now) {
+        List<ActivityReportTermInfo> allActivityReportTermInfo = activityReportTermInfoRepository.findAll();
+        Integer currentTerm = allActivityReportTermInfo.stream()
+                .filter((activityReportTermInfo) -> isBelongingTerm(activityReportTermInfo.getStartDate(),
+                        activityReportTermInfo.getEndDate(), now))
+                .map(ActivityReportTermInfo::getTerm)
+                .findFirst()
+                .orElse(NON_ACTIVITY_REPORT_TERM);
+        return String.valueOf(currentTerm);
     }
 
-    private int calculateGapOfDays(final LocalDate startDate, final LocalDate currentDate) {
-        return (int) Duration.between(startDate.atStartOfDay(), currentDate.atStartOfDay())
-                .toDays();
-    }
-
-    private String calculateCurrentTerm(final int days) {
-        int result = CORRECTION_VALUE + (days / TERM_LENGTH_OF_DAYS);
-
-        if (result <= CORRECTION_VALUE) {
-            result = DEFAULT_TERM;
-        }
-
-        return String.valueOf(result);
+    private boolean isBelongingTerm(LocalDate startDate, LocalDate endDate, LocalDateTime now) {
+        LocalDate nowDate = now.toLocalDate();
+        return (nowDate.isEqual(startDate) || nowDate.isAfter(startDate)) &&
+                (nowDate.isEqual(endDate) || nowDate.isBefore(endDate));
     }
 }

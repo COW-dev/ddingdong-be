@@ -15,6 +15,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -26,7 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityReportService{
+public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityReportService {
 
     private final ActivityReportService activityReportService;
     private final ActivityReportTermInfoService activityReportTermInfoService;
@@ -36,14 +37,14 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
 
     @Override
     public List<ActivityReportQuery> getActivityReport(
-        String term,
-        String clubName
+            String term,
+            String clubName
     ) {
         List<ActivityReport> activityReports = activityReportService.getActivityReport(clubName, term);
 
         return activityReports.stream()
-            .map(this::parseToQuery)
-            .toList();
+                .map(this::parseToQuery)
+                .toList();
     }
 
     @Override
@@ -57,20 +58,20 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     public List<ActivityReportTermInfoQuery> getActivityReportTermInfos() {
         List<ActivityReportTermInfo> termInfos = activityReportTermInfoService.getActivityReportTermInfos();
         return termInfos.stream()
-            .map(ActivityReportTermInfoQuery::from)
-            .toList();
+                .map(ActivityReportTermInfoQuery::from)
+                .toList();
     }
 
     @Override
-    public String getCurrentTerm() {
-        return activityReportTermInfoService.getCurrentTerm();
+    public String getCurrentTerm(LocalDateTime now) {
+        return activityReportTermInfoService.getCurrentTerm(now);
     }
 
     @Transactional
     @Override
     public void create(
-        User user,
-        List<CreateActivityReportCommand> commands
+            User user,
+            List<CreateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
         commands.forEach(command -> {
@@ -84,25 +85,25 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     @Transactional
     @Override
     public void update(
-        User user,
-        String term,
-        List<UpdateActivityReportCommand> commands
+            User user,
+            String term,
+            List<UpdateActivityReportCommand> commands
     ) {
         Club club = clubService.getByUserId(user.getId());
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
 
         IntStream.range(0, commands.size())
-            .forEach(index -> {
-                ActivityReport activityReport = activityReports.get(index);
-                ActivityReport updateActivityReport = commands.get(index).toEntity();
-                activityReportService.update(activityReport, updateActivityReport);
+                .forEach(index -> {
+                    ActivityReport activityReport = activityReports.get(index);
+                    ActivityReport updateActivityReport = commands.get(index).toEntity();
+                    activityReportService.update(activityReport, updateActivityReport);
 
-                fileMetaDataService.update(
-                    commands.get(index).imageId(),
-                    DomainType.ACTIVITY_REPORT_IMAGE,
-                    activityReport.getId()
-                );
-            });
+                    fileMetaDataService.update(
+                            commands.get(index).imageId(),
+                            DomainType.ACTIVITY_REPORT_IMAGE,
+                            activityReport.getId()
+                    );
+                });
     }
 
     @Transactional
@@ -112,25 +113,25 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club.getName(), term);
         activityReportService.deleteAll(activityReports);
         activityReports.forEach(activityReport -> {
-           fileMetaDataService.updateStatusToDelete(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
+            fileMetaDataService.updateStatusToDelete(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId());
         });
     }
 
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
         UploadedFileUrlQuery image = fileMetaDataService
-            .getCoupledAllByDomainTypeAndEntityId(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId())
-            .stream()
-            .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
-            .findFirst()
-            .orElse(null);
+                .getCoupledAllByDomainTypeAndEntityId(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId())
+                .stream()
+                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+                .findFirst()
+                .orElse(null);
         return ActivityReportQuery.of(activityReport, image);
     }
 
     private List<ActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {
         Map<String, Map<String, List<Long>>> groupedData = activityReports.stream().collect(
-            Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
-                Collectors.groupingBy(ActivityReport::getTerm,
-                    Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
+                Collectors.groupingBy(activityReport -> activityReport.getClub().getName(),
+                        Collectors.groupingBy(ActivityReport::getTerm,
+                                Collectors.mapping(ActivityReport::getId, Collectors.toList()))));
 
         return groupedData.entrySet().stream().flatMap(entry -> {
             String clubName = entry.getKey();
@@ -139,8 +140,8 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
             return termMap.entrySet().stream().map(termEntry -> {
                 String term = termEntry.getKey();
                 List<ActivityReportInfo> activityReportInfos = termEntry.getValue().stream()
-                    .map(ActivityReportInfo::new)
-                    .toList();
+                        .map(ActivityReportInfo::new)
+                        .toList();
                 return ActivityReportListQuery.of(clubName, term, activityReportInfos);
             });
 

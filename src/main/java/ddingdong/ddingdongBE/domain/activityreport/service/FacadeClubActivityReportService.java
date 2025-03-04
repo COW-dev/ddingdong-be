@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityRep
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FacadeClubActivityReportService {
@@ -16,7 +17,7 @@ public interface FacadeClubActivityReportService {
 
     List<ActivityReportTermInfoQuery> getActivityReportTermInfos();
 
-    String getCurrentTerm();
+    String getCurrentTerm(LocalDateTime now);
 
     void create(User user, List<CreateActivityReportCommand> commands);
 
