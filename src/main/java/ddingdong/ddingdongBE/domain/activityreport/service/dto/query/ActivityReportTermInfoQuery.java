@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.query;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import java.time.LocalDate;
 import lombok.Builder;
 

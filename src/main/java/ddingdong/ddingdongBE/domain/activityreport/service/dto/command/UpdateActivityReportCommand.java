@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.command;
 
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
-import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.Builder;

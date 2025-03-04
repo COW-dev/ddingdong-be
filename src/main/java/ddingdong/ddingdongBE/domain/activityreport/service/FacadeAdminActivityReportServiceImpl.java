@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportListQuery;

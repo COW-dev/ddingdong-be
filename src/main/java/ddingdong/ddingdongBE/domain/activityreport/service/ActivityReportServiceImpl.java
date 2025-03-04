@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.util.List;
