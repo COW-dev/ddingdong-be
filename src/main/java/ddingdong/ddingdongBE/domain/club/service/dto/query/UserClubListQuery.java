@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.repository.dto.UserClubListInfo;
 
 public record UserClubListQuery(
         Long id,
@@ -10,12 +10,12 @@ public record UserClubListQuery(
         String recruitStatus
 ) {
 
-    public static UserClubListQuery of(Club club, String recruitStatus) {
+    public static UserClubListQuery of(UserClubListInfo userClubListInfo, String recruitStatus) {
         return new UserClubListQuery(
-                club.getId(),
-                club.getName(),
-                club.getCategory(),
-                club.getTag(),
+                userClubListInfo.getId(),
+                userClubListInfo.getName(),
+                userClubListInfo.getCategory(),
+                userClubListInfo.getTag(),
                 recruitStatus
         );
     }

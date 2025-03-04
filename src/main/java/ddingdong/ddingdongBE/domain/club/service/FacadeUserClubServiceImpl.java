@@ -6,6 +6,7 @@ import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.RECRUIT
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
+import ddingdong.ddingdongBE.domain.club.repository.dto.UserClubListInfo;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubListQuery;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -32,13 +33,12 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
 
     @Override
     public List<UserClubListQuery> findAllWithRecruitTimeCheckPoint(LocalDate now) {
-        return clubService.findAll().stream()
-                .map(club -> {
-                    List<Form> forms = formService.getAllByClub(club);
-                    Form form = formService.findActiveForm(forms) != null
-                            ? formService.findActiveForm(forms)
-                            : formService.getNewestForm(forms);
-                    return UserClubListQuery.of(club, checkRecruit(now, form).getText());
+
+        List<UserClubListInfo> userClubListInfos = clubService.findAllClubListInfo();
+        return userClubListInfos.stream()
+                .map(info -> {
+                    System.out.println("날짜 : " + info.getStart() + " " + info.getEnd());
+                    return UserClubListQuery.of(info, checkRecruit(now, info.getStart(), info.getEnd()).getText());
                 })
                 .toList();
     }
@@ -58,11 +58,11 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
         );
     }
 
-    private RecruitmentStatus checkRecruit(LocalDate now, Form form) {
-        if (form == null || form.getStartDate().isAfter(now)) {
+    private RecruitmentStatus checkRecruit(LocalDate now, LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || startDate.isAfter(now)) {
             return BEFORE_RECRUIT;
         }
-        return form.getEndDate().isAfter(now) || form.getEndDate().isEqual(now) ? RECRUITING : END_RECRUIT;
+        return endDate.isAfter(now) || endDate.isEqual(now) ? RECRUITING : END_RECRUIT;
     }
 
     private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
