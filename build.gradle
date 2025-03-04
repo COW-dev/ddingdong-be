@@ -99,8 +99,6 @@ sonar {
         property "sonar.coverage.jacoco.xmlReportPaths", "${layout.buildDirectory}/reports/jacoco/test/jacocoTestReport.xml"
         property "sonar.junit.reportPaths", "${layout.buildDirectory}/test-results/test"
 
-        property "sonar.coverage.minimum", "0"
-
         property "sonar.exclusions", "**/common/**"
         property "sonar.coverage.exclusions", """
             **/common/**,
