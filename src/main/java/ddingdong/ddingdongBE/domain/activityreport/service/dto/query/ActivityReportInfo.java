@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.query;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import lombok.Builder;
 
 @Builder

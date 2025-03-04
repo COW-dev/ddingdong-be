@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service.dto.query;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
-import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDateTime;
 import java.util.List;

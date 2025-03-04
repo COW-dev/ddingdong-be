@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.activityreport.domain;
+package ddingdong.ddingdongBE.domain.activityreport.entity;
 
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;

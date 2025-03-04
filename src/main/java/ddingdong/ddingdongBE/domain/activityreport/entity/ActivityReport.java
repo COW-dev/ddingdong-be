@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.activityreport.domain;
+package ddingdong.ddingdongBE.domain.activityreport.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;

@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.activityreport.domain;
+package ddingdong.ddingdongBE.domain.activityreport.entity;
 
 import jakarta.persistence.Embeddable;
 

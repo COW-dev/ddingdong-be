@@ -4,16 +4,14 @@ import java.util.List;
 import lombok.Builder;
 
 @Builder
-public record ActivityReportListQuery(
+public record AdminActivityReportListQuery(
     String name,
-    String term,
     List<ActivityReportInfo> activityReports
 ) {
 
-  public static ActivityReportListQuery of(String name, String term, List<ActivityReportInfo> activityReportInfos) {
-    return ActivityReportListQuery.builder()
+  public static AdminActivityReportListQuery of(String name, List<ActivityReportInfo> activityReportInfos) {
+    return AdminActivityReportListQuery.builder()
         .name(name)
-        .term(term)
         .activityReports(activityReportInfos)
         .build();
   }

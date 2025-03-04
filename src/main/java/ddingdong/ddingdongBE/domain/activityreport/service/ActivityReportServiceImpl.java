@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.util.List;
@@ -12,26 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class ActivityReportServiceImpl implements ActivityReportService{
+public class ActivityReportServiceImpl implements ActivityReportService {
 
     private final ActivityReportRepository activityReportRepository;
 
     @Override
-    public List<ActivityReport> getActivityReports() {
-        return activityReportRepository.findAll();
+    public List<ActivityReport> getActivityReports(int year, int term) {
+        return activityReportRepository.findAllByCurrentYearAndTerm(year, term);
     }
 
     @Override
-    public List<ActivityReport> getActivityReportsByClub(final Club club) {
-        return activityReportRepository.findByClubName(club.getName());
+    public List<ActivityReport> getActivityReportsByClub(Club club, int year) {
+        return activityReportRepository.findAllByClub(club, year);
     }
 
     @Override
-    public List<ActivityReport> getActivityReport(
-        final String clubName,
-        final String term
-    ) {
-        return activityReportRepository.findByClubNameAndTerm(clubName, term);
+    public List<ActivityReport> getActivityReport(Club club, int year, int term) {
+        return activityReportRepository.findByClubAndTerm(club, year, term);
     }
 
     @Transactional
@@ -44,8 +41,8 @@ public class ActivityReportServiceImpl implements ActivityReportService{
     @Transactional
     @Override
     public void update(
-        final ActivityReport activityReport,
-        final ActivityReport updateActivityReport
+            final ActivityReport activityReport,
+            final ActivityReport updateActivityReport
     ) {
         activityReport.update(updateActivityReport);
     }
@@ -57,11 +54,11 @@ public class ActivityReportServiceImpl implements ActivityReportService{
     }
 
     @Override
-    public List<ActivityReport> getActivityReportOrThrow(String clubName, String term) {
-        List<ActivityReport> activityReports = getActivityReport(clubName, term);
+    public List<ActivityReport> getActivityReportOrThrow(Club club, int year, int term) {
+        List<ActivityReport> activityReports = getActivityReport(club, year, term);
         if (activityReports.isEmpty()) {
-            throw new ResourceNotFound("해당 ActivityReports(clubName: " + clubName + ", term: " + term + ")"
-                + "를 찾을 수 없습니다.");
+            throw new ResourceNotFound("해당 ActivityReports(clubName: " + club.getName() + ", term: " + term + ")"
+                    + "를 찾을 수 없습니다.");
         }
         return activityReports;
     }

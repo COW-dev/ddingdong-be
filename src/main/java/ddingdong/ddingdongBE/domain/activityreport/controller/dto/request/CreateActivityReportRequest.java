@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;

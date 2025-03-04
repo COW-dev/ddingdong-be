@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.repository;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReportTermInfo;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
