@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.common.utils.CalculationUtils;
 import ddingdong.ddingdongBE.common.utils.TimeUtils;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
@@ -135,21 +136,22 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     @Override
     public List<SingleStatisticsQuery> createFileStatistics(FormField formField) {
         List<TextAnswerInfo> textAnswerInfos = formAnswerRepository.getTextAnswerInfosByFormFieldId(formField.getId());
-        List<SingleStatisticsQuery> textStatisticsQueries = new ArrayList<>();
-        for(TextAnswerInfo textAnswerInfo : textAnswerInfos) {
+        List<SingleStatisticsQuery> singleStatisticsQueries = new ArrayList<>();
+        for (TextAnswerInfo textAnswerInfo : textAnswerInfos) {
             Long id = textAnswerInfo.getId();
             String name = textAnswerInfo.getName();
-            List<String> answers = stringListConverter.convertToEntityAttribute(textAnswerInfo.getValue());
-            for (String answer : answers) {
-                textStatisticsQueries.add(new SingleStatisticsQuery(id, name, answer));
-            }
+            List<String> values = stringListConverter.convertToEntityAttribute(textAnswerInfo.getValue());
+            List<FileMetaData> fileMetaDatas = fileMetaDataService.getAllByIds(values);
+            fileMetaDatas.forEach(fileMetaData ->
+                    singleStatisticsQueries.add(new SingleStatisticsQuery(id, name, fileMetaData.getFileName()))
+            );
         }
-        return textStatisticsQueries;
+        return singleStatisticsQueries;
     }
 
     private String getAnswer(String value) {
         List<String> answer = stringListConverter.convertToEntityAttribute(value);
-        if(answer.isEmpty()) {
+        if (answer.isEmpty()) {
             return null;
         }
         return answer.get(0);
