@@ -34,15 +34,15 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
     }
 
     private List<AdminActivityReportListQuery> parseToListQuery(final List<ActivityReport> activityReports) {
-        Map<String, List<ActivityReport>> activityReportsGroupedByClubName = activityReports.stream()
-                .collect(Collectors.groupingBy(report -> report.getClub().getName()));
+        Map<Club, List<ActivityReport>> activityReportsGroupedByClubName = activityReports.stream()
+                .collect(Collectors.groupingBy(ActivityReport::getClub));
 
         return activityReportsGroupedByClubName.entrySet().stream()
                 .map(entry -> {
                     List<ActivityReportInfo> activityReportInfos = entry.getValue().stream()
                             .map(ActivityReportInfo::from)
                             .toList();
-                    return new AdminActivityReportListQuery(entry.getKey(), activityReportInfos);
+                    return AdminActivityReportListQuery.of(entry.getKey(), activityReportInfos);
                 })
                 .toList();
     }
