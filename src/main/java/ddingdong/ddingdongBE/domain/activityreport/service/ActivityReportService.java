@@ -1,16 +1,16 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
-import ddingdong.ddingdongBE.domain.activityreport.domain.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import java.util.List;
 
 public interface ActivityReportService {
 
-    List<ActivityReport> getActivityReports();
+    List<ActivityReport> getActivityReports(int year, int term);
 
-    List<ActivityReport> getActivityReportsByClub(final Club club);
+    List<ActivityReport> getActivityReportsByClub(Club club, int year);
 
-    List<ActivityReport> getActivityReport(String clubName, String term);
+    List<ActivityReport> getActivityReport(Club club, int year, int term);
 
     Long create(final ActivityReport activityReport);
 
@@ -18,5 +18,5 @@ public interface ActivityReportService {
 
     void deleteAll(List<ActivityReport> activityReports);
 
-    List<ActivityReport> getActivityReportOrThrow(String clubName, String term);
+    List<ActivityReport> getActivityReportOrThrow(Club club, int year, int term);
 }
