@@ -9,6 +9,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import java.time.LocalDate;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,12 @@ class ClubRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
     private FormRepository formRepository;
+
+    @BeforeEach
+    void setUp() {
+        clubRepository.deleteAll();
+        formRepository.deleteAll();
+    }
 
 
     @DisplayName("클럽 목록 전체조회에 필요한 모든 클럽 및 폼지 정보를 조회한다. 입력 날짜와 가장 가까운 폼지를 조회한다.")
