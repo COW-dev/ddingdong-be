@@ -3,9 +3,10 @@ package ddingdong.ddingdongBE.domain.activityreport.api;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
-import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportListResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AdminActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportTermInfoResponse;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CentralActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.CurrentTermResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -31,7 +32,7 @@ public interface ClubActivityReportApi {
 
     @Operation(summary = "현재 활동보고서 회차 조회")
     @ApiResponse(responseCode = "200", description = "현재 활동보고서 회차 조회 성공",
-        content = @Content(schema = @Schema(implementation = CurrentTermResponse.class)))
+            content = @Content(schema = @Schema(implementation = CurrentTermResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/activity-reports/current-term")
@@ -39,23 +40,23 @@ public interface ClubActivityReportApi {
 
     @Operation(summary = "본인 동아리 활동보고서 전체 조회")
     @ApiResponse(responseCode = "200", description = "본인 동아리 활동보고서 전체 조회 성공",
-        content = @Content(schema = @Schema(implementation = ActivityReportListResponse.class)))
+            content = @Content(schema = @Schema(implementation = AdminActivityReportListResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/activity-reports")
-    List<ActivityReportListResponse> getMyActivityReports(
-        @AuthenticationPrincipal PrincipalDetails principalDetails
+    List<CentralActivityReportListResponse> getMyActivityReports(
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
     @Operation(summary = "활동보고서 상세 조회")
     @ApiResponse(responseCode = "200", description = "활동보고서 상세 조회 성공",
-        content = @Content(schema = @Schema(implementation = ActivityReportResponse.class)))
+            content = @Content(schema = @Schema(implementation = ActivityReportResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/activity-reports")
     List<ActivityReportResponse> getActivityReport(
-        @RequestParam("term") String term,
-        @RequestParam("club_name") String clubName
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam("term") int term
     );
 
     @Operation(summary = "활동보고서 등록")
@@ -64,8 +65,8 @@ public interface ClubActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping(value = "/my/activity-reports")
     void createActivityReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestBody CreateActivityReportRequests requests
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody CreateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 수정")
@@ -74,9 +75,9 @@ public interface ClubActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping(value = "/my/activity-reports")
     void updateActivityReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam(value = "term") String term,
-        @RequestBody UpdateActivityReportRequests requests
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam(value = "term") int term,
+            @RequestBody UpdateActivityReportRequests requests
     );
 
     @Operation(summary = "활동보고서 삭제")
@@ -85,13 +86,13 @@ public interface ClubActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/my/activity-reports")
     void deleteActivityReport(
-        @AuthenticationPrincipal PrincipalDetails principalDetails,
-        @RequestParam(value = "term") String term
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestParam(value = "term") int term
     );
 
     @Operation(summary = "활동 보고서 회차별 기간 조회 API")
     @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 조회 성공",
-        content = @Content(schema = @Schema(implementation = ActivityReportTermInfoResponse.class)))
+            content = @Content(schema = @Schema(implementation = ActivityReportTermInfoResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/activity-reports/term")
