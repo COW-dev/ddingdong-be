@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import ddingdong.ddingdongBE.domain.activityreport.domain.Participant;
+import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
