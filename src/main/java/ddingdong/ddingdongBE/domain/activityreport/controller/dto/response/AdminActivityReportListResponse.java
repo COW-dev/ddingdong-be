@@ -7,21 +7,29 @@ import lombok.Builder;
 
 @Builder
 public record AdminActivityReportListResponse(
-    @Schema(description = "동아리 이름", example = "카우")
-    String name,
+        AdminActivityReportListClubResponse club,
 
-    @Schema(description = "활동보고서 정보")
-    List<ActivityReportDto> activityReports
+        @Schema(description = "활동보고서 정보")
+        List<ActivityReportDto> activityReports
 ) {
 
     public static AdminActivityReportListResponse from(AdminActivityReportListQuery query) {
         List<ActivityReportDto> activityReports = query.activityReports().stream()
-            .map(ActivityReportDto::from)
-            .toList();
+                .map(ActivityReportDto::from)
+                .toList();
 
         return AdminActivityReportListResponse.builder()
-            .name(query.name())
-            .activityReports(activityReports)
-            .build();
+                .club(new AdminActivityReportListClubResponse(query.clubId(), query.clubName()))
+                .activityReports(activityReports)
+                .build();
+    }
+
+    public record AdminActivityReportListClubResponse(
+            @Schema(description = "동아리 식별자", example = "1")
+            Long id,
+            @Schema(description = "동아리 이름", example = "카우")
+            String name
+    ) {
+
     }
 }
