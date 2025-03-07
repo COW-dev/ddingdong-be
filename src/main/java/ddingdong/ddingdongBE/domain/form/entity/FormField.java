@@ -80,4 +80,8 @@ public class FormField extends BaseEntity {
     public boolean isFile() {
         return this.fieldType == FieldType.FILE;
     }
+
+    public void setFormForConvenience(Form form) {
+        this.form = form;
+    }
 }

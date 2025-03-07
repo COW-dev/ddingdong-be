@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -11,7 +12,9 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -48,6 +51,9 @@ public class Form extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
+    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    private List<FormField> formFields = new ArrayList<>();
+
     @Builder
     private Form(
             String title,
@@ -56,7 +62,8 @@ public class Form extends BaseEntity {
             LocalDate endDate,
             boolean hasInterview,
             List<String> sections,
-            Club club
+            Club club,
+            List<FormField> formFields
     ) {
         this.title = title;
         this.description = description;
@@ -65,6 +72,12 @@ public class Form extends BaseEntity {
         this.hasInterview = hasInterview;
         this.sections = sections;
         this.club = club;
+        this.formFields = formFields;
+    }
+
+    public void addFormFields(FormField formField) {
+        this.formFields.add(formField);
+        formField.setFormForConvenience(this);
     }
 
     public void update(Form updateForm) {
