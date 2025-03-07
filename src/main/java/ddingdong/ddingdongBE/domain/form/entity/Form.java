@@ -79,4 +79,6 @@ public class Form extends BaseEntity {
     public boolean isEqualsById(Long formId) {
         return this.id.equals(formId);
     }
+
+    public void updateEndDate(LocalDate endDate) { this.endDate = endDate; }
 }

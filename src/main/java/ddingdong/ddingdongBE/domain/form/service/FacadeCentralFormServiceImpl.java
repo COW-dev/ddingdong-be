@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.C
 import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
@@ -192,6 +193,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
             log.error("Failed to send bulk emails", e);
             throw new RuntimeException("이메일 전송 중 오류가 발생했습니다.", e);
         }
+    }
+
+    @Transactional
+    @Override
+    public void updateFormEndDate(UpdateFormEndDateCommand command) {
+        Form form = formService.getById(command.formId());
+        form.updateEndDate(command.endDate());
     }
 
     private FormListQuery buildFormListQuery(Form form) {
