@@ -117,7 +117,7 @@ public class Club extends BaseEntity {
 
     public void addClubMember(ClubMember clubMember) {
         this.clubMembers.add(clubMember);
-        clubMember.setClubFormConvenience(this);
+        clubMember.setClubForConvenience(this);
     }
 
     public String getClubUrl() {
