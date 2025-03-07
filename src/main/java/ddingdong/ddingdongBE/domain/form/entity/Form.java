@@ -16,6 +16,8 @@ import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -51,7 +53,7 @@ public class Form extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
-    @OneToMany(mappedBy = "club", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL)
     private List<FormField> formFields = new ArrayList<>();
 
     @Builder
@@ -91,5 +93,29 @@ public class Form extends BaseEntity {
 
     public boolean isEqualsById(Long formId) {
         return this.id.equals(formId);
+    }
+
+    public void updateFormFields(List<FormField> updatedFormFields) {
+        // 삭제될 폼 필드
+        List<FormField> deletedFormFields = this.formFields.stream()
+                .filter(formField -> updatedFormFields.stream()
+                        .noneMatch(updatedField -> updatedField.getId().equals(formField.getId())))
+                .toList();
+        this.formFields.removeAll(deletedFormFields);
+
+        Map<Long, FormField> existingFieldMap = this.formFields.stream()
+                .collect(Collectors.toMap(FormField::getId, field -> field));
+
+        // 추가 및 업데이트
+        for (FormField updatedField : updatedFormFields) {
+            if (updatedField.getId() == null || !existingFieldMap.containsKey(updatedField.getId())) {
+                // 추가
+                addFormFields(updatedField);
+            } else {
+                // 업데이트
+                FormField existingField = existingFieldMap.get(updatedField.getId());
+                existingField.update(updatedField);
+            }
+        }
     }
 }

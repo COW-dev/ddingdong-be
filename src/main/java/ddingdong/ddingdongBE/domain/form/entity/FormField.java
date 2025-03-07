@@ -51,6 +51,7 @@ public class FormField extends BaseEntity {
 
     @Builder
     private FormField(
+            Long id,
             String question,
             FieldType fieldType,
             boolean required,
@@ -59,6 +60,7 @@ public class FormField extends BaseEntity {
             List<String> options,
             Form form
             ) {
+        this.id = id;
         this.question = question;
         this.fieldType = fieldType;
         this.required = required;
@@ -83,5 +85,14 @@ public class FormField extends BaseEntity {
 
     public void setFormForConvenience(Form form) {
         this.form = form;
+    }
+
+    public void update(FormField updatedField) {
+        this.question = updatedField.getQuestion();
+        this.fieldType = updatedField.getFieldType();
+        this.required = updatedField.isRequired();
+        this.fieldOrder = updatedField.getFieldOrder();
+        this.section = updatedField.getSection();
+        this.options = updatedField.getOptions();
     }
 }
