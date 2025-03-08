@@ -80,5 +80,7 @@ public class Form extends BaseEntity {
         return this.id.equals(formId);
     }
 
-    public void updateEndDate(LocalDate endDate) { this.endDate = endDate; }
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 }

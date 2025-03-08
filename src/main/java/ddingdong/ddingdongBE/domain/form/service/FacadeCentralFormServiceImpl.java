@@ -248,7 +248,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private void validateEndDate(LocalDate startDate, LocalDate endDate) {
-        if (startDate.isAfter(endDate)) { throw new InvalidFormEndDateException(); }
+        if (endDate.isBefore(startDate)) { throw new InvalidFormEndDateException(); }
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
