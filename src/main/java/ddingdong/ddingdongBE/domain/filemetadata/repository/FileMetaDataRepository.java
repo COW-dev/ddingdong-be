@@ -63,5 +63,4 @@ public interface FileMetaDataRepository extends JpaRepository<FileMetaData, UUID
 
     @Query("SELECT f FROM FileMetaData f WHERE (f.domainType = 'BANNER_WEB_IMAGE' OR f.domainType = 'BANNER_MOBILE_IMAGE') AND  f.entityId IN :entityIds AND f.fileStatus != 'DELETED'")
     List<FileMetaData> findAllWithBannerByEntityIds(@Param("entityIds") List<Long> entityIds);
-
 }
