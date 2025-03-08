@@ -7,10 +7,14 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLDelete(sql = "update form_application set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLRestriction("deleted_at IS NULL")
 public class FormApplication extends BaseEntity {
 
     @Id
