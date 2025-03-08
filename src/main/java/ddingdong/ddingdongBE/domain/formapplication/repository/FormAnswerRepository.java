@@ -4,9 +4,8 @@ import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
-import org.springframework.data.jpa.repository.JpaRepository;
-
 import java.util.List;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -35,4 +34,11 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
             ORDER BY fap.id
             """, nativeQuery = true)
     List<TextAnswerInfo> getTextAnswerInfosByFormFieldId(Long fieldId);
+
+    @Query(value = """
+            SELECT DISTINCT fa.application_id
+            FROM form_answer fa
+            WHERE fa.field_id = :fieldId
+            """, nativeQuery = true)
+    List<Long> findAllApplicationByFormFieldId(@Param("fieldId") Long fieldId);
 }
