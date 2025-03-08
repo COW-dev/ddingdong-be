@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.api.CentralFormApi;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
@@ -103,5 +104,12 @@ public class CentralFormController implements CentralFormApi {
     ) {
         User user = principalDetails.getUser();
         facadeCentralFormService.sendApplicationResultEmail(request.toCommand(user.getId(), formId));
+    }
+
+    @Override
+    public void updateFormEndDate(UpdateFormEndDateRequest updateFormEndDateRequest, Long formId,
+            PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        facadeCentralFormService.updateFormEndDate(updateFormEndDateRequest.toCommand(user, formId));
     }
 }
