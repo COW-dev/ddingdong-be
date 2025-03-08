@@ -53,7 +53,7 @@ public class Form extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
-    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<FormField> formFields = new ArrayList<>();
 
     @Builder
@@ -99,6 +99,7 @@ public class Form extends BaseEntity {
         // 삭제될 폼 필드
         List<FormField> deletedFormFields = this.formFields.stream()
                 .filter(formField -> updatedFormFields.stream()
+                        .filter(updatedFormField -> updatedFormField.getId() != null)
                         .noneMatch(updatedField -> updatedField.getId().equals(formField.getId())))
                 .toList();
         this.formFields.removeAll(deletedFormFields);
