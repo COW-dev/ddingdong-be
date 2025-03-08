@@ -35,18 +35,10 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
             """, nativeQuery = true)
     List<TextAnswerInfo> getTextAnswerInfosByFormFieldId(Long fieldId);
 
-//    @Query(value = """
-//            SELECT fap.id as id, fap.name as name, fmd.file_name as fileName
-//            FROM (
-//                SELECT *
-//                FROM form_answer fa
-//                WHERE fa.field_id = :fieldId
-//                ) field_answer
-//            JOIN form_application fap
-//            ON fap.id = field_answer.application_id
-//            JOIN file_meta_data fmd
-//            ON field_answer.value = fmd.id
-//            ORDER BY fap.id
-//            """, nativeQuery = true)
-//    List<FileAnswerInfo> getFileAnswerInfosByFormFieldId(Long fieldId);
+    @Query(value = """
+            SELECT DISTINCT fa.application_id
+            FROM form_answer fa
+            WHERE fa.field_id = :fieldId
+            """, nativeQuery = true)
+    List<Long> findAllApplicationByFormFieldId(@Param("fieldId") Long fieldId);
 }

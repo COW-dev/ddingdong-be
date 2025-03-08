@@ -96,7 +96,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         validateEqualsClub(club, form);
-        fileMetaDataService.updateStatusToDelete(DomainType.FORM_FILE, formId);
+        List<FormApplication> formApplications = formApplicationService.getAllByForm(form);
+        formApplications.forEach( //TODO : for문 고치기
+                formApplication -> fileMetaDataService.updateStatusToDelete(DomainType.FORM_FILE, formApplication.getId())
+        );
         formService.delete(form); //테이블 생성 시 외래 키에 cascade 설정하여 formField 삭제도 자동으로 됨.
     }
 
@@ -236,13 +239,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
-                                               List<UpdateFormFieldCommand> updateFormFieldCommands) {
+            List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
-                                               List<CreateFormFieldCommand> createFormFieldCommands) {
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }
