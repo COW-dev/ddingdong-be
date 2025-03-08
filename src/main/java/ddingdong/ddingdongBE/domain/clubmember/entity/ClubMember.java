@@ -70,7 +70,7 @@ public class ClubMember extends BaseEntity {
         this.department = updateClubMember.getDepartment();
     }
 
-    public void setClubFormConvenience(Club club) {
+    public void setClubForConvenience(Club club) {
         this.club = club;
     }
 }

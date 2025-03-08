@@ -39,6 +39,9 @@ public record UpdateFormRequest(
 ) {
 
     record UpdateFormFieldRequest(
+            @Schema(description = "폼지 질문 식별자", example = "1")
+            Long id,
+
             @Schema(description = "폼지 질문", example = "우리 동아리 들어올겁니까?")
             @NotNull(message = "질문는 null이 될 수 없습니다.")
             String question,
@@ -65,6 +68,7 @@ public record UpdateFormRequest(
 
         public UpdateFormFieldCommand toCommand() {
             return UpdateFormFieldCommand.builder()
+                    .id(id)
                     .question(question)
                     .type(FieldType.findType(type))
                     .options(options)

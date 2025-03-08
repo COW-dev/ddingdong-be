@@ -23,6 +23,7 @@ public record UpdateFormCommand(
 
     @Builder
     public record UpdateFormFieldCommand(
+            Long id,
             String question,
             FieldType type,
             List<String> options,
@@ -33,6 +34,7 @@ public record UpdateFormCommand(
 
         public FormField toEntity(Form form) {
             return FormField.builder()
+                    .id(id)
                     .form(form)
                     .question(question)
                     .fieldType(type)

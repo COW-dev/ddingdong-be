@@ -84,12 +84,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Form updateForm = command.toEntity();
         originform.update(updateForm);
 
-        List<FormField> originFormFields = formFieldService.findAllByForm(originform);
-        formFieldService.deleteAll(originFormFields);
-
-        List<FormField> updateFormFields = toUpdateFormFields(originform,
-                command.formFieldCommands());
-        formFieldService.createAll(updateFormFields);
+        List<FormField> updatedFormFields = toUpdateFormFields(originform, command.formFieldCommands());
+        originform.updateFormFields(updatedFormFields);
     }
 
     @Transactional
@@ -252,13 +248,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
-                                               List<UpdateFormFieldCommand> updateFormFieldCommands) {
+            List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
-                                               List<CreateFormFieldCommand> createFormFieldCommands) {
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }

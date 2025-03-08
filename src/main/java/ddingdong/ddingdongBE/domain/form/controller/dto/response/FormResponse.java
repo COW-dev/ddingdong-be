@@ -29,6 +29,8 @@ public record FormResponse(
 
     @Builder
     record FormFieldListResponse(
+            @Schema(description = "폼지 질문 식별자", example = "1")
+            Long id,
             @Schema(description = "폼지 질문", example = "당신의 이름은?")
             String question,
             @Schema(description = "폼지 질문 유형", example = "CHECK_BOX")
@@ -45,6 +47,7 @@ public record FormResponse(
 
         public static FormFieldListResponse from(FormFieldListQuery formFieldListQuery) {
             return FormFieldListResponse.builder()
+                    .id(formFieldListQuery.id())
                     .question(formFieldListQuery.question())
                     .type(formFieldListQuery.type())
                     .options(formFieldListQuery.options())
