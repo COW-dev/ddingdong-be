@@ -4,6 +4,7 @@ import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
 import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
+import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
 import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodException;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -18,6 +19,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.C
 import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
@@ -194,6 +196,16 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         }
     }
 
+    @Transactional
+    @Override
+    public void updateFormEndDate(UpdateFormEndDateCommand command) {
+        Club club = clubService.getByUserId(command.user().getId());
+        Form form = formService.getById(command.formId());
+        validateEndDate(form.getStartDate(), command.endDate());
+        validateDuplicationDateExcludingSelf(club, form.getStartDate(), command.endDate(), command.formId());
+        form.updateEndDate(command.endDate());
+    }
+
     private FormListQuery buildFormListQuery(Form form) {
         FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(),
                 form.getEndDate());
@@ -233,6 +245,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         if (!overlappingForms.isEmpty()) {
             throw new OverlapFormPeriodException();
         }
+    }
+
+    private void validateEndDate(LocalDate startDate, LocalDate endDate) {
+        if (endDate.isBefore(startDate)) { throw new InvalidFormEndDateException(); }
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
