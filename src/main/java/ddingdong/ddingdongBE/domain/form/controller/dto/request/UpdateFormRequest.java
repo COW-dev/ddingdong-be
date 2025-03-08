@@ -68,6 +68,7 @@ public record UpdateFormRequest(
 
         public UpdateFormFieldCommand toCommand() {
             return UpdateFormFieldCommand.builder()
+                    .id(id)
                     .question(question)
                     .type(FieldType.findType(type))
                     .options(options)

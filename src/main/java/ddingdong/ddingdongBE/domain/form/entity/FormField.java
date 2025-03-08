@@ -59,7 +59,7 @@ public class FormField extends BaseEntity {
             String section,
             List<String> options,
             Form form
-            ) {
+    ) {
         this.id = id;
         this.question = question;
         this.fieldType = fieldType;
