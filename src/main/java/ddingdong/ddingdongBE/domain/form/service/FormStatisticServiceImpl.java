@@ -40,7 +40,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     private final FormFieldRepository formFieldRepository;
     private final FormAnswerRepository formAnswerRepository;
     private final StringListConverter stringListConverter;
-    private final FileFormApplicationService formApplicationService;
+    private final FileFormApplicationService fileFormApplicationService;
 
     @Override
     public int getTotalApplicationCountByForm(Form form) {
@@ -130,7 +130,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     @Override
     public List<SingleStatisticsQuery> createFileStatistics(FormField formField) {
         List<Long> applicationIds = formAnswerRepository.findAllApplicationByFormFieldId(formField.getId());
-        List<FileApplicationInfo> fileApplicationInfos = formApplicationService.getAllFileApplicationInfo(
+        List<FileApplicationInfo> fileApplicationInfos = fileFormApplicationService.getAllFileApplicationInfo(
                 applicationIds);
         return fileApplicationInfos.stream()
                 .map(SingleStatisticsQuery::fromFileInfo)
