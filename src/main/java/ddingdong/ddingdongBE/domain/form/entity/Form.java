@@ -119,4 +119,8 @@ public class Form extends BaseEntity {
             }
         }
     }
+
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
 }
