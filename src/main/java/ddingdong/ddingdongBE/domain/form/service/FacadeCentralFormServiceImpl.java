@@ -41,6 +41,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -68,9 +69,12 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
-
-        List<FormField> formFields = toCreateFormFields(savedForm,
-                createFormCommand.formFieldCommands());
+        List<FormField> formFields;
+        if (savedForm.getSections().size() > 1) {
+            formFields = toCreateFormFieldsForMultipleSections(savedForm, createFormCommand.formFieldCommands());
+        } else {
+            formFields = toCreateFormFieldsForSingleSection(savedForm, createFormCommand.formFieldCommands());
+        }
         formFieldService.createAll(formFields);
     }
 
@@ -257,9 +261,23 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
-    private List<FormField> toCreateFormFields(Form savedForm,
-                                               List<CreateFormFieldCommand> createFormFieldCommands) {
+    private List<FormField> toCreateFormFieldsForSingleSection(Form savedForm,
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
+    }
+    private List<FormField> toCreateFormFieldsForMultipleSections(Form savedForm,
+            List<CreateFormFieldCommand> createFormFieldCommands) {
+        return createFormFieldCommands.stream()
+                .flatMap(formFieldCommand -> {
+                    if (formFieldCommand.section().equals("공통")) {
+                        return savedForm.getSections().stream()
+                                .filter(section -> !section.equals("공통"))
+                                .map(section -> formFieldCommand.toEntityWithSection(savedForm, section));
+                    } else {
+                        return Stream.of(formFieldCommand.toEntityWithSection(savedForm, formFieldCommand.section()));
+                    }
+                })
+                .toList();
     }
 }
