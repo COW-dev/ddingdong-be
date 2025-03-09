@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplication.repository.dto;
 
-public interface FileApplicationInfo {
+public interface FileAnswerInfo {
 
     Long getId();
 

@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
-import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileApplicationInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import java.time.LocalDate;
 import java.util.List;
@@ -61,20 +60,4 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
     List<FormApplication> findAllByForm(Form form);
 
     List<FormApplication> getAllByFormIdAndStatus(Long formId, FormApplicationStatus status);
-
-    @Query(value = """
-            SELECT fap.id as id, fap.name as name, fmd.file_name as fileName
-            FROM file_meta_data fmd
-            JOIN form_application fap
-            ON fmd.entity_id = fap.id
-            WHERE fmd.domain_type = :domainType
-            AND fmd.entity_id IN (:applicationIds)
-            AND fmd.file_status = :fileStatus
-            ORDER BY fmd.file_name
-            """, nativeQuery = true)
-    List<FileApplicationInfo> findAllFileApplicationInfo(
-            @Param("domainType") String domainType,
-            @Param("applicationIds") List<Long> applicationIds,
-            @Param("fileStatus") String fileStatus
-    );
 }

@@ -39,7 +39,7 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
 
         List<FormAnswer> formAnswers = toFormAnswers(savedFormApplication,
                 createFormApplicationCommand.formAnswerCommands());
-        updateFileMetaDataStatusToCoupled(formAnswers, savedFormApplication);
+        updateFileMetaDataStatusToCoupled(formAnswers);
         formAnswerService.createAll(formAnswers);
     }
 
@@ -50,13 +50,13 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
         }
     }
 
-    private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, FormApplication formApplication) {
+    private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers) {
         formAnswers.stream()
                 .filter(FormAnswer::isFile)
                 .forEach(formAnswer -> fileMetaDataService.updateStatusToCoupled(
                         formAnswer.getValue(),
                         FORM_FILE,
-                        formApplication.getId()
+                        formAnswer.getId()
                 ));
     }
 

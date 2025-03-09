@@ -17,10 +17,10 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatistics
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
-import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileApplicationInfo;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileAnswerInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
-import ddingdong.ddingdongBE.domain.formapplication.service.FileFormApplicationService;
+import ddingdong.ddingdongBE.domain.formapplication.service.FileFormAnswerService;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -40,7 +40,7 @@ public class FormStatisticServiceImpl implements FormStatisticService {
     private final FormFieldRepository formFieldRepository;
     private final FormAnswerRepository formAnswerRepository;
     private final StringListConverter stringListConverter;
-    private final FileFormApplicationService fileFormApplicationService;
+    private final FileFormAnswerService fileFormAnswerService;
 
     @Override
     public int getTotalApplicationCountByForm(Form form) {
@@ -129,10 +129,10 @@ public class FormStatisticServiceImpl implements FormStatisticService {
 
     @Override
     public List<SingleStatisticsQuery> createFileStatistics(FormField formField) {
-        List<Long> applicationIds = formAnswerRepository.findAllApplicationByFormFieldId(formField.getId());
-        List<FileApplicationInfo> fileApplicationInfos = fileFormApplicationService.getAllFileApplicationInfo(
-                applicationIds);
-        return fileApplicationInfos.stream()
+        List<Long> answerIds = formAnswerRepository.findAllAnswerByFormFieldId(formField.getId());
+        List<FileAnswerInfo> fileAnswerInfos = fileFormAnswerService.getAllFileApplicationInfo(
+                answerIds);
+        return fileAnswerInfos.stream()
                 .map(SingleStatisticsQuery::fromFileInfo)
                 .toList();
     }
