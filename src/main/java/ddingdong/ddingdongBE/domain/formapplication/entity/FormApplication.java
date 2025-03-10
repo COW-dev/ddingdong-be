@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.formapplication.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -21,13 +22,13 @@ public class FormApplication extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String name;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String studentNumber;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 50)
     private String department;
 
     @Column(nullable = false)
@@ -37,18 +38,29 @@ public class FormApplication extends BaseEntity {
     private String email;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, name = "status")
+    @Column(nullable = false, length = 50)
     private FormApplicationStatus status;
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
 
+    @Column(length = 500)
     private String note;
 
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
+
     @Builder
-    private FormApplication(String name, String studentNumber, String department,
-            String phoneNumber, String email,
-            FormApplicationStatus status, Form form) {
+    private FormApplication(
+            String name,
+            String studentNumber,
+            String department,
+            String phoneNumber,
+            String email,
+            FormApplicationStatus status,
+            Form form,
+            LocalDateTime deletedAt
+    ) {
         this.name = name;
         this.studentNumber = studentNumber;
         this.department = department;
@@ -56,6 +68,7 @@ public class FormApplication extends BaseEntity {
         this.email = email;
         this.status = status;
         this.form = form;
+        this.deletedAt = deletedAt;
     }
 
     public void updateStatus(FormApplicationStatus status) {
