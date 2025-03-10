@@ -53,6 +53,9 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
+    private static final int SINGLE_SECTION_SIZE = 1;
+    private static final String COMMON_SECTION = "공통";
+
     private final FormService formService;
     private final FormFieldService formFieldService;
     private final ClubService clubService;
@@ -69,12 +72,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
-        List<FormField> formFields;
-        if (savedForm.getSections().size() > 1) {
-            formFields = toCreateFormFieldsForMultipleSections(savedForm, createFormCommand.formFieldCommands());
-        } else {
-            formFields = toCreateFormFieldsForSingleSection(savedForm, createFormCommand.formFieldCommands());
-        }
+        List<FormField> formFields = buildFormFieldBySection(savedForm,
+                createFormCommand.formFieldCommands());
         formFieldService.createAll(formFields);
     }
 
@@ -258,26 +257,41 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private List<FormField> toUpdateFormFields(Form originform,
                                                List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(originform))
+                .toList();
+    }
+
+    private List<FormField> buildFormFieldBySection(Form savedForm,
+            List<CreateFormFieldCommand> createFormFieldCommand) {
+        if (savedForm.isLargerSectionThan(SINGLE_SECTION_SIZE)) {
+            return toCreateFormFieldsForMultipleSections(savedForm, createFormFieldCommand);
+        } else {
+            return toCreateFormFieldsForSingleSection(savedForm, createFormFieldCommand);
+        }
     }
 
     private List<FormField> toCreateFormFieldsForSingleSection(Form savedForm,
             List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
+                .toList();
     }
+
     private List<FormField> toCreateFormFieldsForMultipleSections(Form savedForm,
             List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
-                .flatMap(formFieldCommand -> {
-                    if (formFieldCommand.section().equals("공통")) {
-                        return savedForm.getSections().stream()
-                                .filter(section -> !section.equals("공통"))
-                                .map(section -> formFieldCommand.toEntityWithSection(savedForm, section));
-                    } else {
-                        return Stream.of(formFieldCommand.toEntityWithSection(savedForm, formFieldCommand.section()));
-                    }
-                })
+                .flatMap(formFieldCommand -> createFormFieldsBySection(savedForm, formFieldCommand))
                 .toList();
     }
+
+    private Stream<FormField> createFormFieldsBySection(Form savedForm,
+            CreateFormFieldCommand formFieldCommand) {
+        if (formFieldCommand.section().equals(COMMON_SECTION)) {
+            return savedForm.getSections().stream()
+                    .filter(section -> !section.equals(COMMON_SECTION))
+                    .map(section -> formFieldCommand.toEntityWithSection(savedForm, section));
+        }
+        return Stream.of(formFieldCommand.toEntityWithSection(savedForm, formFieldCommand.section()));
+    }
+
 }
