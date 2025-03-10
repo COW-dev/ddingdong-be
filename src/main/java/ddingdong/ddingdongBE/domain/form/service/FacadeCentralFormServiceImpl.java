@@ -26,13 +26,13 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.ApplicantStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.DepartmentStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery.FieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.service.dto.query.TextFieldStatisticsQuery.TextStatisticsQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.email.SesEmailService;
 import ddingdong.ddingdongBE.email.dto.EmailContent;
@@ -164,14 +164,18 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
-    public TextFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
+    public SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId) {
         FormField formField = formFieldService.getById(fieldId);
         if (!formField.isTextType()) {
             throw new InvalidFieldTypeException();
         }
         String type = formField.getFieldType().name();
-        List<TextStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
-        return new TextFieldStatisticsQuery(type, textStatisticsQueries);
+        if (formField.isFile()) {
+            List<SingleStatisticsQuery> textStatisticsQueries = formStatisticService.createFileStatistics(formField);
+            return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
+        }
+        List<SingleStatisticsQuery> textStatisticsQueries = formStatisticService.createTextStatistics(formField);
+        return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
     @Override
@@ -248,13 +252,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
-                                               List<UpdateFormFieldCommand> updateFormFieldCommands) {
+            List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
-                                               List<CreateFormFieldCommand> createFormFieldCommands) {
+            List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
     }

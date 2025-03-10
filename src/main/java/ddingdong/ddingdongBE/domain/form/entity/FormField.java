@@ -76,4 +76,8 @@ public class FormField extends BaseEntity {
     return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
             || this.fieldType == FieldType.FILE;
   }
+
+  public boolean isFile() {
+    return this.fieldType == FieldType.FILE;
+  }
 }
