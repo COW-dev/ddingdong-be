@@ -56,7 +56,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
-    private final FileMetaDataService fileMetaDataService;
     private final SesEmailService sesEmailService;
 
     @Transactional
