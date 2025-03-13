@@ -68,7 +68,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
-
         List<FormField> formFields = toCreateFormFields(savedForm,
                 createFormCommand.formFieldCommands());
         formFieldService.createAll(formFields);
@@ -250,12 +249,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private List<FormField> toUpdateFormFields(Form originform,
             List<UpdateFormFieldCommand> updateFormFieldCommands) {
         return updateFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(originform)).toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(originform))
+                .toList();
     }
 
     private List<FormField> toCreateFormFields(Form savedForm,
             List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
-                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm)).toList();
+                .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
+                .flatMap(formField -> formField.generateFormFieldsBySection(savedForm))
+                .toList();
     }
 }
