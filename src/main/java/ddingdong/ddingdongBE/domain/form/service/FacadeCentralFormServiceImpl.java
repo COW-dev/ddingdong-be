@@ -41,7 +41,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -52,9 +51,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 @Slf4j
 public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
-
-    private static final int SINGLE_SECTION_SIZE = 1;
-    private static final String COMMON_SECTION = "공통";
 
     private final FormService formService;
     private final FormFieldService formFieldService;
@@ -72,9 +68,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         Form form = createFormCommand.toEntity(club);
         Form savedForm = formService.create(form);
-        List<FormField> formFields = buildFormFieldBySection(savedForm,
+        List<FormField> formFields = toCreateFormFields(savedForm,
                 createFormCommand.formFieldCommands());
-        formFieldService.createAll(formFields);
+        List<FormField> newFormFields = formFields.stream().flatMap(formField -> formField.generateFormFieldsBySection(form)).toList();
+        formFieldService.createAll(newFormFields);
     }
 
     @Transactional
@@ -261,37 +258,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 .toList();
     }
 
-    private List<FormField> buildFormFieldBySection(Form savedForm,
-            List<CreateFormFieldCommand> createFormFieldCommand) {
-        if (savedForm.isLargerSectionThan(SINGLE_SECTION_SIZE)) {
-            return toCreateFormFieldsForMultipleSections(savedForm, createFormFieldCommand);
-        } else {
-            return toCreateFormFieldsForSingleSection(savedForm, createFormFieldCommand);
-        }
-    }
-
-    private List<FormField> toCreateFormFieldsForSingleSection(Form savedForm,
+    private List<FormField> toCreateFormFields(Form savedForm,
             List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
                 .toList();
     }
-
-    private List<FormField> toCreateFormFieldsForMultipleSections(Form savedForm,
-            List<CreateFormFieldCommand> createFormFieldCommands) {
-        return createFormFieldCommands.stream()
-                .flatMap(formFieldCommand -> createFormFieldsBySection(savedForm, formFieldCommand))
-                .toList();
-    }
-
-    private Stream<FormField> createFormFieldsBySection(Form savedForm,
-            CreateFormFieldCommand formFieldCommand) {
-        if (formFieldCommand.section().equals(COMMON_SECTION)) {
-            return savedForm.getSections().stream()
-                    .filter(section -> !section.equals(COMMON_SECTION))
-                    .map(section -> formFieldCommand.toEntityWithSection(savedForm, section));
-        }
-        return Stream.of(formFieldCommand.toEntityWithSection(savedForm, formFieldCommand.section()));
-    }
-
 }

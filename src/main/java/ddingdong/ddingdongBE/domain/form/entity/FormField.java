@@ -13,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -22,62 +23,92 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class FormField extends BaseEntity {
+    private static final String COMMON_SECTION = "공통";
+    private static final int SINGLE_SECTION_SIZE = 1;
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String question;
+    @Column(nullable = false)
+    private String question;
 
-  @Column(nullable = false)
-  private boolean required;
+    @Column(nullable = false)
+    private boolean required;
 
-  @Column(nullable = false)
-  private int fieldOrder;
+    @Column(nullable = false)
+    private int fieldOrder;
 
-  @Column(nullable = false)
-  private String section;
+    @Column(nullable = false)
+    private String section;
 
-  @Convert(converter = StringListConverter.class)
-  private List<String> options;
+    @Convert(converter = StringListConverter.class)
+    private List<String> options;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private FieldType fieldType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FieldType fieldType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Form form;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Form form;
 
-  @Builder
-  private FormField(
-      String question,
-      FieldType fieldType,
-      boolean required,
-      int fieldOrder,
-      String section,
-      List<String> options,
-      Form form
-  ) {
-    this.question = question;
-    this.fieldType = fieldType;
-    this.required = required;
-    this.fieldOrder = fieldOrder;
-    this.section = section;
-    this.options = options;
-    this.form = form;
-  }
+    @Builder
+    private FormField(
+            String question,
+            FieldType fieldType,
+            boolean required,
+            int fieldOrder,
+            String section,
+            List<String> options,
+            Form form
+    ) {
+        this.question = question;
+        this.fieldType = fieldType;
+        this.required = required;
+        this.fieldOrder = fieldOrder;
+        this.section = section;
+        this.options = options;
+        this.form = form;
+    }
 
-  public boolean isMultipleChoice() {
-    return this.fieldType == FieldType.CHECK_BOX || this.fieldType == FieldType.RADIO;
-  }
+    public boolean isMultipleChoice() {
+        return this.fieldType == FieldType.CHECK_BOX || this.fieldType == FieldType.RADIO;
+    }
 
-  public boolean isTextType() {
-    return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
-            || this.fieldType == FieldType.FILE;
-  }
+    public boolean isTextType() {
+        return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
+                || this.fieldType == FieldType.FILE;
+    }
 
-  public boolean isFile() {
-    return this.fieldType == FieldType.FILE;
-  }
+    public boolean isFile() {
+        return this.fieldType == FieldType.FILE;
+    }
+
+    public Stream<FormField> generateFormFieldsBySection(Form form) {
+        if (form.isLargerSectionThan(SINGLE_SECTION_SIZE)) {
+            return expandCommonSectionFormField(form);
+        }
+        return Stream.of(this);
+    }
+
+    private Stream<FormField> expandCommonSectionFormField(Form form) {
+        if (this.section.equals(COMMON_SECTION)) {
+            return form.getSections().stream()
+                    .filter(section -> !section.equals(COMMON_SECTION))
+                    .map(this::copyWithSection);
+        }
+        return Stream.of(this);
+    }
+
+    private FormField copyWithSection(String newSection) {
+        return FormField.builder()
+                .question(this.question)
+                .fieldType(this.fieldType)
+                .required(this.required)
+                .fieldOrder(this.fieldOrder)
+                .section(newSection)
+                .options(this.options)
+                .form(this.form)
+                .build();
+    }
 }
