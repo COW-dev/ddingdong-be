@@ -9,6 +9,8 @@ import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +23,9 @@ public class GeneralFormService implements FormService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "clubsCache", allEntries = true)
+    })
     public Form create(Form form) {
         return formRepository.save(form);
     }
@@ -33,6 +38,11 @@ public class GeneralFormService implements FormService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "formsCache", key = "'form_' + #root.args[0].id + '_*'", allEntries = true),
+            @CacheEvict(value = "formSectionsCache", key = "'formSection_from_' + #root.args[0].id"),
+            @CacheEvict(value = "clubsCache", allEntries = true)
+    })
     public void delete(Form form) {
         formRepository.delete(form);
     }
