@@ -18,7 +18,7 @@ public class UserClubController implements UserClubApi {
     private final FacadeUserClubService facadeUserClubService;
 
     @Override
-    @Cacheable(value = "clubsCache")
+    @Cacheable(value = "clubsCache", key = "'clubs'")
     public List<UserClubListResponse> getClubs() {
         return facadeUserClubService.findAllWithRecruitTimeCheckPoint(LocalDate.now()).stream()
                 .map(UserClubListResponse::from)
