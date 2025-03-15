@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -12,15 +13,20 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLDelete(sql = "update form_answer set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLRestriction("deleted_at IS NULL")
 public class FormAnswer extends BaseEntity {
 
     @Id
@@ -28,6 +34,7 @@ public class FormAnswer extends BaseEntity {
     private Long id;
 
     @Convert(converter = StringListConverter.class)
+    @Column(columnDefinition = "TEXT")
     private List<String> value;
 
     @JoinColumn(name = "application_id")
@@ -38,11 +45,20 @@ public class FormAnswer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private FormField formField;
 
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
+
     @Builder
-    private FormAnswer(List<String> value, FormApplication formApplication, FormField formField) {
+    private FormAnswer(
+            List<String> value,
+            FormApplication formApplication,
+            FormField formField,
+            LocalDateTime deletedAt
+    ) {
         this.value = value;
         this.formApplication = formApplication;
         this.formField = formField;
+        this.deletedAt = deletedAt;
     }
 
     public boolean isFile() {
