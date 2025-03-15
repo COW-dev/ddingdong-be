@@ -40,7 +40,7 @@ public class GeneralFormService implements FormService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "formsCache", key = "'form_' + #root.args[0].id + '_*'", allEntries = true),
-            @CacheEvict(value = "formSectionsCache", key = "'formSection_form_' + #root.args[0].id"),
+            @CacheEvict(value = "formSectionsCache", key = "'form_' + #root.args[0].id + '_formSection'"),
             @CacheEvict(value = "clubsCache", allEntries = true)
     })
     public void delete(Form form) {

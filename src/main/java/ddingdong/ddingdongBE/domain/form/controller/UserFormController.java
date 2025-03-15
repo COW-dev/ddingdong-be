@@ -17,7 +17,7 @@ public class UserFormController implements UserFormApi {
     private final FacadeUserFormService facadeUserFormService;
 
     @Override
-    @Cacheable(value = "formSectionsCache", key = "'formSection_form_' + #root.args[0]")
+    @Cacheable(value = "formSectionsCache", key = "'form_' + #root.args[0] + '_formSection'")
     public FormSectionResponse getFormSections(Long formId) {
         FormSectionQuery query = facadeUserFormService.getFormSection(formId);
         return FormSectionResponse.from(query);

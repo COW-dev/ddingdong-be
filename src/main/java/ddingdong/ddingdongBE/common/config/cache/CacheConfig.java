@@ -109,7 +109,7 @@ public class CacheConfig {
         }
 
         private Long extract(String key) {
-            if (FORM_CACHE_PATTERN.matcher(key).matches()) {
+            if (FORM_CACHE_PATTERN.matcher(key).matches() || FORM_SECTION_CACHE_PATTERN.matcher(key).matches()) {
                 String[] parts = key.split("_");
                 if (parts.length >= 2) {
                     try {
