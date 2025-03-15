@@ -28,7 +28,7 @@ public class CacheConfig {
     private final FormService formService;
 
     private static final Pattern FORM_CACHE_PATTERN = Pattern.compile("^form_\\d+.*$");
-    private static final Pattern FORM_SECTION_CACHE_PATTERN = Pattern.compile("^formSection_\\d+$");
+    private static final Pattern FORM_SECTION_CACHE_PATTERN = Pattern.compile("^form_\\d+_formSection$");
 
     @Bean
     public CacheManager cacheManager() {
@@ -76,14 +76,14 @@ public class CacheConfig {
         }
 
         private long calculateExpiryNanos(Object key) {
-            Long formId = extracFormId(key);
+            Long formId = extractFormId(key);
             if (formId == null) {
                 return TimeUnit.HOURS.toNanos(1); // 기본값: 1시간
             }
+
             try {
                 Form form = formService.getById(formId);
                 LocalDate endDate = form.getEndDate();
-
                 LocalDateTime now = LocalDateTime.now();
                 LocalDateTime endDateTime = endDate.atTime(23, 59, 59);
 
@@ -98,24 +98,17 @@ public class CacheConfig {
         /**
          * 캐시 키에서 폼 ID 추출
          */
-        private Long extracFormId(Object key) {
+        private Long extractFormId(Object key) {
             if (key instanceof String cacheKey) {
                 if (FORM_CACHE_PATTERN.matcher(cacheKey).matches() ||
                         FORM_SECTION_CACHE_PATTERN.matcher(cacheKey).matches()) {
-                    return extract(cacheKey);
-                }
-            }
-            return null;
-        }
-
-        private Long extract(String key) {
-            if (FORM_CACHE_PATTERN.matcher(key).matches() || FORM_SECTION_CACHE_PATTERN.matcher(key).matches()) {
-                String[] parts = key.split("_");
-                if (parts.length >= 2) {
-                    try {
-                        return Long.parseLong(parts[1]);
-                    } catch (NumberFormatException e) {
-                        return null;
+                    String[] parts = cacheKey.split("_");
+                    if (parts.length >= 2) {
+                        try {
+                            return Long.parseLong(parts[1]);
+                        } catch (NumberFormatException e) {
+                            return null;
+                        }
                     }
                 }
             }
