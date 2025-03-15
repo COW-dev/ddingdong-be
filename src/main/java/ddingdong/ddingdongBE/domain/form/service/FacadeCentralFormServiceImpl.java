@@ -76,7 +76,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     @Caching(evict = {
             @CacheEvict(value = "formsCache", key = "'form_' + #root.args[0].formId() + '_*'", allEntries = true),
-            @CacheEvict(value = "formSectionsCache", key = "'formSection_from_' + #root.args[0].formId()"),
+            @CacheEvict(value = "formSectionsCache", key = "'formSection_form_' + #root.args[0].formId()"),
             @CacheEvict(value = "clubsCache", allEntries = true)
     })
     public void updateForm(UpdateFormCommand command) {
