@@ -33,7 +33,6 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
 
     @Override
     public List<UserClubListQuery> findAllWithRecruitTimeCheckPoint(LocalDate now) {
-
         List<UserClubListInfo> userClubListInfos = clubService.findAllClubListInfo();
         return userClubListInfos.stream()
                 .map(info -> UserClubListQuery.of(info, checkRecruit(now, info.getStart(), info.getEnd()).getText()))

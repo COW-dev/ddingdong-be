@@ -31,7 +31,7 @@ public class SesEmailService {
 
     @Async
     public CompletableFuture<Void> sendBulkResultEmails(List<FormApplication> formApplications,
-                                                        EmailContent emailContent) {
+            EmailContent emailContent) {
         return CompletableFuture.allOf(
                 formApplications.stream()
                         .map(application -> CompletableFuture.runAsync(() -> {
@@ -43,7 +43,13 @@ public class SesEmailService {
                                     sendEmail(emailContent, application);
                                     break;
                                 } catch (LimitExceededException e) {
-                                    retryFixedInterval(application, e, attempt, maxRetries, retryDelayMs);
+                                    try {
+                                        retryFixedInterval(application, e, attempt, maxRetries, retryDelayMs);
+                                    } catch (InterruptedException ie) {
+                                        Thread.currentThread().interrupt();
+                                        log.error("이메일 전송 중 인터럽트 발생 - {}", application.getEmail());
+                                        throw new RuntimeException("이메일 전송 중 인터럽트 발생: " + application.getEmail(), ie);
+                                    }
                                 } catch (Exception e) {
                                     log.error("이메일 전송 실패 - {}: {}", application.getEmail(), e.getMessage());
                                     throw new RuntimeException("이메일 전송에 실패했습니다: " + application.getEmail(), e);
@@ -85,21 +91,18 @@ public class SesEmailService {
     }
 
     private void retryFixedInterval(FormApplication application,
-                                    LimitExceededException e,
-                                    int attempt,
-                                    int maxRetries,
-                                    long retryDelayMs) {
+            LimitExceededException e,
+            int attempt,
+            int maxRetries,
+            long retryDelayMs) throws InterruptedException {
         if (attempt == maxRetries) {
             log.error("최대 재시도 횟수 초과. 이메일 전송 실패 - {}", application.getEmail());
             throw new RuntimeException("이메일 전송 최대 재시도 횟수 초과: " + application.getEmail(), e);
         }
         log.warn("Rate limit 발생. {}ms 후 재시도 ({}/{}): {}",
                 retryDelayMs, attempt + 1, maxRetries, application.getEmail());
-        try {
-            Thread.sleep(retryDelayMs);
-        } catch (InterruptedException ie) {
-            Thread.currentThread().interrupt();
-            throw new RuntimeException("재시도 대기 중 인터럽트 발생", ie);
-        }
+
+        // InterruptedException을 다시 던져서 호출자가 처리할 수 있게 함
+        Thread.sleep(retryDelayMs);
     }
 }

@@ -9,7 +9,6 @@ import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodExc
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
@@ -42,6 +41,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +57,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
-    private final FileMetaDataService fileMetaDataService;
     private final SesEmailService sesEmailService;
 
     @Transactional
@@ -74,6 +74,11 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
+    @Caching(evict = {
+            @CacheEvict(value = "formsCache", key = "'form_' + #root.args[0].formId() + '_*'", allEntries = true),
+            @CacheEvict(value = "formSectionsCache", key = "'form_' + #root.args[0].formId() + '_formSection'"),
+            @CacheEvict(value = "clubsCache", allEntries = true)
+    })
     public void updateForm(UpdateFormCommand command) {
         Club club = clubService.getByUserId(command.user().getId());
         validateDuplicationDateExcludingSelf(club, command.startDate(), command.endDate(), command.formId());
@@ -242,7 +247,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private void validateEndDate(LocalDate startDate, LocalDate endDate) {
-        if (endDate.isBefore(startDate)) { throw new InvalidFormEndDateException(); }
+        if (endDate.isBefore(startDate)) {
+            throw new InvalidFormEndDateException();
+        }
     }
 
     private List<FormField> toUpdateFormFields(Form originform,
