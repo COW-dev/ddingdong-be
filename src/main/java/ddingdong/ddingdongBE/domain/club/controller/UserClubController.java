@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,8 +17,8 @@ public class UserClubController implements UserClubApi {
 
     private final FacadeUserClubService facadeUserClubService;
 
-
     @Override
+    @Cacheable(value = "clubsCache", key = "'clubs'")
     public List<UserClubListResponse> getClubs() {
         return facadeUserClubService.findAllWithRecruitTimeCheckPoint(LocalDate.now()).stream()
                 .map(UserClubListResponse::from)
