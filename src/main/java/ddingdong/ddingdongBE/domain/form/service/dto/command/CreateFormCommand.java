@@ -42,19 +42,6 @@ public record CreateFormCommand(
                     .form(savedForm)
                     .build();
         }
-
-        public FormField toEntityWithSection(Form savedForm, String section) {
-            return FormField.builder()
-                    .question(question)
-                    .fieldType(type)
-                    .options(options)
-                    .required(required)
-                    .fieldOrder(order)
-                    .section(section)
-                    .form(savedForm)
-                    .build();
-        }
-
     }
 
     public Form toEntity(Club club) {

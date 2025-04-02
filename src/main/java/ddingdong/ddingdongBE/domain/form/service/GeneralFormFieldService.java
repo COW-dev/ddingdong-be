@@ -14,25 +14,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GeneralFormFieldService implements FormFieldService {
 
-  private final FormFieldRepository formFieldRepository;
+    private static final String FORM_DEFAULT_SECTION = "공통";
 
-  @Transactional
-  @Override
-  public void createAll(List<FormField> formFields) {
-    formFieldRepository.saveAll(formFields);
-  }
+    private final FormFieldRepository formFieldRepository;
+
+    @Transactional
+    @Override
+    public void createAll(List<FormField> formFields) {
+        formFieldRepository.saveAll(formFields);
+    }
 
 
-  @Override
-  public FormField getById(Long id) {
-    return formFieldRepository.findById(id)
-        .orElseThrow(() -> new ResourceNotFound("FormField(fieldId=" + id + ")를 찾을 수 없습니다."));
-  }
+    @Override
+    public FormField getById(Long id) {
+        return formFieldRepository.findById(id)
+                .orElseThrow(
+                        () -> new ResourceNotFound("FormField(fieldId=" + id + ")를 찾을 수 없습니다."));
+    }
 
-  @Override
-  public List<FormField> findAllByForm(Form form) {
-    return formFieldRepository.findAllByForm(form);
-  }
+    @Override
+    public List<FormField> findAllByForm(Form form) {
+        return formFieldRepository.findAllByForm(form);
+    }
 
     @Transactional
     @Override
@@ -42,6 +45,7 @@ public class GeneralFormFieldService implements FormFieldService {
 
     @Override
     public List<FormField> getAllByFormAndSection(Form form, String section) {
-        return formFieldRepository.findAllByFormAndSection(form.getId(), section);
+        return formFieldRepository.findAllByFormAndSection(form.getId(), section,
+                FORM_DEFAULT_SECTION);
     }
 }

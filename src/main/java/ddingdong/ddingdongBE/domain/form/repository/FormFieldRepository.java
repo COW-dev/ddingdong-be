@@ -30,10 +30,11 @@ public interface FormFieldRepository extends JpaRepository<FormField, Long> {
             SELECT *
               FROM form_field f
               WHERE f.form_id = :formId 
-                AND f.section = :section
+                AND (f.section = :section OR f.section = :defaultSection)
             """, nativeQuery = true)
     List<FormField> findAllByFormAndSection(
             @Param("formId") Long formId,
-            @Param("section") String section
+            @Param("section") String section,
+            @Param("defaultSection") String defaultSection
     );
 }
