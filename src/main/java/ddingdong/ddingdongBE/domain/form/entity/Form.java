@@ -17,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -126,5 +127,9 @@ public class Form extends BaseEntity {
 
     public boolean isLargerSectionThan(int sectionSize) {
         return this.sections.size() > sectionSize;
+    }
+
+    public boolean isNotEqualClubId(Long clubId) {
+        return !Objects.equals(club.getId(), clubId);
     }
 }

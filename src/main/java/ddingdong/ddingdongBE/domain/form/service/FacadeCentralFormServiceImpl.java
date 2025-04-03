@@ -36,7 +36,6 @@ import ddingdong.ddingdongBE.email.SesEmailService;
 import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -213,7 +212,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private void validateEqualsClub(Club club, Form form) {
-        if (!Objects.equals(club.getId(), form.getClub().getId())) {
+        if (form.isNotEqualClubId(club.getId())) {
             throw new NonHaveAuthority();
         }
     }
