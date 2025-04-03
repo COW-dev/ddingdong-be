@@ -121,6 +121,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public FormStatisticsQuery getStatisticsByForm(User user, Long formId) {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
+        validateEqualsClub(club, form);
         int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
         List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(
                 totalCount, form);
