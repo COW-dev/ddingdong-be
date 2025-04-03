@@ -123,8 +123,4 @@ public class Form extends BaseEntity {
     public void updateEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
-
-    public boolean isLargerSectionThan(int sectionSize) {
-        return this.sections.size() > sectionSize;
-    }
 }
