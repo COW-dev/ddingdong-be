@@ -266,7 +266,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
             List<CreateFormFieldCommand> createFormFieldCommands) {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
-                .flatMap(formField -> formField.generateFormFieldsBySection(savedForm))
                 .toList();
     }
 }
