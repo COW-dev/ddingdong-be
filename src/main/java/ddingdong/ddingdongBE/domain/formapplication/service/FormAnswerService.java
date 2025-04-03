@@ -1,8 +1,9 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-
 import java.util.List;
 
 public interface FormAnswerService {
@@ -11,4 +12,5 @@ public interface FormAnswerService {
 
     List<FormAnswer> getAllByApplication(FormApplication formApplication);
 
+    List<FileMetaData> getAllFileByForm(Form form);
 }

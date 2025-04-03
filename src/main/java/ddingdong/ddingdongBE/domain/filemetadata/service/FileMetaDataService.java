@@ -31,6 +31,8 @@ public interface FileMetaDataService {
 
     void updateStatusToDelete(DomainType domainType, Long entityId);
 
+    void updateStatusToDelete(List<FileMetaData> fileMetaDatas);
+
     void update(String id, DomainType domainType, Long entityId);
 
     void update(List<String> ids, DomainType domainType, Long entityId);
