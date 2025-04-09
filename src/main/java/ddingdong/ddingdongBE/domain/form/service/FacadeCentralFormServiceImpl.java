@@ -206,8 +206,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private FormListQuery buildFormListQuery(Form form) {
-        FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(),
-                form.getEndDate());
+        FormStatus formStatus = form.getFormStatus(LocalDate.now());
         return FormListQuery.from(form, formStatus);
     }
 
