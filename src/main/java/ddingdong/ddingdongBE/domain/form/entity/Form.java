@@ -123,4 +123,14 @@ public class Form extends BaseEntity {
     public void updateEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
+
+    public FormStatus getFormStatus(LocalDate now) {
+        if (now.isBefore(startDate)) {
+            return FormStatus.UPCOMING;
+        }
+        if (!now.isAfter(endDate)) {
+            return FormStatus.ONGOING;
+        }
+        return FormStatus.CLOSED;
+    }
 }

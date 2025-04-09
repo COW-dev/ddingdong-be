@@ -57,19 +57,4 @@ public class GeneralFormService implements FormService {
         return formRepository.findOverlappingForms(id, startDate, endDate);
     }
 
-    @Override
-    public Form findActiveForm(List<Form> forms) {
-        return forms.stream()
-                .filter(f -> FormStatus.getDescription(LocalDate.now(), f.getStartDate(), f.getEndDate()) == FormStatus.ONGOING)
-                .findFirst()
-                .orElse(null);
-    }
-
-    @Override
-    public Form getNewestForm(List<Form> forms) {
-        return forms.stream()
-                .max(Comparator.comparing(Form::getId))
-                .orElse(null);
-    }
-
 }
