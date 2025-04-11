@@ -174,6 +174,11 @@ public class FileMetaDataServiceImpl implements FileMetaDataService {
         fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
     }
 
+    @Override
+    public void updateStatusToDelete(List<FileMetaData> fileMetaDatas) {
+        fileMetaDatas.forEach(fileMetaData -> fileMetaData.updateStatus(DELETED));
+    }
+
     private List<String> getNewIds(List<String> ids) {
         List<FileMetaData> fileMetaDatas = fileMetaDataRepository.findByIdIn(toUUIDs(ids));
         return fileMetaDatas.stream()

@@ -9,7 +9,7 @@ import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodExc
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
@@ -32,6 +32,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatistics
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.email.SesEmailService;
@@ -59,8 +60,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
-    private final FileMetaDataService fileMetaDataService;
     private final SesEmailService sesEmailService;
+    private final FormAnswerService formAnswerService;
+    private final FileMetaDataService fileMetaDataService;
 
     @Transactional
     @Override
@@ -100,7 +102,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
         validateEqualsClub(club, form);
-        fileMetaDataService.updateStatusToDelete(DomainType.FORM_FILE, formId);
+        List<FileMetaData> fileMetaDatas = formAnswerService.getAllFileByForm(form);
+        fileMetaDataService.updateStatusToDelete(fileMetaDatas);
         formService.delete(form); //테이블 생성 시 외래 키에 cascade 설정하여 formField 삭제도 자동으로 됨.
     }
 

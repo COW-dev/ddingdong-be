@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.formapplication.repository;
 
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
@@ -58,5 +59,15 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
     List<FileAnswerInfo> findAllFileAnswerInfo(
             @Param("domainType") String domainType,
             @Param("answerIds") List<Long> answerIds,
-            @Param("fileStatus") String fileStatus    );
+            @Param("fileStatus") String fileStatus);
+
+
+    @Query("""
+            SELECT fmd
+            FROM FileMetaData fmd
+            JOIN FormAnswer fa ON fmd.entityId = fa.id
+            JOIN FormField ffd ON fa.formField.id = ffd.id
+            WHERE fmd.domainType = 'FORM_FILE' AND ffd.form.id = :formId
+            """)
+    List<FileMetaData> getAllFileByForm(@Param("formId") Long formId);
 }
