@@ -2,9 +2,9 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
-import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
+import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodException;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -213,7 +213,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private void validateEqualsClub(Club club, Form form) {
         if (form.isNotEqualClubId(club.getId())) {
-            throw new NonHaveAuthority();
+            throw new NonHaveFormAuthority();
         }
     }
 
