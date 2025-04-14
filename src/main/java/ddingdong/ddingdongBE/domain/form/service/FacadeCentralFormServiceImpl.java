@@ -2,9 +2,9 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
 
-import ddingdong.ddingdongBE.common.exception.AuthenticationException.NonHaveAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
+import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodException;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
@@ -39,7 +39,6 @@ import ddingdong.ddingdongBE.email.SesEmailService;
 import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
@@ -127,6 +126,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public FormStatisticsQuery getStatisticsByForm(User user, Long formId) {
         Club club = clubService.getByUserId(user.getId());
         Form form = formService.getById(formId);
+        validateEqualsClub(club, form);
         int totalCount = formStatisticService.getTotalApplicationCountByForm(form);
         List<DepartmentStatisticQuery> departmentStatisticQueries = formStatisticService.createDepartmentStatistics(
                 totalCount, form);
@@ -218,8 +218,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     private void validateEqualsClub(Club club, Form form) {
-        if (!Objects.equals(club.getId(), form.getClub().getId())) {
-            throw new NonHaveAuthority();
+        if (form.isNotEqualClubId(club.getId())) {
+            throw new NonHaveFormAuthority();
         }
     }
 
