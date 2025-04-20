@@ -2,9 +2,8 @@ package ddingdong.ddingdongBE.domain.formapplication.repository;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
+import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
@@ -29,26 +28,19 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
     @Autowired
     private FormAnswerRepository formAnswerRepository;
 
-    private FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
-
     @DisplayName("폼 지원서id와 FileMetaData의 entityId와 조인하여 정보를 조회한다")
     @Test
     void findAllFileApplicationInfo() {
         // given
-        FormApplication formApplication = fixtureMonkey.giveMeBuilder(FormApplication.class)
-                .set("name", "이름1")
-                .set("form", null)
-                .sample();
+        FormApplication formApplication = FormApplicationFixture.create("이름1", null);
         FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         FormAnswer formAnswer = FormAnswer.builder()
                 .formApplication(savedFormApplication)
                 .value(List.of())
                 .build();
         FormAnswer savedFormAnswer = formAnswerRepository.save(formAnswer);
-        FormApplication formApplication2 = fixtureMonkey.giveMeBuilder(FormApplication.class)
-                .set("name", "이름2")
-                .set("form", null)
-                .sample();
+        FormApplication formApplication2 = FormApplicationFixture.create("이름2", null);
+
         FormApplication savedFormApplication2 = formApplicationRepository.save(formApplication2);
         FormAnswer formAnswer2 = FormAnswer.builder()
                 .formApplication(savedFormApplication2)
