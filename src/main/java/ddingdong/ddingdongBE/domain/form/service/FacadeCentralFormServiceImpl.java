@@ -13,7 +13,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
-import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
+import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
@@ -109,9 +109,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public List<FormListQuery> getAllMyForm(User user) {
         Club club = clubService.getByUserId(user.getId());
-        List<Form> forms = formService.getAllByClub(club);
-        return forms.stream()
-                .map(this::buildFormListQuery)
+        Forms forms = formService.getAllByClub(club);
+        return forms.getForms().stream()
+                .map(FormListQuery::from)
                 .toList();
     }
 
@@ -209,11 +209,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         validateEndDate(form.getStartDate(), command.endDate());
         validateDuplicationDateExcludingSelf(club, form.getStartDate(), command.endDate(), command.formId());
         form.updateEndDate(command.endDate());
-    }
-
-    private FormListQuery buildFormListQuery(Form form) {
-        FormStatus formStatus = form.getFormStatus(LocalDate.now());
-        return FormListQuery.from(form, formStatus);
     }
 
     private void validateEqualsClub(Club club, Form form) {

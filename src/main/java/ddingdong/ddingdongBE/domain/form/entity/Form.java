@@ -125,21 +125,23 @@ public class Form extends BaseEntity {
         this.endDate = endDate;
     }
 
-    public FormStatus getFormStatus(LocalDate now) {
-        if (now.isBefore(startDate)) {
-            return FormStatus.UPCOMING;
-        }
-        if (!now.isAfter(endDate)) {
-            return FormStatus.ONGOING;
-        }
-        return FormStatus.CLOSED;
-    }
-
-    public boolean isLargerSectionThan(int sectionSize) {
-        return this.sections.size() > sectionSize;
-    }
-
     public boolean isNotEqualClubId(Long clubId) {
         return !Objects.equals(club.getId(), clubId);
+    }
+
+    public FormStatus getFormStatus(LocalDate localDate) {
+        return FormStatus.determineStatus(this, localDate);
+    }
+
+    public boolean isEqualStatusTo(FormStatus formStatus) {
+        return FormStatus.determineStatus(this, LocalDate.now()) == formStatus;
+    }
+
+    public boolean isAfterStartDateTo(LocalDate date) {
+        return date.isBefore(startDate);
+    }
+
+    public boolean isNotAfterEndDateTo(LocalDate date) {
+        return !date.isAfter(endDate);
     }
 }

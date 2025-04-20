@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.club.service;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.BEFORE_RECRUIT;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.END_RECRUIT;
 import static ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus.RECRUITING;
-import static ddingdong.ddingdongBE.domain.form.entity.FormStatus.ONGOING;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.RecruitmentStatus;
@@ -13,12 +12,11 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
-import ddingdong.ddingdongBE.domain.form.entity.FormStatus;
+import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -45,23 +43,14 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
-        List<Form> forms = formService.getAllByClub(club);
-        Form form = chooseActiveOrNewestForm(forms);
+        Forms forms = formService.getAllByClub(club);
+        Form form = forms.getActiveOrNewest();
         return UserClubQuery.of(
                 club,
                 form,
                 getFileKey(DomainType.CLUB_PROFILE, clubId),
                 getFileKey(DomainType.CLUB_INTRODUCTION, clubId)
         );
-    }
-
-    private Form chooseActiveOrNewestForm(List<Form> forms) {
-        return forms.stream()
-                .filter(f -> f.getFormStatus(LocalDate.now()) == ONGOING)
-                .findFirst()
-                .orElse(forms.stream()
-                        .max(Comparator.comparing(Form::getId))
-                        .orElse(null));
     }
 
     private RecruitmentStatus checkRecruit(LocalDate now, LocalDate startDate, LocalDate endDate) {

@@ -12,4 +12,14 @@ public enum FormStatus {
     CLOSED("마감");
 
     private final String description;
+
+    public static FormStatus determineStatus(Form form, LocalDate date) {
+        if (form.isAfterStartDateTo(date)) {
+            return UPCOMING;
+        }
+        if (form.isNotAfterEndDateTo(date)) {
+            return ONGOING;
+        }
+        return CLOSED;
+    }
 }
