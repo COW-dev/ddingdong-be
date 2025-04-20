@@ -32,34 +32,31 @@ public class FacadeUserFormApplicationServiceImpl implements FacadeUserFormAppli
     @Override
     public void createFormApplication(CreateFormApplicationCommand createFormApplicationCommand) {
         Form form = formService.getById(createFormApplicationCommand.formId());
-        LocalDate now = LocalDate.now();
-        validateFormPeriod(form.getStartDate(), form.getEndDate(), now);
+        validateFormPeriod(form);
         FormApplication formApplication = createFormApplicationCommand.toEntity(form);
         FormApplication savedFormApplication = formApplicationService.create(formApplication);
 
         List<FormAnswer> formAnswers = toFormAnswers(savedFormApplication,
                 createFormApplicationCommand.formAnswerCommands());
-        updateFileMetaDataStatusToCoupled(formAnswers, form);
-        formAnswerService.createAll(formAnswers);
+        List<FormAnswer> createdFormAnswers = formAnswerService.createAll(formAnswers);
+
+        updateFileMetaDataStatusToCoupled(createdFormAnswers);
     }
 
-    private void validateFormPeriod(LocalDate startDate,
-            LocalDate endDate, LocalDate now) {
-        if (startDate.isAfter(now) || endDate.isBefore(now)) {
+    private void validateFormPeriod(Form form) { // TODO : Form 내부로 옮기기
+        if (form.getStartDate().isAfter(LocalDate.now()) || form.getEndDate().isBefore(LocalDate.now())) {
             throw new FormPeriodException();
         }
     }
 
-    private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers, Form form) {
-        formAnswers.forEach(formAnswer -> {
-            if (formAnswer.isFile()) {
-                fileMetaDataService.updateStatusToCoupled(
+    private void updateFileMetaDataStatusToCoupled(List<FormAnswer> formAnswers) {
+        formAnswers.stream()
+                .filter(FormAnswer::isFile)
+                .forEach(formAnswer -> fileMetaDataService.updateStatusToCoupled(
                         formAnswer.getValue(),
                         FORM_FILE,
-                        form.getId()
-                );
-            }
-        });
+                        formAnswer.getId()
+                ));
     }
 
     private List<FormAnswer> toFormAnswers(

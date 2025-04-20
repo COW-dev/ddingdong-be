@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.entity;
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.common.converter.StringListConverter;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -11,8 +12,13 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -48,6 +54,9 @@ public class Form extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
+    @OneToMany(mappedBy = "form", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<FormField> formFields = new ArrayList<>();
+
     @Builder
     private Form(
             String title,
@@ -56,7 +65,8 @@ public class Form extends BaseEntity {
             LocalDate endDate,
             boolean hasInterview,
             List<String> sections,
-            Club club
+            Club club,
+            List<FormField> formFields
     ) {
         this.title = title;
         this.description = description;
@@ -65,6 +75,12 @@ public class Form extends BaseEntity {
         this.hasInterview = hasInterview;
         this.sections = sections;
         this.club = club;
+        this.formFields = formFields;
+    }
+
+    public void addFormFields(FormField formField) {
+        this.formFields.add(formField);
+        formField.setFormForConvenience(this);
     }
 
     public void update(Form updateForm) {
@@ -78,5 +94,54 @@ public class Form extends BaseEntity {
 
     public boolean isEqualsById(Long formId) {
         return this.id.equals(formId);
+    }
+
+    public void updateFormFields(List<FormField> updatedFormFields) {
+        // 삭제될 폼 필드
+        List<FormField> deletedFormFields = this.formFields.stream()
+                .filter(formField -> updatedFormFields.stream()
+                        .filter(updatedFormField -> updatedFormField.getId() != null)
+                        .noneMatch(updatedField -> updatedField.getId().equals(formField.getId())))
+                .toList();
+        this.formFields.removeAll(deletedFormFields);
+
+        Map<Long, FormField> existingFieldMap = this.formFields.stream()
+                .collect(Collectors.toMap(FormField::getId, field -> field));
+
+        // 추가 및 업데이트
+        for (FormField updatedField : updatedFormFields) {
+            if (updatedField.getId() == null || !existingFieldMap.containsKey(updatedField.getId())) {
+                // 추가
+                addFormFields(updatedField);
+            } else {
+                // 업데이트
+                FormField existingField = existingFieldMap.get(updatedField.getId());
+                existingField.update(updatedField);
+            }
+        }
+    }
+
+    public void updateEndDate(LocalDate endDate) {
+        this.endDate = endDate;
+    }
+
+    public boolean isNotEqualClubId(Long clubId) {
+        return !Objects.equals(club.getId(), clubId);
+    }
+
+    public FormStatus getFormStatus(LocalDate localDate) {
+        return FormStatus.determineStatus(this, localDate);
+    }
+
+    public boolean isEqualStatusTo(FormStatus formStatus) {
+        return FormStatus.determineStatus(this, LocalDate.now()) == formStatus;
+    }
+
+    public boolean isAfterStartDateTo(LocalDate date) {
+        return date.isBefore(startDate);
+    }
+
+    public boolean isNotAfterEndDateTo(LocalDate date) {
+        return !date.isAfter(endDate);
     }
 }

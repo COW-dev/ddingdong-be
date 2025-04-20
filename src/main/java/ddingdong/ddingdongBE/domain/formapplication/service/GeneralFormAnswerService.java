@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.formapplication.service;
 
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormAnswerRepository;
@@ -18,12 +20,17 @@ public class GeneralFormAnswerService implements FormAnswerService {
 
     @Transactional
     @Override
-    public void createAll(List<FormAnswer> formAnswers) {
-        formAnswerRepository.saveAll(formAnswers);
+    public List<FormAnswer> createAll(List<FormAnswer> formAnswers) {
+        return formAnswerRepository.saveAll(formAnswers);
     }
 
     @Override
     public List<FormAnswer> getAllByApplication(FormApplication formApplication) {
         return formAnswerRepository.findAllByFormApplication(formApplication);
+    }
+
+    @Override
+    public List<FileMetaData> getAllFileByForm(Form form) {
+        return formAnswerRepository.getAllFileByForm(form.getId());
     }
 }

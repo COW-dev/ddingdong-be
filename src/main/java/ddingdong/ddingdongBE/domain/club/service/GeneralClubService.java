@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +22,7 @@ public class GeneralClubService implements ClubService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "clubsCache", allEntries = true)
     public Long save(Club club) {
         Club savedClub = clubRepository.save(club);
         return savedClub.getId();
@@ -62,6 +64,7 @@ public class GeneralClubService implements ClubService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "clubsCache", allEntries = true)
     public void delete(Long clubId) {
         Club club = getById(clubId);
         clubRepository.delete(club);

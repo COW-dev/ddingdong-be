@@ -23,57 +23,76 @@ import lombok.NoArgsConstructor;
 @Getter
 public class FormField extends BaseEntity {
 
-  @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-  @Column(nullable = false)
-  private String question;
+    @Column(nullable = false)
+    private String question;
 
-  @Column(nullable = false)
-  private boolean required;
+    @Column(nullable = false)
+    private boolean required;
 
-  @Column(nullable = false)
-  private int fieldOrder;
+    @Column(nullable = false)
+    private int fieldOrder;
 
-  @Column(nullable = false)
-  private String section;
+    @Column(nullable = false)
+    private String section;
 
-  @Convert(converter = StringListConverter.class)
-  private List<String> options;
+    @Convert(converter = StringListConverter.class)
+    private List<String> options;
 
-  @Enumerated(EnumType.STRING)
-  @Column(nullable = false)
-  private FieldType fieldType;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private FieldType fieldType;
 
-  @ManyToOne(fetch = FetchType.LAZY)
-  private Form form;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Form form;
 
-  @Builder
-  private FormField(
-      String question,
-      FieldType fieldType,
-      boolean required,
-      int fieldOrder,
-      String section,
-      List<String> options,
-      Form form
-  ) {
-    this.question = question;
-    this.fieldType = fieldType;
-    this.required = required;
-    this.fieldOrder = fieldOrder;
-    this.section = section;
-    this.options = options;
-    this.form = form;
-  }
+    @Builder
+    private FormField(
+            Long id,
+            String question,
+            FieldType fieldType,
+            boolean required,
+            int fieldOrder,
+            String section,
+            List<String> options,
+            Form form
+    ) {
+        this.id = id;
+        this.question = question;
+        this.fieldType = fieldType;
+        this.required = required;
+        this.fieldOrder = fieldOrder;
+        this.section = section;
+        this.options = options;
+        this.form = form;
+    }
 
-  public boolean isMultipleChoice() {
-    return this.fieldType == FieldType.CHECK_BOX || this.fieldType == FieldType.RADIO;
-  }
+    public boolean isMultipleChoice() {
+        return this.fieldType == FieldType.CHECK_BOX || this.fieldType == FieldType.RADIO;
+    }
 
-  public boolean isTextType() {
-    return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
-            || this.fieldType == FieldType.FILE;
-  }
+    public boolean isTextType() {
+        return this.fieldType == FieldType.TEXT || this.fieldType == FieldType.LONG_TEXT
+                || this.fieldType == FieldType.FILE;
+    }
+
+    public boolean isFile() {
+        return this.fieldType == FieldType.FILE;
+    }
+
+    public void setFormForConvenience(Form form) {
+        this.form = form;
+    }
+
+    public void update(FormField updatedField) {
+        this.question = updatedField.getQuestion();
+        this.fieldType = updatedField.getFieldType();
+        this.required = updatedField.isRequired();
+        this.fieldOrder = updatedField.getFieldOrder();
+        this.section = updatedField.getSection();
+        this.options = updatedField.getOptions();
+    }
 }
