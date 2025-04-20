@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FormAnswerService {
 
-    void createAll(List<FormAnswer> formAnswers);
+    List<FormAnswer> createAll(List<FormAnswer> formAnswers);
 
     List<FormAnswer> getAllByApplication(FormApplication formApplication);
 

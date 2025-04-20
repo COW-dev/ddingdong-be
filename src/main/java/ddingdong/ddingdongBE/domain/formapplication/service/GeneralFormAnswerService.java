@@ -20,8 +20,8 @@ public class GeneralFormAnswerService implements FormAnswerService {
 
     @Transactional
     @Override
-    public void createAll(List<FormAnswer> formAnswers) {
-        formAnswerRepository.saveAll(formAnswers);
+    public List<FormAnswer> createAll(List<FormAnswer> formAnswers) {
+        return formAnswerRepository.saveAll(formAnswers);
     }
 
     @Override
