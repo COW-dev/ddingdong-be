@@ -46,7 +46,7 @@ public class FacadeCentralFormApplicationServiceImpl implements
         Form form = formService.getById(formId);
         validateAuthority(club, form);
         List<FormApplication> formApplications = formApplicationService.getAllByForm(form);
-        FormStatus formStatus = FormStatus.getDescription(LocalDate.now(), form.getStartDate(), form.getEndDate());
+        FormStatus formStatus = form.getFormStatus(LocalDate.now());
         if (formApplications == null) {
             return MyAllFormApplicationsQuery.createEmpty(form, formStatus.getDescription());
         }

@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.club.service.dto.query.UserClubQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
@@ -42,10 +43,8 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
     @Override
     public UserClubQuery getClub(Long clubId) {
         Club club = clubService.getById(clubId);
-        List<Form> forms = formService.getAllByClub(club);
-        Form form = formService.findActiveForm(forms) != null
-                ? formService.findActiveForm(forms)
-                : formService.getNewestForm(forms);
+        Forms forms = formService.getAllByClub(club);
+        Form form = forms.getActiveOrNewest();
         return UserClubQuery.of(
                 club,
                 form,
