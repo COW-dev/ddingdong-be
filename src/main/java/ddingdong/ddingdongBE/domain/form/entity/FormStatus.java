@@ -13,16 +13,13 @@ public enum FormStatus {
 
     private final String description;
 
-
-    public static FormStatus getDescription(LocalDate now, LocalDate startDate, LocalDate endDate) {
-        if (now.isBefore(startDate)) {
-            return FormStatus.UPCOMING;
+    public static FormStatus determineStatus(Form form, LocalDate date) {
+        if (form.isAfterStartDateTo(date)) {
+            return UPCOMING;
         }
-
-        if (!now.isAfter(endDate)) {
-            return FormStatus.ONGOING;
+        if (form.isNotAfterEndDateTo(date)) {
+            return ONGOING;
         }
-
-        return FormStatus.CLOSED;
+        return CLOSED;
     }
 }

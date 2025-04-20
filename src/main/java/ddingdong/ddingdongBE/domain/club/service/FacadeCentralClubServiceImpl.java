@@ -5,11 +5,10 @@ import ddingdong.ddingdongBE.domain.club.service.dto.command.UpdateClubInfoComma
 import ddingdong.ddingdongBE.domain.club.service.dto.query.MyClubInfoQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
-import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,13 +26,10 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
     @Override
     public MyClubInfoQuery getMyClubInfo(Long userId) {
         Club club = clubService.getByUserId(userId);
-        List<Form> forms = formService.getAllByClub(club);
-        Form form = formService.findActiveForm(forms) != null
-                ? formService.findActiveForm(forms)
-                : formService.getNewestForm(forms);
+        Forms forms = formService.getAllByClub(club);
         return MyClubInfoQuery.of(
                 club,
-                form,
+                forms.getActiveOrNewest(),
                 getFileKey(DomainType.CLUB_PROFILE, club.getId()),
                 getFileKey(DomainType.CLUB_INTRODUCTION, club.getId())
         );
