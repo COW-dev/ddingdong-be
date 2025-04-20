@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.time.LocalDate;
 import java.util.List;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -135,4 +136,29 @@ class FormTest {
                 .contains("옵션1", "옵션2", "새 옵션");
     }
 
+    @DisplayName("현재 날짜가 기간 내 포함된다면 알맞는 FormStatus를 반환한다.")
+    @Test
+    void isDateInRange() {
+        // given
+        LocalDate now = LocalDate.now();
+        LocalDate startDate = now.minusDays(1);
+        LocalDate endDate = now.plusDays(1);
+
+        Form form = Form.builder()
+                .title("테스트 폼")
+                .description("설명")
+                .startDate(startDate)
+                .endDate(endDate)
+                .hasInterview(false)
+                .sections(List.of())
+                .club(null)
+                .formFields(List.of())
+                .build();
+
+        // when
+        FormStatus formStatus = form.getFormStatus(now);
+
+        // then
+        Assertions.assertThat(formStatus).isEqualTo(FormStatus.ONGOING);
+    }
 }
