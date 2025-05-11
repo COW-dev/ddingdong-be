@@ -178,7 +178,7 @@
 <img src="https://github.com/user-attachments/assets/4248a049-8c69-4ffd-aa8f-cc49abd2a42f" width="100px" />
 </td>
 <td>
-<img src="" width="100px" />
+<img src="https://cdn.discordapp.com/attachments/1371084853142884492/1371086241793052752/3.jpg?ex=6821db11&is=68208991&hm=6f1a177a9f50dc9a3e88993af67b32afe9921ed32ea5a4ce3e605ab04689c747&" width="100px" />
 </a>
 </td>
 </tr>
