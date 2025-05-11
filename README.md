@@ -113,12 +113,19 @@
 <img src="https://avatars.githubusercontent.com/u/75975946?v=4" width="100px" />
 </a>
 </td>
+<td>
+<a href="https://github.com/ujinsim">
+<img src="https://avatars.githubusercontent.com/u/98771235?v=4" width="100px" />
+</a>
+</td>
 </tr>
 <tr>
 <td><b>김세빈</b></td>
 <td><b>모유경</b></td>
+<td><b>심유진</b></td>
 </tr>
 <tr>
+<td><b>FE Developer</b></td>
 <td><b>FE Developer</b></td>
 <td><b>FE Developer</b></td>
 </tr>
@@ -143,13 +150,20 @@
 <img src="https://avatars.githubusercontent.com/u/59856002?v=4" width="100px" />
 </a>
 </td>
+<td>
+<a href="https://github.com/Seooooo24">
+<img src="https://avatars.githubusercontent.com/u/134712764?v=4" width="100px" />
+</a>
+</td>
 </tr>
 <tr>
 <td><b>고선제</b></td>
 <td><b>박수환</b></td>
 <td><b>유원준</b></td>
+<td><b>서아영</b></td>
 </tr>
 <tr>
+<td><b>BE Developer</b></td>
 <td><b>BE Developer</b></td>
 <td><b>BE Developer</b></td>
 <td><b>BE Developer</b></td>
@@ -163,11 +177,17 @@
 <td>
 <img src="https://github.com/user-attachments/assets/4248a049-8c69-4ffd-aa8f-cc49abd2a42f" width="100px" />
 </td>
+<td>
+<img src="https://github.com/user-attachments/assets/4248a049-8c69-4ffd-aa8f-cc49abd2a42f" width="100px" />
+</a>
+</td>
 </tr>
 <tr>
 <td><b>봉서연</b></td>
+<td><b>김민주</b></td>
 </tr>
 <tr>
+<td><b>Designer</b></td>
 <td><b>Designer</b></td>
 </tr>
 </table>
