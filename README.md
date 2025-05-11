@@ -178,7 +178,7 @@
 <img src="https://github.com/user-attachments/assets/4248a049-8c69-4ffd-aa8f-cc49abd2a42f" width="100px" />
 </td>
 <td>
-<img src="https://github.com/user-attachments/assets/4248a049-8c69-4ffd-aa8f-cc49abd2a42f" width="100px" />
+<img src="" width="100px" />
 </a>
 </td>
 </tr>
