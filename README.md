@@ -43,8 +43,8 @@
 
 #### 동아리 지원하기
 
-![지원하기](https://github.com/user-attachments/assets/d492d98f-7ab0-421e-8aab-e8332b4d5360
-)
+![지원하기](
+https://github.com/user-attachments/assets/f3130d1c-b5b0-479a-bace-22332e0d5e8d)
 
 - 동아리 측에서 지정한 섹션을 선택하여 섹션별로 동아리 지원서를 작성할 수 있습니다.
 - 외부 사이트로 연결할 필요 없이 띵동 내에서 동아리 지원할 수 있습니다.
@@ -109,7 +109,7 @@
 
 #### 동아리 지원자 관리
 
-![지원자](https://github.com/user-attachments/assets/58e1c2dd-ab1c-4e87-9699-3fe6bf9b1b2d)
+![지원자](https://github.com/user-attachments/assets/da371868-acfb-47bd-846b-5385ebb3bb25)
 
 - 각 동아리는 지원자 목록을 학번과 함께 한 눈에 확인할 수 있습니다.
 - 지원자 상태(평가중, 합격, 불합격)을 간편하게 처리하고 확인할 수 있습니다.
@@ -121,7 +121,7 @@
 
 #### 동아리 지원서 통계
 
-![지원서 통계](https://github.com/user-attachments/assets/27320db3-b0a2-47cf-8e63-61b43bcf56c3)
+![지원서 통계](https://github.com/user-attachments/assets/62e935fb-bbdd-4744-8f69-f278fa58fbf7)
 
 - 각 지원서의 지원자들에 대한 통계 기능을 제공합니다.
 - 지원자 학과 Top5와 최근 모집 대비 지원자 수를 확인할 수 있습니다.
@@ -130,7 +130,7 @@
 
 #### 동아리 지원서 관리
 
-![지원서](https://github.com/user-attachments/assets/23340137-ecf2-42b2-b0e1-414acb21f02a)
+![지원서](https://github.com/user-attachments/assets/a46db637-a8fe-45ab-8783-c38b2ef8b1e3)
 
 - 각 동아리는 지원서를 생성, 조회, 수정, 삭제할 수 있습니다.
 - 동아리 관리자는 이전 모집 지원서를 확인하고 간편하게 질문을 작성할 수 있습니다.
