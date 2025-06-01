@@ -67,8 +67,10 @@ class ClubRepositoryTest extends DataJpaTestSupport {
 
         assertSoftly(softly -> {
             softly.assertThat(infos.size()).isEqualTo(2);
-            softly.assertThat(infos.get(0).getName()).isEqualTo("클럽1 최신 폼지");
-            softly.assertThat(infos.get(1).getName()).isEqualTo("클럽2 최신 폼지");
+            softly.assertThat(infos.get(0).getName()).isEqualTo("이름1");
+            softly.assertThat(infos.get(1).getName()).isEqualTo("이름2");
+            softly.assertThat(infos.get(0).getStart()).isEqualTo(clubForm.getStartDate());
+            softly.assertThat(infos.get(1).getStart()).isEqualTo(club2Form.getStartDate());
         });
     }
 }
