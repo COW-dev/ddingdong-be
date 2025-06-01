@@ -37,7 +37,7 @@ class ClubRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
         Club savedClub2 = clubRepository.save(club2);
         Form clubForm = Form.builder()
-                .title("제목 1")
+                .title("클럽1 최신 폼지")
                 .startDate(LocalDate.of(2024, 12, 13))
                 .endDate(LocalDate.of(2024, 12, 20))
                 .hasInterview(false)
@@ -45,7 +45,7 @@ class ClubRepositoryTest extends DataJpaTestSupport {
                 .club(savedClub)
                 .build();
         Form clubForm2 = Form.builder()
-                .title("제목 1")
+                .title("클럽1 올드 폼지")
                 .startDate(LocalDate.of(2024, 11, 13))
                 .endDate(LocalDate.of(2024, 11, 20))
                 .hasInterview(false)
@@ -53,7 +53,7 @@ class ClubRepositoryTest extends DataJpaTestSupport {
                 .club(savedClub)
                 .build();
         Form club2Form = Form.builder()
-                .title("제목 2")
+                .title("클럽2 최신 폼지")
                 .startDate(LocalDate.of(2024, 12, 7))
                 .endDate(LocalDate.of(2024, 12, 12))
                 .hasInterview(false)
@@ -67,10 +67,8 @@ class ClubRepositoryTest extends DataJpaTestSupport {
 
         assertSoftly(softly -> {
             softly.assertThat(infos.size()).isEqualTo(2);
-            softly.assertThat(infos.get(0).getName()).isEqualTo("이름1");
-            softly.assertThat(infos.get(1).getName()).isEqualTo("이름2");
-            softly.assertThat(infos.get(0).getStart()).isEqualTo(LocalDate.of(2024, 12, 13));
-            softly.assertThat(infos.get(1).getStart()).isEqualTo(LocalDate.of(2024, 12, 7));
+            softly.assertThat(infos.get(0).getName()).isEqualTo("클럽1 최신 폼지");
+            softly.assertThat(infos.get(1).getName()).isEqualTo("클럽2 최신 폼지");
         });
     }
 }
