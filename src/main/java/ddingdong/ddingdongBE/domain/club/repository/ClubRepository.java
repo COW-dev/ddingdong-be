@@ -35,7 +35,8 @@ public interface ClubRepository extends JpaRepository<Club, Long> {
                             )
                             LIMIT 1
                     )
-                ) f ON c.id = f.club_id;
+                ) f ON c.id = f.club_id
+                WHERE deleted_at IS NULL;
             """, nativeQuery = true)
     List<UserClubListInfo> findAllClubListInfo(@Param("now") LocalDate now);
 }
