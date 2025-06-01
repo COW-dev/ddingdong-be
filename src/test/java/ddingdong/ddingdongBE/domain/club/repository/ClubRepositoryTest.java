@@ -8,7 +8,6 @@ import ddingdong.ddingdongBE.domain.club.repository.dto.UserClubListInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -30,30 +29,38 @@ class ClubRepositoryTest extends DataJpaTestSupport {
         Club club = Club.builder()
                 .user(null)
                 .name("이름1")
-                .deletedAt(LocalDateTime.now())
                 .build();
         Club club2 = Club.builder()
                 .user(null)
                 .name("이름2")
                 .build();
-        clubRepository.saveAll(List.of(club, club2));
-        Form form = Form.builder()
+        Club savedClub = clubRepository.save(club);
+        Club savedClub2 = clubRepository.save(club2);
+        Form clubForm = Form.builder()
                 .title("제목 1")
                 .startDate(LocalDate.of(2024, 12, 13))
                 .endDate(LocalDate.of(2024, 12, 20))
                 .hasInterview(false)
                 .sections(List.of())
-                .club(club)
+                .club(savedClub)
                 .build();
-        Form form2 = Form.builder()
+        Form clubForm2 = Form.builder()
+                .title("제목 1")
+                .startDate(LocalDate.of(2024, 11, 13))
+                .endDate(LocalDate.of(2024, 11, 20))
+                .hasInterview(false)
+                .sections(List.of())
+                .club(savedClub)
+                .build();
+        Form club2Form = Form.builder()
                 .title("제목 2")
                 .startDate(LocalDate.of(2024, 12, 7))
                 .endDate(LocalDate.of(2024, 12, 12))
                 .hasInterview(false)
                 .sections(List.of())
-                .club(club)
+                .club(savedClub2)
                 .build();
-        formRepository.saveAll(List.of(form, form2));
+        formRepository.saveAll(List.of(clubForm, clubForm2, club2Form));
         // when
         List<UserClubListInfo> infos = clubRepository.findAllClubListInfo(LocalDate.of(2024, 12, 30));
         // then
@@ -63,7 +70,7 @@ class ClubRepositoryTest extends DataJpaTestSupport {
             softly.assertThat(infos.get(0).getName()).isEqualTo("이름1");
             softly.assertThat(infos.get(1).getName()).isEqualTo("이름2");
             softly.assertThat(infos.get(0).getStart()).isEqualTo(LocalDate.of(2024, 12, 13));
-            softly.assertThat(infos.get(0).getEnd()).isEqualTo(LocalDate.of(2024, 12, 20));
+            softly.assertThat(infos.get(1).getStart()).isEqualTo(LocalDate.of(2024, 12, 7));
         });
     }
 }
