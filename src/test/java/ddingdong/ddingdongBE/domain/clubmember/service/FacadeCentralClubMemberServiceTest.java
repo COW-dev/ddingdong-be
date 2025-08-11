@@ -1,8 +1,12 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -152,4 +156,47 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         assertThat(updatedClubMember.getDepartment()).isEqualTo("test");
     }
 
+    @DisplayName("동아리원을 개별 삭제할 수 있다.")
+    @Test
+    void deleteClubMember() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        ClubMember clubMember = ClubMemberFixture.createClubMember(savedClub);
+        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        ClubMember found = clubMemberService.getById(savedClubMember.getId());
+
+        //when
+        facadeCentralClubMemberService.delete(savedUser.getId(), savedClubMember.getId());
+
+        //then
+        assertThat(found).isNotNull();
+        assertThatThrownBy(() -> {
+            clubMemberService.getById(savedClubMember.getId());
+        }).isInstanceOf(ResourceNotFound.class);
+    }
+
+    @DisplayName("자신의 동아리에 속해있지 않은 동아리원을 삭제한다면, 예외를 발생시킨다.")
+    @Test
+    void deleteClubMemberNotAuth() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        ClubMember clubMember = ClubMemberFixture.createClubMember(savedClub);
+        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        clubMemberService.getById(savedClubMember.getId());
+
+        User otherUser = UserFixture.createClubUser();
+        User savedOtherUser = userRepository.save(otherUser);
+        Club other = ClubFixture.createClub(savedOtherUser);
+        Club savedOther = clubRepository.save(other);
+        //when & then
+        assertThatThrownBy(() -> {
+            facadeCentralClubMemberService.delete(savedOther.getId(), savedClubMember.getId());
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
 }

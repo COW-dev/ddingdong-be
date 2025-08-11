@@ -63,6 +63,14 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
         clubMember.updateInformation(command.toEntity());
     }
 
+    @Override
+    @Transactional
+    public void delete(final Long userId, final Long clubMemberId) {
+        Club club = clubService.getByUserId(userId);
+        ClubMember clubMember = clubMemberService.getById(clubMemberId);
+        clubMember.validateBelongsToClub(club);
+        clubMemberService.delete(clubMember);
+    }
 
     private List<ClubMember> filterCreatedMembers(List<ClubMember> updatedClubMembers, Set<Long> updatedMemberIds,
                                                   Set<Long> currentMemberIds) {

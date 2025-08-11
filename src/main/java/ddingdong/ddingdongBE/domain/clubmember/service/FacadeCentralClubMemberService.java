@@ -14,4 +14,5 @@ public interface FacadeCentralClubMemberService {
 
     void update(UpdateClubMemberCommand updateClubMemberCommand);
 
+    void delete(Long userId, Long clubMemberId);
 }
