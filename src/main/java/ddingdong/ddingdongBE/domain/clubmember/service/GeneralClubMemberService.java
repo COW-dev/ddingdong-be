@@ -33,4 +33,15 @@ public class GeneralClubMemberService implements ClubMemberService {
         clubMemberRepository.deleteAllInBatch(clubMembers);
     }
 
+    @Override
+    @Transactional
+    public void delete(ClubMember clubMember) {
+        clubMemberRepository.delete(clubMember);
+    }
+
+    @Override
+    @Transactional
+    public void save(ClubMember clubMember) {
+        clubMemberRepository.save(clubMember);
+    }
 }
