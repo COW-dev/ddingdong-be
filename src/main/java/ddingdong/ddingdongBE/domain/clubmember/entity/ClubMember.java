@@ -19,6 +19,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
@@ -75,7 +76,7 @@ public class ClubMember extends BaseEntity {
         this.club = club;
     }
 
-    public void validateBelongsToClub(final Club targetClub) {
+    public void validateBelongsToClub(@NonNull final Club targetClub) {
         if (this.club == null || !Objects.equals(this.club.getId(), targetClub.getId())) {
             throw new IllegalArgumentException("동아리원은 해당 동아리에 속해 있지 않습니다");
         }
