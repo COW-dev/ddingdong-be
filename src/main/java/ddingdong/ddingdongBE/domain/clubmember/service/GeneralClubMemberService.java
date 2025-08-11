@@ -34,7 +34,12 @@ public class GeneralClubMemberService implements ClubMemberService {
     }
 
     @Override
-    public void delete(final ClubMember clubMember) {
+    public void delete(ClubMember clubMember) {
         clubMemberRepository.delete(clubMember);
+    }
+
+    @Override
+    public void save(ClubMember clubMember) {
+        clubMemberRepository.save(clubMember);
     }
 }

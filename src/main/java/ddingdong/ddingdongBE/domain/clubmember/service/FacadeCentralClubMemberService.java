@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.AllClubMemberInfoQuery;
@@ -15,4 +16,6 @@ public interface FacadeCentralClubMemberService {
     void update(UpdateClubMemberCommand updateClubMemberCommand);
 
     void delete(Long userId, Long clubMemberId);
+
+    void create(CreateClubMemberCommand command);
 }

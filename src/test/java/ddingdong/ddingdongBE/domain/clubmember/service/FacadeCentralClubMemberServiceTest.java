@@ -12,8 +12,10 @@ import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
@@ -25,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -53,6 +56,8 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
+    @Autowired
+    private ClubService clubService;
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
@@ -198,5 +203,32 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         assertThatThrownBy(() -> {
             facadeCentralClubMemberService.delete(savedOther.getId(), savedClubMember.getId());
         }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("동아리원을 개별 생성할 수 있다.")
+    @Test
+    void create() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        CreateClubMemberCommand command = CreateClubMemberCommand.builder()
+                .userId(savedUser.getId())
+                .name("김철수")
+                .studentNumber("60191234")
+                .phoneNumber("010-1234-5678")
+                .position(Position.MEMBER)
+                .department("컴퓨터공학과")
+                .build();
+        // when
+        facadeCentralClubMemberService.create(command);
+
+        // then
+        Club found = clubService.getById(savedClub.getId());
+        List<ClubMember> clubMembers = found.getClubMembers().stream()
+                .filter(clubMember -> Objects.equals(clubMember.getName(), "김철수"))
+                .toList();
+        assertThat(clubMembers).isNotEmpty();
     }
 }

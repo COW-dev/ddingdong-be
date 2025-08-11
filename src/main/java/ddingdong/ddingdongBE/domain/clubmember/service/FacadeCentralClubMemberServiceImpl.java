@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.clubmember.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.query.AllClubMemberInfoQuery;
@@ -65,11 +66,20 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
 
     @Override
     @Transactional
-    public void delete(final Long userId, final Long clubMemberId) {
+    public void delete(Long userId, Long clubMemberId) {
         Club club = clubService.getByUserId(userId);
         ClubMember clubMember = clubMemberService.getById(clubMemberId);
         clubMember.validateBelongsToClub(club);
         clubMemberService.delete(clubMember);
+    }
+
+    @Override
+    @Transactional
+    public void create(final CreateClubMemberCommand command) {
+        Club club = clubService.getByUserId(command.userId());
+        ClubMember clubMember = command.toEntity(club);
+        clubMemberService.save(clubMember);
+        club.addClubMember(clubMember);
     }
 
     private List<ClubMember> filterCreatedMembers(List<ClubMember> updatedClubMembers, Set<Long> updatedMemberIds,

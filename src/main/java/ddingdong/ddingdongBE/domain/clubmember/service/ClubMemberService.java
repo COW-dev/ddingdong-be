@@ -12,4 +12,6 @@ public interface ClubMemberService {
     void deleteAll(List<ClubMember> clubMembers);
 
     void delete(ClubMember clubMember);
+
+    void save(ClubMember clubMember);
 }
