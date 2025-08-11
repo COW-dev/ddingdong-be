@@ -1,15 +1,21 @@
 package ddingdong.ddingdongBE.domain.clubmember.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.navercorp.fixturemonkey.FixtureMonkey;
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
+import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
@@ -21,6 +27,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Objects;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
@@ -49,6 +56,8 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     private EntityManager entityManager;
 
     private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
+    @Autowired
+    private ClubService clubService;
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
@@ -152,4 +161,74 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         assertThat(updatedClubMember.getDepartment()).isEqualTo("test");
     }
 
+    @DisplayName("동아리원을 개별 삭제할 수 있다.")
+    @Test
+    void deleteClubMember() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        ClubMember clubMember = ClubMemberFixture.createClubMember(savedClub);
+        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        ClubMember found = clubMemberService.getById(savedClubMember.getId());
+
+        //when
+        facadeCentralClubMemberService.delete(savedUser.getId(), savedClubMember.getId());
+
+        //then
+        assertThat(found).isNotNull();
+        assertThatThrownBy(() -> {
+            clubMemberService.getById(savedClubMember.getId());
+        }).isInstanceOf(ResourceNotFound.class);
+    }
+
+    @DisplayName("자신의 동아리에 속해있지 않은 동아리원을 삭제한다면, 예외를 발생시킨다.")
+    @Test
+    void deleteClubMemberNotAuth() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        ClubMember clubMember = ClubMemberFixture.createClubMember(savedClub);
+        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        clubMemberService.getById(savedClubMember.getId());
+
+        User otherUser = UserFixture.createClubUser();
+        User savedOtherUser = userRepository.save(otherUser);
+        Club other = ClubFixture.createClub(savedOtherUser);
+        Club savedOther = clubRepository.save(other);
+        //when & then
+        assertThatThrownBy(() -> {
+            facadeCentralClubMemberService.delete(savedOther.getId(), savedClubMember.getId());
+        }).isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @DisplayName("동아리원을 개별 생성할 수 있다.")
+    @Test
+    void create() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        CreateClubMemberCommand command = CreateClubMemberCommand.builder()
+                .userId(savedUser.getId())
+                .name("김철수")
+                .studentNumber("60191234")
+                .phoneNumber("010-1234-5678")
+                .position(Position.MEMBER)
+                .department("컴퓨터공학과")
+                .build();
+        // when
+        facadeCentralClubMemberService.create(command);
+
+        // then
+        Club found = clubService.getById(savedClub.getId());
+        List<ClubMember> clubMembers = found.getClubMembers().stream()
+                .filter(clubMember -> Objects.equals(clubMember.getName(), "김철수"))
+                .toList();
+        assertThat(clubMembers).isNotEmpty();
+    }
 }
