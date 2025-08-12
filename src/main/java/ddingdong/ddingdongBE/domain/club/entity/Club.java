@@ -123,4 +123,9 @@ public class Club extends BaseEntity {
     public String getClubUrl() {
         return DDINDONG_SERVICE_CLUB_URL + id;
     }
+
+    public void addClubMembers(List<ClubMember> clubMembers) {
+        this.clubMembers.addAll(clubMembers);
+        clubMembers.forEach(clubMember -> clubMember.setClubForConvenience(this));
+    }
 }

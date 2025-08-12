@@ -160,12 +160,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
         List<ClubMember> finalPassedClubMembers = finalPassedFormApplications.stream()
-                .map(formApplication -> {
-                    ClubMember clubMember = ClubMember.createFromFormApplication(formApplication);
-                    club.addClubMember(clubMember);
-                    return clubMember;
-                })
+                .map(ClubMember::createFromFormApplication)
                 .toList();
+        club.addClubMembers(finalPassedClubMembers);
         clubMemberService.saveAll(finalPassedClubMembers);
     }
 

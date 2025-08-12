@@ -76,6 +76,7 @@ public class ClubMember extends BaseEntity {
                 .position(MEMBER)
                 .build();
     }
+
     public void updateInformation(ClubMember updateClubMember) {
         this.name = updateClubMember.getName();
         this.studentNumber = updateClubMember.getStudentNumber();
