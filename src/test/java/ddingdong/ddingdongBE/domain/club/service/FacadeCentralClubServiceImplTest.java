@@ -16,6 +16,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
+import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -40,6 +41,8 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
     private FileMetaDataRepository fileMetaDataRepository;
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+    @Autowired
+    private FormRepository formRepository;
 
     @DisplayName("중앙동아리: 내 동아리 정보 조회")
     @Test
@@ -120,5 +123,4 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
         Club result = clubRepository.findById(savedClub.getId()).orElseThrow();
         assertThat(result.getName()).isEqualTo("testname");
     }
-
 }

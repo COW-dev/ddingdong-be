@@ -92,8 +92,9 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void registerMembers(Long formId) {
-        facadeCentralFormService.registerApplicantAsMember(formId);
+    public void registerMembers(PrincipalDetails principalDetails, Long formId) {
+        Long userId = principalDetails.getUser().getId();
+        facadeCentralFormService.registerApplicantAsMember(userId, formId);
     }
 
     @Override

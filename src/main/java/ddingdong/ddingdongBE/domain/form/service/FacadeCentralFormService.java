@@ -28,7 +28,7 @@ public interface FacadeCentralFormService {
 
     MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId);
 
-    void registerApplicantAsMember(Long formId);
+    void registerApplicantAsMember(Long userId, Long formId);
 
     SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId);
 
