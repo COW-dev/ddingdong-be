@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.clubmember.service;
+package ddingdong.ddingdongBE.common.fixture;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;

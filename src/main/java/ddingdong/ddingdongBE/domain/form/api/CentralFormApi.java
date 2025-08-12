@@ -117,7 +117,10 @@ public interface CentralFormApi {
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/members/register-applicants")
-    void registerMembers(@PathVariable("formId") Long formId);
+    void registerMembers(
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @PathVariable("formId") Long formId
+    );
 
     @Operation(summary = "동아리 지원 결과 이메일 전송 API")
     @ApiResponse(responseCode = "201", description = "동아리 지원 결과 이메일 전송 성공")

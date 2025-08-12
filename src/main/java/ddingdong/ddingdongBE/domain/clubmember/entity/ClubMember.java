@@ -1,8 +1,11 @@
 package ddingdong.ddingdongBE.domain.clubmember.entity;
 
+import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
+
 import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -64,6 +67,15 @@ public class ClubMember extends BaseEntity {
         this.department = department;
     }
 
+    public static ClubMember createFromFormApplication(FormApplication formApplication) {
+        return ClubMember.builder()
+                .name(formApplication.getName())
+                .studentNumber(formApplication.getStudentNumber())
+                .department(formApplication.getDepartment())
+                .phoneNumber(formApplication.getPhoneNumber())
+                .position(MEMBER)
+                .build();
+    }
     public void updateInformation(ClubMember updateClubMember) {
         this.name = updateClubMember.getName();
         this.studentNumber = updateClubMember.getStudentNumber();

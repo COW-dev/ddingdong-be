@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.ClubMemberFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
