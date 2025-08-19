@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - feature/DDING-002
 jobs:
   build:
     runs-on: ubuntu-latest
