@@ -47,16 +47,46 @@ server:
       enabled: true
   port: 8080
 
+# Actuator 메트릭 설정
 management:
   endpoints:
     web:
       exposure:
-        include: info, health
+        # 최소한 필요한 엔드포인트만
+        include: info, health,metrics,prometheus
       base-path: ${ACTUATOR_BASE_PATH}
     jmx:
       exposure:
         exclude: "*"
-    prometheus:
-      enabled: true
   server:
     port: 9090
+
+  endpoint:
+    prometheus:
+      enabled: true
+
+  metrics:
+    # 필요한 메트릭만 활성화
+    enable:
+      process: true
+      hikaricp: true    # 데이터베이스 연결 풀
+      jvm: true         # JVM 메모리, GC, 스레드
+      system: true      # 시스템 메트릭 (일부)
+      web: true         # HTTP 요청 메트릭
+
+    # HTTP 응답시간 히스토그램
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      percentiles:
+        http.server.requests: 0.5, 0.9, 0.95, 0.99
+
+    # 공통 라벨
+    tags:
+      application: "띵동 운영"
+      server: "운영서버"
+
+  prometheus:
+    metrics:
+      export:
+        enabled: true
