@@ -45,7 +45,7 @@ public class CustomExceptionHandler {
 
         loggingApplicationError(connectionInfo
                 + "\n"
-                + "[SYSTEM-ERROR]" + " : " + exception.getMessage());
+                + "[SYSTEM-ERROR]" + " : " + exception.getMessage(), exception);
 
         Sentry.captureException(exception, scope -> {
             scope.setExtra("requestMethod", requestMethod);
@@ -70,7 +70,7 @@ public class CustomExceptionHandler {
 
         loggingApplicationWarn(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
+                + exception.getClass().getSimpleName() + " : " + exception.getMessage(), exception);
 
         return new ErrorResponse(BAD_REQUEST.value(), exception.getMessage(), LocalDateTime.now()
         );
@@ -83,7 +83,7 @@ public class CustomExceptionHandler {
 
         loggingApplicationWarn(connectionInfo
                 + "\n"
-                + exception.getErrorCode() + " : " + exception.getMessage());
+                + exception.getErrorCode() + " : " + exception.getMessage(), exception);
 
         return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
         );
@@ -96,7 +96,7 @@ public class CustomExceptionHandler {
 
         loggingApplicationWarn(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + exception.getMessage());
+                + exception.getClass().getSimpleName() + " : " + exception.getMessage(), exception);
 
         return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
         );
@@ -115,7 +115,7 @@ public class CustomExceptionHandler {
 
         loggingApplicationWarn(connectionInfo
                 + "\n"
-                + exception.getClass().getSimpleName() + " : " + message);
+                + exception.getClass().getSimpleName() + " : " + message, exception);
 
         return new ErrorResponse(BAD_REQUEST.value(), message, LocalDateTime.now()
         );
@@ -145,12 +145,12 @@ public class CustomExceptionHandler {
         return requestMethod + requestUrl + "?" + queryString + " from ip: " + clientIp;
     }
 
-    private void loggingApplicationWarn(String applicationLog) {
-        log.warn("errorLog = {}", applicationLog);
+    private void loggingApplicationWarn(String applicationLog, Throwable e) {
+        log.warn("errorLog = {}", applicationLog, e);
     }
 
-    private void loggingApplicationError(String applicationLog) {
-        log.error("errorLog = {}", applicationLog);
+    private void loggingApplicationError(String applicationLog, Throwable e) {
+        log.error("errorLog = {}", applicationLog, e);
     }
 
     private String getRequestBody(HttpServletRequest request) {

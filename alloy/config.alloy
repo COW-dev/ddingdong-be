@@ -1,0 +1,71 @@
+prometheus.scrape "spring_boot" {
+    targets = [
+        {
+            "__address__" = "localhost:9090",
+            "__metrics_path__" = "/server/actuator/prometheus",
+            "job" = "spring-boot",
+            "instance" = sys.env("SERVER_NAME"),
+            "environment" = sys.env("ALLOY_ENV"),
+            "server_type" = "application",
+        },
+    ]
+    scrape_interval = "15s"
+    scrape_timeout = "10s"
+    forward_to = [prometheus.remote_write.central.receiver]
+}
+
+prometheus.exporter.unix "system" {
+    filesystem {
+        mount_points_exclude = "^/(sys|proc|dev|host|etc)($|/)"
+        fs_types_exclude = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|iso9660|mqueue|nsfs|overlay|proc|procfs|pstore|rpc_pipefs|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+    }
+    enable_collectors = ["processes"]
+}
+
+prometheus.scrape "system" {
+    targets = prometheus.exporter.unix.system.targets
+    job_name = "node"
+    scrape_interval = "15s"
+    scrape_timeout = "10s"
+
+    forward_to = [prometheus.relabel.system_labels.receiver]
+}
+
+prometheus.relabel "system_labels" {
+    forward_to = [prometheus.remote_write.central.receiver]
+
+    rule {
+        target_label = "instance"
+        replacement = sys.env("SERVER_NAME")
+    }
+
+    rule {
+        target_label = "environment"
+        replacement = sys.env("ALLOY_ENV")
+    }
+
+    rule {
+        target_label = "server_type"
+        replacement = "system"
+    }
+}
+
+
+prometheus.remote_write "central" {
+    endpoint {
+        url = "http://3.39.151.102:9090/api/v1/write"
+        remote_timeout = "30s"
+        queue_config {
+            capacity = 10000
+            max_shards = 10
+            min_shards = 1
+            max_samples_per_send = 1000
+            batch_send_deadline = "5s"
+        }
+    }
+    wal {
+        truncate_frequency = "2h"
+        min_keepalive_time = "5m"
+        max_keepalive_time = "8h"
+    }
+}
