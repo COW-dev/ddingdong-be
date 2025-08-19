@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
-import static ddingdong.ddingdongBE.domain.club.entity.Position.MEMBER;
-
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
 import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
@@ -9,6 +7,7 @@ import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodExc
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
+import ddingdong.ddingdongBE.domain.clubmember.service.ClubMemberService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
@@ -62,6 +61,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final SesEmailService sesEmailService;
     private final FormAnswerService formAnswerService;
     private final FileMetaDataService fileMetaDataService;
+    private final ClubMemberService clubMemberService;
 
     @Transactional
     @Override
@@ -153,19 +153,17 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     @Transactional
-    public void registerApplicantAsMember(Long formId) {
+    public void registerApplicantAsMember(Long userId, Long formId) {
+        Club club = clubService.getByUserId(userId);
+        List<ClubMember> originClubMembers = club.getClubMembers();
+        clubMemberService.deleteAll(originClubMembers);
+
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(formId);
-        finalPassedFormApplications.forEach(formApplication -> {
-            Club club = formApplication.getForm().getClub();
-            ClubMember clubMember = ClubMember.builder()
-                    .name(formApplication.getName())
-                    .studentNumber(formApplication.getStudentNumber())
-                    .department(formApplication.getDepartment())
-                    .phoneNumber(formApplication.getPhoneNumber())
-                    .position(MEMBER)
-                    .build();
-            club.addClubMember(clubMember);
-        });
+        List<ClubMember> finalPassedClubMembers = finalPassedFormApplications.stream()
+                .map(ClubMember::createFromFormApplication)
+                .toList();
+        club.addClubMembers(finalPassedClubMembers);
+        clubMemberService.saveAll(finalPassedClubMembers);
     }
 
     @Override

@@ -1,55 +1,31 @@
 <configuration>
-    <!-- 전체 로그를 기록할 Appender (INFO 이상 모든 로그) -->
-    <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/all/logFile.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/all/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
+    <!-- 콘솔 로그 Appender -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <!-- WARN 로그를 기록할 Appender -->
-    <appender name="WARN_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/warn/logFile.log</file>
+    <!-- 통합 로그 파일 Appender (INFO 이상 모든 로그를 하나의 파일에) -->
+    <appender name="FILE_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/application.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/warn/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/application.%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
+            <totalSizeCap>500MB</totalSizeCap>
         </rollingPolicy>
         <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{35} - %msg%n</pattern>
         </encoder>
-        <!-- WARN 레벨 이상의 로그만 기록 -->
+        <!-- INFO 이상의 모든 로그 기록 -->
         <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>WARN</level>
+            <level>INFO</level>
         </filter>
     </appender>
 
-    <!-- ERROR 로그를 기록할 Appender -->
-    <appender name="ERROR_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/error/logFile.log</file>
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/error/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>30</maxHistory>
-            <totalSizeCap>100MB</totalSizeCap>
-        </rollingPolicy>
-        <encoder>
-            <pattern>%-4relative [%thread] %-5level %logger{35} - %msg%n</pattern>
-        </encoder>
-        <!-- ERROR 레벨 이상의 로그만 기록 -->
-        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-            <level>ERROR</level>
-        </filter>
-    </appender>
-
-    <!-- Root Logger 설정: INFO 이상의 모든 로그를 기록 -->
+    <!-- Root Logger 설정 -->
     <root level="INFO">
-        <appender-ref ref="ALL_LOG"/>  <!-- 전체 로그 기록 -->
-        <appender-ref ref="WARN_LOG"/> <!-- WARN 로그 기록 -->
-        <appender-ref ref="ERROR_LOG"/> <!-- ERROR 로그 기록 -->
+        <appender-ref ref="CONSOLE"/>   <!-- 콘솔 출력 -->
+        <appender-ref ref="FILE_LOG"/>  <!-- 파일 출력 -->
     </root>
 </configuration>
