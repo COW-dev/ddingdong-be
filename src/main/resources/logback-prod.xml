@@ -1,4 +1,10 @@
 <configuration>
+    <!-- 콘솔 로그 Appender 추가 -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
     <!-- 전체 로그를 기록할 Appender (INFO 이상 모든 로그) -->
     <appender name="ALL_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>logs/all/logFile.log</file>
@@ -48,6 +54,7 @@
 
     <!-- Root Logger 설정: INFO 이상의 모든 로그를 기록 -->
     <root level="INFO">
+        <appender-ref ref="CONSOLE"/>  <!-- 콘솔 로그 추가 -->
         <appender-ref ref="ALL_LOG"/>  <!-- 전체 로그 기록 -->
         <appender-ref ref="WARN_LOG"/> <!-- WARN 로그 기록 -->
         <appender-ref ref="ERROR_LOG"/> <!-- ERROR 로그 기록 -->
