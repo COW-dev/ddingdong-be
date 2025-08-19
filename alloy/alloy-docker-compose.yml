@@ -1,0 +1,12 @@
+version: '3'
+
+services:
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    network_mode: host
+    volumes:
+      - /var/app/current/alloy/config.alloy:/etc/alloy/config.alloy:ro
+    environment:
+      - ALLOY_ENV=prod
+      - SERVER_NAME=prod-server
