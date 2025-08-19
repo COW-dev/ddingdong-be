@@ -45,6 +45,7 @@ server:
   tomcat:
     mbeanregistry:
       enabled: true
+  port: 8080
 
 management:
   endpoints:
