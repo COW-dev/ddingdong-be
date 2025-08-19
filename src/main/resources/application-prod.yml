@@ -8,6 +8,10 @@ spring:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
+    hikari:
+      # HikariCP 메트릭 활성화
+      register-mbeans: true
+      pool-name: "HikariPool-Main"
 
   jpa:
     database: mysql
