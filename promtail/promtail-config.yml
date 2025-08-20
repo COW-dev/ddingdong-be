@@ -6,26 +6,10 @@ positions:
   filename: /positions.yaml
 
 scrape_configs:
-  - job_name: all
+  - job_name: application
     static_configs:
       - targets:
           - localhost
         labels:
-          job: all_logs
-          __path__: /var/logs/all/*.log
-
-  - job_name: warn
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: warn_logs
-          __path__: /var/logs/warn/*.log
-
-  - job_name: error
-    static_configs:
-      - targets:
-          - localhost
-        labels:
-          job: error_logs
-          __path__: /var/logs/error/*.log
+          job: application_logs
+          __path__: logs/application*.log
