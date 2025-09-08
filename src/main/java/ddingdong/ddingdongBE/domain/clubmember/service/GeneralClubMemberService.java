@@ -30,7 +30,7 @@ public class GeneralClubMemberService implements ClubMemberService {
     @Override
     @Transactional
     public void deleteAll(List<ClubMember> clubMembers) {
-        clubMemberRepository.deleteAllInBatch(clubMembers);
+        clubMemberRepository.deleteAll(clubMembers);
     }
 
     @Override
