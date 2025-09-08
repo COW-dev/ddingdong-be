@@ -62,8 +62,21 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
-    void updateClubMemberList() throws IOException {
-        //given
+    void updateAllClubMemberList() throws IOException {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+        
+        ClubMember member1 = ClubMember.builder().club(savedClub).name("기존멤버1").build();
+        ClubMember member2 = ClubMember.builder().club(savedClub).name("기존멤버2").build();
+        ClubMember member3 = ClubMember.builder().club(savedClub).name("기존멤버3").build();
+        
+        List<ClubMember> existingMembers = clubMemberRepository.saveAll(List.of(member1, member2, member3));
+        club.addClubMembers(existingMembers);
+        
+        // 엑셀 파일 생성 (기존 멤버 중 1, 2번만 유지하고 3번 삭제)
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();
         Sheet sheet = workbook.createSheet("Members");
@@ -75,21 +88,24 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         header.createCell(4).setCellValue("비교(임원진) - 영어만");
         header.createCell(5).setCellValue("학과(부)");
 
+        // 기존 멤버 1번만 유지
         Row row1 = sheet.createRow(1);
-        row1.createCell(0).setCellValue(1);
-        row1.createCell(1).setCellValue("5uhwann");
+        row1.createCell(0).setCellValue(existingMembers.get(0).getId());
+        row1.createCell(1).setCellValue("수정된멤버1");
         row1.createCell(2).setCellValue("60001234");
         row1.createCell(3).setCellValue("010-1234-5678");
-        row1.createCell(4).setCellValue("LEADER");
-        row1.createCell(5).setCellValue("융합소프트웨어학부");
+        row1.createCell(4).setCellValue("MEMBER");
+        row1.createCell(5).setCellValue("컴퓨터공학과");
 
+        // 기존 멤버 2번만 유지
         Row row2 = sheet.createRow(2);
-        row2.createCell(0).setCellValue(6);
-        row2.createCell(1).setCellValue("5uhwann");
-        row2.createCell(2).setCellValue(60001234);
-        row2.createCell(3).setCellValue("010-1234-5678");
-        row2.createCell(4).setCellValue("LEADER");
-        row2.createCell(5).setCellValue("융합소프트웨어학부");
+        row2.createCell(0).setCellValue(existingMembers.get(1).getId());
+        row2.createCell(1).setCellValue("수정된멤버2");
+        row2.createCell(2).setCellValue("60002345");
+        row2.createCell(3).setCellValue("010-2345-6789");
+        row2.createCell(4).setCellValue("MEMBER");
+        row2.createCell(5).setCellValue("컴퓨터공학과");
+        
         workbook.write(out);
         workbook.close();
 
@@ -101,37 +117,25 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
                 in
         );
 
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
-        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
-                .set("user", savedUser)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", List.of())
-                .set("deletedAt", null)
-                .sample());
-        List<ClubMember> clubMembers = fixtureMonkey.giveMeBuilder(ClubMember.class)
-                .set("club", savedClub)
-                .set("deletedAt", null)
-                .sampleList(5);
-        clubMemberRepository.saveAll(clubMembers);
-        entityManager.flush();
-        entityManager.clear();
-
         UpdateClubMemberListCommand command = UpdateClubMemberListCommand.builder()
                 .userId(savedUser.getId())
                 .clubMemberListFile(validExcelFile)
                 .build();
 
-        //when
+        // when
         facadeCentralClubMemberService.updateMemberList(command);
 
-        //then
-        List<ClubMember> updatedClubMemberList = clubMemberRepository.findAll();
-        assertThat(updatedClubMemberList.size()).isEqualTo(2);
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findAll();
+        assertThat(remainingMembers).hasSize(2); // member3는 soft delete됨
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactlyInAnyOrder("수정된멤버1", "수정된멤버2");
     }
 
     @DisplayName("동아리원 정보를 수정한다.")
     @Test
-    void update() {
+    void updateAll() {
         //given
         User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)

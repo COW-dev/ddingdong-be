@@ -14,4 +14,8 @@ public interface ClubMemberService {
     void delete(ClubMember clubMember);
 
     void save(ClubMember clubMember);
+
+    void updateAll(List<ClubMember> updateClubMemberInfos);
+
+    List<ClubMember> getByClubId(Long clubId);
 }
