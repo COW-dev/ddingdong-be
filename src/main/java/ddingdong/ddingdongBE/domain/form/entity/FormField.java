@@ -12,15 +12,20 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
 import java.util.List;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@SQLDelete(sql = "update form_field set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLRestriction("deleted_at IS NULL")
 public class FormField extends BaseEntity {
 
     @Id
@@ -48,6 +53,9 @@ public class FormField extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
+
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
     @Builder
     private FormField(
