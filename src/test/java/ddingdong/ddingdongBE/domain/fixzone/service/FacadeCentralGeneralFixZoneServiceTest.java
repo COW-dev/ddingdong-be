@@ -54,9 +54,12 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     @Test
     void create() {
         //given
-        User user = fixture.giveMeOne(User.class);
+        User user = fixture.giveMeBuilder(User.class)
+                .set("id", null)
+                .sample();
         User savedUser = userRepository.save(user);
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", savedUser)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -102,9 +105,12 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     @Test
     void getMyFixZones() {
         //given
-        User user = fixture.giveMeOne(User.class);
+        User user = fixture.giveMeBuilder(User.class)
+                .set("id", null)
+                .sample();
         User savedUser = userRepository.save(user);
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", savedUser)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -112,6 +118,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                 .sample();
         Club savedClub = clubRepository.save(club);
         List<FixZone> fixZones = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -131,6 +138,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     void getFixZone() {
         //given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", null)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -139,6 +147,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                 .sample();
         Club savedClub = clubRepository.save(club);
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -148,7 +157,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
         UUID fileId2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
-                        .set("id", fileId1)
+                        .set("id", UUID.randomUUID())
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
                         .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
@@ -156,7 +165,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                         .set("fileStatus", FileStatus.COUPLED)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
-                        .set("id", fileId2)
+                        .set("id", UUID.randomUUID())
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
                         .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
@@ -180,6 +189,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     void getFixZoneWithNoneImage() {
         //given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", null)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -188,6 +198,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                 .sample();
         Club savedClub = clubRepository.save(club);
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -206,6 +217,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     void update() {
         //given
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -232,6 +244,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
     void delete() {
         //given
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -241,7 +254,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
         UUID fileId2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
                 fixture.giveMeBuilder(FileMetaData.class)
-                        .set("id", fileId1)
+                        .set("id", UUID.randomUUID())
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId1)
                         .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())
@@ -249,7 +262,7 @@ class FacadeCentralGeneralFixZoneServiceTest extends TestContainerSupport {
                         .set("fileStatus", FileStatus.COUPLED)
                         .sample(),
                 fixture.giveMeBuilder(FileMetaData.class)
-                        .set("id", fileId2)
+                        .set("id", UUID.randomUUID())
                         .set("fileKey", "test/IMAGE/2024-01-01/" + fileId2)
                         .set("domainType", DomainType.FIX_ZONE_IMAGE)
                         .set("entityId", savedFixZone.getId())

@@ -36,12 +36,14 @@ class FacadeAdminGeneralFixZoneServiceTest extends TestContainerSupport {
     void findAll() {
         //given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", null)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .sample();
         Club savedClub = clubRepository.save(club);
         List<FixZone> fixZones = fixture.giveMeBuilder(FixZone.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("deletedAt", null)
                 .sampleList(5);
@@ -59,6 +61,7 @@ class FacadeAdminGeneralFixZoneServiceTest extends TestContainerSupport {
     void updateToComplete() {
         //given
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)
@@ -78,6 +81,7 @@ class FacadeAdminGeneralFixZoneServiceTest extends TestContainerSupport {
     void delete() {
         //given
         FixZone fixZone = fixture.giveMeBuilder(FixZone.class)
+                .set("id", null)
                 .set("club", null)
                 .set("isCompleted", false)
                 .set("deletedAt", null)

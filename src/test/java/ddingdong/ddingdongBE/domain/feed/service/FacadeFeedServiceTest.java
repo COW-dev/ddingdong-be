@@ -66,52 +66,52 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     void getFeedById() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
-            .set("id", 1L)
-            .set("name", "카우")
-            .set("user", null)
-            .set("score", Score.from(BigDecimal.ZERO))
-            .set("clubMembers", null)
-            .set("deletedAt", null)
-            .sample();
+                .setNull("id")
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
         Club savedClub = clubRepository.save(club);
         DomainType clubDomainType = DomainType.CLUB_PROFILE;
         Long clubEntityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.save(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", clubDomainType)
-                .set("entityId", clubEntityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", clubDomainType)
+                        .set("entityId", clubEntityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         );
 
         LocalDateTime now = LocalDateTime.now();
         Feed feed = fixture.giveMeBuilder(Feed.class)
-            .set("id", 1L)
-            .set("club", savedClub)
-            .set("activityContent", "카우 활동내역")
-            .set("feedType", FeedType.IMAGE)
-            .set("createdAt", now)
-            .sample();
+                .setNull("id")
+                .set("club", savedClub)
+                .set("activityContent", "카우 활동내역")
+                .set("feedType", FeedType.IMAGE)
+                .set("createdAt", now)
+                .sample();
         Feed savedFeed = feedRepository.save(feed);
 
         DomainType domainType = DomainType.FEED_IMAGE;
         Long entityId = 1L;
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.save(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id2)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         );
 
         BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
-            .willReturn(new UploadedFileUrlQuery(null, null, null));
+                .willReturn(new UploadedFileUrlQuery(null, null, null));
         BDDMockito.given(s3FileService.getUploadedVideoUrl(any()))
-            .willReturn(new UploadedVideoUrlQuery(null, null, null,null));
+                .willReturn(new UploadedVideoUrlQuery(null, null, null, null));
 
         // when
         FeedQuery info = facadeFeedService.getById(savedFeed.getId());
