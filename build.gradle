@@ -50,9 +50,8 @@ dependencies {
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
 
     //etc(기타)
-    implementation "io.awspring.cloud:spring-cloud-aws-starter:3.4.0"
-    implementation 'software.amazon.awssdk:s3:2.21.29'
-    implementation 'software.amazon.awssdk:url-connection-client:2.21.29'
+    implementation 'software.amazon.awssdk:s3:2.30.16'
+    implementation 'software.amazon.awssdk:url-connection-client:2.30.16'
     implementation 'org.apache.poi:poi:5.2.0'
     implementation 'org.apache.poi:poi-ooxml:5.2.0'
     implementation 'io.sentry:sentry-logback:7.6.0'

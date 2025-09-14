@@ -31,7 +31,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class FacadeFeedServiceTest extends TestContainerSupport {
@@ -48,7 +48,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
 
-    @MockBean
+    @MockitoBean
     private S3FileService s3FileService;
 
     private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
