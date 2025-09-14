@@ -79,15 +79,19 @@ management:
       process: true
       hikaricp: true    # 데이터베이스 연결 풀
       jvm: true         # JVM 메모리, GC, 스레드
-      system: true      # 시스템 메트릭 (일부)
       web: true         # HTTP 요청 메트릭
+      system: false      # 시스템 메트릭 (일부)
+      logback: false
+      spring : false
+      cache: false
+
 
     # HTTP 응답시간 히스토그램
     distribution:
       percentiles-histogram:
-        http.server.requests: true
+        http.server.requests: false
       percentiles:
-        http.server.requests: 0.5, 0.9, 0.95, 0.99
+        http.server.requests: 0.5, 0.95, 0.99
 
     # 공통 라벨
     tags:
