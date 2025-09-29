@@ -53,6 +53,10 @@ server:
 
 # Actuator 메트릭 설정
 management:
+  observations:
+    enable:
+      spring:
+        security: false
   endpoints:
     web:
       exposure:
@@ -77,6 +81,9 @@ management:
       jvm: true         # JVM 메모리, GC, 스레드
       system: true      # 시스템 메트릭 (일부)
       web: true         # HTTP 요청 메트릭
+      spring:
+        security:
+          filter chains: false
 
     # HTTP 응답시간 히스토그램
     distribution:
