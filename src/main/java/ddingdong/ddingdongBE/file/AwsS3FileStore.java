@@ -1,8 +1,9 @@
 package ddingdong.ddingdongBE.file;
 
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.ObjectMetadata;
-import com.amazonaws.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.core.sync.RequestBody;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import software.amazon.awssdk.services.s3.model.DeleteObjectRequest;
 
 import ddingdong.ddingdongBE.file.service.dto.UploadFileDto;
 
@@ -24,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class AwsS3FileStore implements FileStore {
 
-	private final AmazonS3Client amazonS3Client;
+	private final S3Client s3Client;
 
 	@Value("${cloud.aws.region.static}")
 	private String region;
@@ -40,13 +41,15 @@ public class AwsS3FileStore implements FileStore {
 			String storeFileName = createStoreFileName(uploadFileName);
 			String keyName = fileType + filePath + storeFileName;
 
-			ObjectMetadata objectMetadata = new ObjectMetadata();
-			objectMetadata.setContentLength(file.getSize());
-			objectMetadata.setContentType(file.getContentType());
-
 			try {
-				amazonS3Client.putObject(
-					new PutObjectRequest(bucketName, keyName, file.getInputStream(), objectMetadata));
+				PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+						.bucket(bucketName)
+						.key(keyName)
+						.contentType(file.getContentType())
+						.contentLength(file.getSize())
+						.build();
+				
+				s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 			} catch (IOException e) {
 				throw new RuntimeException("파일 업로드 실패");
 			}
@@ -67,15 +70,19 @@ public class AwsS3FileStore implements FileStore {
 			String storeFileName = createStoreFileName(uploadFileName);
 			String keyName = fileType + filePath + storeFileName;
 
-			ObjectMetadata objectMetadata = new ObjectMetadata();
-			objectMetadata.setContentLength(file.getSize());
-			objectMetadata.setContentType(file.getContentType());
-			assert uploadFileName != null;
-			objectMetadata.setContentDisposition("attachment; filename=" + "\"" + URLEncoder.encode(uploadFileName,
-				StandardCharsets.UTF_8) + "\"");
 			try {
-				amazonS3Client.putObject(
-					new PutObjectRequest(bucketName, keyName, file.getInputStream(), objectMetadata));
+				assert uploadFileName != null;
+				String contentDisposition = "attachment; filename=" + "\"" + URLEncoder.encode(uploadFileName, StandardCharsets.UTF_8) + "\"";
+				
+				PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+						.bucket(bucketName)
+						.key(keyName)
+						.contentType(file.getContentType())
+						.contentLength(file.getSize())
+						.contentDisposition(contentDisposition)
+						.build();
+				
+				s3Client.putObject(putObjectRequest, RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
 			} catch (IOException e) {
 				throw new RuntimeException("파일 업로드 실패");
 			}
@@ -90,7 +97,11 @@ public class AwsS3FileStore implements FileStore {
 	@Override
 	public void deleteFile(String fileType, String filePath, String uploadFileName) {
 		String keyName = fileType + filePath + uploadFileName;
-		amazonS3Client.deleteObject(bucketName, keyName);
+		DeleteObjectRequest deleteObjectRequest = DeleteObjectRequest.builder()
+				.bucket(bucketName)
+				.key(keyName)
+				.build();
+		s3Client.deleteObject(deleteObjectRequest);
 	}
 
 	@Override

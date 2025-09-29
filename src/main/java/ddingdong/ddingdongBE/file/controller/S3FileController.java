@@ -28,7 +28,7 @@ public class S3FileController implements S3FileAPi {
         GeneratePreSignedUrlRequestQuery query =
                 s3FileService.generatePresignedUrlRequest(
                         new GeneratePreSignedUrlRequestCommand(now, user.getId(), decodedFileName));
-        URL presingedUrl = s3FileService.getPresignedUrl(query.generatePresignedUrlRequest());
+        URL presingedUrl = s3FileService.getPresignedUrl(query.putObjectRequest());
         return UploadUrlResponse.of(query, presingedUrl);
     }
 
@@ -39,7 +39,7 @@ public class S3FileController implements S3FileAPi {
         GeneratePreSignedUrlRequestQuery query =
                 s3FileService.generateDownloadPresignedUrlRequest(
                         new GeneratePreSignedUrlRequestCommand(now, 9999L, decodedFileName));
-        URL presingedUrl = s3FileService.getPresignedUrl(query.generatePresignedUrlRequest());
+        URL presingedUrl = s3FileService.getPresignedUrl(query.putObjectRequest());
         return UploadUrlResponse.of(query, presingedUrl);
     }
 }

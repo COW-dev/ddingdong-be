@@ -34,8 +34,9 @@ class FacadeUserBannerServiceImplTest extends TestContainerSupport {
     @Test
     void findAll() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         List<Banner> banners = fixtureMonkey.giveMeBuilder(Banner.class)
+                .set("id", null)
                 .set("user", savedUser)
                 .sampleList(5);
         bannerRepository.saveAll(banners);

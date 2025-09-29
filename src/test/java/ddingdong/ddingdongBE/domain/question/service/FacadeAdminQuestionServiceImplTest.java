@@ -48,6 +48,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
     void getAllQuestions() {
         //given
         List<Question> questions = fixtureMonkey.giveMeBuilder(Question.class)
+                .setNull("id")
                 .setNull("user")
                 .setNotNull("question")
                 .setNotNull("reply")
@@ -67,6 +68,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
     void updateQuestion() {
         // Given
         Question beforeQuestion = fixtureMonkey.giveMeBuilder(Question.class)
+                .setNull("id")
                 .setNull("user")
                 .setNotNull("question")
                 .setNotNull("reply")
@@ -91,6 +93,7 @@ class FacadeAdminQuestionServiceImplTest extends TestContainerSupport {
     void deleteQuestion() {
         // Given
         Question question = fixtureMonkey.giveMeBuilder(Question.class)
+                .setNull("id")
                 .setNull("user")
                 .setNotNull("question")
                 .setNotNull("reply")

@@ -50,13 +50,11 @@ class FacadeUserFormServiceImplTest extends TestContainerSupport {
   @BeforeEach
   void setUp() {
     User user = User.builder()
-            .id(1L)
             .role(Role.CLUB)
             .build();
     savedUser = userRepository.save(user);
 
     Club club = Club.builder()
-            .id(1L)
             .user(savedUser)
             .score(null)
             .clubMembers(null)

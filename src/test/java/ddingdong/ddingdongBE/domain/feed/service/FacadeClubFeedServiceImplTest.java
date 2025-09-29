@@ -55,9 +55,9 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
     @Test
     void create() {
         // given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
-            .set("id", 1L)
+            .setNull("id")
             .set("user", savedUser)
             .set("score", Score.from(BigDecimal.ZERO))
             .set("phoneNumber", PhoneNumber.from("010-1234-5678"))
@@ -97,6 +97,7 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
         // given
         Feed savedFeed = feedRepository.save(
             fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("activityContent", "기존 활동내용")
                 .set("feedType", FeedType.VIDEO)
                 .set("club", null)
@@ -124,6 +125,7 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
 
         Feed savedFeed = feedRepository.save(
             fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("feedType", FeedType.IMAGE)
                 .set("activityContent", "활동내용")
                 .set("club", null)
@@ -158,6 +160,7 @@ class FacadeClubFeedServiceImplTest extends TestContainerSupport {
 
         Feed savedFeed = feedRepository.save(
             fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("feedType", FeedType.VIDEO)
                 .set("activityContent", "활동내용")
                 .set("club", null)

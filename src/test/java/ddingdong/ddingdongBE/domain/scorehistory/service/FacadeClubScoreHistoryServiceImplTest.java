@@ -37,9 +37,12 @@ class FacadeClubScoreHistoryServiceImplTest extends TestContainerSupport {
     @DisplayName("동아리: ScoreHistory 리스트 조회")
     void getAllQuestions() {
         //given
-        User user = fixtureMonkey.giveMeOne(User.class);
+        User user = fixtureMonkey.giveMeBuilder(User.class)
+                .set("id", null)
+                .sample();
         User savedUser = userRepository.save(user);
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
@@ -47,6 +50,7 @@ class FacadeClubScoreHistoryServiceImplTest extends TestContainerSupport {
                 .sample();
         Club savedClub = clubRepository.save(club);
         List<ScoreHistory> questions = fixtureMonkey.giveMeBuilder(ScoreHistory.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("amount", BigDecimal.ONE)
                 .sampleList(5);

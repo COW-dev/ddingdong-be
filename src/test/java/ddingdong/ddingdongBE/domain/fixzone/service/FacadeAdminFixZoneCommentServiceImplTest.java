@@ -46,14 +46,16 @@ class FacadeAdminFixZoneCommentServiceImplTest extends TestContainerSupport {
 
     @BeforeEach
     void setUp() {
-        savedUser = userRepository.save(fixture.giveMeOne(User.class));
+        savedUser = userRepository.save(fixture.giveMeBuilder(User.class).set("id", null).sample());
         savedClub = clubRepository.save(fixture.giveMeBuilder(Club.class)
+                .setNull("id")
                 .set("user", savedUser)
                 .set("clubMembers", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("deletedAt", null)
                 .sample());
         savedFixZone = fixZoneRepository.save(fixture.giveMeBuilder(FixZone.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("deletedAt", null)
                 .sample());
@@ -78,6 +80,7 @@ class FacadeAdminFixZoneCommentServiceImplTest extends TestContainerSupport {
     void update() {
         //given
         FixZoneComment fixZoneComment = fixture.giveMeBuilder(FixZoneComment.class)
+                .setNull("id")
                 .set("fixZone", savedFixZone)
                 .set("club", savedClub)
                 .set("deletedAt", null)
@@ -99,6 +102,7 @@ class FacadeAdminFixZoneCommentServiceImplTest extends TestContainerSupport {
     void delete() {
         //given
         FixZoneComment fixZoneComment = fixture.giveMeBuilder(FixZoneComment.class)
+                .set("id", null)
                 .set("fixZone", savedFixZone)
                 .set("club", savedClub)
                 .set("deletedAt", null)
