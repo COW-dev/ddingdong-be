@@ -55,15 +55,18 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         //given
         DomainType domainType = DomainType.CLUB_PROFILE;
         Long entityId = 1L;
-        fileMetaDataRepository.saveAll(fixture.giveMeBuilder(FileMetaData.class)
-            .set("domainType", domainType)
-            .set("entityId", entityId)
-            .set("fileStatus", FileStatus.COUPLED)
-            .sampleList(3));
+        fileMetaDataRepository.saveAll(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .setLazy("id", UUID::randomUUID)  // 생성 시마다 새로운 UUID
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sampleList(3)
+        );
 
         //when
         List<FileMetaData> result =
-            fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
+                fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, entityId);
 
         //then
         assertThat(result).hasSize(3);
@@ -78,18 +81,18 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", null)
-                .set("entityId", null)
-                .set("fileStatus", FileStatus.PENDING)
-                .sample(),
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id2)
-                .set("domainType", null)
-                .set("entityId", null)
-                .set("fileStatus", FileStatus.PENDING)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", null)
+                        .set("entityId", null)
+                        .set("fileStatus", FileStatus.PENDING)
+                        .sample(),
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", null)
+                        .set("entityId", null)
+                        .set("fileStatus", FileStatus.PENDING)
+                        .sample()
         ));
 
         //when
@@ -98,10 +101,10 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         em.clear();
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
-            domainType, entityId, FileStatus.COUPLED);
+                domainType, entityId, FileStatus.COUPLED);
         assertThat(result).hasSize(2)
-            .extracting("fileStatus")
-            .contains(FileStatus.COUPLED);
+                .extracting("fileStatus")
+                .contains(FileStatus.COUPLED);
     }
 
     @DisplayName("FileMetaData 수정 - COUPLED & DELETED id를 일부 수정할 경우")
@@ -114,37 +117,37 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
         UUID id3 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample(),
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id2)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample(),
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         ));
         FileMetaData fileMetaData = fixture.giveMeBuilder(FileMetaData.class)
-            .set("id", id3)
-            .set("domainType", domainType)
-            .set("entityId", entityId)
-            .set("fileStatus", FileStatus.PENDING)
-            .sample();
+                .set("id", id3)
+                .set("domainType", domainType)
+                .set("entityId", entityId)
+                .set("fileStatus", FileStatus.PENDING)
+                .sample();
         fileMetaDataRepository.save(fileMetaData);
         //when
         fileMetaDataService.update(List.of(id1.toString(), id3.toString()), domainType, entityId);
         em.flush();
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
-            domainType, entityId, FileStatus.COUPLED);
+                domainType, entityId, FileStatus.COUPLED);
 
         Optional<FileMetaData> deletedFileMetaData = fileMetaDataRepository.findById(id2);
         assertThat(result).hasSize(2)
-            .extracting("id", "fileStatus")
-            .contains(tuple(id1, FileStatus.COUPLED), tuple(id3, FileStatus.COUPLED));
+                .extracting("id", "fileStatus")
+                .contains(tuple(id1, FileStatus.COUPLED), tuple(id3, FileStatus.COUPLED));
         assertThat(deletedFileMetaData).isPresent();
         assertThat(deletedFileMetaData.get().getFileStatus()).isEqualTo(FileStatus.DELETED);
     }
@@ -157,12 +160,12 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.save(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         );
 
         //when
@@ -170,11 +173,11 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
 
         //then
         List<FileMetaData> result = fileMetaDataRepository.findAllByDomainTypeAndEntityIdWithFileStatus(
-            domainType, entityId, FileStatus.COUPLED);
+                domainType, entityId, FileStatus.COUPLED);
 
         assertThat(result).hasSize(1)
-            .extracting("id", "fileStatus")
-            .contains(tuple(id1, FileStatus.COUPLED));
+                .extracting("id", "fileStatus")
+                .contains(tuple(id1, FileStatus.COUPLED));
     }
 
 
@@ -187,18 +190,18 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         UUID id2 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.saveAll(List.of(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample(),
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id2)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample(),
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         ));
 
         //when
@@ -218,12 +221,12 @@ class FileMetaDataServiceImplTest extends TestContainerSupport {
         Long entityId = 1L;
         UUID id1 = UuidCreator.getTimeOrderedEpoch();
         fileMetaDataRepository.save(
-            fixture.giveMeBuilder(FileMetaData.class)
-                .set("id", id1)
-                .set("domainType", domainType)
-                .set("entityId", entityId)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample()
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", domainType)
+                        .set("entityId", entityId)
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
         );
         // when
         FileMetaData fileMetaData = fileMetaDataService.getById(id1.toString());

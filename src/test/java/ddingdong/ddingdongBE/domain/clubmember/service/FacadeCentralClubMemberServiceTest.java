@@ -137,14 +137,15 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     @Test
     void updateAll() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
+                .setNull("id")
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
                 .sample());
         ClubMember savedClubMember = clubMemberRepository.save(
-                fixtureMonkey.giveMeBuilder(ClubMember.class).set("club", savedClub).sample());
+                fixtureMonkey.giveMeBuilder(ClubMember.class).setNull("id").set("club", savedClub).sample());
 
         UpdateClubMemberCommand command = UpdateClubMemberCommand.builder()
                 .clubMemberId(savedClubMember.getId())

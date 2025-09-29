@@ -58,7 +58,7 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         String link = "testLink";
         UUID webImageId = UuidCreator.getTimeOrderedEpoch();
         UUID mobileImageId = UuidCreator.getTimeOrderedEpoch();
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         CreateBannerCommand command = new CreateBannerCommand(
                 savedUser,
                 link,
@@ -108,39 +108,43 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     @Test
     void findAll() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         bannerRepository.saveAll(List.of(
                 fixtureMonkey.giveMeBuilder(Banner.class)
-                        .set("id", 1L)
+                        .setNull("id")
                         .set("user", savedUser)
                         .set("deletedAt", null)
                         .sample(),
                 fixtureMonkey.giveMeBuilder(Banner.class)
-                        .set("id", 2L)
+                        .setNull("id")
                         .set("user", savedUser)
                         .set("deletedAt", null)
                         .sample()
         ));
 
         FileMetaData fileMetaData1 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", UUID.randomUUID())
                 .set("entityId", 1L)
                 .set("fileKey", "/test/FILE/2024-01-01/cow/test")
                 .set("domainType", DomainType.BANNER_WEB_IMAGE)
                 .set("fileStatus", FileStatus.COUPLED)
                 .sample();
         FileMetaData fileMetaData2 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", UUID.randomUUID())
                 .set("entityId", 1L)
                 .set("fileKey", "/test/FILE/2024-01-01/cow/test")
                 .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
                 .set("fileStatus", FileStatus.COUPLED)
                 .sample();
         FileMetaData fileMetaData3 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", UUID.randomUUID())
                 .set("entityId", 2L)
                 .set("fileKey", "/test/FILE/2024-01-01/cow/test")
                 .set("domainType", DomainType.BANNER_WEB_IMAGE)
                 .set("fileStatus", FileStatus.COUPLED)
                 .sample();
         FileMetaData fileMetaData4 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
+                .set("id", UUID.randomUUID())
                 .set("entityId", 2L)
                 .set("fileKey", "/test/FILE/2024-01-01/cow/test")
                 .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
@@ -181,8 +185,9 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     @Test
     void delete() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
         Banner banner = fixtureMonkey.giveMeBuilder(Banner.class)
+                .setNull("id")
                 .set("user", savedUser)
                 .set("deletedAt", null)
                 .sample();

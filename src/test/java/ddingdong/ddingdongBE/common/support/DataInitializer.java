@@ -20,8 +20,10 @@ public class DataInitializer {
   private static final String OFF_FOREIGN_CONSTRAINTS = "SET foreign_key_checks = false";
   private static final String ON_FOREIGN_CONSTRAINTS = "SET foreign_key_checks = true";
   private static final String TRUNCATE_SQL_FORMAT = "TRUNCATE %s";
+  private static final String RESET_AUTO_INCREMENT_FORMAT = "ALTER TABLE %s AUTO_INCREMENT = 1";
 
   private static final List<String> truncationDMLs = new ArrayList<>();
+  private static final List<String> autoIncrementResetDMLs = new ArrayList<>();
 
   @PersistenceContext
   private EntityManager em;
@@ -36,6 +38,9 @@ public class DataInitializer {
     truncationDMLs.stream()
         .map(em::createNativeQuery)
         .forEach(Query::executeUpdate);
+    autoIncrementResetDMLs.stream()
+        .map(em::createNativeQuery)
+        .forEach(Query::executeUpdate);
     em.createNativeQuery(ON_FOREIGN_CONSTRAINTS).executeUpdate();
   }
 
@@ -45,5 +50,9 @@ public class DataInitializer {
     tableNames.stream()
         .map(tableName -> String.format(TRUNCATE_SQL_FORMAT, tableName))
         .forEach(truncationDMLs::add);
+    
+    tableNames.stream()
+        .map(tableName -> String.format(RESET_AUTO_INCREMENT_FORMAT, tableName))
+        .forEach(autoIncrementResetDMLs::add);
   }
 }
