@@ -1,10 +1,10 @@
 package ddingdong.ddingdongBE.file.service.dto.query;
 
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.util.UUID;
 
 public record GeneratePreSignedUrlRequestQuery(
-        GeneratePresignedUrlRequest generatePresignedUrlRequest,
+        PutObjectRequest putObjectRequest,
         UUID id,
         String contentType
 ) {

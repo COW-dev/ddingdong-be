@@ -38,6 +38,7 @@ class FacadeAdminScoreHistoryServiceImplTest extends TestContainerSupport {
         //given
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
                 .setNull("user")
+                .set("id", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
                 .set("deletedAt", null)
@@ -67,13 +68,15 @@ class FacadeAdminScoreHistoryServiceImplTest extends TestContainerSupport {
         //given
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
                 .setNull("user")
+                .set("id", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
                 .set("deletedAt", null)
                 .sample();
         Club savedClub = clubRepository.save(club);
         List<ScoreHistory> questions = fixtureMonkey.giveMeBuilder(ScoreHistory.class)
-                .set("club", savedClub)
+                .set("club", clubRepository.findById(savedClub.getId()).orElseThrow())
+                .set("id", null)
                 .set("amount", BigDecimal.ONE)
                 .sampleList(5);
         scoreHistoryRepository.saveAll(questions);

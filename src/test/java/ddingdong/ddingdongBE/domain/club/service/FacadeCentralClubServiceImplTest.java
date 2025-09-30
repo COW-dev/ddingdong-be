@@ -48,9 +48,9 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
     @Test
     void getMyClubInfo() {
         //given
-        User savedUser = userRepository.save(fixture.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixture.giveMeBuilder(User.class).set("id", null).sample());
         Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("phoneNumber", PhoneNumber.from("010-1234-5678"))
@@ -88,9 +88,9 @@ class FacadeCentralClubServiceImplTest extends TestContainerSupport {
     @Test
     void updateClubInfo() {
         //given
-        User savedUser = userRepository.save(fixture.giveMeOne(User.class));
+        User savedUser = userRepository.save(fixture.giveMeBuilder(User.class).set("id", null).sample());
         Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("user", savedUser)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("phoneNumber", PhoneNumber.from("010-1234-5678"))

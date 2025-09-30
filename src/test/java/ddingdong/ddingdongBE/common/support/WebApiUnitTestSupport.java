@@ -14,8 +14,8 @@ import ddingdong.ddingdongBE.file.service.FileService;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -31,15 +31,15 @@ public abstract class WebApiUnitTestSupport {
   private WebApplicationContext context;
   @Autowired
   protected MockMvc mockMvc;
-  @MockBean
+  @MockitoBean
   protected FacadeDocumentServiceImpl facadeDocumentServiceImpl;
-  @MockBean
+  @MockitoBean
   protected FacadeAdminDocumentServiceImpl facadeAdminDocumentServiceImpl;
-  @MockBean
+  @MockitoBean
   protected FileService fileService;
-  @MockBean
+  @MockitoBean
   protected FileInformationService fileInformationService;
-  @MockBean
+  @MockitoBean
   protected ClubService clubService;
 
   @Autowired

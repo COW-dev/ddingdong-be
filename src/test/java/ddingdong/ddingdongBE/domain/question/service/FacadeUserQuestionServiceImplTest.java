@@ -29,6 +29,7 @@ class FacadeUserQuestionServiceImplTest extends TestContainerSupport {
     void getAllQuestions() {
         //given
         List<Question> questions = fixtureMonkey.giveMeBuilder(Question.class)
+                .setNull("id")
                 .setNull("user")
                 .setNotNull("question")
                 .setNotNull("reply")

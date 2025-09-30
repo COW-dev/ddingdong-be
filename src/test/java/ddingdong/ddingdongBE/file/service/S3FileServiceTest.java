@@ -49,13 +49,13 @@ class S3FileServiceTest extends TestContainerSupport {
         Optional<FileMetaData> createdFileMetaData =
             fileMetaDataRepository.findById(fileId);
 
-        assertThat(query.generatePresignedUrlRequest())
+        assertThat(query.putObjectRequest())
             .satisfies(request -> {
-                assertThat(request.getContentType())
+                assertThat(request.contentType())
                     .as("Content type should be image/jpeg")
                     .isEqualTo("image/jpeg");
 
-                assertThat(request.getKey())
+                assertThat(request.key())
                     .as("Key should contain correct date, userId, and fileId")
                     .contains(String.format("%s/%d-%d-%d/%s/",
                         "IMAGE", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))
@@ -66,7 +66,7 @@ class S3FileServiceTest extends TestContainerSupport {
         assertThat(createdFileMetaData).isPresent();
         assertThat(createdFileMetaData.get())
             .extracting("fileKey", "fileName", "fileStatus")
-            .containsExactly(query.generatePresignedUrlRequest().getKey(), fileName, PENDING);
+            .containsExactly(query.putObjectRequest().key(), fileName, PENDING);
     }
 
     @DisplayName("GeneratePreSignedUrlRequest(VIDEO)를 생성한다.")
@@ -85,12 +85,12 @@ class S3FileServiceTest extends TestContainerSupport {
         //then
         UUID id = query.id();
 
-        assertThat(query.generatePresignedUrlRequest())
+        assertThat(query.putObjectRequest())
             .satisfies(request -> {
-                assertThat(request.getContentType())
+                assertThat(request.contentType())
                     .as("Content type should match the video's MIME type")
                     .isEqualTo(expectedContentType(fileName));
-                assertThat(request.getKey())
+                assertThat(request.key())
                     .as("Key should contain correct date, userId, and fileId")
                     .contains(String.format("%s/%d-%d-%d/%s/",
                         "VIDEO", now.getYear(), now.getMonthValue(), now.getDayOfMonth(), userId))

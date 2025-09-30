@@ -38,6 +38,7 @@ class GeneralFeedServiceTest extends TestContainerSupport {
     void create() {
         // given
         Feed feed = fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("activityContent", "활동내용")
                 .set("feedType", FeedType.IMAGE)
                 .set("deletedAt", null)
@@ -57,6 +58,7 @@ class GeneralFeedServiceTest extends TestContainerSupport {
     void getFeedPageByClubId() {
         // given
         Club club = fixtureMonkey.giveMeBuilder(Club.class)
+                .setNull("id")
                 .set("name", "카우")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -65,24 +67,28 @@ class GeneralFeedServiceTest extends TestContainerSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("activityContent", "내용1")
                 .set("feedType", FeedType.IMAGE)
                 .set("deletedAt", null)
                 .sample();
         Feed feed2 = fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("activityContent", "내용2")
                 .set("feedType", FeedType.VIDEO)
                 .set("deletedAt", null)
                 .sample();
         Feed feed3 = fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("activityContent", "내용3")
                 .set("feedType", FeedType.IMAGE)
                 .set("deletedAt", null)
                 .sample();
         Feed feed4 = fixtureMonkey.giveMeBuilder(Feed.class)
+                .setNull("id")
                 .set("club", savedClub)
                 .set("activityContent", "내용4")
                 .set("feedType", FeedType.IMAGE)

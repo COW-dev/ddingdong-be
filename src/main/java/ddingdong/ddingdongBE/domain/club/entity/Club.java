@@ -128,4 +128,8 @@ public class Club extends BaseEntity {
         this.clubMembers.addAll(clubMembers);
         clubMembers.forEach(clubMember -> clubMember.setClubForConvenience(this));
     }
+
+    public void removeAll(final List<ClubMember> deletedMembers) {
+        this.clubMembers.removeAll(deletedMembers);
+    }
 }

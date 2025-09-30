@@ -55,18 +55,21 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void findNewestPerClubPage() {
         // given
         Club club1 = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우1")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
                 .sample();
         Club club2 = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우2")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
                 .set("clubMembers", null)
                 .sample();
         Club club3 = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우3")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -77,37 +80,37 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub3 = clubRepository.save(club3);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("club", savedClub1)
                 .set("activityContent", "내용 1 올드")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("club", savedClub1)
                 .set("activityContent", "내용 1 최신")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 3L)
+                .set("id", null)
                 .set("club", savedClub2)
                 .set("activityContent", "내용 2 올드")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 4L)
+                .set("id", null)
                 .set("club", savedClub2)
                 .set("activityContent", "내용 2 최신")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed5 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 5L)
+                .set("id", null)
                 .set("club", savedClub3)
                 .set("activityContent", "내용 3 올드")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed6 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 6L)
+                .set("id", null)
                 .set("club", savedClub3)
                 .set("activityContent", "내용 3 최신")
                 .set("feedType", FeedType.IMAGE)
@@ -131,6 +134,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void 페이지네이션_남은_개수가_사이즈보다_적은경우() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -139,25 +143,25 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용1")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용2")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 3L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용3")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 4L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용4")
                 .set("feedType", FeedType.IMAGE)
@@ -181,6 +185,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void findPageByClubIdOrderById() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -189,25 +194,25 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용1")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용2")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 3L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용3")
                 .set("feedType", FeedType.IMAGE)
                 .sample();
         Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 4L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용4")
                 .set("feedType", FeedType.IMAGE)
@@ -233,6 +238,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void 동아리_피드_목록_조회() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -241,13 +247,13 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용1")
                 .set("feedType", FeedType.VIDEO)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용2")
                 .set("feedType", FeedType.VIDEO)
@@ -276,13 +282,13 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
 
         VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("vodProcessingNotification", null)
                 .set("fileMetaData", fileMetaData)
                 .set("convertJobStatus", ConvertJobStatus.COMPLETE)
                 .sample();
         VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("vodProcessingNotification", null)
                 .set("fileMetaData", fileMetaData2)
                 .set("convertJobStatus", ConvertJobStatus.PENDING)
@@ -305,6 +311,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     void 모든_동아리_최신_피드_조회() {
         // given
         Club club = fixture.giveMeBuilder(Club.class)
+                .set("id", null)
                 .set("name", "카우")
                 .set("user", null)
                 .set("score", Score.from(BigDecimal.ZERO))
@@ -313,13 +320,13 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Club savedClub = clubRepository.save(club);
 
         Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용1")
                 .set("feedType", FeedType.VIDEO)
                 .sample();
         Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("club", savedClub)
                 .set("activityContent", "내용2")
                 .set("feedType", FeedType.VIDEO)
@@ -348,13 +355,13 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
 
         VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", 1L)
+                .set("id", null)
                 .set("vodProcessingNotification", null)
                 .set("fileMetaData", fileMetaData)
                 .set("convertJobStatus", ConvertJobStatus.COMPLETE)
                 .sample();
         VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", 2L)
+                .set("id", null)
                 .set("vodProcessingNotification", null)
                 .set("fileMetaData", fileMetaData2)
                 .set("convertJobStatus", ConvertJobStatus.COMPLETE)

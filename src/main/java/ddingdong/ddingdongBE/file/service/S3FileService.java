@@ -1,10 +1,12 @@
 package ddingdong.ddingdongBE.file.service;
 
-import com.amazonaws.AmazonClientException;
-import com.amazonaws.AmazonServiceException;
-import com.amazonaws.HttpMethod;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
+import software.amazon.awssdk.services.s3.S3Client;
+import software.amazon.awssdk.services.s3.presigner.S3Presigner;
+import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
+import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequest;
+import software.amazon.awssdk.core.exception.SdkClientException;
+import software.amazon.awssdk.core.exception.SdkServiceException;
+import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
@@ -17,7 +19,6 @@ import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +42,8 @@ public class S3FileService {
     @Value("${spring.config.activate.on-profile}")
     private String serverProfile;
 
-    private final AmazonS3Client amazonS3Client;
+    private final S3Client s3Client;
+    private final S3Presigner s3Presigner;
     private final FileMetaDataService fileMetaDataService;
 
     public GeneratePreSignedUrlRequestQuery generatePresignedUrlRequest(GeneratePreSignedUrlRequestCommand command) {
@@ -54,13 +56,19 @@ public class S3FileService {
         return buildPresignedUrlRequest(command, contentType);
     }
 
-    public URL getPresignedUrl(GeneratePresignedUrlRequest generatePresignedUrlRequest) {
+    public URL getPresignedUrl(PutObjectRequest putObjectRequest) {
         try {
-            return amazonS3Client.generatePresignedUrl(generatePresignedUrlRequest);
-        } catch (AmazonServiceException e) {
+            PutObjectPresignRequest presignRequest = PutObjectPresignRequest.builder()
+                    .signatureDuration(java.time.Duration.ofMillis(PRE_SIGNED_URL_EXPIRATION_TIME))
+                    .putObjectRequest(putObjectRequest)
+                    .build();
+            
+            PresignedPutObjectRequest presignedRequest = s3Presigner.presignPutObject(presignRequest);
+            return presignedRequest.url();
+        } catch (SdkServiceException e) {
             log.warn("AWS Service Error : {}", e.getMessage());
             throw new AwsService();
-        } catch (AmazonClientException e) {
+        } catch (SdkClientException e) {
             log.warn("AWS Client Error : {}", e.getMessage());
             throw new AwsClient();
         }
@@ -70,7 +78,7 @@ public class S3FileService {
         if (key == null) {
             return null;
         }
-        String region = amazonS3Client.getRegionName();
+        String region = s3Client.serviceClientConfiguration().region().id();
         String[] splitKey = key.split("/");
         String originUrl = String.format(S3_URL_FORMAT, inputBucket, region) + key;
         String cdnUrl = FILE_CDN_URL + key;
@@ -90,7 +98,7 @@ public class S3FileService {
     //TODO: video 피드 조회 시 수정 필요
     public UploadedVideoUrlQuery getUploadedVideoUrl(String key) {
         String fileId = extractFileId(key);
-        String region = amazonS3Client.getRegionName();
+        String region = s3Client.serviceClientConfiguration().region().id();
 
         String thumbnailOriginUrl = generateS3Url(outputBucket, region, "thumbnails/", fileId, ".0000000.jpg");
         String thumbnailCdnUrl = generateCdnUrl("thumbnails/", fileId, ".0000000.jpg");
@@ -103,27 +111,21 @@ public class S3FileService {
     private GeneratePreSignedUrlRequestQuery buildPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command, ContentType contentType) {
         UUID id = UuidCreator.getTimeOrderedEpoch();
         String key = generateKey(contentType, command, id);
-        Date expiration = getExpirationTime();
 
         fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
 
-        GeneratePresignedUrlRequest request = createPresignedUrlRequest(key, contentType, expiration);
+        PutObjectRequest request = createPutObjectRequest(key, contentType);
         return new GeneratePreSignedUrlRequestQuery(request, id, contentType.getMimeType());
     }
 
-    private GeneratePresignedUrlRequest createPresignedUrlRequest(String key, ContentType contentType,
-                                                                  Date expiration) {
-        return new GeneratePresignedUrlRequest(inputBucket, key)
-                .withMethod(HttpMethod.PUT)
-                .withExpiration(expiration)
-                .withContentType(contentType.getMimeType());
+    private PutObjectRequest createPutObjectRequest(String key, ContentType contentType) {
+        return PutObjectRequest.builder()
+                .bucket(inputBucket)
+                .key(key)
+                .contentType(contentType.getMimeType())
+                .build();
     }
 
-    private Date getExpirationTime() {
-        Date expiration = new Date();
-        expiration.setTime(expiration.getTime() + PRE_SIGNED_URL_EXPIRATION_TIME);
-        return expiration;
-    }
 
     private String generateKey(ContentType contentType, GeneratePreSignedUrlRequestCommand command,
                                UUID uploadFileName) {

@@ -43,18 +43,22 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
     @Transactional
     public void updateMemberList(UpdateClubMemberListCommand command) {
         Club club = clubService.getByUserId(command.userId());
-        List<ClubMember> updatedClubMembers =
+        List<ClubMember> updateClubMemberInfos =
                 excelFileService.extractClubMembersInformation(club, command.clubMemberListFile());
-        List<ClubMember> clubMembers = club.getClubMembers();
-        Set<Long> updatedMemberIds = updatedClubMembers.stream()
+        List<ClubMember> clubMembers = clubMemberService.getByClubId(club.getId());
+        Set<Long> updatedMemberInfoIds = updateClubMemberInfos.stream()
                 .map(ClubMember::getId)
                 .collect(Collectors.toSet());
         Set<Long> currentMemberIds = clubMembers.stream()
                 .map(ClubMember::getId)
                 .collect(Collectors.toSet());
 
-        clubMemberService.saveAll(filterCreatedMembers(updatedClubMembers, updatedMemberIds, currentMemberIds));
-        clubMemberService.deleteAll(filterDeletedMembers(clubMembers, updatedMemberIds, currentMemberIds));
+        clubMemberService.saveAll(filterCreatedMembers(updateClubMemberInfos, updatedMemberInfoIds, currentMemberIds));
+        clubMemberService.updateAll(filterUpdatedMembers(updateClubMemberInfos, updatedMemberInfoIds, currentMemberIds));
+
+        List<ClubMember> deletedMembers = filterDeletedMembers(clubMembers, updatedMemberInfoIds, currentMemberIds);
+        club.removeAll(deletedMembers);
+        clubMemberService.deleteAll(deletedMembers);
     }
 
     @Override
@@ -91,10 +95,20 @@ public class FacadeCentralClubMemberServiceImpl implements FacadeCentralClubMemb
                 .toList();
     }
 
+    private List<ClubMember> filterUpdatedMembers(List<ClubMember> updatedClubMembers, Set<Long> updatedMemberIds,
+            Set<Long> currentMemberIds) {
+        Set<Long> willUpdateMemberIds = new HashSet<>(currentMemberIds);
+        willUpdateMemberIds.retainAll(updatedMemberIds);
+        return updatedClubMembers.stream()
+                .filter(member -> willUpdateMemberIds.contains(member.getId()))
+                .toList();
+    }
+
     private List<ClubMember> filterDeletedMembers(List<ClubMember> clubMembers, Set<Long> updatedMemberIds,
                                                   Set<Long> currentMemberIds) {
         Set<Long> deletedMemberIds = new HashSet<>(currentMemberIds);
         deletedMemberIds.removeAll(updatedMemberIds);
+        System.out.println(deletedMemberIds);
         return clubMembers.stream()
                 .filter(member -> deletedMemberIds.contains(member.getId()))
                 .toList();
