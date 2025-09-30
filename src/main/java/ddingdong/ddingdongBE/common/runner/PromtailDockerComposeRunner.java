@@ -19,7 +19,13 @@ public class PromtailDockerComposeRunner implements ApplicationRunner {
         log.info("Running PromtailDockerComposeRunner");
 
         ProcessBuilder processBuilder = new ProcessBuilder();
-        processBuilder.command("docker-compose", "-f", "/var/app/current/promtail/promtail-docker-compose.yml", "up", "-d");
+        processBuilder.command(
+                "docker-compose",
+                "-f",
+                "/var/app/current/promtail/promtail-docker-compose.yml",
+                "--env-file", "/var/app/current/.env",
+                "up", "-d"
+        );
 
         Process process = processBuilder.start();
 
