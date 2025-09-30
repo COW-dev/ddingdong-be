@@ -50,6 +50,117 @@ prometheus.relabel "system_labels" {
     }
 }
 
+// ========== MySQL Exporter (DB 내부 지표) ==========
+prometheus.exporter.mysql "rds_mysql" {
+  data_source_name = sys.env("DB_USER") + ":" + sys.env("DB_PASSWORD") + "@tcp(ddingdong-dev.c8bj0rlp6aer.ap-northeast-2.rds.amazonaws.com:3306)/"
+}
+
+// ========== CloudWatch Exporter (RDS 리소스 지표) ==========
+prometheus.exporter.cloudwatch "rds_cw" {
+  sts_region = "ap-northeast-2"
+
+  static "rds"{
+    namespace = "AWS/RDS"
+    regions = ["ap-northeast-2"]
+
+    dimensions = {
+        DBInstanceIdentifier = "ddingdong-dev",
+    }
+
+    metric {
+      name       = "CPUUtilization"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "FreeableMemory"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "FreeStorageSpace"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "DatabaseConnections"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "ReadIOPS"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "WriteIOPS"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "ReadLatency"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "WriteLatency"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "ReplicaLag"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    // ===== 추가된 Throughput 메트릭 =====
+    metric {
+      name       = "ReadThroughput"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+
+    metric {
+      name       = "WriteThroughput"
+      statistics = ["Average"]
+      period     = "30s"
+      length     = "5m"
+    }
+  }
+}
+
+prometheus.scrape "mysql_scrape" {
+  targets = prometheus.exporter.mysql.rds_mysql.targets
+  scrape_interval = "30s"
+  scrape_timeout = "10s"
+  forward_to = [prometheus.remote_write.central.receiver]
+}
+
+// CloudWatch 스크래핑
+prometheus.scrape "cloudwatch_scrape" {
+  targets = prometheus.exporter.cloudwatch.rds_cw.targets
+  scrape_interval = "60s"
+  scrape_timeout = "30s"
+  forward_to = [prometheus.remote_write.central.receiver]
+}
 
 prometheus.remote_write "central" {
     endpoint {
@@ -68,4 +179,22 @@ prometheus.remote_write "central" {
         min_keepalive_time = "5m"
         max_keepalive_time = "8h"
     }
+}
+
+otelcol.receiver.otlp "default" {
+  http {
+    endpoint = "0.0.0.0:4318"
+  }
+  output {
+    traces = [otelcol.exporter.otlphttp.tempo.input]
+  }
+}
+
+otelcol.exporter.otlphttp "tempo" {
+  client {
+    endpoint = "http://3.39.151.102:4318/tempo/otlp"
+    tls {
+      insecure = true
+    }
+  }
 }
