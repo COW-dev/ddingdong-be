@@ -186,11 +186,11 @@ otelcol.receiver.otlp "default" {
     endpoint = "0.0.0.0:4317"
   }
   output {
-    traces = [otelcol.exporter.otlphttp.tempo.input]
+    traces = [otelcol.exporter.otlp.tempo.input]
   }
 }
 
-otelcol.exporter.otlphttp "tempo" {
+otelcol.exporter.otlp "tempo" {
   client {
     endpoint = "http://3.39.151.102:4317/tempo/otlp"
     tls {
