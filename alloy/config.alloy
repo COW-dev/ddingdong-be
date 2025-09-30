@@ -192,7 +192,7 @@ otelcol.receiver.otlp "default" {
 
 otelcol.exporter.otlp "tempo" {
   client {
-    endpoint = "http://3.39.151.102:4317/tempo/otlp"
+    endpoint = "http://3.39.151.102:4317"
     tls {
       insecure = true
     }
