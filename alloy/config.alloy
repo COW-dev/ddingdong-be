@@ -182,8 +182,8 @@ prometheus.remote_write "central" {
 }
 
 otelcol.receiver.otlp "default" {
-  http {
-    endpoint = "0.0.0.0:4318"
+  grpc {
+    endpoint = "0.0.0.0:4317"
   }
   output {
     traces = [otelcol.exporter.otlphttp.tempo.input]
@@ -192,7 +192,7 @@ otelcol.receiver.otlp "default" {
 
 otelcol.exporter.otlphttp "tempo" {
   client {
-    endpoint = "http://3.39.151.102:4318/tempo/otlp"
+    endpoint = "http://3.39.151.102:4317/tempo/otlp"
     tls {
       insecure = true
     }

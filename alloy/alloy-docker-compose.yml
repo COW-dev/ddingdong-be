@@ -5,6 +5,8 @@ services:
     image: grafana/alloy:latest
     container_name: alloy
     network_mode: host
+    ports:
+      - "4317:4317"
     volumes:
       - /var/app/current/alloy/config.alloy:/etc/alloy/config.alloy:ro
     environment:
