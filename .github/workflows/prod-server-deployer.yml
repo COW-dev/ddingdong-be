@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - fix/DDING-000
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -56,6 +57,7 @@ jobs:
           cp -r alloy deploy/alloy
           cp -r .ebextensions deploy/.ebextensions
           cp -r .platform deploy/.platform
+          cp -r otel deploy/otel 
           cd deploy && zip -r deploy.zip .
 
         # Beanstalk Deploy 플러그인 사용
