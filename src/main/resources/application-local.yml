@@ -8,17 +8,31 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
     password: 1234
+  flyway:
+    enabled: false
 
   jpa:
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
     properties:
       hibernate:
         format_sql: true
         show-sql: true
-    defer-datasource-initialization: false
-
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: always
 logging:
   level:
     org.springframework.cache: TRACE
     org.springframework.cache.interceptor.CacheInterceptor: TRACE
+    org:
+      hibernate:
+        SQL: DEBUG
+        type:
+          descriptor:
+            sql:
+              BasicBinder: TRACE
+        orm:
+          jdbc:
+            bind: TRACE
