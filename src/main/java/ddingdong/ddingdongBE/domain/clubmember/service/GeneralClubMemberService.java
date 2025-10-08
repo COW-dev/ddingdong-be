@@ -45,8 +45,8 @@ public class GeneralClubMemberService implements ClubMemberService {
         clubMemberRepository.save(clubMember);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void deleteAllByClubId(final Long clubId) {
         clubMemberRepository.deleteAllByClubId(clubId);
     }

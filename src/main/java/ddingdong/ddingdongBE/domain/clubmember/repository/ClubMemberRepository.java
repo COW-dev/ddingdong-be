@@ -13,7 +13,7 @@ public interface ClubMemberRepository extends JpaRepository<ClubMember, Long> {
 
     List<ClubMember> findByClubId(Long clubId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE ClubMember cm SET cm.deletedAt = CURRENT_TIMESTAMP WHERE cm.club.id = :clubId AND cm.deletedAt IS NULL")
     void deleteAllByClubId(Long clubId);
 }
