@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -38,10 +39,10 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
     public List<AdminClubListQuery> findAll() {
         return clubService.findAll().stream()
                 .map(club -> {
-                    UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(
+                    UploadedFileUrlAndNameQuery clubProfileImageQuery = fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(
                                     DomainType.CLUB_PROFILE, club.getId())
                             .stream()
-                            .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+                            .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
                             .findFirst()
                             .orElse(null);
                     return AdminClubListQuery.of(club, clubProfileImageQuery);
