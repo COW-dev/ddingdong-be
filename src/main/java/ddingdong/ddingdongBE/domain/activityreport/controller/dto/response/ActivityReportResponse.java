@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -76,7 +76,7 @@ public record ActivityReportResponse(
         String cdnUrl
     ) {
 
-        public static ActivityReportImageResponse from(UploadedFileUrlQuery query) {
+        public static ActivityReportImageResponse from(UploadedFileUrlAndNameQuery query) {
             if (query == null) {
                 return null;
             }
