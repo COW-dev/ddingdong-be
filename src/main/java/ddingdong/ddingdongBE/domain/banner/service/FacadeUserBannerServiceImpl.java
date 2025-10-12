@@ -6,7 +6,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -54,11 +54,11 @@ public class FacadeUserBannerServiceImpl implements FacadeUserBannerService {
                         (existing, replacement) -> existing
                 ));
 
-        UploadedFileUrlQuery webImageUrlQuery = s3FileService.getUploadedFileUrl(
-                fileMetaDataMap.get(DomainType.BANNER_WEB_IMAGE).getFileKey()
+        UploadedFileUrlAndNameQuery webImageUrlQuery = s3FileService.getUploadedFileUrlAndName(
+                fileMetaDataMap.get(DomainType.BANNER_WEB_IMAGE).getFileKey(), fileMetaDataMap.get(DomainType.BANNER_WEB_IMAGE).getFileName()
         );
-        UploadedFileUrlQuery mobileImageUrlQuery = s3FileService.getUploadedFileUrl(
-                fileMetaDataMap.get(DomainType.BANNER_MOBILE_IMAGE).getFileKey()
+        UploadedFileUrlAndNameQuery mobileImageUrlQuery = s3FileService.getUploadedFileUrlAndName(
+                fileMetaDataMap.get(DomainType.BANNER_MOBILE_IMAGE).getFileKey(), fileMetaDataMap.get(DomainType.BANNER_MOBILE_IMAGE).getFileName()
         );
         return UserBannerListQuery.of(banner, webImageUrlQuery, mobileImageUrlQuery);
     }

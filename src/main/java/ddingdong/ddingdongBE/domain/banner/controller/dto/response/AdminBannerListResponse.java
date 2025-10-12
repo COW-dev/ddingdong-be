@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.banner.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(
@@ -37,7 +37,7 @@ public record AdminBannerListResponse(
             String cdnUrl
     ) {
 
-        public static AdminBannerListImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static AdminBannerListImageUrlResponse from(UploadedFileUrlAndNameQuery query) {
             if (query == null) {
                 return null;
             }
