@@ -31,7 +31,7 @@ public record MyFeedPageResponse(
             @Schema(description = "피드 썸네일 S3 URL", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
             String thumbnailOriginUrl,
             @Schema(description = "피드 썸네일 파일 이름", example = "filename.jpg")
-            String thumbnailFilename,
+            String thumbnailFileName,
             @Schema(description = "피드 타입", example = "IMAGE")
             String feedType
     ) {
@@ -41,7 +41,7 @@ public record MyFeedPageResponse(
                     .id(feedListQuery.id())
                     .thumbnailCdnUrl(feedListQuery.thumbnailCdnUrl())
                     .thumbnailOriginUrl(feedListQuery.thumbnailOriginUrl())
-                    .thumbnailFilename(feedListQuery.thumbnailFileName())
+                    .thumbnailFileName(feedListQuery.thumbnailFileName())
                     .feedType(feedListQuery.feedType())
                     .build();
         }
