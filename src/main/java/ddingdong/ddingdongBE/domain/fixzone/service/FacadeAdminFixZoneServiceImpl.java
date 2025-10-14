@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneListQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.util.List;
@@ -33,11 +34,11 @@ public class FacadeAdminFixZoneServiceImpl implements FacadeAdminFixZoneService 
     @Override
     public AdminFixZoneQuery getFixZone(Long fixZoneId) {
         FixZone fixZone = fixZoneService.getById(fixZoneId);
-        List<UploadedFileUrlWithOrderQuery> imageUrlQueries = fileMetaDataService
+        List<UploadedFileUrlAndNameWithOrderQuery> imageUrlQueries = fileMetaDataService
                 .getCoupledAllByDomainTypeAndEntityId(DomainType.FIX_ZONE_IMAGE, fixZoneId)
                 .stream()
-                .map(fileMetaData -> UploadedFileUrlWithOrderQuery.of(
-                        s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()), fileMetaData.getOrder()))
+                .map(fileMetaData -> UploadedFileUrlAndNameWithOrderQuery.of(
+                        s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()), fileMetaData.getOrder()))
                 .toList();
         Club club = fixZone.getClub();
         UploadedFileUrlQuery clubProfileImageQuery = fileMetaDataService

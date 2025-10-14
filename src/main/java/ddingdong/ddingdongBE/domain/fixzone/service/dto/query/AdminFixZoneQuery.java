@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.fixzone.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.time.LocalDateTime;
@@ -15,13 +16,13 @@ public record AdminFixZoneQuery(
         String content,
         boolean isCompleted,
         LocalDateTime requestedAt,
-        List<UploadedFileUrlWithOrderQuery> imageUrlQueries,
+        List<UploadedFileUrlAndNameWithOrderQuery> imageUrlQueries,
         List<FixZoneCommentQuery> fixZoneCommentQueries
 ) {
 
     public static AdminFixZoneQuery of(
             FixZone fixZone,
-            List<UploadedFileUrlWithOrderQuery> fixZoneImageUrlQueries,
+            List<UploadedFileUrlAndNameWithOrderQuery> fixZoneImageUrlQueries,
             UploadedFileUrlQuery commenterProfileImageUrlQuery) {
         return new AdminFixZoneQuery(
                 fixZone.getId(),
