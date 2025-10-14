@@ -8,7 +8,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,10 +45,10 @@ public class FacadeCentralClubServiceImpl implements FacadeCentralClubService {
         return club.getId();
     }
 
-    private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
+    private UploadedFileUrlAndNameQuery getFileKey(DomainType domainType, Long clubId) {
         return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
                 .stream()
-                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+                .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
                 .findFirst()
                 .orElse(null);
     }

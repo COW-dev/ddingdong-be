@@ -1,9 +1,8 @@
 package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Builder;
 
 @Builder
@@ -12,10 +11,10 @@ public record AdminClubListQuery(
         String name,
         String category,
         BigDecimal score,
-        UploadedFileUrlQuery profileImageUrlQuery
+        UploadedFileUrlAndNameQuery profileImageUrlQuery
 ) {
 
-    public static AdminClubListQuery of(Club club, UploadedFileUrlQuery profileImageUrlQuery) {
+    public static AdminClubListQuery of(Club club, UploadedFileUrlAndNameQuery profileImageUrlQuery) {
         return AdminClubListQuery.builder()
                 .id(club.getId())
                 .name(club.getName())
