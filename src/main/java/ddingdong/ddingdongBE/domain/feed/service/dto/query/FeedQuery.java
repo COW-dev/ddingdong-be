@@ -10,16 +10,16 @@ public record FeedQuery(
     String activityContent,
     String feedType,
     LocalDate createdDate,
-    FeedFileUrlQuery feedFileUrlQuery,
+    FeedFileInfoQuery feedFileInfoQuery,
     ClubProfileQuery clubProfileQuery
     ) {
 
-  public static FeedQuery of(Feed feed, ClubProfileQuery clubProfileQuery, FeedFileUrlQuery feedFileUrlQuery) {
+  public static FeedQuery of(Feed feed, ClubProfileQuery clubProfileQuery, FeedFileInfoQuery feedFileInfoQuery) {
     return FeedQuery.builder()
         .id(feed.getId())
         .clubProfileQuery(clubProfileQuery)
         .activityContent(feed.getActivityContent())
-        .feedFileUrlQuery(feedFileUrlQuery)
+        .feedFileInfoQuery(feedFileInfoQuery)
         .feedType(feed.getFeedType().toString())
         .createdDate(LocalDate.from(feed.getCreatedAt()))
         .build();

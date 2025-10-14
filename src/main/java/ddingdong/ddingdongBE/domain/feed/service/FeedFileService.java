@@ -4,7 +4,7 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileInfoQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -28,27 +28,27 @@ public class FeedFileService {
         FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
         if (feed.isImage()) {
             UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
-            return new FeedListQuery(feed.getId(), urlQuery.cdnUrl(), urlQuery.originUrl(), feed.getFeedType().name());
+            return new FeedListQuery(feed.getId(), urlQuery.cdnUrl(), urlQuery.originUrl(), feed.getFeedType().name(), fileMetaData.getFileName());
         }
 
         if (feed.isVideo()) {
             UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
-            return new FeedListQuery(feed.getId(), urlQuery.thumbnailCdnUrl(), urlQuery.thumbnailOriginUrl(), feed.getFeedType().name());
+            return new FeedListQuery(feed.getId(), urlQuery.thumbnailCdnUrl(), urlQuery.thumbnailOriginUrl(), feed.getFeedType().name(), fileMetaData.getFileName());
         }
 
         throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");
     }
 
-    public FeedFileUrlQuery extractFeedFileInfo(Feed feed) {
+    public FeedFileInfoQuery extractFeedFileInfo(Feed feed) {
         FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
         if (feed.isImage()) {
             UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
-            return new FeedFileUrlQuery(urlQuery.id(), urlQuery.originUrl(), urlQuery.cdnUrl());
+            return new FeedFileInfoQuery(urlQuery.id(), urlQuery.originUrl(), urlQuery.cdnUrl(), fileMetaData.getFileName());
         }
 
         if (feed.isVideo()) {
             UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
-            return new FeedFileUrlQuery(fileMetaData.getId().toString(), urlQuery.videoOriginUrl(), urlQuery.videoCdnUrl());
+            return new FeedFileInfoQuery(fileMetaData.getId().toString(), urlQuery.videoOriginUrl(), urlQuery.videoCdnUrl(), fileMetaData.getFileName());
         }
 
         throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");

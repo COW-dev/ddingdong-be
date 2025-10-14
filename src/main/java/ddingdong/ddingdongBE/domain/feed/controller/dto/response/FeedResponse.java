@@ -2,7 +2,7 @@ package ddingdong.ddingdongBE.domain.feed.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileInfoQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
 import lombok.Builder;
@@ -56,11 +56,11 @@ public record FeedResponse(
         String cdnUrl
     ) {
 
-        public static FileUrlResponse from(FeedFileUrlQuery feedFileUrlQuery) {
+        public static FileUrlResponse from(FeedFileInfoQuery feedFileInfoQuery) {
             return FileUrlResponse.builder()
-                .id(feedFileUrlQuery.id())
-                .originUrl(feedFileUrlQuery.originUrl())
-                .cdnUrl(feedFileUrlQuery.cdnUrl())
+                .id(feedFileInfoQuery.id())
+                .originUrl(feedFileInfoQuery.originUrl())
+                .cdnUrl(feedFileInfoQuery.cdnUrl())
                 .build();
         }
     }
@@ -70,7 +70,7 @@ public record FeedResponse(
             .id(query.id())
             .clubProfile(ClubProfileResponse.from(query.clubProfileQuery()))
             .activityContent(query.activityContent())
-            .fileUrls(FileUrlResponse.from(query.feedFileUrlQuery()))
+            .fileUrls(FileUrlResponse.from(query.feedFileInfoQuery()))
             .feedType(query.feedType())
             .createdDate(query.createdDate())
             .build();
