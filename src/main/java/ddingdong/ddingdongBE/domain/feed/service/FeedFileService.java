@@ -10,6 +10,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import lombok.RequiredArgsConstructor;
@@ -56,11 +57,11 @@ public class FeedFileService {
 
     public ClubProfileQuery extractClubInfo(Club club) {
         String clubName = club.getName();
-        UploadedFileUrlQuery urlQuery = getFileUrl(DomainType.CLUB_PROFILE, club.getId());
+        UploadedFileUrlAndNameQuery urlQuery = getFileUrlAndName(DomainType.CLUB_PROFILE, club.getId());
         if (urlQuery == null) {
-            return new ClubProfileQuery(club.getId(), clubName, null, null);
+            return new ClubProfileQuery(club.getId(), clubName, null, null, null);
         }
-        return new ClubProfileQuery(club.getId(), clubName, urlQuery.originUrl(), urlQuery.cdnUrl());
+        return new ClubProfileQuery(club.getId(), clubName, urlQuery.originUrl(), urlQuery.cdnUrl(), urlQuery.fileName());
     }
 
     private FileMetaData getFileMetaData(DomainType domainType, Long id) {
@@ -70,10 +71,10 @@ public class FeedFileService {
             .orElseThrow(() -> new ResourceNotFound("해당 FileMetaData(feedId: " + id + ")를 찾을 수 없습니다.)"));
     }
 
-    private UploadedFileUrlQuery getFileUrl(DomainType domainType, Long clubId) {
+    private UploadedFileUrlAndNameQuery getFileUrlAndName(DomainType domainType, Long clubId) {
         return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
             .stream()
-            .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+            .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
             .findFirst()
             .orElse(null);
     }
