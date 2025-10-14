@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.notice.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -53,11 +52,13 @@ public record NoticeResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl
+            String cdnUrl,
+            @Schema(description = "파일 이름", example = "filename.jpg")
+            String fileName
     ) {
 
-        public static NoticeImageUrlResponse from(UploadedFileUrlWithOrderQuery query) {
-            return new NoticeImageUrlResponse(query.id(), query.order(), query.originUrl(), query.cdnUrl());
+        public static NoticeImageUrlResponse from(UploadedFileUrlAndNameWithOrderQuery query) {
+            return new NoticeImageUrlResponse(query.id(), query.order(), query.originUrl(), query.cdnUrl(), query.fileName());
         }
 
     }

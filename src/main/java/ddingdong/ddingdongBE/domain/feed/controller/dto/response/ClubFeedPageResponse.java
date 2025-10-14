@@ -29,6 +29,8 @@ public record ClubFeedPageResponse(
         String thumbnailCdnUrl,
         @Schema(description = "피드 썸네일 S3 URL", example = "https://%s.s3.%s.amazonaws.com/%s/%s/%s")
         String thumbnailOriginUrl,
+        @Schema(description = "피드 썸네일 파일 이름", example = "filename.jpg")
+        String thumbnailFilename,
         @Schema(description = "피드 타입", example = "IMAGE")
         String feedType
     ) {
