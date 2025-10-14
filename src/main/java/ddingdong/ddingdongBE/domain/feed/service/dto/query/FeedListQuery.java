@@ -9,6 +9,7 @@ public record FeedListQuery(
     Long id,
     String thumbnailCdnUrl,
     String thumbnailOriginUrl,
+    String thumbnailFileName,
     String feedType
 ) {
 
