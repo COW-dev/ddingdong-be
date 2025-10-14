@@ -7,7 +7,8 @@ public record ClubProfileQuery(
     Long id,
     String name,
     String profileImageOriginUrl,
-    String profileImageCdnUrl
+    String profileImageCdnUrl,
+    String profileFileName
 ) {
 
 }

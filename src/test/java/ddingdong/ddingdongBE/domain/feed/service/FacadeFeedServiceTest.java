@@ -19,6 +19,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
 import java.math.BigDecimal;
@@ -110,6 +111,8 @@ class FacadeFeedServiceTest extends TestContainerSupport {
 
         BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
                 .willReturn(new UploadedFileUrlQuery(null, null, null));
+        BDDMockito.given(s3FileService.getUploadedFileUrlAndName(any(), any()))
+                .willReturn(new UploadedFileUrlAndNameQuery(null, null, null, null));
         BDDMockito.given(s3FileService.getUploadedVideoUrl(any()))
                 .willReturn(new UploadedVideoUrlQuery(null, null, null, null));
 
