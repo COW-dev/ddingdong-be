@@ -2,9 +2,7 @@ package ddingdong.ddingdongBE.domain.club.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.math.BigDecimal;
-import java.util.List;
 import lombok.Builder;
 
 @Builder

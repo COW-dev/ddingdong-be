@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery.FixZoneCommentQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;

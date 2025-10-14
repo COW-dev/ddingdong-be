@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 

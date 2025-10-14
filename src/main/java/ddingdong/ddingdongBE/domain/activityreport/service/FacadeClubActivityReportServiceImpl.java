@@ -5,7 +5,6 @@ import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
-import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.AdminActivityReportListQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.CentralActivityReportListQuery;

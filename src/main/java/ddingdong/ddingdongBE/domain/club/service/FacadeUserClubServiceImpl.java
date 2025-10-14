@@ -16,7 +16,6 @@ import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;

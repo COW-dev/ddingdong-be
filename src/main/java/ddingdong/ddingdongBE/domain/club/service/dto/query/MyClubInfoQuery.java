@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.club.service.dto.query;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.time.LocalDate;
 
 public record MyClubInfoQuery(
