@@ -34,14 +34,16 @@ public record UserBannerListResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl
+            String cdnUrl,
+            @Schema(description = "파일 이름", example = "filename.jpg")
+            String filename
     ) {
 
         public static UserBannerListImageUrlResponse from(UploadedFileUrlAndNameQuery query) {
             if (query == null) {
                 return null;
             }
-            return new UserBannerListImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new UserBannerListImageUrlResponse(query.originUrl(), query.cdnUrl(), query.fileName());
         }
 
     }

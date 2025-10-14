@@ -68,14 +68,16 @@ public record UserClubResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl
+            String cdnUrl,
+            @Schema(description = "파일 이름", example = "filename.jpg")
+            String filename
     ) {
 
         public static UserClubImageUrlResponse from(UploadedFileUrlAndNameQuery query) {
             if (query == null) {
                 return null;
             }
-            return new UserClubImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new UserClubImageUrlResponse(query.originUrl(), query.cdnUrl(), query.fileName());
         }
 
     }

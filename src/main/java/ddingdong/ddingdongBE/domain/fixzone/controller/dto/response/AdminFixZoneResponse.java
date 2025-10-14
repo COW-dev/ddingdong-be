@@ -3,8 +3,8 @@ package ddingdong.ddingdongBE.domain.fixzone.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.AdminFixZoneQuery.FixZoneCommentQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -69,7 +69,8 @@ public record AdminFixZoneResponse(
             if (query == null) {
                 return null;
             }
-            return new FixZoneImageUrlResponse(query.order(), query.originUrl(), query.cdnUrl(), query.fileName());
+            return new FixZoneImageUrlResponse(query.order(), query.originUrl(), query.cdnUrl(),
+                    query.fileName());
         }
 
     }
@@ -116,14 +117,18 @@ public record AdminFixZoneResponse(
                     @Schema(description = "원본 url", example = "url")
                     String originUrl,
                     @Schema(description = "cdn url", example = "url")
-                    String cdnUrl
+                    String cdnUrl,
+                    @Schema(description = "파일 이름", example = "filename.jpg")
+                    String fileName
             ) {
 
-                public static FixZoneCommentCommenterProfileImageResponse from(UploadedFileUrlQuery query) {
+                public static FixZoneCommentCommenterProfileImageResponse from(
+                        UploadedFileUrlAndNameQuery query) {
                     if (query == null) {
                         return null;
                     }
-                    return new FixZoneCommentCommenterProfileImageResponse(query.originUrl(), query.cdnUrl());
+                    return new FixZoneCommentCommenterProfileImageResponse(query.originUrl(),
+                            query.cdnUrl(), query.fileName());
                 }
 
             }
