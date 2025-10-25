@@ -31,7 +31,7 @@ public class ActivityReport extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String term;
+    private int term;
 
     @Column(length = 100)
     private String content;
@@ -54,7 +54,7 @@ public class ActivityReport extends BaseEntity {
 
     @Builder
     public ActivityReport(
-        String term,
+        int term,
         String content,
         String place,
         LocalDateTime startDate,

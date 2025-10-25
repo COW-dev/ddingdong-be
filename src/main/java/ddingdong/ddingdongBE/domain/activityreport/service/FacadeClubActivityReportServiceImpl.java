@@ -132,7 +132,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
 
     private List<CentralActivityReportListQuery> parseToListQuery(String clubName,
             List<ActivityReport> activityReports) {
-        Map<String, List<ActivityReport>> activityReportsGroupedByTerm = activityReports.stream()
+        Map<Integer, List<ActivityReport>> activityReportsGroupedByTerm = activityReports.stream()
                 .collect(Collectors.groupingBy(ActivityReport::getTerm));
 
         return activityReportsGroupedByTerm.entrySet().stream()
