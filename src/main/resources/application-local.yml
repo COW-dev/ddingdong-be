@@ -19,6 +19,7 @@ spring:
         format_sql: true
         show-sql: true
     defer-datasource-initialization: true
+
 logging:
   level:
     org.springframework.cache: TRACE
