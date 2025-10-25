@@ -63,7 +63,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     }
 
     @Override
-    public String getCurrentTerm(LocalDateTime now) {
+    public int getCurrentTerm(LocalDateTime now) {
         return activityReportTermInfoService.getCurrentTerm(now);
     }
 
