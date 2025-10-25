@@ -6,10 +6,10 @@ import lombok.Builder;
 @Builder
 public record CurrentTermResponse(
     @Schema(description = "현재 활동 회차", example = "1")
-    String term
+    int term
 ) {
 
-    public static CurrentTermResponse from(String term) {
+    public static CurrentTermResponse from(int term) {
         return CurrentTermResponse.builder()
             .term(term)
             .build();
