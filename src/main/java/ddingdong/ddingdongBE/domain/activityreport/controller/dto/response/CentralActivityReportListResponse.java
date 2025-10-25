@@ -11,7 +11,7 @@ public record CentralActivityReportListResponse(
         String name,
 
         @Schema(description = "회차", example = "1")
-        String term,
+        int term,
 
         @Schema(description = "활동보고서 정보")
         List<ActivityReportDto> activityReports
