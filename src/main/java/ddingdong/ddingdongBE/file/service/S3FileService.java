@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.file.service;
 
+import com.github.f4b6a3.uuid.UuidCreator;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -108,7 +109,7 @@ public class S3FileService {
     }
 
     private GeneratePreSignedUrlRequestQuery buildPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command, ContentType contentType) {
-        UUID id = UUID.randomUUID();
+        UUID id = UuidCreator.getTimeOrderedEpoch();
         String key = generateKey(contentType, command, id);
 
         fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
