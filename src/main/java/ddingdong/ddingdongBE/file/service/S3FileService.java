@@ -7,7 +7,6 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.exception.SdkServiceException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
-import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
@@ -109,7 +108,7 @@ public class S3FileService {
     }
 
     private GeneratePreSignedUrlRequestQuery buildPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command, ContentType contentType) {
-        UUID id = UuidCreator.getTimeOrderedEpoch();
+        UUID id = UUID.randomUUID();
         String key = generateKey(contentType, command, id);
 
         fileMetaDataService.create(FileMetaData.createPending(id, key, command.fileName()));
