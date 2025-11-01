@@ -44,15 +44,14 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     }
 
     @Override
-    public String getCurrentTerm(LocalDateTime now) {
+    public int getCurrentTerm(LocalDateTime now) {
         List<ActivityReportTermInfo> allActivityReportTermInfo = activityReportTermInfoRepository.findAll();
-        Integer currentTerm = allActivityReportTermInfo.stream()
+        return allActivityReportTermInfo.stream()
                 .filter((activityReportTermInfo) -> isBelongingTerm(activityReportTermInfo.getStartDate(),
                         activityReportTermInfo.getEndDate(), now))
                 .map(ActivityReportTermInfo::getTerm)
                 .findFirst()
                 .orElse(NON_ACTIVITY_REPORT_TERM);
-        return String.valueOf(currentTerm);
     }
 
     private boolean isBelongingTerm(LocalDate startDate, LocalDate endDate, LocalDateTime now) {

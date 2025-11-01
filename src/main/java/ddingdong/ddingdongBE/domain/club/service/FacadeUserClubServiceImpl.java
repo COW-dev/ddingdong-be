@@ -15,7 +15,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.FormService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -60,10 +60,10 @@ public class FacadeUserClubServiceImpl implements FacadeUserClubService {
         return endDate.isAfter(now) || endDate.isEqual(now) ? RECRUITING : END_RECRUIT;
     }
 
-    private UploadedFileUrlQuery getFileKey(DomainType domainType, Long clubId) {
+    private UploadedFileUrlAndNameQuery getFileKey(DomainType domainType, Long clubId) {
         return fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(domainType, clubId)
                 .stream()
-                .map(fileMetaData -> s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()))
+                .map(fileMetaData -> s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()))
                 .findFirst()
                 .orElse(null);
     }

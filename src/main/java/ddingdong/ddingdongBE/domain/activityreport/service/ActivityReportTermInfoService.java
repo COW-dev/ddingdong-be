@@ -11,5 +11,5 @@ public interface ActivityReportTermInfoService {
 
     void create(LocalDate startDate, int totalTermCount);
 
-    String getCurrentTerm(LocalDateTime now);
+    int getCurrentTerm(LocalDateTime now);
 }
