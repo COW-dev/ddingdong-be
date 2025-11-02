@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.fixzone.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -30,8 +30,8 @@ public class FixZoneComment extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "club_id")
-    private Club club;
+    @JoinColumn(name = "user_id")
+    private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fix_zone_id", nullable = false)
@@ -43,9 +43,9 @@ public class FixZoneComment extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    public FixZoneComment(Long id, Club club, FixZone fixZone, String content) {
+    public FixZoneComment(Long id, User user, FixZone fixZone, String content) {
         this.id = id;
-        this.club = club;
+        this.user = user;
         this.fixZone = fixZone;
         this.content = content;
     }

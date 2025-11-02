@@ -1,7 +1,5 @@
 package ddingdong.ddingdongBE.domain.fixzone.service;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
-import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommentCommand;
@@ -17,14 +15,12 @@ public class FacadeAdminFixZoneCommentServiceImpl implements FacadeAdminFixZoneC
 
     private final FixZoneCommentService fixZoneCommentService;
     private final FixZoneService fixZoneService;
-    private final ClubService clubService;
 
     @Override
     @Transactional
     public Long create(CreateFixZoneCommentCommand command) {
-        Club adminClub = clubService.getByUserId(command.userId());
         FixZone fixZone = fixZoneService.getById(command.fixZoneId());
-        return fixZoneCommentService.save(command.toEntity(adminClub, fixZone));
+        return fixZoneCommentService.save(command.toEntity(command.user(), fixZone));
     }
 
     @Override

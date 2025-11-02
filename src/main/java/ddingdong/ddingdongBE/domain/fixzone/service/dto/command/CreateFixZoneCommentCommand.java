@@ -1,18 +1,18 @@
 package ddingdong.ddingdongBE.domain.fixzone.service.dto.command;
 
-import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 
 public record CreateFixZoneCommentCommand(
-        Long userId,
+        User user,
         Long fixZoneId,
         String content
 ) {
 
-    public FixZoneComment toEntity(Club club, FixZone fixZone) {
+    public FixZoneComment toEntity(User user, FixZone fixZone) {
         return FixZoneComment.builder()
-                .club(club)
+                .user(user)
                 .fixZone(fixZone)
                 .content(content)
                 .build();
