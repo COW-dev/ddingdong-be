@@ -55,7 +55,6 @@ public class JwtAuthService implements AuthService {
         log.info("사용자 아이디 요청 : {}", request.authId());
         User user = userRepository.findByAuthId(request.authId())
                 .orElseThrow(UnRegisteredId::new);
-        log.info("사용자 패스워드 요청 : {}, 사용자 : {}", request.password(), user.getPassword());
         if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new InvalidPassword();
         }

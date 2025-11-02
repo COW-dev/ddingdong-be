@@ -34,10 +34,10 @@ public class UserFixture {
 
     public static User createClubUser() {
         return User.builder()
-                .authId("admin123")
+                .authId("club123")
                 .password("1234")
-                .name("관리자")
-                .role(Role.ADMIN)
+                .name("동아리 사용자")
+                .role(Role.CLUB)
                 .build();
     }
 }

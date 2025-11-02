@@ -73,7 +73,6 @@ class AdminFixZoneControllerE2ETest extends NonTxTestContainerSupport {
     }
 
     private String getAuthToken(String authId, String password) {
-        System.out.println(authId + " " + password);
         SignInResponse response = given()
                 .contentType(ContentType.JSON)
                 .body(new SignInRequest(authId, password))
