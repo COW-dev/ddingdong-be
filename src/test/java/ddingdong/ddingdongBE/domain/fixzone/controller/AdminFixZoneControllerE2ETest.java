@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -104,7 +105,7 @@ class AdminFixZoneControllerE2ETest extends NonTxTestContainerSupport {
 
         // 댓글이 실제로 생성되었는지 확인
         long commentCount = fixZoneCommentRepository.count();
-        assert commentCount > 0;
+        Assertions.assertThat(commentCount).isGreaterThan(0);
     }
 
     @DisplayName("존재하지 않는 픽스존에 댓글 생성 시 404 에러가 발생한다")
