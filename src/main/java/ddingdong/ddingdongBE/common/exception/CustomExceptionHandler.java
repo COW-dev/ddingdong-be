@@ -17,6 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -78,15 +79,15 @@ public class CustomExceptionHandler {
 
     @ResponseStatus(BAD_REQUEST)
     @ExceptionHandler(CustomException.class)
-    public ErrorResponse handlePersistenceException(CustomException exception, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handlePersistenceException(CustomException exception, HttpServletRequest request) {
         String connectionInfo = createLogConnectionInfo(request);
 
         loggingApplicationWarn(connectionInfo
                 + "\n"
                 + exception.getErrorCode() + " : " + exception.getMessage(), exception);
 
-        return new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()
-        );
+        return ResponseEntity.status(exception.getErrorCode())
+                .body(new ErrorResponse(exception.getErrorCode(), exception.getMessage(), LocalDateTime.now()));
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
