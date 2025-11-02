@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.util.Collection;
 import java.util.Date;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -26,6 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -50,10 +52,10 @@ public class JwtAuthService implements AuthService {
 
     @Override
     public String signIn(SignInRequest request) {
-        User user = userRepository.findByAuthId(request.getAuthId())
+        log.info("사용자 아이디 요청 : {}", request.authId());
+        User user = userRepository.findByAuthId(request.authId())
                 .orElseThrow(UnRegisteredId::new);
-
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+        if (!passwordEncoder.matches(request.password(), user.getPassword())) {
             throw new InvalidPassword();
         }
         PrincipalDetails principalDetails = new PrincipalDetails(user);

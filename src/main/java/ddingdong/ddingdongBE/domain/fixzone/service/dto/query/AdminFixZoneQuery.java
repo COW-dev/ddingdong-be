@@ -51,7 +51,7 @@ public record AdminFixZoneQuery(
                 UploadedFileUrlAndNameQuery commenterProfileImageUrlQuery) {
             return new FixZoneCommentQuery(
                     fixZoneComment.getId(),
-                    fixZoneComment.getClub().getName(),
+                    fixZoneComment.getUser().getName(),
                     fixZoneComment.getContent(),
                     commenterProfileImageUrlQuery,
                     fixZoneComment.getCreatedAt()
