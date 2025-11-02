@@ -2,8 +2,10 @@ package ddingdong.ddingdongBE.domain.fixzone.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.FixZoneCommentFixture;
+import ddingdong.ddingdongBE.common.fixture.FixZoneFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
@@ -13,10 +15,8 @@ import ddingdong.ddingdongBE.domain.fixzone.repository.FixZoneCommentRepository;
 import ddingdong.ddingdongBE.domain.fixzone.repository.FixZoneRepository;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.CreateFixZoneCommentCommand;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.command.UpdateFixZoneCommentCommand;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import java.math.BigDecimal;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -38,53 +38,42 @@ class FacadeAdminFixZoneCommentServiceImplTest extends TestContainerSupport {
     @Autowired
     private ClubRepository clubRepository;
 
-    private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
-
-    private User savedUser;
-    private Club savedClub;
+    private User savedAdmin;
     private FixZone savedFixZone;
 
     @BeforeEach
     void setUp() {
-        savedUser = userRepository.save(fixture.giveMeBuilder(User.class).set("id", null).sample());
-        savedClub = clubRepository.save(fixture.giveMeBuilder(Club.class)
-                .setNull("id")
-                .set("user", savedUser)
-                .set("clubMembers", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("deletedAt", null)
-                .sample());
-        savedFixZone = fixZoneRepository.save(fixture.giveMeBuilder(FixZone.class)
-                .setNull("id")
-                .set("club", savedClub)
-                .set("deletedAt", null)
-                .sample());
+        savedAdmin = userRepository.save(UserFixture.createAdminUser());
+        User savedClubUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedClubUser));
+        savedFixZone = fixZoneRepository.save(FixZoneFixture.createFixZone(savedClub));
     }
 
     @DisplayName("어드민 - 픽스존 댓글 생성")
     @Test
     void create() {
         //given
-        CreateFixZoneCommentCommand command =
-                new CreateFixZoneCommentCommand(savedUser.getId(), savedFixZone.getId(), "test");
+        CreateFixZoneCommentCommand command = new CreateFixZoneCommentCommand(
+                savedAdmin,
+                savedFixZone.getId(),
+                "새로운 댓글 내용"
+        );
+
         //when
-        Long createdFixZoneCommentId = facadeAdminFixZoneCommentService.create(command);
+        Long commentId = facadeAdminFixZoneCommentService.create(command);
 
         //then
-        Optional<FixZoneComment> result = fixZoneCommentRepository.findById(createdFixZoneCommentId);
-        assertThat(result.isPresent()).isTrue();
+        FixZoneComment result = fixZoneCommentRepository.findById(commentId).orElseThrow();
+        assertThat(result.getContent()).isEqualTo("새로운 댓글 내용");
+        assertThat(result.getUser()).isEqualTo(savedAdmin);
+        assertThat(result.getFixZone()).isEqualTo(savedFixZone);
     }
 
     @DisplayName("어드민 - 픽스존 댓글 수정")
     @Test
     void update() {
         //given
-        FixZoneComment fixZoneComment = fixture.giveMeBuilder(FixZoneComment.class)
-                .setNull("id")
-                .set("fixZone", savedFixZone)
-                .set("club", savedClub)
-                .set("deletedAt", null)
-                .sample();
+        FixZoneComment fixZoneComment = FixZoneCommentFixture.createFixZoneComment(savedAdmin, savedFixZone);
         FixZoneComment savedFixZoneComment = fixZoneCommentRepository.save(fixZoneComment);
 
         UpdateFixZoneCommentCommand command = new UpdateFixZoneCommentCommand(savedFixZoneComment.getId(), "test");
@@ -101,12 +90,7 @@ class FacadeAdminFixZoneCommentServiceImplTest extends TestContainerSupport {
     @Test
     void delete() {
         //given
-        FixZoneComment fixZoneComment = fixture.giveMeBuilder(FixZoneComment.class)
-                .set("id", null)
-                .set("fixZone", savedFixZone)
-                .set("club", savedClub)
-                .set("deletedAt", null)
-                .sample();
+        FixZoneComment fixZoneComment = FixZoneCommentFixture.createFixZoneComment(savedAdmin, savedFixZone);
         FixZoneComment savedFixZoneComment = fixZoneCommentRepository.save(fixZoneComment);
 
         //when
