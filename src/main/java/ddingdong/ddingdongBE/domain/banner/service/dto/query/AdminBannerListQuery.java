@@ -1,19 +1,19 @@
 package ddingdong.ddingdongBE.domain.banner.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 
 public record AdminBannerListQuery(
         Long id,
         String link,
-        UploadedFileUrlAndNameQuery webImageUrlQuery,
-        UploadedFileUrlAndNameQuery mobileImageUrlQuery
+        UploadedFileUrlQuery webImageUrlQuery,
+        UploadedFileUrlQuery mobileImageUrlQuery
 ) {
 
     public static AdminBannerListQuery of(
             Banner banner,
-            UploadedFileUrlAndNameQuery webImageUrlQuery,
-            UploadedFileUrlAndNameQuery mobileImageUrlQuery
+            UploadedFileUrlQuery webImageUrlQuery,
+            UploadedFileUrlQuery mobileImageUrlQuery
     ) {
         return new AdminBannerListQuery(banner.getId(), banner.getLink(), webImageUrlQuery, mobileImageUrlQuery);
     }

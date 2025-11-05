@@ -8,7 +8,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 public record CreateActivityReportRequest(
     @Schema(description = "활동 보고서 회차 정보", example = "1")
-    int term,
+    String term,
 
     @Schema(description = "활동 보고서 내용", example = "세션을 진행하였습니다")
     String content,

@@ -19,12 +19,10 @@ import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -90,7 +88,6 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     private void checkVodProcessingJobAndNotify(Feed feed) {
         VodProcessingJob vodProcessingJob = vodProcessingJobService.findByVideoFeedId(feed.getId());
         if (vodProcessingJob != null && vodProcessingJob.isPossibleNotify()) {
-            log.info("피드 생성이 뒤늦게 완료되어 알람 전송 {} : {}", feed.getClub().getName(), feed.getId());
             SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
                     "vod-processing",
                     new SseVodProcessingNotificationDto(
