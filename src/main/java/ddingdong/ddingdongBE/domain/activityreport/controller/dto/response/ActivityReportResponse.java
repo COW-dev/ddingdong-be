@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.activityreport.entity.Participant;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,7 +35,7 @@ public record ActivityReportResponse(
     @Schema(description = "활동 종료 일자", example = "2024-01-04")
     LocalDateTime endDate,
 
-    @Schema(description = "활동보고서 이미지 정보", implementation = ActivityReportImageResponse.class)
+    @Schema(description = "활동보고서 이미지 URL", implementation = ActivityReportImageResponse.class)
     ActivityReportImageResponse image,
 
     @Schema(description = "활동 참여자 목록",
@@ -65,7 +65,7 @@ public record ActivityReportResponse(
 
     @Schema(
         name = "ActivityReportImageUrlResponse",
-        description = "활동보고서 이미지 정보 조회 응답"
+        description = "활동보고서 이미지 URL 조회 응답"
     )
     record ActivityReportImageResponse(
         @Schema(description = "활동보고서 이미지 ID", example = "uuid")
@@ -73,16 +73,14 @@ public record ActivityReportResponse(
         @Schema(description = "원본 url", example = "url")
         String originUrl,
         @Schema(description = "cdn url", example = "url")
-        String cdnUrl,
-        @Schema(description = "파일 이름", example = "filename.jpg")
-        String fileName
+        String cdnUrl
     ) {
 
-        public static ActivityReportImageResponse from(UploadedFileUrlAndNameQuery query) {
+        public static ActivityReportImageResponse from(UploadedFileUrlQuery query) {
             if (query == null) {
                 return null;
             }
-            return new ActivityReportImageResponse(query.id(), query.originUrl(), query.cdnUrl(), query.fileName());
+            return new ActivityReportImageResponse(query.id(), query.originUrl(), query.cdnUrl());
         }
     }
 }

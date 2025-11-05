@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.banner.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.banner.service.dto.query.AdminBannerListQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(
@@ -34,16 +34,14 @@ public record AdminBannerListResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl,
-            @Schema(description = "파일 이름", example = "filename.jpg")
-            String filename
+            String cdnUrl
     ) {
 
-        public static AdminBannerListImageUrlResponse from(UploadedFileUrlAndNameQuery query) {
+        public static AdminBannerListImageUrlResponse from(UploadedFileUrlQuery query) {
             if (query == null) {
                 return null;
             }
-            return new AdminBannerListImageUrlResponse(query.originUrl(), query.cdnUrl(), query.fileName());
+            return new AdminBannerListImageUrlResponse(query.originUrl(), query.cdnUrl());
         }
 
     }

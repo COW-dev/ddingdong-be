@@ -32,7 +32,7 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
     @Override
     public CurrentTermResponse getCurrentTerm() {
         LocalDateTime now = LocalDateTime.now();
-        int currentTerm = facadeClubActivityReportService.getCurrentTerm(now);
+        String currentTerm = facadeClubActivityReportService.getCurrentTerm(now);
         return CurrentTermResponse.from(currentTerm);
     }
 

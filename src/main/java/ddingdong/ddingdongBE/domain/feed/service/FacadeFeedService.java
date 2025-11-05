@@ -3,7 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileInfoQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileUrlQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.NewestFeedPerClubPageQuery;
@@ -53,8 +53,8 @@ public class FacadeFeedService {
     public FeedQuery getById(Long feedId) {
         Feed feed = feedService.getById(feedId);
         ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
-        FeedFileInfoQuery feedFileInfoQuery = feedFileService.extractFeedFileInfo(feed);
-        return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery);
+        FeedFileUrlQuery feedFileUrlQuery = feedFileService.extractFeedFileInfo(feed);
+        return FeedQuery.of(feed, clubProfileQuery, feedFileUrlQuery);
     }
 
 }

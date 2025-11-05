@@ -3,8 +3,8 @@ package ddingdong.ddingdongBE.domain.fixzone.controller.dto.response;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery;
 import ddingdong.ddingdongBE.domain.fixzone.service.dto.query.CentralFixZoneQuery.FixZoneCommentQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
@@ -63,17 +63,14 @@ public record CentralFixZoneResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl,
-            @Schema(description = "파일 이름", example = "filename.jpg")
-            String filename
+            String cdnUrl
     ) {
 
-        public static FixZoneImageUrlResponse from(UploadedFileUrlAndNameWithOrderQuery query) {
+        public static FixZoneImageUrlResponse from(UploadedFileUrlWithOrderQuery query) {
             if (query == null) {
                 return null;
             }
-            return new FixZoneImageUrlResponse(query.id(), query.order(), query.originUrl(),
-                    query.cdnUrl(), query.fileName());
+            return new FixZoneImageUrlResponse(query.id(), query.order(), query.originUrl(), query.cdnUrl());
         }
 
     }
@@ -120,18 +117,14 @@ public record CentralFixZoneResponse(
                     @Schema(description = "원본 url", example = "url")
                     String originUrl,
                     @Schema(description = "cdn url", example = "url")
-                    String cdnUrl,
-                    @Schema(description = "파일 이름", example = "filename.jpg")
-                    String filename
+                    String cdnUrl
             ) {
 
-                public static FixZoneCommentCommenterProfileImageResponse from(
-                        UploadedFileUrlAndNameQuery query) {
+                public static FixZoneCommentCommenterProfileImageResponse from(UploadedFileUrlQuery query) {
                     if (query == null) {
                         return null;
                     }
-                    return new FixZoneCommentCommenterProfileImageResponse(query.originUrl(),
-                            query.cdnUrl(), query.fileName());
+                    return new FixZoneCommentCommenterProfileImageResponse(query.originUrl(), query.cdnUrl());
                 }
 
             }

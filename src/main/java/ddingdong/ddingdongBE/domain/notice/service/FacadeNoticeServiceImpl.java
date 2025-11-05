@@ -8,7 +8,10 @@ import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListPagingQue
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeListPagingQuery.NoticeInfo;
 import ddingdong.ddingdongBE.domain.notice.service.dto.query.NoticeQuery;
 import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -39,11 +42,11 @@ public class FacadeNoticeServiceImpl implements FacadeNoticeService {
     public NoticeQuery getNotice(Long noticeId) {
         Notice notice = noticeService.getById(noticeId);
 
-        List<UploadedFileUrlAndNameWithOrderQuery> imageUrlQueries =
+        List<UploadedFileUrlWithOrderQuery> imageUrlQueries =
                 fileMetaDataService.getCoupledAllByDomainTypeAndEntityIdOrderedAsc(DomainType.NOTICE_IMAGE, noticeId)
                         .stream()
-                        .map(fileMetaData -> UploadedFileUrlAndNameWithOrderQuery.of(
-                                s3FileService.getUploadedFileUrlAndName(fileMetaData.getFileKey(), fileMetaData.getFileName()), fileMetaData.getOrder())
+                        .map(fileMetaData -> UploadedFileUrlWithOrderQuery.of(
+                                s3FileService.getUploadedFileUrl(fileMetaData.getFileKey()), fileMetaData.getOrder())
                         )
                         .toList();
 

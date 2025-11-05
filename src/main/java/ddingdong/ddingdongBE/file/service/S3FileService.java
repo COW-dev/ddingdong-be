@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.file.service;
 
-import com.github.f4b6a3.uuid.UuidCreator;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -8,6 +7,7 @@ import software.amazon.awssdk.services.s3.presigner.model.PresignedPutObjectRequ
 import software.amazon.awssdk.core.exception.SdkClientException;
 import software.amazon.awssdk.core.exception.SdkServiceException;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
+import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsClient;
 import ddingdong.ddingdongBE.common.exception.AwsException.AwsService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;

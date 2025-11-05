@@ -9,7 +9,7 @@ import lombok.Builder;
 
 @Builder
 public record CreateActivityReportCommand(
-    int term,
+    String term,
     String content,
     String place,
     String startDate,

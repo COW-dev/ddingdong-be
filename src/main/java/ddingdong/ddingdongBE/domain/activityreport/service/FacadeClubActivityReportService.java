@@ -17,7 +17,7 @@ public interface FacadeClubActivityReportService {
 
     List<ActivityReportTermInfoQuery> getActivityReportTermInfos();
 
-    int getCurrentTerm(LocalDateTime now);
+    String getCurrentTerm(LocalDateTime now);
 
     void create(User user, List<CreateActivityReportCommand> commands);
 

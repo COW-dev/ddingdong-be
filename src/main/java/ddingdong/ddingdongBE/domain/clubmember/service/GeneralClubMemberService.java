@@ -4,6 +4,9 @@ import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFo
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +50,17 @@ public class GeneralClubMemberService implements ClubMemberService {
 
     @Override
     @Transactional
-    public void deleteAllByClubId(final Long clubId) {
-        clubMemberRepository.deleteAllByClubId(clubId);
+    public void updateAll(final List<ClubMember> updateClubMemberInfos) {
+        Map<Long, ClubMember> updatedMemberMap = updateClubMemberInfos.stream()
+                .collect(Collectors.toMap(ClubMember::getId, Function.identity()));
+
+        clubMemberRepository.findByIdIn(updatedMemberMap.keySet())
+                .forEach(member ->
+                        member.updateInformation(updatedMemberMap.get(member.getId())));
+    }
+
+    @Override
+    public List<ClubMember> getByClubId(final Long clubId) {
+        return clubMemberRepository.findByClubId(clubId);
     }
 }

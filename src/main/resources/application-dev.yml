@@ -21,10 +21,6 @@ spring:
     init:
       mode: never
 
-springdoc:
-  api-docs:
-    version: OPENAPI_3_0
-
 jwt:
   header: "Authorization"
   prefix: "Bearer"

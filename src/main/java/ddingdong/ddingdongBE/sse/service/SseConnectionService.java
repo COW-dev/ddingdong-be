@@ -61,7 +61,7 @@ public class SseConnectionService {
                 sseEmitter.send(SseEmitter.event()
                         .name("sse")
                         .data(data));
-                log.info("SSE Event 사용자에게 전송완료 userid:{}: {}", sseId, "sse");
+                log.debug("SSE Event sent to user {}: {}", sseId, "sse");
             } catch (IOException e) {
                 log.error("Error sending SSE event to user: {}", sseId, e);
                 sseEmitter.complete();

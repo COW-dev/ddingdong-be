@@ -1,2 +1,0 @@
-ALTER TABLE notice
-    MODIFY COLUMN content VARCHAR(1000) NULL;

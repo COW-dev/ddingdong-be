@@ -2,8 +2,8 @@ package ddingdong.ddingdongBE.domain.fixzone.service.dto.query;
 
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZone;
 import ddingdong.ddingdongBE.domain.fixzone.entity.FixZoneComment;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameWithOrderQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlWithOrderQuery;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -15,14 +15,14 @@ public record CentralFixZoneQuery(
         String content,
         boolean isCompleted,
         LocalDateTime requestedAt,
-        List<UploadedFileUrlAndNameWithOrderQuery> imageUrlQueries,
+        List<UploadedFileUrlWithOrderQuery> imageUrlQueries,
         List<FixZoneCommentQuery> fixZoneCommentQueries
 ) {
 
     public static CentralFixZoneQuery of(
             FixZone fixZone,
-            List<UploadedFileUrlAndNameWithOrderQuery> fixZoneImageUrlQueries,
-            UploadedFileUrlAndNameQuery commenterProfileImageUrlQuery) {
+            List<UploadedFileUrlWithOrderQuery> fixZoneImageUrlQueries,
+            UploadedFileUrlQuery commenterProfileImageUrlQuery) {
         return new CentralFixZoneQuery(
                 fixZone.getId(),
                 fixZone.getClub().getLocation().getValue(),
@@ -42,13 +42,13 @@ public record CentralFixZoneQuery(
             Long id,
             String commenter,
             String content,
-            UploadedFileUrlAndNameQuery profileImageQuery,
+            UploadedFileUrlQuery profileImageQuery,
             LocalDateTime createdAt
     ) {
 
         public static FixZoneCommentQuery of(
                 FixZoneComment fixZoneComment,
-                UploadedFileUrlAndNameQuery commenterProfileImageUrlQuery) {
+                UploadedFileUrlQuery commenterProfileImageUrlQuery) {
             return new FixZoneCommentQuery(
                     fixZoneComment.getId(),
                     fixZoneComment.getClub().getName(),

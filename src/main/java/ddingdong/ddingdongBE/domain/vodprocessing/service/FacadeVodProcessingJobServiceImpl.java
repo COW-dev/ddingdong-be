@@ -14,13 +14,11 @@ import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional(readOnly = true)
-@Slf4j
 @RequiredArgsConstructor
 public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJobService {
 
@@ -42,7 +40,6 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     @Override
     @Transactional
     public void updateVodProcessingJobStatus(UpdateVodProcessingJobStatusCommand command) {
-        log.info("vod상태 업데이트 메서드 호출 {} : {}", command.convertJobId(), command.status());
         VodProcessingJob vodProcessingJob = vodProcessingJobService.getByConvertJobId(command.convertJobId());
         vodProcessingJob.updateConvertJobStatus(command.status());
         checkVodProcessingJobStatus(vodProcessingJob);
@@ -57,12 +54,10 @@ public class FacadeVodProcessingJobServiceImpl implements FacadeVodProcessingJob
     private void checkExistingFeedAndNotify(VodProcessingJob vodProcessingJob) {
         Long entityId = vodProcessingJob.getFileMetaData().getEntityId();
         if(entityId == null) {
-            log.info("현재 피드 업로드가 완료되지 않아 알림 보내지 않고 종료");
             return;
         }
         Optional<Feed> optionalFeed = feedService.findById(entityId);
         if (optionalFeed.isPresent()) {
-            log.info("피드 업로드가 완료된 상태로, 알람 전송");
             SseEvent<SseVodProcessingNotificationDto> sseEvent = SseEvent.of(
                     "vod-processing",
                     new SseVodProcessingNotificationDto(
