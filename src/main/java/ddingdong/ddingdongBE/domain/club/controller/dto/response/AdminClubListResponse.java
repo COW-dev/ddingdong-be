@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.controller.dto.response;
 
 import ddingdong.ddingdongBE.domain.club.service.dto.query.AdminClubListQuery;
-import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.math.BigDecimal;
 
@@ -39,14 +39,16 @@ public record AdminClubListResponse(
             @Schema(description = "원본 url", example = "url")
             String originUrl,
             @Schema(description = "cdn url", example = "url")
-            String cdnUrl
+            String cdnUrl,
+            @Schema(description = "파일 이름", example = "filename.jpg")
+            String filename
     ) {
 
-        public static AdminClubListImageUrlResponse from(UploadedFileUrlQuery query) {
+        public static AdminClubListImageUrlResponse from(UploadedFileUrlAndNameQuery query) {
             if(query == null){
                 return null;
             }
-            return new AdminClubListImageUrlResponse(query.originUrl(), query.cdnUrl());
+            return new AdminClubListImageUrlResponse(query.originUrl(), query.cdnUrl(), query.fileName());
         }
 
     }

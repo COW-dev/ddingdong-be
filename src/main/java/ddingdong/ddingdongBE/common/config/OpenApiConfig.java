@@ -18,7 +18,6 @@ public class OpenApiConfig {
     @Bean
     public OpenAPI openApi() {
         return new OpenAPI()
-                .openapi("3.0.1")
                 .components(securityComponents())
                 .servers(List.of(new Server().url(serverUrl)));
     }

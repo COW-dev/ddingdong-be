@@ -44,7 +44,6 @@ public class ExcelClubMemberDto {
 
     public ClubMember toEntity(Club club) {
         return ClubMember.builder()
-                .id(id)
                 .club(club)
                 .name(name)
                 .studentNumber(studentNumber)
