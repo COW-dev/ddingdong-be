@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplication.infrastructure;
+package ddingdong.ddingdongBE.domain.form.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -6,7 +6,7 @@ import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationEmailSender;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SesFormApplicationEmailSenderTest extends TestContainerSupport {
+class SesFormEmailSenderTest extends TestContainerSupport {
 
     @Autowired
-    private FormApplicationEmailSender formApplicationEmailSender;
+    private FormEmailSender formEmailSender;
 
     @Autowired
     private EmailSendHistoryRepository emailSendHistoryRepository;
@@ -38,7 +38,7 @@ class SesFormApplicationEmailSenderTest extends TestContainerSupport {
         formApplication = FormApplicationFixture.pendingFormApplication();
         FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         emailContent = EmailContent.of("테스트 제목", "테스트 내용입니다. 안녕하세요 {지원자명}님", ClubFixture.createClub());
-        
+
         // 실제 EmailSendHistory 엔티티 생성
         emailSendHistory = EmailSendHistory.createPending(savedFormApplication);
         emailSendHistory = emailSendHistoryRepository.save(emailSendHistory);
@@ -48,7 +48,8 @@ class SesFormApplicationEmailSenderTest extends TestContainerSupport {
     @Test
     void sendResult_success() {
         // when
-        formApplicationEmailSender.sendResult(formApplication, emailContent, emailSendHistory.getId());
+        formEmailSender.sendResult(formApplication.getEmail(), formApplication.getName(), emailSendHistory.getId(),
+                emailContent);
 
         // then
         EmailSendHistory updatedHistory = emailSendHistoryRepository.findById(emailSendHistory.getId()).orElseThrow();

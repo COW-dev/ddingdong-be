@@ -1,7 +1,6 @@
-package ddingdong.ddingdongBE.domain.formapplication.infrastructure;
+package ddingdong.ddingdongBE.domain.form.infrastructure;
 
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationEmailSender;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormEmailSender;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.infrastructure.SesEmailSender;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 
 @RequiredArgsConstructor
 @Component
-public class SesFormApplicationEmailSender implements FormApplicationEmailSender {
+public class SesFormEmailSender implements FormEmailSender {
 
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;
@@ -23,17 +22,16 @@ public class SesFormApplicationEmailSender implements FormApplicationEmailSender
     private final SesEmailSender sesEmailSender;
 
     @Override
-    public void sendResult(final FormApplication formApplication, final EmailContent emailContent,
-            final Long emailSendHistoryId) {
-        SendEmailRequest sendEmailRequest = createSendEmailRequest(formApplication, emailContent);
-        sesEmailSender.sendResult(sendEmailRequest, emailSendHistoryId);
+    public void sendResult(String destinationName, String destinationEmail, Long emailHistoryId, EmailContent emailContent) {
+        SendEmailRequest sendEmailRequest = createSendEmailRequest(destinationName, destinationEmail, emailContent);
+        sesEmailSender.sendResult(sendEmailRequest, emailHistoryId);
     }
 
-    private SendEmailRequest createSendEmailRequest(FormApplication formApplication, EmailContent emailContent) {
+    private SendEmailRequest createSendEmailRequest(String destinationName, String destinationEmail, EmailContent emailContent) {
         return SendEmailRequest.builder()
                 .source(senderEmail)
                 .destination(Destination.builder()
-                        .toAddresses(formApplication.getEmail())
+                        .toAddresses(destinationEmail)
                         .build())
                 .configurationSetName("ddingdong-form-application-result-set")
                 .message(Message.builder()
@@ -45,12 +43,12 @@ public class SesFormApplicationEmailSender implements FormApplicationEmailSender
                                 .html(Content.builder()
                                         .charset("UTF-8")
                                         .data(emailContent.htmlContent()
-                                                .replace("{지원자명}", formApplication.getName()))
+                                                .replace("{지원자명}", destinationName))
                                         .build())
                                 .text(Content.builder()
                                         .charset("UTF-8")
                                         .data(emailContent.textContent()
-                                                .replace("{지원자명}", formApplication.getName()))
+                                                .replace("{지원자명}", destinationName))
                                         .build())
                                 .build())
                         .build())
