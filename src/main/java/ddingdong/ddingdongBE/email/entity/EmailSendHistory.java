@@ -33,6 +33,7 @@ public class EmailSendHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 현재 FormApplication과 강한 결합 중, 이후 다른 도메인이 이메일 전송 사용이 필요할 때 리팩토링 필요.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_application_id")
     private FormApplication formApplication;
@@ -81,6 +82,10 @@ public class EmailSendHistory extends BaseEntity {
 
     public void markNonRetryFail() {
         this.status = PERMANENT_FAILURE;
+    }
+
+    public void updateStatusTo(String eventType) {
+        this.status = EmailSendStatus.findByValue(eventType);
     }
 
     public void updateMessageTrackingId(String messageId) {
