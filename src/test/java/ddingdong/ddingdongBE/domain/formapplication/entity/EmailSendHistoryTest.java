@@ -1,4 +1,4 @@
-ㄹimport static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
 import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PERMANENT_FAILURE;
 import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.SENDING;
 import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.TEMPORARY_FAILURE;

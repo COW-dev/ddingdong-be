@@ -1,8 +1,12 @@
 package ddingdong.ddingdongBE.domain.formapplication.entity;
 
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.*;
+import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PERMANENT_FAILURE;
+import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.SENDING;
+import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.TEMPORARY_FAILURE;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -10,6 +14,7 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import javax.annotation.Nullable;
@@ -28,6 +33,7 @@ public class EmailSendHistory extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_application_id")
     private FormApplication formApplication;
 
     @Enumerated(EnumType.STRING)
@@ -36,6 +42,7 @@ public class EmailSendHistory extends BaseEntity {
     private int retryCount;
 
     @Nullable
+    @Column(name = "message_tracking_id")
     private String messageTrackingId;
 
     @Nullable
