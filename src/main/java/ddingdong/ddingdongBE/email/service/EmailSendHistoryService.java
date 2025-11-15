@@ -48,6 +48,11 @@ public class EmailSendHistoryService {
         emailSendHistory.updateStatusTo(eventType);
     }
 
+    @Transactional
+    public EmailSendHistory save(EmailSendHistory emailSendHistory) {
+        return emailSendHistoryRepository.save(emailSendHistory);
+    }
+
     private EmailSendHistory getById(Long emailSendHistoryId) {
         return emailSendHistoryRepository.findById(emailSendHistoryId)
                 .orElseThrow(() -> new ResourceNotFound(

@@ -29,18 +29,21 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
-import ddingdong.ddingdongBE.email.entity.EmailContent;
+import ddingdong.ddingdongBE.domain.form.service.event.SendFormResultEmailEvent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
-import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationEmailService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.email.entity.EmailContent;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
+import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,7 +61,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FormAnswerService formAnswerService;
     private final FileMetaDataService fileMetaDataService;
     private final ClubMemberService clubMemberService;
-    private final FormApplicationEmailService formApplicationEmailService;
+    private final EmailSendHistoryService emailSendHistoryService;
+    private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
     @Override
@@ -187,7 +191,11 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.target()
         );
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
-        formApplicationEmailService.sendBulkResult(formApplications, emailContent);
+        formApplications.forEach(application -> {
+                    EmailSendHistory emailSendHistory = emailSendHistoryService.save(EmailSendHistory.createPending(application));
+                    applicationEventPublisher.publishEvent(new SendFormResultEmailEvent(
+                            emailSendHistory.getId(), application.getEmail(), application.getName(), emailContent));
+                });
     }
 
     @Transactional
