@@ -73,6 +73,7 @@ public class SesFormApplicationEmailSender implements FormApplicationEmailSender
                 .destination(Destination.builder()
                         .toAddresses(formApplication.getEmail())
                         .build())
+                .configurationSetName("ddingdong-form-application-result-set")
                 .message(Message.builder()
                         .subject(Content.builder()
                                 .charset("UTF-8")
