@@ -1,12 +1,14 @@
-package ddingdong.ddingdongBE.email;
+package ddingdong.ddingdongBE.email.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -36,6 +38,14 @@ public class EmailSendHistoryService {
     public void updateMessageTrackingId(Long emailSendHistoryId, String messageId) {
         EmailSendHistory emailSendHistory = getById(emailSendHistoryId);
         emailSendHistory.updateMessageTrackingId(messageId);
+    }
+
+    @Transactional
+    public void updateEmailSendStatus(String eventType, String messageId) {
+        EmailSendHistory emailSendHistory = emailSendHistoryRepository.findByMessageTrackingId(messageId)
+                .orElseThrow(() -> new ResourceNotFound( "해당 messageId(id = " + messageId + ")로 이메일을 찾을 수 없습니다."));
+        log.info("이메일(id = {}) 상태 변경 {} -> {}", emailSendHistory.getId(), emailSendHistory.getStatus(), eventType);
+        emailSendHistory.updateStatusTo(eventType);
     }
 
     private EmailSendHistory getById(Long emailSendHistoryId) {

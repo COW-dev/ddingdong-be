@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplication.infrastructure;
+package ddingdong.ddingdongBE.email.infrastructure;
 
 import org.springframework.stereotype.Component;
 import software.amazon.awssdk.awscore.exception.AwsServiceException;

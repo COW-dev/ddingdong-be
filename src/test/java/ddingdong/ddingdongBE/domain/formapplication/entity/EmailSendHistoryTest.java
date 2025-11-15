@@ -1,11 +1,11 @@
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PERMANENT_FAILURE;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.SENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.TEMPORARY_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PERMANENT_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILURE;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
