@@ -6,7 +6,7 @@ import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormEmailSender;
+import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
@@ -18,10 +18,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class SesFormEmailSenderTest extends TestContainerSupport {
+class SesFormResultEmailSenderTest extends TestContainerSupport {
 
     @Autowired
-    private FormEmailSender formEmailSender;
+    private FormResultEmailSender formResultEmailSender;
 
     @Autowired
     private EmailSendHistoryRepository emailSendHistoryRepository;
@@ -48,7 +48,7 @@ class SesFormEmailSenderTest extends TestContainerSupport {
     @Test
     void sendResult_success() {
         // when
-        formEmailSender.sendResult(formApplication.getEmail(), formApplication.getName(), emailSendHistory.getId(),
+        formResultEmailSender.sendResult(formApplication.getEmail(), formApplication.getName(), emailSendHistory.getId(),
                 emailContent);
 
         // then

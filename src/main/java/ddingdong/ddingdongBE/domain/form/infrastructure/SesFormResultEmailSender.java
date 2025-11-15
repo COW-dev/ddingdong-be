@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.infrastructure;
 
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormEmailSender;
+import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.infrastructure.SesEmailSender;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 
 @RequiredArgsConstructor
 @Component
-public class SesFormEmailSender implements FormEmailSender {
+public class SesFormResultEmailSender implements FormResultEmailSender {
 
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;

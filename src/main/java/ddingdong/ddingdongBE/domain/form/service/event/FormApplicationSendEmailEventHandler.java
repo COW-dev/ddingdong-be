@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service.event;
 
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormEmailSender;
+import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -13,13 +13,13 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Slf4j
 public class FormApplicationSendEmailEventHandler {
 
-    private final FormEmailSender formEmailSender;
+    private final FormResultEmailSender formResultEmailSender;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
     @Async("emailAsyncExecutor")
     public void sendBulkResult(SendFormResultEmailEvent event) {
         log.info("지원 결과 이메일 전송 이벤트 핸들링 성공 : {} : {}", event.destinationEmail(), event.destinationName());
-        formEmailSender.sendResult(
+        formResultEmailSender.sendResult(
                 event.destinationEmail(),
                 event.destinationName(),
                 event.emailSendHistoryId(),
