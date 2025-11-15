@@ -22,12 +22,12 @@ public class SesFormResultEmailSender implements FormResultEmailSender {
     private final SesEmailSender sesEmailSender;
 
     @Override
-    public void sendResult(String destinationName, String destinationEmail, Long emailHistoryId, EmailContent emailContent) {
-        SendEmailRequest sendEmailRequest = createSendEmailRequest(destinationName, destinationEmail, emailContent);
+    public void sendResult(String destinationEmail, String destinationName, Long emailHistoryId, EmailContent emailContent) {
+        SendEmailRequest sendEmailRequest = createSendEmailRequest(destinationEmail, destinationName, emailContent);
         sesEmailSender.sendResult(sendEmailRequest, emailHistoryId);
     }
 
-    private SendEmailRequest createSendEmailRequest(String destinationName, String destinationEmail, EmailContent emailContent) {
+    private SendEmailRequest createSendEmailRequest( String destinationEmail, String destinationName, EmailContent emailContent) {
         return SendEmailRequest.builder()
                 .source(senderEmail)
                 .destination(Destination.builder()
