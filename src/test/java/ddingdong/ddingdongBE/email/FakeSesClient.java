@@ -1,5 +1,6 @@
-package ddingdong.ddingdongBE.domain.formapplication.infrastructure;
+package ddingdong.ddingdongBE.email;
 
+import ddingdong.ddingdongBE.email.infrastructure.SesClientPort;
 import java.util.UUID;
 import software.amazon.awssdk.services.ses.model.SendEmailRequest;
 import software.amazon.awssdk.services.ses.model.SendEmailResponse;

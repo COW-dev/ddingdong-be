@@ -1,11 +1,12 @@
-package ddingdong.ddingdongBE.domain.formapplication.entity;
+package ddingdong.ddingdongBE.email.entity;
 
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PERMANENT_FAILURE;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.SENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.TEMPORARY_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PERMANENT_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILURE;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -32,6 +33,7 @@ public class EmailSendHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    // 현재 FormApplication과 강한 결합 중, 이후 다른 도메인이 이메일 전송 사용이 필요할 때 리팩토링 필요.
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_application_id")
     private FormApplication formApplication;
@@ -80,6 +82,10 @@ public class EmailSendHistory extends BaseEntity {
 
     public void markNonRetryFail() {
         this.status = PERMANENT_FAILURE;
+    }
+
+    public void updateStatusTo(String eventType) {
+        this.status = EmailSendStatus.findByValue(eventType);
     }
 
     public void updateMessageTrackingId(String messageId) {

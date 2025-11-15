@@ -5,11 +5,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailContent;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
+import ddingdong.ddingdongBE.email.entity.EmailContent;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,7 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 class SesFormApplicationEmailSenderTest extends TestContainerSupport {
 
     @Autowired
-    private SesFormApplicationEmailSender sesFormApplicationEmailSender;
+    private FormApplicationEmailSender formApplicationEmailSender;
 
     @Autowired
     private EmailSendHistoryRepository emailSendHistoryRepository;
@@ -47,7 +48,7 @@ class SesFormApplicationEmailSenderTest extends TestContainerSupport {
     @Test
     void sendResult_success() {
         // when
-        sesFormApplicationEmailSender.sendResult(formApplication, emailContent, emailSendHistory.getId());
+        formApplicationEmailSender.sendResult(formApplication, emailContent, emailSendHistory.getId());
 
         // then
         EmailSendHistory updatedHistory = emailSendHistoryRepository.findById(emailSendHistory.getId()).orElseThrow();

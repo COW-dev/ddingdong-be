@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplication.infrastructure;
+package ddingdong.ddingdongBE.email.infrastructure;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

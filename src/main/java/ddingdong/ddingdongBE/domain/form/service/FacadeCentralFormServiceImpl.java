@@ -29,7 +29,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailContent;
+import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationEmailService;
