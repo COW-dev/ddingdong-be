@@ -29,17 +29,14 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
+import ddingdong.ddingdongBE.domain.formapplication.entity.EmailContent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
+import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationEmailService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.email.SesEmailService;
-import ddingdong.ddingdongBE.email.dto.EmailContent;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -58,10 +55,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final ClubService clubService;
     private final FormStatisticService formStatisticService;
     private final FormApplicationService formApplicationService;
-    private final SesEmailService sesEmailService;
     private final FormAnswerService formAnswerService;
     private final FileMetaDataService fileMetaDataService;
     private final ClubMemberService clubMemberService;
+    private final FormApplicationEmailService formApplicationEmailService;
 
     @Transactional
     @Override
@@ -181,22 +178,16 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
+    @Transactional
     @Override
     public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
         Club club = clubService.getByUserId(command.userId());
         List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
                 command.formId(),
-                FormApplicationStatus.findStatus(command.target())
+                command.target()
         );
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
-        CompletableFuture<Void> future = sesEmailService.sendBulkResultEmails(formApplications, emailContent);
-
-        try {
-            future.get(5, TimeUnit.MINUTES);  // 최대 5분 대기
-        } catch (Exception e) {
-            log.error("Failed to send bulk emails", e);
-            throw new RuntimeException("이메일 전송 중 오류가 발생했습니다.", e);
-        }
+        formApplicationEmailService.sendBulkResult(formApplications, emailContent);
     }
 
     @Transactional
