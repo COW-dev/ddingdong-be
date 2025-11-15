@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.domain.formapplication.entity;
+package ddingdong.ddingdongBE.email.entity;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 

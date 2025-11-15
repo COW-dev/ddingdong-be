@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.common.config;
 
 import ddingdong.ddingdongBE.common.support.DataInitializer;
-import ddingdong.ddingdongBE.domain.formapplication.infrastructure.FakeSesClient;
-import ddingdong.ddingdongBE.domain.formapplication.infrastructure.SesClientPort;
+import ddingdong.ddingdongBE.email.FakeSesClient;
+import ddingdong.ddingdongBE.email.infrastructure.SesClientPort;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;

@@ -1,8 +1,8 @@
-package ddingdong.ddingdongBE.email;
+package ddingdong.ddingdongBE.email.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

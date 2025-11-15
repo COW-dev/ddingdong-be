@@ -1,11 +1,12 @@
-package ddingdong.ddingdongBE.domain.formapplication.entity;
+package ddingdong.ddingdongBE.email.entity;
 
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.PERMANENT_FAILURE;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.SENDING;
-import static ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendStatus.TEMPORARY_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PERMANENT_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILURE;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;

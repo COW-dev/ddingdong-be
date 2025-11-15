@@ -9,8 +9,8 @@ import static org.mockito.BDDMockito.verify;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailContent;
-import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
+import ddingdong.ddingdongBE.email.entity.EmailContent;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
