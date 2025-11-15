@@ -1,4 +1,4 @@
-package ddingdong.ddingdongBE.email.dto;
+package ddingdong.ddingdongBE.domain.formapplication.entity;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 
@@ -21,3 +21,4 @@ public record EmailContent(
         return new EmailContent(subject, htmlContent, plainContent);
     }
 }
+

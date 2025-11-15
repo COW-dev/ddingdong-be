@@ -1,10 +1,12 @@
 package ddingdong.ddingdongBE.domain.form.service.dto.command;
 
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+
 public record SendApplicationResultEmailCommand(
         Long userId,
         Long formId,
         String title,
-        String target,
+        FormApplicationStatus target,
         String message
 ) {
 
