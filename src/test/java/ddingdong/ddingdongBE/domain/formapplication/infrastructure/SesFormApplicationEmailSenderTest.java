@@ -9,7 +9,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.EmailContent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
-import ddingdong.ddingdongBE.email.EmailSendHistoryService;
+import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -23,13 +23,10 @@ class SesFormApplicationEmailSenderTest extends TestContainerSupport {
     private SesFormApplicationEmailSender sesFormApplicationEmailSender;
 
     @Autowired
-    private EmailSendHistoryService emailSendHistoryService;
-
-    @Autowired
     private EmailSendHistoryRepository emailSendHistoryRepository;
 
     @Autowired
-    private SesClientPort sesClientPort;
+    private FormApplicationRepository formApplicationRepository;
 
     private FormApplication formApplication;
     private EmailContent emailContent;
@@ -38,10 +35,11 @@ class SesFormApplicationEmailSenderTest extends TestContainerSupport {
     @BeforeEach
     void setUp() {
         formApplication = FormApplicationFixture.pendingFormApplication();
+        FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         emailContent = EmailContent.of("테스트 제목", "테스트 내용입니다. 안녕하세요 {지원자명}님", ClubFixture.createClub());
         
         // 실제 EmailSendHistory 엔티티 생성
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(savedFormApplication);
         emailSendHistory = emailSendHistoryRepository.save(emailSendHistory);
     }
 
