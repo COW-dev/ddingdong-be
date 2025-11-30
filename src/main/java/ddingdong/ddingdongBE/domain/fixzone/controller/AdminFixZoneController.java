@@ -46,7 +46,7 @@ public class AdminFixZoneController implements AdminFixZoneApi {
             Long fixZoneId
     ) {
         User admin = principalDetails.getUser();
-        facadeAdminFixZoneCommentService.create(request.toCommand(admin.getId(), fixZoneId));
+        facadeAdminFixZoneCommentService.create(request.toCommand(admin, fixZoneId));
     }
 
     @Override

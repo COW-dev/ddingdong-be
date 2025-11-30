@@ -6,13 +6,13 @@ import lombok.Builder;
 @Builder
 public record CentralActivityReportListQuery(
         String name,
-        String term,
+        int term,
         List<ActivityReportInfo> activityReports
 ) {
 
     public static CentralActivityReportListQuery of(
             String name,
-            String term,
+            int term,
             List<ActivityReportInfo> activityReportInfos
     ) {
         return CentralActivityReportListQuery.builder()
