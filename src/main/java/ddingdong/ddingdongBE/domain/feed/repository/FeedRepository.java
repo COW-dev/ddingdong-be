@@ -40,32 +40,23 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
 
     @Query(value = """
         select * from feed f
-        where f.id in
-        (select max(id)
-        from feed
-        where deleted_at is null
-        and (
-            f.feed_type != 'VIDEO'
-            or exists (
-                 select 1
-                    from (
-                        select id
-                            from file_meta_data
-                            where entity_id = f.id
-                            and domain_type = 'FEED_VIDEO'
-                    ) filtered_fm
-                    join vod_processing_job vpj
-                    on filtered_fm.id = vpj.file_meta_data_id
-                    where vpj.convert_job_status = 'COMPLETE'
-                    )
-            )
-        GROUP BY club_id)
-        and (:currentCursorId = -1 or id < :currentCursorId)
-        ORDER BY id DESC
-        limit :size
-        """,
-    nativeQuery = true)
-    Slice<Feed> findNewestPerClubPage(
+                   where f.deleted_at is null
+                   and (
+                       f.feed_type != 'VIDEO'
+                       or exists (
+                           select 1
+                           from file_meta_data fm
+                           join vod_processing_job vpj on fm.id = vpj.file_meta_data_id
+                           where fm.entity_id = f.id
+                           and fm.domain_type = 'FEED_VIDEO'
+                           and vpj.convert_job_status = 'COMPLETE'
+                       )
+                   )
+                   and (:currentCursorId = -1 or f.id < :currentCursorId)
+                   ORDER BY f.id DESC
+                   limit :size
+        """, nativeQuery = true)
+    Slice<Feed> getAllFeedPage(
         @Param("size") int size,
         @Param("currentCursorId") Long currentCursorId
     );

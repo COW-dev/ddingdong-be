@@ -28,11 +28,11 @@ public class FeedController implements FeedApi {
   }
 
   @Override
-  public NewestFeedPerClubPageResponse getNewestFeedPerClub(
+  public NewestFeedPerClubPageResponse getAllFeedPage(
       int size,
       Long currentCursorId
   ) {
-    NewestFeedPerClubPageQuery newestFeedPerClubPageQuery = facadeFeedService.getNewestFeedPerClubPage(size, currentCursorId);
+    NewestFeedPerClubPageQuery newestFeedPerClubPageQuery = facadeFeedService.getAllFeedPage(size, currentCursorId);
     return NewestFeedPerClubPageResponse.from(newestFeedPerClubPageQuery);
   }
 
