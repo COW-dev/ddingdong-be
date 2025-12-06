@@ -10,7 +10,7 @@ public enum EmailSendStatus {
 
     PENDING("Pending"),
     SENDING("Sending"),
-    TEMPORARY_FAILURE("Tempporary Failure"),
+    TEMPORARY_FAILURE("Temporary Failure"),
     PERMANENT_FAILURE("Permanent Failure"),
     DELIVERY_SUCCESS("Delivery"),
     BOUNCE_REJECT("Bounce"),

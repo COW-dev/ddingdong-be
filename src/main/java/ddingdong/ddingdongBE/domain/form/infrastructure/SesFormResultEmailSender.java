@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.infrastructure;
 
+import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.infrastructure.SesEmailSender;
@@ -22,12 +23,16 @@ public class SesFormResultEmailSender implements FormResultEmailSender {
     private final SesEmailSender sesEmailSender;
 
     @Override
-    public void sendResult(String destinationEmail, String destinationName, Long emailHistoryId, EmailContent emailContent) {
-        SendEmailRequest sendEmailRequest = createSendEmailRequest(destinationEmail, destinationName, emailContent);
-        sesEmailSender.sendResult(sendEmailRequest, emailHistoryId);
+    public void sendResult(FormResultSendingEmailInfo info) {
+        SendEmailRequest sendEmailRequest = createSendEmailRequest(
+                info.destinationEmail(),
+                info.destinationName(),
+                info.emailContent()
+        );
+        sesEmailSender.sendResult(sendEmailRequest, info.emailSendHistoryId());
     }
 
-    private SendEmailRequest createSendEmailRequest( String destinationEmail, String destinationName, EmailContent emailContent) {
+    private SendEmailRequest createSendEmailRequest(String destinationEmail, String destinationName, EmailContent emailContent) {
         return SendEmailRequest.builder()
                 .source(senderEmail)
                 .destination(Destination.builder()

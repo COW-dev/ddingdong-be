@@ -33,9 +33,9 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
               limit :size
             """, nativeQuery = true)
     Slice<Feed> findPageByClubIdOrderById(
-            @Param("clubId") Long clubId,
-            @Param("size") int size,
-            @Param("currentCursorId") Long currentCursorId
+        @Param("clubId") Long clubId,
+        @Param("size") int size,
+        @Param("currentCursorId") Long currentCursorId
     );
 
     @Query(value = """
@@ -57,8 +57,8 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
                    limit :size
         """, nativeQuery = true)
     Slice<Feed> getAllFeedPage(
-            @Param("size") int size,
-            @Param("currentCursorId") Long currentCursorId
+        @Param("size") int size,
+        @Param("currentCursorId") Long currentCursorId
     );
 
 }

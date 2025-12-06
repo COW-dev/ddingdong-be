@@ -3,11 +3,11 @@ package ddingdong.ddingdongBE.domain.feed.controller;
 import ddingdong.ddingdongBE.domain.feed.api.FeedApi;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.ClubFeedPageResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedResponse;
-import ddingdong.ddingdongBE.domain.feed.controller.dto.response.FeedPageResponse;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.NewestFeedPerClubPageResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FacadeFeedService;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedPageQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.NewestFeedPerClubPageQuery;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -19,21 +19,21 @@ public class FeedController implements FeedApi {
 
   @Override
   public ClubFeedPageResponse getFeedPageByClub(
-          Long clubId,
-          int size,
-          Long currentCursorId
+      Long clubId,
+      int size,
+      Long currentCursorId
   ) {
     ClubFeedPageQuery clubFeedPageQuery = facadeFeedService.getFeedPageByClub(clubId, size, currentCursorId);
     return ClubFeedPageResponse.from(clubFeedPageQuery);
   }
 
   @Override
-  public FeedPageResponse getAllFeedPage(
-          int size,
-          Long currentCursorId
+  public NewestFeedPerClubPageResponse getAllFeedPage(
+      int size,
+      Long currentCursorId
   ) {
-    FeedPageQuery feedPageQuery = facadeFeedService.getAllFeedPage(size, currentCursorId);
-    return FeedPageResponse.from(feedPageQuery);
+    NewestFeedPerClubPageQuery newestFeedPerClubPageQuery = facadeFeedService.getAllFeedPage(size, currentCursorId);
+    return NewestFeedPerClubPageResponse.from(newestFeedPerClubPageQuery);
   }
 
   @Override

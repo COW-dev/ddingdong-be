@@ -215,7 +215,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         // given
         Club club1 = clubRepository.save(ClubFixture.createClub());
         Club club2 = clubRepository.save(ClubFixture.createClub());
-
+        
         Feed oldFeed = feedRepository.save(FeedFixture.createImageFeed(club1, "오래된 피드"));
         Feed newFeed = feedRepository.save(FeedFixture.createImageFeed(club2, "최신 피드"));
 

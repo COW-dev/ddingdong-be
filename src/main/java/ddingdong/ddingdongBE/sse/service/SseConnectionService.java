@@ -27,15 +27,21 @@ public class SseConnectionService {
         sseConnectionRepository.save(id, sseEmitter);
 
         // 연결 완료 콜백
-        sseEmitter.onCompletion(() -> sseConnectionRepository.deleteById(id));
+        sseEmitter.onCompletion(() -> {
+            log.info("sse connection complete");
+            sseConnectionRepository.deleteById(id);
+        });
 
         // 연결 타임아웃 콜백
-        sseEmitter.onTimeout(sseEmitter::complete);
+        sseEmitter.onTimeout(() -> {
+            log.info("sse connection timeout");
+            sseEmitter.complete();
+        });
 
         // 연결 에러 콜백
         sseEmitter.onError((ex) -> {
             log.warn("SSE Connection error: {}", ex.getMessage());
-            sseConnectionRepository.deleteById(id);
+            sseEmitter.complete();
         });
 
         try {
