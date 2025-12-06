@@ -1,6 +1,9 @@
 package ddingdong.ddingdongBE.domain.form.service.event;
 
+import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
@@ -14,16 +17,20 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class FormApplicationSendEmailEventHandler {
 
     private final FormResultEmailSender formResultEmailSender;
+    private final Executor emailAsyncExecutor;
 
     @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
-    @Async("emailAsyncExecutor")
-    public void sendBulkResult(SendFormResultEmailEvent event) {
-        log.info("지원 결과 이메일 전송 이벤트 핸들링 성공 : {} : {}", event.destinationEmail(), event.destinationName());
-        formResultEmailSender.sendResult(
-                event.destinationEmail(),
-                event.destinationName(),
-                event.emailSendHistoryId(),
-                event.emailContent()
-        );
+    @Async("generalAsyncExecutor")
+    public void sendBulkResult(SendFormResultEvent event) {
+        event.formResultSendingEmailInfos()
+                .forEach(info -> CompletableFuture.runAsync(
+                        () -> sendEmail(info),
+                        emailAsyncExecutor
+                ));
+    }
+
+    private void sendEmail(final FormResultSendingEmailInfo info) {
+        log.info("지원 결과 이메일 전송 이벤트 핸들링 성공 : {} : {}", info.destinationEmail(), info.destinationName());
+        formResultEmailSender.sendResult(info);
     }
 }
