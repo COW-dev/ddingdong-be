@@ -2,17 +2,14 @@ package ddingdong.ddingdongBE.domain.club.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.club.service.dto.command.CreateClubCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.AdminClubListQuery;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -23,67 +20,68 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class FacadeAdminClubServiceImplTest extends TestContainerSupport {
+public class FacadeAdminClubServiceImplTest extends TestContainerSupport {
 
-    @Autowired
-    private FacadeAdminClubService facadeAdminClubService;
     @Autowired
     private ClubRepository clubRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private FacadeAdminClubService facadeAdminClubService;
 
-    private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
     private CreateClubCommand command;
 
     @BeforeEach
     void setUp() {
         command = new CreateClubCommand(
-                "test",
+                "testName",
                 "testCategory",
                 "testLeaderName",
                 "testTag",
-                "testtest",
-                "abcd1234"
+                "testAuthId",
+                "test1234"
         );
     }
 
     @DisplayName("어드민: 동아리 생성")
     @Test
-    void createClub() {
+    void create() {
         // given
         // when
-        Long createdClubId = facadeAdminClubService.create(command);
+        Long clubId = facadeAdminClubService.create(command);
+
+        Club testClub = clubRepository.findById(clubId).orElse(null);
+        Optional<User> testUser = userRepository.findByAuthId(command.authId());
 
         // then
-        Club createdClub = clubRepository.findById(createdClubId).orElse(null);
-        Optional<User> createUser = userRepository.findByAuthId(command.authId());
+        assertThat(testClub).isNotNull();
+        assertThat(testClub.getName()).isEqualTo("testName");
+        assertThat(testClub.getCategory()).isEqualTo("testCategory");
+        assertThat(testClub.getLeader()).isEqualTo("testLeaderName");
+        assertThat(testClub.getTag()).isEqualTo("testTag");
 
-        assertThat(createdClub).isNotNull();
-        assertThat(createdClub.getName()).isEqualTo("test");
-        assertThat(createdClub.getCategory()).isEqualTo("testCategory");
-        assertThat(createdClub.getLeader()).isEqualTo("testLeaderName");
-        assertThat(createdClub.getTag()).isEqualTo("testTag");
-        assertThat(createUser).isPresent();
+        assertThat(testUser).isPresent();
     }
 
     @DisplayName("어드민: 동아리 목록 조회")
     @Test
-    void findAllClubs() {
+    void findAll() {
         // given
-        List<Club> clubs = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", new ArrayList<>())
-                .set("deletedAt", null)
-                .sampleList(3);
+        List<Club> clubs = new ArrayList<>();
+
+        for (int i = 0; i < 5; i++) {
+            Club club = ClubFixture.createClub();
+            clubs.add(club);
+        }
         clubRepository.saveAll(clubs);
 
         // when
         List<AdminClubListQuery> result = facadeAdminClubService.findAll();
 
         // then
-        assertThat(result).hasSize(3);
+        assertThat(result).hasSize(5);
+        assertThat(result.get(0).id()).isEqualTo(clubs.get(0).getId());
+        assertThat(result.get(0).name()).isEqualTo(clubs.get(0).getName());
     }
 
     @DisplayName("어드민: 동아리 삭제")
@@ -94,9 +92,9 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
 
         // when
         facadeAdminClubService.deleteClub(clubId);
+        Optional<Club> result = clubRepository.findById(clubId);
 
         // then
-        Optional<Club> result = clubRepository.findById(clubId);
         assertThat(result).isEmpty();
     }
 }
