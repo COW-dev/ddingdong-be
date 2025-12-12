@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class FacadeCentralClubServiceImplTest extends TestContainerSupport {
+class FacadeCentralClubServiceImplTest extends TestContainerSupport {
 
     @Autowired
     private ClubRepository clubRepository;
@@ -76,8 +76,8 @@ public class FacadeCentralClubServiceImplTest extends TestContainerSupport {
         // then
         Optional<Club> result = clubRepository.findById(savedClub.getId());
         assertThat(result).isPresent();
-        assertThat(result.get().getName()).isEqualTo("updatedName");
-        assertThat(result.get().getCategory()).isEqualTo("updatedCategory");
-        assertThat(result.get().getLeader()).isEqualTo("updatedClubLeader");
+        assertThat(result.get().getName()).isEqualTo(command.name());
+        assertThat(result.get().getCategory()).isEqualTo(command.category());
+        assertThat(result.get().getLeader()).isEqualTo(command.clubLeader());
     }
 }
