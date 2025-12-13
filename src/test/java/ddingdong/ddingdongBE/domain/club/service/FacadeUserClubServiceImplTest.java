@@ -117,7 +117,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
         );
     }
 
-    @DisplayName("유저: 동아리 정보 상세 조회(기본) - Form이 존재하면 Form 관련 필드를 반환한다.)")
+    @DisplayName("유저: 동아리 정보 상세 조회(기본) - Form이 존재하면 Form 관련 필드를 반환한다.")
     @Test
     void getClubWithForm() {
         // given
