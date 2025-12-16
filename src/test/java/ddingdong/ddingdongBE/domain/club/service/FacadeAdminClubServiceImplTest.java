@@ -50,15 +50,15 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
         // when
         Long clubId = facadeAdminClubService.create(command);
 
-        Club testClub = clubRepository.findById(clubId).orElse(null);
+        Optional<Club> testClub = clubRepository.findById(clubId);
         Optional<User> testUser = userRepository.findByAuthId(command.authId());
 
         // then
-        assertThat(testClub).isNotNull();
-        assertThat(testClub.getName()).isEqualTo("testName");
-        assertThat(testClub.getCategory()).isEqualTo("testCategory");
-        assertThat(testClub.getLeader()).isEqualTo("testLeaderName");
-        assertThat(testClub.getTag()).isEqualTo("testTag");
+        assertThat(testClub).isPresent();
+        assertThat(testClub.get().getName()).isEqualTo(command.clubName());
+        assertThat(testClub.get().getCategory()).isEqualTo(command.category());
+        assertThat(testClub.get().getLeader()).isEqualTo(command.leaderName());
+        assertThat(testClub.get().getTag()).isEqualTo(command.tag());
 
         assertThat(testUser).isPresent();
     }

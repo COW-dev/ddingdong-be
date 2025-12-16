@@ -22,6 +22,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,16 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
     @Autowired
     private FacadeUserClubService facadeUserClubService;
 
+    @AfterEach
+    void tearDown() {
+        formRepository.deleteAllInBatch();
+        clubRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
+    }
+
     @DisplayName("유저: 동아리 목록 조회 - 모집 전")
     @Test
-    void findAllWithRecruitTimeCheckPoint_BeforeRecruit() {
+    void findAllWithRecruitTimeCheckPointBeforeRecruit() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 31);
@@ -67,7 +75,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("유저: 동아리 목록 조회 - 모집 가능")
     @Test
-    void findAllWithRecruitTimeCheckPoint_Recruiting() {
+    void findAllWithRecruitTimeCheckPointRecruiting() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 31);
@@ -93,7 +101,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("유저: 동아리 목록 조회 - 모집 마감")
     @Test
-    void findAllWithRecruitTimeCheckPoint_EndRecruit() {
+    void findAllWithRecruitTimeCheckPointEndRecruit() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 1);
@@ -129,15 +137,17 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
         UserClubQuery result = facadeUserClubService.getClub(savedClub.getId());
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.name()).isEqualTo(savedClub.getName());
-        assertThat(result.category()).isEqualTo(savedClub.getCategory());
-        assertThat(result.tag()).isEqualTo(savedClub.getTag());
-        assertThat(result.leader()).isEqualTo(savedClub.getLeader());
+        assertAll(
+                () -> assertThat(result).isNotNull(),
+                () -> assertThat(result.name()).isEqualTo(savedClub.getName()),
+                () -> assertThat(result.category()).isEqualTo(savedClub.getCategory()),
+                () -> assertThat(result.tag()).isEqualTo(savedClub.getTag()),
+                () -> assertThat(result.leader()).isEqualTo(savedClub.getLeader()),
 
-        assertThat(result.formId()).isEqualTo(savedForm.getId());
-        assertThat(result.startDate()).isEqualTo(savedForm.getStartDate());
-        assertThat(result.endDate()).isEqualTo(savedForm.getEndDate());
+                () -> assertThat(result.formId()).isEqualTo(savedForm.getId()),
+                () -> assertThat(result.startDate()).isEqualTo(savedForm.getStartDate()),
+                () -> assertThat(result.endDate()).isEqualTo(savedForm.getEndDate())
+        );
     }
 
     @DisplayName("유저: 동아리 정보 상세 조회 - Form이 없으면 Form 관련 필드를 Null값으로 반환한다.")
@@ -151,9 +161,17 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
         UserClubQuery result = facadeUserClubService.getClub(savedClub.getId());
 
         // then
-        assertThat(result.formId()).isNull();
-        assertThat(result.startDate()).isNull();
-        assertThat(result.endDate()).isNull();
+        assertAll(
+                () -> assertThat(result).isNotNull(),
+                () -> assertThat(result.name()).isEqualTo(savedClub.getName()),
+                () -> assertThat(result.category()).isEqualTo(savedClub.getCategory()),
+                () -> assertThat(result.tag()).isEqualTo(savedClub.getTag()),
+                () -> assertThat(result.leader()).isEqualTo(savedClub.getLeader()),
+
+                () -> assertThat(result.formId()).isNull(),
+                () -> assertThat(result.startDate()).isNull(),
+                () -> assertThat(result.endDate()).isNull()
+        );
     }
 
     private List<Club> saveClubsWithSize(int clubSize) {
