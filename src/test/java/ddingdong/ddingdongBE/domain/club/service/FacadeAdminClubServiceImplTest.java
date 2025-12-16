@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.club.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -79,9 +80,14 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
         List<AdminClubListQuery> result = facadeAdminClubService.findAll();
 
         // then
-        assertThat(result).hasSize(5);
-        assertThat(result.get(0).id()).isEqualTo(clubs.get(0).getId());
-        assertThat(result.get(0).name()).isEqualTo(clubs.get(0).getName());
+        assertAll(
+                () -> assertThat(result).hasSize(5),
+                () -> assertThat(result)
+                        .extracting(AdminClubListQuery::id)
+                        .containsExactlyInAnyOrderElementsOf(
+                                clubs.stream().map(Club::getId).toList()
+                        )
+        );
     }
 
     @DisplayName("어드민: 동아리 삭제")
