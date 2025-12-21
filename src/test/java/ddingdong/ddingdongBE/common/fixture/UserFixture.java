@@ -45,7 +45,7 @@ public class UserFixture {
         return User.builder()
                 .authId("general123")
                 .password(encode)
-                .name("동아리 사용자")
+                .name("일반 동아리원")
                 .role(Role.USER)
                 .build();
     }
@@ -54,7 +54,7 @@ public class UserFixture {
         return User.builder()
                 .authId("general123")
                 .password("1234")
-                .name("동아리 사용자")
+                .name("일반 동아리원")
                 .role(Role.USER)
                 .build();
     }
