@@ -41,6 +41,15 @@ public class UserFixture {
                 .build();
     }
 
+    public static User createGeneralUser(String encode) {
+        return User.builder()
+                .authId("club123")
+                .password(encode)
+                .name("동아리 사용자")
+                .role(Role.USER)
+                .build();
+    }
+
     public static User createGeneralUser() {
         return User.builder()
                 .authId("club123")

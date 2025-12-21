@@ -56,10 +56,9 @@ class GeneralClubMemberServiceTest extends TestContainerSupport {
         // given
         User savedUser = userRepository.save(UserFixture.createClubUser());
         Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
-        ClubMember savedClubMember = clubMemberRepository.save(
-                ClubMemberFixture.createClubMember(savedClub));
+        clubMemberRepository.save(ClubMemberFixture.createClubMember(savedClub));
 
-        Long notExistId = savedClubMember.getId() + 9999L;
+        Long notExistId = -1L;
 
         // when & then
         assertThatThrownBy(() -> clubMemberService.getById(notExistId))
@@ -70,13 +69,13 @@ class GeneralClubMemberServiceTest extends TestContainerSupport {
     @Test
     void deleteAllByClubId() {
         // given
-        User savedUser = userRepository.save(UserFixture.createClubUser());
+        User savedUser = userRepository.save(UserFixture.createClubUser("1234"));
         Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
         ClubMember clubMember1 = ClubMemberFixture.createClubMember(savedClub);
         ClubMember clubMember2 = ClubMemberFixture.createClubMember(savedClub);
         clubMemberRepository.saveAll(List.of(clubMember1, clubMember2));
 
-        User otherUser = userRepository.save(UserFixture.createClubUser());
+        User otherUser = userRepository.save(UserFixture.createClubUser("5678"));
         Club otherClub = clubRepository.save(ClubFixture.createClub(otherUser));
         ClubMember otherClubMember = clubMemberRepository.save(
                 ClubMemberFixture.createClubMember(otherClub));
