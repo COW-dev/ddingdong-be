@@ -40,4 +40,13 @@ public class UserFixture {
                 .role(Role.CLUB)
                 .build();
     }
+
+    public static User createGeneralUser() {
+        return User.builder()
+                .authId("club123")
+                .password("1234")
+                .name("동아리 사용자")
+                .role(Role.USER)
+                .build();
+    }
 }
