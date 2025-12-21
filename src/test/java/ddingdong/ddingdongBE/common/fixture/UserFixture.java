@@ -43,7 +43,7 @@ public class UserFixture {
 
     public static User createGeneralUser(String encode) {
         return User.builder()
-                .authId("club123")
+                .authId("general123")
                 .password(encode)
                 .name("동아리 사용자")
                 .role(Role.USER)
@@ -52,7 +52,7 @@ public class UserFixture {
 
     public static User createGeneralUser() {
         return User.builder()
-                .authId("club123")
+                .authId("general123")
                 .password("1234")
                 .name("동아리 사용자")
                 .role(Role.USER)
