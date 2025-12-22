@@ -3,12 +3,10 @@ package ddingdong.ddingdongBE.domain.clubmember.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.ClubMemberFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.entity.Position;
@@ -19,25 +17,24 @@ import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.multipart.MultipartFile;
 
 @SpringBootTest
@@ -54,10 +51,6 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     @Autowired
     private ClubMemberService clubMemberService;
     @Autowired
-    private EntityManager entityManager;
-
-    private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getBuilderIntrospectorMonkey();
-    @Autowired
     private ClubService clubService;
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
@@ -68,14 +61,15 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         User savedUser = userRepository.save(user);
         Club club = ClubFixture.createClub(savedUser);
         Club savedClub = clubRepository.save(club);
-        
+
         ClubMember member1 = ClubMember.builder().club(savedClub).name("기존멤버1").build();
         ClubMember member2 = ClubMember.builder().club(savedClub).name("기존멤버2").build();
         ClubMember member3 = ClubMember.builder().club(savedClub).name("기존멤버3").build();
-        
-        List<ClubMember> existingMembers = clubMemberRepository.saveAll(List.of(member1, member2, member3));
+
+        List<ClubMember> existingMembers = clubMemberRepository.saveAll(
+                List.of(member1, member2, member3));
         club.addClubMembers(existingMembers);
-        
+
         // 엑셀 파일 생성 (기존 멤버 중 1, 2번만 유지하고 3번 삭제)
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         Workbook workbook = new XSSFWorkbook();
@@ -105,7 +99,7 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         row2.createCell(3).setCellValue("010-2345-6789");
         row2.createCell(4).setCellValue("MEMBER");
         row2.createCell(5).setCellValue("컴퓨터공학과");
-        
+
         workbook.write(out);
         workbook.close();
 
@@ -137,46 +131,53 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     @Test
     void updateAll() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
-        Club savedClub = clubRepository.save(fixtureMonkey.giveMeBuilder(Club.class)
-                .setNull("id")
-                .set("user", savedUser)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample());
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
         ClubMember savedClubMember = clubMemberRepository.save(
-                fixtureMonkey.giveMeBuilder(ClubMember.class).setNull("id").set("club", savedClub).sample());
+                ClubMemberFixture.createClubMember(savedClub));
 
-        UpdateClubMemberCommand command = UpdateClubMemberCommand.builder()
-                .clubMemberId(savedClubMember.getId())
-                .name("test")
-                .phoneNumber("010-1234-5678")
-                .studentNumber("60001234")
-                .position(Position.LEADER)
-                .department("test").build();
+        UpdateClubMemberCommand command = getUpdateClubMemberCommand(savedClubMember);
 
         //when
         facadeCentralClubMemberService.update(command);
 
         //then
         ClubMember updatedClubMember = clubMemberService.getById(savedClubMember.getId());
-        assertThat(updatedClubMember.getName()).isEqualTo("test");
-        assertThat(updatedClubMember.getPhoneNumber()).isEqualTo("010-1234-5678");
-        assertThat(updatedClubMember.getStudentNumber()).isEqualTo("60001234");
-        assertThat(updatedClubMember.getPosition()).isEqualTo(Position.LEADER);
-        assertThat(updatedClubMember.getDepartment()).isEqualTo("test");
+
+        assertThat(updatedClubMember.getName()).isEqualTo(command.name());
+        assertThat(updatedClubMember.getPhoneNumber()).isEqualTo(command.phoneNumber());
+        assertThat(updatedClubMember.getStudentNumber()).isEqualTo(command.studentNumber());
+        assertThat(updatedClubMember.getPosition()).isEqualTo(command.position());
+        assertThat(updatedClubMember.getDepartment()).isEqualTo(command.department());
+    }
+
+    @Disabled("TODO: 동아리 소속 여부 검증 로직 추가 후 활성화")
+    @DisplayName("동아리에 속해있지 않은 멤버를 수정하면 예외를 발생시킨다.")
+    @Test
+    void updateWhenOtherClubLeader() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        ClubMember savedClubMember = clubMemberRepository.save(
+                ClubMemberFixture.createClubMember(savedClub));
+
+        Club other = clubRepository.save(ClubFixture.createClub()); // 검증 불가
+
+        UpdateClubMemberCommand command = getUpdateClubMemberCommand(savedClubMember);
+
+        // when & then
+        assertThatThrownBy(() -> facadeCentralClubMemberService.update(command))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("동아리원을 개별 삭제할 수 있다.")
     @Test
     void deleteClubMember() {
         // given
-        User user = UserFixture.createClubUser();
-        User savedUser = userRepository.save(user);
-        Club club = ClubFixture.createClub(savedUser);
-        Club savedClub = clubRepository.save(club);
-        ClubMember clubMember = ClubMemberFixture.createClubMember(savedClub);
-        ClubMember savedClubMember = clubMemberRepository.save(clubMember);
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        ClubMember savedClubMember = clubMemberRepository.save(
+                ClubMemberFixture.createClubMember(savedClub));
         ClubMember found = clubMemberService.getById(savedClubMember.getId());
 
         //when
@@ -184,9 +185,8 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
 
         //then
         assertThat(found).isNotNull();
-        assertThatThrownBy(() -> {
-            clubMemberService.getById(savedClubMember.getId());
-        }).isInstanceOf(ResourceNotFound.class);
+        assertThatThrownBy(() -> clubMemberService.getById(savedClubMember.getId()))
+                .isInstanceOf(ResourceNotFound.class);
     }
 
     @DisplayName("자신의 동아리에 속해있지 않은 동아리원을 삭제한다면, 예외를 발생시킨다.")
@@ -205,28 +205,21 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         User savedOtherUser = userRepository.save(otherUser);
         Club other = ClubFixture.createClub(savedOtherUser);
         Club savedOther = clubRepository.save(other);
-        //when & then
-        assertThatThrownBy(() -> {
-            facadeCentralClubMemberService.delete(savedOther.getId(), savedClubMember.getId());
-        }).isInstanceOf(IllegalArgumentException.class);
+
+        // when & then
+        assertThatThrownBy(() -> facadeCentralClubMemberService.delete(savedOther.getId(),
+                savedClubMember.getId()))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @DisplayName("동아리원을 개별 생성할 수 있다.")
     @Test
     void create() {
         // given
-        User user = UserFixture.createClubUser();
-        User savedUser = userRepository.save(user);
-        Club club = ClubFixture.createClub(savedUser);
-        Club savedClub = clubRepository.save(club);
-        CreateClubMemberCommand command = CreateClubMemberCommand.builder()
-                .userId(savedUser.getId())
-                .name("김철수")
-                .studentNumber("60191234")
-                .phoneNumber("010-1234-5678")
-                .position(Position.MEMBER)
-                .department("컴퓨터공학과")
-                .build();
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        CreateClubMemberCommand command = getCreateClubMemberCommand(savedUser);
+
         // when
         facadeCentralClubMemberService.create(command);
 
@@ -236,5 +229,53 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
                 .filter(clubMember -> Objects.equals(clubMember.getName(), "김철수"))
                 .toList();
         assertThat(clubMembers).isNotEmpty();
+    }
+
+    @DisplayName("동아리가 없는 사람이 동아리원을 생성하면 예외를 발생시킨다.")
+    @Test
+    void createWhenUserHasNoClub() {
+        // given
+        User otherUser = userRepository.save(UserFixture.createClubUser());
+        CreateClubMemberCommand command = getCreateClubMemberCommand(otherUser);
+
+        // when & then
+        assertThatThrownBy(() -> facadeCentralClubMemberService.create(command))
+                .isInstanceOf(ResourceNotFound.class);
+    }
+
+    @Disabled("TODO: 권한 검증 로직 추가 후 활성화: 예외 타입은 정책 확정 후 변경")
+    @DisplayName("일반 부원이 동아리원을 생성하면 예외를 발생시킨다.")
+    @Test
+    void createWhenUserHasNoAuth() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createGeneralUser());
+        clubRepository.save(ClubFixture.createClub(savedUser));
+
+        CreateClubMemberCommand command = getCreateClubMemberCommand(savedUser);
+
+        // when & then
+        assertThatThrownBy(() -> facadeCentralClubMemberService.create(command))
+                .isInstanceOf(AccessDeniedException.class);
+    }
+
+    private CreateClubMemberCommand getCreateClubMemberCommand(User savedUser) {
+        return CreateClubMemberCommand.builder()
+                .userId(savedUser.getId())
+                .name("김철수")
+                .studentNumber("60191234")
+                .phoneNumber("010-1234-5678")
+                .position(Position.MEMBER)
+                .department("컴퓨터공학과")
+                .build();
+    }
+
+    private UpdateClubMemberCommand getUpdateClubMemberCommand(ClubMember savedClubMember) {
+        return UpdateClubMemberCommand.builder()
+                .clubMemberId(savedClubMember.getId())
+                .name("test")
+                .phoneNumber("010-1234-5678")
+                .studentNumber("60001234")
+                .position(Position.LEADER)
+                .department("test").build();
     }
 }
