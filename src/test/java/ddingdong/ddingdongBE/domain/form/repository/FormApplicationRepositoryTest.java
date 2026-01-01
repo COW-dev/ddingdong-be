@@ -2,9 +2,7 @@ package ddingdong.ddingdongBE.domain.form.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
