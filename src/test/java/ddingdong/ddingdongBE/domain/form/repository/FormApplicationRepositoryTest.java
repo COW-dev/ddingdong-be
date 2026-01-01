@@ -117,6 +117,102 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 .form(form)
                 .build();
     }
+
+    @DisplayName("주어진 날짜를 기준으로 주어진 개수만큼 최신 폼지의 시작일과 지원 수를 반환한다.")
+    @Test
+    void findRecentFormByDateWithApplicationCount() {
+        // given
+        User user = User.builder()
+                .name("유저")
+                .role(Role.CLUB)
+                .build();
+        User savedUser = userRepository.save(user);
+
+        Club club = Club.builder()
+                .name("동아리")
+                .user(savedUser)
+                .score(Score.from(BigDecimal.ZERO))
+                .build();
+        Club savedClub = clubRepository.save(club);
+
+        Form form1 = Form.builder()
+                .title("폼지")
+                .description("설명")
+                .hasInterview(false)
+                .club(savedClub)
+                .startDate(LocalDate.of(2020, 3, 1))
+                .endDate(LocalDate.of(2020, 4, 1))
+                .sections(List.of("섹션1"))
+                .build();
+        Form savedForm1 = formRepository.save(form1);
+
+        FormApplication formApplication = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("6000000")
+                .email("email@email.com")
+                .phoneNumber("010-0000-000")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm1)
+                .build();
+        FormApplication formApplication2 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("6000000")
+                .email("email@email.com")
+                .phoneNumber("010-0000-000")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm1)
+                .build();
+
+        formApplicationRepository.saveAll(List.of(formApplication, formApplication2));
+
+        Form form2 = Form.builder()
+                .title("폼지")
+                .description("설명")
+                .hasInterview(false)
+                .club(savedClub)
+                .startDate(LocalDate.of(2020, 1, 1))
+                .endDate(LocalDate.of(2020, 2, 1))
+                .sections(List.of("섹션1"))
+                .build();
+        Form savedForm2 = formRepository.save(form2);
+
+        FormApplication formApplication3 = FormApplication.builder()
+                .name("이름1")
+                .studentNumber("6000000")
+                .email("email@email.com")
+                .phoneNumber("010-0000-000")
+                .department("학과1")
+                .status(FormApplicationStatus.SUBMITTED)
+                .form(savedForm2)
+                .build();
+        formApplicationRepository.save(formApplication3);
+
+        Form form3 = Form.builder()
+                .title("폼지")
+                .description("설명")
+                .hasInterview(false)
+                .club(savedClub)
+                .startDate(LocalDate.of(2020, 5, 1))
+                .endDate(LocalDate.of(2020, 6, 1))
+                .sections(List.of("섹션1"))
+                .build();
+        Form savedForm3 = formRepository.save(form3);
+
+        // when
+        List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
+                savedClub.getId(),
+                savedForm1.getEndDate(),
+                3
+        );
+        // then
+        assertThat(recentFormInfos.size()).isEqualTo(2);
+        assertThat(recentFormInfos.get(0).getCount()).isEqualTo(1);
+        assertThat(recentFormInfos.get(0).getDate()).isEqualTo(LocalDate.of(2020, 1, 1));
+        assertThat(recentFormInfos.get(1).getCount()).isEqualTo(2);
+        assertThat(recentFormInfos.get(1).getDate()).isEqualTo(LocalDate.of(2020, 3, 1));
+    }
 }
 //    @DisplayName("지원자 수 상위 5개 학과와 그 개수를 반환한다.")
 //    @Test
