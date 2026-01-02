@@ -2,6 +2,9 @@ package ddingdong.ddingdongBE.domain.form.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
+import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
@@ -11,11 +14,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
-import ddingdong.ddingdongBE.domain.user.entity.Role;
-import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -49,38 +48,17 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
     @Test
     void findTopDepartmentsByFormId() {
         // given
-        User user = User.builder()
-                .name("유저")
-                .role(Role.CLUB)
-                .build();
-        User savedUser = userRepository.save(user);
-
-        Club club = Club.builder()
-                .name("동아리")
-                .user(savedUser)
-                .score(Score.from(BigDecimal.ZERO))
-                .build();
-        Club savedClub = clubRepository.save(club);
-
-        Form form = Form.builder()
-                .title("폼지")
-                .description("설명")
-                .hasInterview(false)
-                .club(savedClub)
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now())
-                .sections(List.of("섹션1"))
-                .build();
-        Form savedForm = formRepository.save(form);
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
 
         List<FormApplication> applications = List.of(
-                createApp(savedForm, "융합소프트웨어학부"),
-                createApp(savedForm, "융합소프트웨어학부"),
-                createApp(savedForm, "디지털콘텐츠디자인학과"),
-                createApp(savedForm, "청소년지도학과"),
-                createApp(savedForm, "산업공학과"),
-                createApp(savedForm, "디지털콘텐츠디자인학과"),
-                createApp(savedForm, "융합소프트웨어학부")
+                FormApplicationFixture.create(savedForm, "융합소프트웨어학부"),
+                FormApplicationFixture.create(savedForm, "융합소프트웨어학부"),
+                FormApplicationFixture.create(savedForm, "디지털콘텐츠디자인학과"),
+                FormApplicationFixture.create(savedForm, "청소년지도학과"),
+                FormApplicationFixture.create(savedForm, "산업공학과"),
+                FormApplicationFixture.create(savedForm, "디지털콘텐츠디자인학과"),
+                FormApplicationFixture.create(savedForm, "융합소프트웨어학부")
         );
         formApplicationRepository.saveAll(applications);
 
@@ -104,83 +82,18 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
     @Test
     void findRecentFormByDateWithApplicationCount() {
         // given
-        User user = User.builder()
-                .name("유저")
-                .role(Role.CLUB)
-                .build();
-        User savedUser = userRepository.save(user);
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
 
-        Club club = Club.builder()
-                .name("동아리")
-                .user(savedUser)
-                .score(Score.from(BigDecimal.ZERO))
-                .build();
-        Club savedClub = clubRepository.save(club);
+        Form savedForm1 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 3, 1), List.of(2020, 4, 1)));
+        FormApplication formApplication1 = FormApplicationFixture.create(savedForm1);
+        FormApplication formApplication2 = FormApplicationFixture.create(savedForm1);
+        formApplicationRepository.saveAll(List.of(formApplication1, formApplication2));
 
-        Form form1 = Form.builder()
-                .title("폼지")
-                .description("설명")
-                .hasInterview(false)
-                .club(savedClub)
-                .startDate(LocalDate.of(2020, 3, 1))
-                .endDate(LocalDate.of(2020, 4, 1))
-                .sections(List.of("섹션1"))
-                .build();
-        Form savedForm1 = formRepository.save(form1);
-
-        FormApplication formApplication = FormApplication.builder()
-                .name("이름1")
-                .studentNumber("6000000")
-                .email("email@email.com")
-                .phoneNumber("010-0000-000")
-                .department("학과1")
-                .status(FormApplicationStatus.SUBMITTED)
-                .form(savedForm1)
-                .build();
-        FormApplication formApplication2 = FormApplication.builder()
-                .name("이름1")
-                .studentNumber("6000000")
-                .email("email@email.com")
-                .phoneNumber("010-0000-000")
-                .department("학과1")
-                .status(FormApplicationStatus.SUBMITTED)
-                .form(savedForm1)
-                .build();
-
-        formApplicationRepository.saveAll(List.of(formApplication, formApplication2));
-
-        Form form2 = Form.builder()
-                .title("폼지")
-                .description("설명")
-                .hasInterview(false)
-                .club(savedClub)
-                .startDate(LocalDate.of(2020, 1, 1))
-                .endDate(LocalDate.of(2020, 2, 1))
-                .sections(List.of("섹션1"))
-                .build();
-        Form savedForm2 = formRepository.save(form2);
-
-        FormApplication formApplication3 = FormApplication.builder()
-                .name("이름1")
-                .studentNumber("6000000")
-                .email("email@email.com")
-                .phoneNumber("010-0000-000")
-                .department("학과1")
-                .status(FormApplicationStatus.SUBMITTED)
-                .form(savedForm2)
-                .build();
+        Form savedForm2 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 1, 1), List.of(2020, 2, 1)));
+        FormApplication formApplication3 = FormApplicationFixture.create(savedForm2);
         formApplicationRepository.save(formApplication3);
 
-        Form form3 = Form.builder()
-                .title("폼지")
-                .description("설명")
-                .hasInterview(false)
-                .club(savedClub)
-                .startDate(LocalDate.of(2020, 5, 1))
-                .endDate(LocalDate.of(2020, 6, 1))
-                .sections(List.of("섹션1"))
-                .build();
-        Form savedForm3 = formRepository.save(form3);
+        Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 5, 1), List.of(2020, 6, 1)));
 
         // when
         List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
@@ -200,38 +113,17 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
     @Test
     void findAllFinalPassedByFormId() {
         // given
-        User user = User.builder()
-                .name("유저")
-                .role(Role.CLUB)
-                .build();
-        User savedUser = userRepository.save(user);
-
-        Club club = Club.builder()
-                .name("동아리")
-                .user(savedUser)
-                .score(Score.from(BigDecimal.ZERO))
-                .build();
-        Club savedClub = clubRepository.save(club);
-
-        Form form = Form.builder()
-                .title("폼지")
-                .description("설명")
-                .hasInterview(false)
-                .club(savedClub)
-                .startDate(LocalDate.now())
-                .endDate(LocalDate.now())
-                .sections(List.of("섹션1"))
-                .build();
-        Form savedForm = formRepository.save(form);
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
 
         List<FormApplication> applications = List.of(
-                createApp(savedForm, FormApplicationStatus.FINAL_PASS),
-                createApp(savedForm, FormApplicationStatus.FINAL_PASS),
-                createApp(savedForm, FormApplicationStatus.FINAL_PASS),
-                createApp(savedForm, FormApplicationStatus.FIRST_PASS),
-                createApp(savedForm, FormApplicationStatus.FINAL_FAIL),
-                createApp(savedForm, FormApplicationStatus.FINAL_FAIL),
-                createApp(savedForm, FormApplicationStatus.SUBMITTED)
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_FAIL),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_FAIL),
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.SUBMITTED)
         );
         formApplicationRepository.saveAll(applications);
 
@@ -241,29 +133,5 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         // then
         assertThat(formApplicationRepository.findAllFinalPassedByFormId(savedForm.getId())
                 .size()).isEqualTo(4);
-    }
-
-    private FormApplication createApp(Form form, String department) {
-        return FormApplication.builder()
-                .name("지원자")
-                .studentNumber("60000000")
-                .phoneNumber("010-0000-000")
-                .email("email@email.com")
-                .department(department)
-                .status(FormApplicationStatus.SUBMITTED)
-                .form(form)
-                .build();
-    }
-
-    private FormApplication createApp(Form form, FormApplicationStatus status) {
-        return FormApplication.builder()
-                .name("지원자")
-                .studentNumber("60000000")
-                .phoneNumber("010-0000-000")
-                .email("email@email.com")
-                .department("학과1")
-                .status(status)
-                .form(form)
-                .build();
     }
 }
