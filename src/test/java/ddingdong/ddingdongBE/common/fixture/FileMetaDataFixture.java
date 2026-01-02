@@ -17,4 +17,16 @@ public class FileMetaDataFixture {
                 .entityId(entityId)
                 .build();
     }
+
+    public static FileMetaData fileMetaData(UUID id, Long entityId, DomainType domainType,
+            String fileKey, String fileName) {
+        return FileMetaData.builder()
+                .id(id)
+                .fileKey(fileKey)
+                .fileStatus(FileStatus.COUPLED)
+                .fileName(fileName)
+                .domainType(domainType)
+                .entityId(entityId)
+                .build();
+    }
 }
