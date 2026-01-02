@@ -31,7 +31,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
             .title("새로운 문서 제목")
             .fileIds(List.of("1","2"))
             .build();
-        doNothing().when(facadeAdminDocumentServiceImpl).create(any(CreateDocumentCommand.class));
+        doNothing().when(facadeAdminDocumentService).create(any(CreateDocumentCommand.class));
 
         // when // then
         mockMvc.perform(MockMvcRequestBuilders.post("/server/admin/documents")
@@ -41,7 +41,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
             .andDo(print())
             .andExpect(status().isCreated());
 
-        verify(facadeAdminDocumentServiceImpl).create(any());
+        verify(facadeAdminDocumentService).create(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -56,7 +56,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
             .fileIds(List.of("1","2"))
             .build();
 
-        doNothing().when(facadeAdminDocumentServiceImpl).update(any(UpdateDocumentCommand.class));
+        doNothing().when(facadeAdminDocumentService).update(any(UpdateDocumentCommand.class));
 
         // when // then
         mockMvc.perform(MockMvcRequestBuilders.patch("/server/admin/documents/{documentId}", updateId)
@@ -65,7 +65,7 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(facadeAdminDocumentServiceImpl).update(any());
+        verify(facadeAdminDocumentService).update(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -80,6 +80,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(facadeAdminDocumentServiceImpl).delete(deletedId);
+        verify(facadeAdminDocumentService).delete(deletedId);
     }
 }

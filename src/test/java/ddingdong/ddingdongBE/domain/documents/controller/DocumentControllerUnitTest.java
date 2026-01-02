@@ -35,7 +35,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         );
         Long totalPageCount = 10L;
         DocumentListPagingQuery queries = DocumentListPagingQuery.of(documents, totalPageCount);
-        when(facadeDocumentServiceImpl.getDocumentList(any())).thenReturn(queries);
+        when(facadeDocumentService.getDocumentList(any())).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/documents?page=1&limit=10")
@@ -60,7 +60,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
             .fileInfoQueries(files)
             .createdAt(LocalDate.now()).build();
         Long documentId = 1L;
-        when(facadeDocumentServiceImpl.getDocument(documentId)).thenReturn(query);
+        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
 
         //when //then
         mockMvc.perform(get("/server/documents/{documentId}", 1L)
