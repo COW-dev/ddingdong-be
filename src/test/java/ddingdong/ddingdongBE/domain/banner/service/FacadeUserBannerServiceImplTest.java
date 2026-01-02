@@ -45,7 +45,7 @@ class FacadeUserBannerServiceImplTest extends TestContainerSupport {
     S3FileService s3FileService;
 
     @BeforeEach
-    void tearDown() {
+    void setUp() {
         fileMetaDataRepository.deleteAllInBatch();
         bannerRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();

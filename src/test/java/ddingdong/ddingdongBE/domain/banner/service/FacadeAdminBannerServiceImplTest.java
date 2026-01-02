@@ -48,7 +48,7 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     private S3FileService s3FileService;
 
     @BeforeEach
-    void tearDown() {
+    void setUp() {
         fileMetaDataRepository.deleteAllInBatch();
         bannerRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
@@ -70,9 +70,9 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         );
 
         fileMetaDataRepository.saveAll(List.of(
-                createPendingFileMetaDataWithId(webImageId),
-                createPendingFileMetaDataWithId(mobileImageId))
-        );
+                FileMetaDataFixture.fileMetaDataWithFileStatus(webImageId, FileStatus.PENDING),
+                FileMetaDataFixture.fileMetaDataWithFileStatus(mobileImageId, FileStatus.PENDING)
+        ));
 
         //when
         Long createdBannerId = facadeAdminBannerService.create(command);
@@ -81,6 +81,7 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         Banner createdBanner = bannerRepository.findById(createdBannerId).orElseThrow();
         List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findAllByEntityIdWithFileStatus(
                 createdBannerId, FileStatus.COUPLED);
+
         assertThat(createdBanner)
                 .extracting("id", "user.id", "link")
                 .contains(
@@ -194,14 +195,5 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                         tuple(DomainType.BANNER_WEB_IMAGE, FileStatus.DELETED),
                         tuple(DomainType.BANNER_MOBILE_IMAGE, FileStatus.DELETED)
                 );
-    }
-
-    private FileMetaData createPendingFileMetaDataWithId(UUID id) {
-        return FileMetaData.builder()
-                .id(id)
-                .fileKey("test")
-                .fileName("test")
-                .fileStatus(FileStatus.PENDING)
-                .build();
     }
 }

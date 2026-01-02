@@ -8,6 +8,7 @@ import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import jakarta.persistence.EntityManager;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,8 @@ class BannerRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
     private BannerRepository bannerRepository;
+    @Autowired
+    private EntityManager entityManager;
 
     @Autowired
     private UserRepository userRepository;
@@ -31,6 +34,8 @@ class BannerRepositoryTest extends DataJpaTestSupport {
 
         // when
         bannerRepository.delete(banner);
+        entityManager.flush();
+        entityManager.clear();
 
         // then
         Optional<Banner> found = bannerRepository.findById(banner.getId());

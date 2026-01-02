@@ -29,4 +29,13 @@ public class FileMetaDataFixture {
                 .entityId(entityId)
                 .build();
     }
+
+    public static FileMetaData fileMetaDataWithFileStatus(UUID id, FileStatus fileStatus) {
+        return FileMetaData.builder()
+                .id(id)
+                .fileKey("test")
+                .fileName("test")
+                .fileStatus(fileStatus)
+                .build();
+    }
 }
