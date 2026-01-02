@@ -20,7 +20,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 
+@WebMvcTest(controllers = DocumentController.class)
 class DocumentControllerUnitTest extends WebApiUnitTestSupport {
 
 
