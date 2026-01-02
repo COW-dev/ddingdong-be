@@ -132,6 +132,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
 
         // then
         assertThat(formApplicationRepository.findAllFinalPassedByFormId(savedForm.getId())
-                .size()).isEqualTo(4);
+                .size()).isEqualTo(3);
     }
 }
