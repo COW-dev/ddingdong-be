@@ -12,15 +12,22 @@ import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.CreateDocumentRequest;
 import ddingdong.ddingdongBE.domain.documents.controller.dto.request.UpdateDocumentRequest;
+import ddingdong.ddingdongBE.domain.documents.service.FacadeAdminDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.CreateDocumentCommand;
 import ddingdong.ddingdongBE.domain.documents.service.dto.command.UpdateDocumentCommand;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+@WebMvcTest(controllers = AdminDocumentController.class)
 public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
+
+    @MockitoBean
+    protected FacadeAdminDocumentService facadeAdminDocumentService;
 
     @WithMockAuthenticatedUser(role = "ADMIN")
     @DisplayName("document 자료 생성 요청을 수행한다.")
@@ -28,20 +35,20 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
     void createDocument() throws Exception {
         // given
         CreateDocumentRequest request = CreateDocumentRequest.builder()
-            .title("새로운 문서 제목")
-            .fileIds(List.of("1","2"))
-            .build();
-        doNothing().when(facadeAdminDocumentServiceImpl).create(any(CreateDocumentCommand.class));
+                .title("새로운 문서 제목")
+                .fileIds(List.of("1", "2"))
+                .build();
+        doNothing().when(facadeAdminDocumentService).create(any(CreateDocumentCommand.class));
 
         // when // then
         mockMvc.perform(MockMvcRequestBuilders.post("/server/admin/documents")
-            .with(csrf())
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(objectMapper.writeValueAsString(request)))
-            .andDo(print())
-            .andExpect(status().isCreated());
+                        .with(csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(request)))
+                .andDo(print())
+                .andExpect(status().isCreated());
 
-        verify(facadeAdminDocumentServiceImpl).create(any());
+        verify(facadeAdminDocumentService).create(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -52,20 +59,21 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
         Long updateId = 1L;
 
         UpdateDocumentRequest request = UpdateDocumentRequest.builder()
-            .title("새로운 문서 제목")
-            .fileIds(List.of("1","2"))
-            .build();
+                .title("새로운 문서 제목")
+                .fileIds(List.of("1", "2"))
+                .build();
 
-        doNothing().when(facadeAdminDocumentServiceImpl).update(any(UpdateDocumentCommand.class));
+        doNothing().when(facadeAdminDocumentService).update(any(UpdateDocumentCommand.class));
 
         // when // then
-        mockMvc.perform(MockMvcRequestBuilders.patch("/server/admin/documents/{documentId}", updateId)
-                .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(request)))
+        mockMvc.perform(
+                        MockMvcRequestBuilders.patch("/server/admin/documents/{documentId}", updateId)
+                                .with(csrf())
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk());
 
-        verify(facadeAdminDocumentServiceImpl).update(any());
+        verify(facadeAdminDocumentService).update(any());
     }
 
     @WithMockAuthenticatedUser(role = "ADMIN")
@@ -80,6 +88,6 @@ public class AdminDocumentControllerUnitTest extends WebApiUnitTestSupport {
                 .andDo(print())
                 .andExpect(status().isOk());
 
-        verify(facadeAdminDocumentServiceImpl).delete(deletedId);
+        verify(facadeAdminDocumentService).delete(deletedId);
     }
 }
