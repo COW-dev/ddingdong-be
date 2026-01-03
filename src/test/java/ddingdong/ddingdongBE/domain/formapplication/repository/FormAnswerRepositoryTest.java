@@ -85,9 +85,9 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         UUID fileId2 = UUID.randomUUID();
         UUID fileId3 = UUID.randomUUID();
 
-        FileMetaData fileMetaData1 = FileMetaDataFixture.formFileMetaData(fileId1, savedFormAnswer1.getId());
-        FileMetaData fileMetaData2 = FileMetaDataFixture.formFileMetaData(fileId2, savedFormAnswer2.getId());
-        FileMetaData fileMetaData3 = FileMetaDataFixture.formFileMetaData(fileId3, savedFormAnswer3.getId());
+        FileMetaData fileMetaData1 = FileMetaDataFixture.createFormFileMetaData(fileId1, savedFormAnswer1.getId());
+        FileMetaData fileMetaData2 = FileMetaDataFixture.createFormFileMetaData(fileId2, savedFormAnswer2.getId());
+        FileMetaData fileMetaData3 = FileMetaDataFixture.createFormFileMetaData(fileId3, savedFormAnswer3.getId());
         fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2, fileMetaData3));
 
         // when
