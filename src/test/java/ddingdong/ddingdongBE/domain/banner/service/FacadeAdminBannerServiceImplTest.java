@@ -70,8 +70,8 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         );
 
         fileMetaDataRepository.saveAll(List.of(
-                FileMetaDataFixture.fileMetaDataWithFileStatus(webImageId, FileStatus.PENDING),
-                FileMetaDataFixture.fileMetaDataWithFileStatus(mobileImageId, FileStatus.PENDING)
+                FileMetaDataFixture.createFileMetaDataWithFileStatus(webImageId, FileStatus.PENDING),
+                FileMetaDataFixture.createFileMetaDataWithFileStatus(mobileImageId, FileStatus.PENDING)
         ));
 
         //when
@@ -106,19 +106,19 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         Banner savedBanner1 = bannerRepository.save(BannerFixture.createBanner(savedUser));
         Banner savedBanner2 = bannerRepository.save(BannerFixture.createBanner(savedUser));
 
-        FileMetaData b1Web = FileMetaDataFixture.fileMetaData(
+        FileMetaData b1Web = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner1.getId(), DomainType.BANNER_WEB_IMAGE, "b1-web-key",
                 "b1-web.png"
         );
-        FileMetaData b1Mobile = FileMetaDataFixture.fileMetaData(
+        FileMetaData b1Mobile = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner1.getId(), DomainType.BANNER_MOBILE_IMAGE, "b1-m-key",
                 "b1-m.png"
         );
-        FileMetaData b2Web = FileMetaDataFixture.fileMetaData(
+        FileMetaData b2Web = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner2.getId(), DomainType.BANNER_WEB_IMAGE, "b2-web-key",
                 "b2-web.png"
         );
-        FileMetaData b2Mobile = FileMetaDataFixture.fileMetaData(
+        FileMetaData b2Mobile = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner2.getId(), DomainType.BANNER_MOBILE_IMAGE, "b2-m-key",
                 "b2-m.png"
         );
@@ -157,10 +157,10 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                 .findFirst()
                 .orElseThrow();
 
-        assertThat(banner1Result.webImageUrlQuery()).isSameAs(b1WebQuery);
-        assertThat(banner1Result.mobileImageUrlQuery()).isSameAs(b1MobileQuery);
-        assertThat(banner2Result.webImageUrlQuery()).isSameAs(b2WebQuery);
-        assertThat(banner2Result.mobileImageUrlQuery()).isSameAs(b2MobileQuery);
+        assertThat(banner1Result.webImageUrlQuery()).isEqualTo(b1WebQuery);
+        assertThat(banner1Result.mobileImageUrlQuery()).isEqualTo(b1MobileQuery);
+        assertThat(banner2Result.webImageUrlQuery()).isEqualTo(b2WebQuery);
+        assertThat(banner2Result.mobileImageUrlQuery()).isEqualTo(b2MobileQuery);
     }
 
     @DisplayName("어드민: Banner 삭제")
@@ -169,11 +169,11 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         //given
         User savedUser = userRepository.save(UserFixture.createGeneralUser());
         Banner savedBanner = bannerRepository.save(BannerFixture.createBanner(savedUser));
-        FileMetaData web = FileMetaDataFixture.fileMetaData(
+        FileMetaData web = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner.getId(), DomainType.BANNER_WEB_IMAGE, "web-key",
                 "web.png"
         );
-        FileMetaData mobile = FileMetaDataFixture.fileMetaData(
+        FileMetaData mobile = FileMetaDataFixture.createCoupledFileMetaData(
                 UUID.randomUUID(), savedBanner.getId(), DomainType.BANNER_MOBILE_IMAGE, "m-key",
                 "m.png"
         );
