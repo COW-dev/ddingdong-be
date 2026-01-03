@@ -19,7 +19,7 @@ public class FormApplicationFixture {
                 .build();
     }
 
-    public static FormApplication create(String name, Form form) {
+    public static FormApplication createWithName(Form form, String name) {
         return FormApplication.builder()
                 .name(name)
                 .studentNumber("20231234")
@@ -45,7 +45,7 @@ public class FormApplicationFixture {
                 .build();
     }
 
-    public static FormApplication create(Form form, String department) {
+    public static FormApplication createWithDepartment(Form form, String department) {
         return FormApplication.builder()
                 .name("이름")
                 .studentNumber("20231234")
