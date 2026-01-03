@@ -1,21 +1,29 @@
 package ddingdong.ddingdongBE.domain.formapplication.repository;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FileMetaDataFixture;
+import ddingdong.ddingdongBE.common.fixture.FormAnswerFixture;
+import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
+import ddingdong.ddingdongBE.common.fixture.FormFieldFixture;
 import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import ddingdong.ddingdongBE.domain.form.entity.FieldType;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileAnswerInfo;
+import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
 import java.util.List;
 import java.util.UUID;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,42 +31,154 @@ import org.springframework.beans.factory.annotation.Autowired;
 class FormAnswerRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
+    ClubRepository clubRepository;
+    @Autowired
     FormAnswerRepository formAnswerRepository;
     @Autowired
     FormFieldRepository formFieldRepository;
     @Autowired
     FormRepository formRepository;
     @Autowired
+    FormApplicationRepository formApplicationRepository;
+    @Autowired
     FileMetaDataRepository fileMetaDataRepository;
+
+    @Test
+    @DisplayName("특정 질문에 대한 답변 개수를 조회한다")
+    void countByFormField() {
+        // given
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication savedFormApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm));
+        FormApplication savedFormApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm));
+        FormField savedFormField = formFieldRepository.save(FormFieldFixture.create(savedForm));
+
+        FormAnswer formAnswer1 = FormAnswerFixture.create(savedFormApplication1, savedFormField);
+        FormAnswer formAnswer2 = FormAnswerFixture.create(savedFormApplication2, savedFormField);
+        formAnswerRepository.saveAll(List.of(formAnswer1, formAnswer2));
+
+        // when
+        int count = formAnswerRepository.countByFormField(savedFormField);
+
+        // then
+        assertThat(count).isEqualTo(2);
+    }
+
+    @Test
+    @DisplayName("특정 폼지의 한 지원자가 작성한 모든 답변을 조회한다")
+    void findAllByFormApplication() {
+        // given
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormField savedFormField1 = formFieldRepository.save(FormFieldFixture.create(savedForm));
+        FormField savedFormField2 = formFieldRepository.save(FormFieldFixture.create(savedForm));
+
+        FormApplication savedApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm));
+        FormApplication savedApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm));
+
+        FormAnswer answer1 = FormAnswerFixture.create(savedApplication1, savedFormField1);
+        FormAnswer answer2 = FormAnswerFixture.create(savedApplication1, savedFormField2);
+        FormAnswer answer3 = FormAnswerFixture.create(savedApplication2, savedFormField1);
+        formAnswerRepository.saveAll(List.of(answer1, answer2, answer3));
+
+        // when
+        List<FormAnswer> results = formAnswerRepository.findAllByFormApplication(savedApplication1);
+
+        // then
+        assertThat(results).hasSize(2);
+        assertThat(results).extracting("value")
+                .containsExactlyInAnyOrder(answer1.getValue(), answer2.getValue());
+    }
 
     @DisplayName("주어진 FormField와 연관된 FormAnswer의 value를 모두 반환한다.")
     @Test
     void findAllValueByFormFieldId() {
         // given
-        FormField formField = FormField.builder()
-                .question("질문입니다")
-                .required(true)
-                .fieldOrder(1)
-                .section("서버")
-                .options(List.of("지문1", "지문2"))
-                .fieldType(FieldType.CHECK_BOX)
-                .form(null)
-                .build();
-        FormField savedField = formFieldRepository.save(formField);
-        FormAnswer formAnswer = FormAnswer.builder()
-                .value(List.of("서버", "웹"))
-                .formField(savedField)
-                .build();
-        FormAnswer formAnswer2 = FormAnswer.builder()
-                .value(List.of("서버입니다", "웹입니다."))
-                .formField(savedField)
-                .build();
-        formAnswerRepository.saveAll(List.of(formAnswer, formAnswer2));
+        FormField savedField = formFieldRepository.save(FormFieldFixture.create(null));
+        FormAnswer formAnswer1 = FormAnswerFixture.create(null, savedField, List.of("서버", "웹"));
+        FormAnswer formAnswer2 = FormAnswerFixture.create(null, savedField,
+                List.of("서버입니다", "웹입니다"));
+        formAnswerRepository.saveAll(List.of(formAnswer1, formAnswer2));
+
         // when
-        List<String> allValueByFormField = formAnswerRepository.findAllValueByFormFieldId(savedField.getId());
+        List<String> allValueByFormField = formAnswerRepository.findAllValueByFormFieldId(
+                savedField.getId());
+
         // then
-        Assertions.assertThat(allValueByFormField).hasSize(2);
-        Assertions.assertThat(allValueByFormField.get(0)).isEqualTo("[\"서버\",\"웹\"]");
+        assertThat(allValueByFormField).hasSize(2);
+        assertThat(allValueByFormField.get(0)).isEqualTo("[\"서버\",\"웹\"]");
+    }
+
+    @Test
+    @DisplayName("특정 질문에 대한 지원자 이름과 답변 내용을 조회한다")
+    void getTextAnswerInfosByFormFieldId() {
+        // given
+        Club savedClub = clubRepository.save(ClubFixture.createClub());
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormField savedFormField = formFieldRepository.save(FormFieldFixture.create(savedForm));
+
+        FormApplication savedApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.createWithName(savedForm, "지원자A"));
+        FormApplication savedApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.createWithName(savedForm, "지원자B"));
+
+        FormAnswer answer1 = FormAnswerFixture.create(savedApplication1, savedFormField,
+                List.of("답변A"));
+        FormAnswer answer2 = FormAnswerFixture.create(savedApplication2, savedFormField,
+                List.of("답변B"));
+        formAnswerRepository.saveAll(List.of(answer1, answer2));
+
+        // when
+        List<TextAnswerInfo> results = formAnswerRepository.getTextAnswerInfosByFormFieldId(
+                savedFormField.getId());
+
+        // then
+        assertThat(results).hasSize(2);
+        assertThat(results.get(0).getName()).isEqualTo("지원자A");
+        assertThat(results.get(0).getValue()).isEqualTo("[\"답변A\"]");
+
+        assertThat(results.get(1).getName()).isEqualTo("지원자B");
+        assertThat(results.get(1).getValue()).isEqualTo("[\"답변B\"]");
+    }
+
+    @Test
+    @DisplayName("업로드된 파일 답변에 대한 메타데이터 정보를 조회한다")
+    void findAllFileAnswerInfo() {
+        // given
+        Form form = formRepository.save(FormFixture.createForm(null));
+        FormField fileField = formFieldRepository.save(FormFieldFixture.create(form));
+
+        FormApplication formApplication = formApplicationRepository.save(
+                FormApplicationFixture.createWithName(form, "이름")
+        );
+        FormAnswer savedAnswer = formAnswerRepository.save(
+                FormAnswerFixture.create(formApplication, fileField, List.of("filename.pdf"))
+        );
+
+        FileMetaData fileMetaData = FileMetaDataFixture.create(
+                UUID.randomUUID(),
+                savedAnswer.getId(),
+                "filename.pdf"
+        );
+        fileMetaDataRepository.save(fileMetaData);
+
+        // when
+        List<Long> answerIds = List.of(savedAnswer.getId());
+        List<FileAnswerInfo> results = formAnswerRepository.findAllFileAnswerInfo(
+                "FORM_FILE",
+                answerIds,
+                "COUPLED"
+        );
+
+        // then
+        assertThat(results).hasSize(1);
+        assertThat(results.get(0).getName()).isEqualTo("이름");
+        assertThat(results.get(0).getFileName()).isEqualTo("filename.pdf");
+        assertThat(results.get(0).getId()).isEqualTo(savedAnswer.getId());
     }
 
     @DisplayName("FormID에 해당하는 모든 FormAnswer ID를 EntityId로 보유한 FileMetaData를 모두 조회한다")
@@ -85,9 +205,9 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         UUID fileId2 = UUID.randomUUID();
         UUID fileId3 = UUID.randomUUID();
 
-        FileMetaData fileMetaData1 = FileMetaDataFixture.formFileMetaData(fileId1, savedFormAnswer1.getId());
-        FileMetaData fileMetaData2 = FileMetaDataFixture.formFileMetaData(fileId2, savedFormAnswer2.getId());
-        FileMetaData fileMetaData3 = FileMetaDataFixture.formFileMetaData(fileId3, savedFormAnswer3.getId());
+        FileMetaData fileMetaData1 = FileMetaDataFixture.create(fileId1, savedFormAnswer1.getId());
+        FileMetaData fileMetaData2 = FileMetaDataFixture.create(fileId2, savedFormAnswer2.getId());
+        FileMetaData fileMetaData3 = FileMetaDataFixture.create(fileId3, savedFormAnswer3.getId());
         fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2, fileMetaData3));
 
         // when
@@ -95,9 +215,12 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
 
         // then
         assertSoftly(softly -> {
-            softly.assertThat(allFileByForm.get(0).getEntityId()).isEqualTo(savedFormAnswer1.getId());
-            softly.assertThat(allFileByForm.get(1).getEntityId()).isEqualTo(savedFormAnswer2.getId());
-            softly.assertThat(allFileByForm.get(2).getEntityId()).isEqualTo(savedFormAnswer3.getId());
+            softly.assertThat(allFileByForm.get(0).getEntityId())
+                    .isEqualTo(savedFormAnswer1.getId());
+            softly.assertThat(allFileByForm.get(1).getEntityId())
+                    .isEqualTo(savedFormAnswer2.getId());
+            softly.assertThat(allFileByForm.get(2).getEntityId())
+                    .isEqualTo(savedFormAnswer3.getId());
         });
     }
 }
