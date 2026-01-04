@@ -45,12 +45,12 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
 
     @BeforeEach
     void setUp() {
+        formAnswerRepository.deleteAllInBatch();
         formApplicationRepository.deleteAllInBatch();
+        formRepository.deleteAllInBatch();
         clubRepository.deleteAllInBatch();
         userRepository.deleteAllInBatch();
-        formRepository.deleteAllInBatch();
         fileMetaDataRepository.deleteAllInBatch();
-        formAnswerRepository.deleteAllInBatch();
     }
 
     @DisplayName("특정 동아리 폼지 지원자의 학과 중 많은 학과 상위 n개를 조회한다.")

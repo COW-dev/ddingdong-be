@@ -26,6 +26,7 @@ import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileAnswerInf
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
 import java.util.List;
 import java.util.UUID;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,15 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     FormApplicationRepository formApplicationRepository;
     @Autowired
     FileMetaDataRepository fileMetaDataRepository;
+
+    @BeforeEach
+    void setUp() {
+        formAnswerRepository.deleteAllInBatch();
+        formApplicationRepository.deleteAllInBatch();
+        formRepository.deleteAllInBatch();
+        clubRepository.deleteAllInBatch();
+        fileMetaDataRepository.deleteAllInBatch();
+    }
 
     @DisplayName("주어진 FormField와 연관된 FormAnswer의 value를 모두 반환한다.")
     @Test
@@ -120,9 +130,9 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         // when
         List<Long> answerIds = List.of(savedAnswer.getId());
         List<FileAnswerInfo> results = formAnswerRepository.findAllFileAnswerInfo(
-                "FORM_FILE",
+                DomainType.FORM_FILE.name(),
                 answerIds,
-                "COUPLED"
+                FileStatus.COUPLED.name()
         );
 
         // then
