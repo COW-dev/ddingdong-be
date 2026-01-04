@@ -49,6 +49,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     @BeforeEach
     void setUp() {
         formAnswerRepository.deleteAllInBatch();
+        formFieldRepository.deleteAllInBatch();
         formApplicationRepository.deleteAllInBatch();
         formRepository.deleteAllInBatch();
         clubRepository.deleteAllInBatch();
