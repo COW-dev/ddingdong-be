@@ -14,6 +14,8 @@ public class FormFieldFixture {
                 .form(form)
                 .question("질문")
                 .options(List.of("선택지"))
+                .required(false)
+                .fieldOrder(1)
                 .build();
     }
 
@@ -24,6 +26,8 @@ public class FormFieldFixture {
                 .form(form)
                 .question(question)
                 .options(List.of("선택지"))
+                .required(false)
+                .fieldOrder(1)
                 .build();
     }
 }
