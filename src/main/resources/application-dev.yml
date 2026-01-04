@@ -31,3 +31,8 @@ jwt:
   issuer: "ddingdong"
   secret: ${JWT_SECRET}
   expiration: 36000
+
+cloud:
+  aws:
+    ses:
+      configuration-set-name: "ddingdong-form-application-result-set"
