@@ -1,32 +1,23 @@
 package ddingdong.ddingdongBE.domain.formapplication.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
-import ddingdong.ddingdongBE.common.fixture.FileMetaDataFixture;
-import ddingdong.ddingdongBE.common.fixture.FormAnswerFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormAnswer;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
-import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileAnswerInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -151,36 +142,5 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         // then
         assertThat(formApplicationRepository.findAllFinalPassedByFormId(savedForm.getId())
                 .size()).isEqualTo(3);
-    }
-
-    @DisplayName("폼 지원서id와 FileMetaData의 entityId와 조인하여 정보를 조회한다")
-    @Test
-    void findAllFileApplicationInfo() {
-        // given
-        FormApplication formApplication = FormApplicationFixture.createWithName(null, "이름1");
-        FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
-        FormAnswer savedFormAnswer1 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication, null));
-
-        FormApplication formApplication2 = FormApplicationFixture.createWithName(null, "이름2");
-        FormApplication savedFormApplication2 = formApplicationRepository.save(formApplication2);
-        FormAnswer savedFormAnswer2 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication2, null));
-
-        FileMetaData fileMetaData1 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름1");
-        FileMetaData fileMetaData2 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름2");
-        fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2));
-        List<Long> ids = List.of(savedFormAnswer1.getId(), savedFormAnswer2.getId());
-
-        // when
-        List<FileAnswerInfo> fileAnswerInfos = formAnswerRepository.findAllFileAnswerInfo(
-                DomainType.FORM_FILE.name(), ids, FileStatus.COUPLED.name());
-
-        // then
-        assertSoftly(softly -> {
-            softly.assertThat(fileAnswerInfos).hasSize(2);
-            softly.assertThat(fileAnswerInfos.get(0).getFileName()).isEqualTo(fileMetaData1.getFileName());
-            softly.assertThat(fileAnswerInfos.get(0).getName()).isEqualTo(savedFormApplication.getName());
-            softly.assertThat(fileAnswerInfos.get(0).getId()).isEqualTo(savedFormAnswer1.getId());
-            softly.assertThat(fileAnswerInfos.get(1).getFileName()).isEqualTo(fileMetaData2.getFileName());
-        });
     }
 }

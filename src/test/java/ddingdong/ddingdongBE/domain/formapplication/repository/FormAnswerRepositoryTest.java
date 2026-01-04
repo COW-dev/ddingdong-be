@@ -12,7 +12,9 @@ import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
@@ -170,6 +172,37 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
                     .isEqualTo(savedFormAnswer2.getId());
             softly.assertThat(allFileByForm.get(2).getEntityId())
                     .isEqualTo(savedFormAnswer3.getId());
+        });
+    }
+
+    @DisplayName("폼 지원서id와 FileMetaData의 entityId와 조인하여 정보를 조회한다")
+    @Test
+    void findAllFileApplicationInfo() {
+        // given
+        FormApplication formApplication = FormApplicationFixture.createWithName(null, "이름1");
+        FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
+        FormAnswer savedFormAnswer1 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication, null));
+
+        FormApplication formApplication2 = FormApplicationFixture.createWithName(null, "이름2");
+        FormApplication savedFormApplication2 = formApplicationRepository.save(formApplication2);
+        FormAnswer savedFormAnswer2 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication2, null));
+
+        FileMetaData fileMetaData1 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름1");
+        FileMetaData fileMetaData2 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름2");
+        fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2));
+        List<Long> ids = List.of(savedFormAnswer1.getId(), savedFormAnswer2.getId());
+
+        // when
+        List<FileAnswerInfo> fileAnswerInfos = formAnswerRepository.findAllFileAnswerInfo(
+                DomainType.FORM_FILE.name(), ids, FileStatus.COUPLED.name());
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(fileAnswerInfos).hasSize(2);
+            softly.assertThat(fileAnswerInfos.get(0).getFileName()).isEqualTo(fileMetaData1.getFileName());
+            softly.assertThat(fileAnswerInfos.get(0).getName()).isEqualTo(savedFormApplication.getName());
+            softly.assertThat(fileAnswerInfos.get(0).getId()).isEqualTo(savedFormAnswer1.getId());
+            softly.assertThat(fileAnswerInfos.get(1).getFileName()).isEqualTo(fileMetaData2.getFileName());
         });
     }
 }
