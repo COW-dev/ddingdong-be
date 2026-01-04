@@ -1,11 +1,10 @@
-package ddingdong.ddingdongBE.domain.form.entity;
+package ddingdong.ddingdongBE.domain.form.service.event;
 
 import ddingdong.ddingdongBE.email.entity.EmailContent;
 
-public record FormResultSendingEmailInfo(
+public record SendFormResultEmailEvent(
         Long emailSendHistoryId,
         String destinationEmail,
         String destinationName,
-        EmailContent emailContent
-) {
+        EmailContent emailContent) {
 }

@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
-import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
+import ddingdong.ddingdongBE.email.entity.EmailContent;
 
 public interface FormResultEmailSender {
 
-    void sendResult(FormResultSendingEmailInfo formResultSendingEmailInfo);
+    void sendResult(String destinationEmail, String destinationName, Long emailHistoryId, EmailContent emailContent);
 }

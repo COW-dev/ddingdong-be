@@ -14,7 +14,6 @@ public class SseConnectionController implements SseConnectionApi {
 
     private final SseConnectionService sseConnectionService;
 
-    //TODO :  API의 헤더에 X-Accel-Buffering: no 설정해, nginx 버퍼링 제거하기
     @Override
     public SseEmitter subscribe(PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();

@@ -29,8 +29,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
-import ddingdong.ddingdongBE.domain.form.service.event.SendFormResultEvent;
+import ddingdong.ddingdongBE.domain.form.service.event.SendFormResultEmailEvent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
@@ -192,13 +191,11 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.target()
         );
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
-        List<FormResultSendingEmailInfo> formResultSendingEmailInfos = formApplications.stream()
-                .map(application -> {
+        formApplications.forEach(application -> {
                     EmailSendHistory emailSendHistory = emailSendHistoryService.save(EmailSendHistory.createPending(application));
-                    return new FormResultSendingEmailInfo(emailSendHistory.getId(), application.getEmail(), application.getName(), emailContent);
-                })
-                .toList();
-        applicationEventPublisher.publishEvent(new SendFormResultEvent(formResultSendingEmailInfos));
+                    applicationEventPublisher.publishEvent(new SendFormResultEmailEvent(
+                            emailSendHistory.getId(), application.getEmail(), application.getName(), emailContent));
+                });
     }
 
     @Transactional
