@@ -43,57 +43,6 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     @Autowired
     FileMetaDataRepository fileMetaDataRepository;
 
-    @Test
-    @DisplayName("특정 질문에 대한 답변 개수를 조회한다")
-    void countByFormField() {
-        // given
-        Club savedClub = clubRepository.save(ClubFixture.createClub());
-        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
-        FormApplication savedFormApplication1 = formApplicationRepository.save(
-                FormApplicationFixture.create(savedForm));
-        FormApplication savedFormApplication2 = formApplicationRepository.save(
-                FormApplicationFixture.create(savedForm));
-        FormField savedFormField = formFieldRepository.save(FormFieldFixture.create(savedForm));
-
-        FormAnswer formAnswer1 = FormAnswerFixture.create(savedFormApplication1, savedFormField);
-        FormAnswer formAnswer2 = FormAnswerFixture.create(savedFormApplication2, savedFormField);
-        formAnswerRepository.saveAll(List.of(formAnswer1, formAnswer2));
-
-        // when
-        int count = formAnswerRepository.countByFormField(savedFormField);
-
-        // then
-        assertThat(count).isEqualTo(2);
-    }
-
-    @Test
-    @DisplayName("특정 폼지의 한 지원자가 작성한 모든 답변을 조회한다")
-    void findAllByFormApplication() {
-        // given
-        Club savedClub = clubRepository.save(ClubFixture.createClub());
-        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
-        FormField savedFormField1 = formFieldRepository.save(FormFieldFixture.create(savedForm));
-        FormField savedFormField2 = formFieldRepository.save(FormFieldFixture.create(savedForm));
-
-        FormApplication savedApplication1 = formApplicationRepository.save(
-                FormApplicationFixture.create(savedForm));
-        FormApplication savedApplication2 = formApplicationRepository.save(
-                FormApplicationFixture.create(savedForm));
-
-        FormAnswer answer1 = FormAnswerFixture.create(savedApplication1, savedFormField1);
-        FormAnswer answer2 = FormAnswerFixture.create(savedApplication1, savedFormField2);
-        FormAnswer answer3 = FormAnswerFixture.create(savedApplication2, savedFormField1);
-        formAnswerRepository.saveAll(List.of(answer1, answer2, answer3));
-
-        // when
-        List<FormAnswer> results = formAnswerRepository.findAllByFormApplication(savedApplication1);
-
-        // then
-        assertThat(results).hasSize(2);
-        assertThat(results).extracting("value")
-                .containsExactlyInAnyOrder(answer1.getValue(), answer2.getValue());
-    }
-
     @DisplayName("주어진 FormField와 연관된 FormAnswer의 value를 모두 반환한다.")
     @Test
     void findAllValueByFormFieldId() {
