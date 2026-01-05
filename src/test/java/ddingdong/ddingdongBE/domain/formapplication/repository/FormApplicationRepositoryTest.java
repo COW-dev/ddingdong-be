@@ -71,16 +71,16 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         // given
         Club savedClub = clubRepository.save(ClubFixture.createClub());
 
-        Form savedForm1 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 3, 1), List.of(2020, 4, 1)));
+        Form savedForm1 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 3, 1), LocalDate.of(2020, 4, 1)));
         FormApplication formApplication1 = FormApplicationFixture.create(savedForm1);
         FormApplication formApplication2 = FormApplicationFixture.create(savedForm1);
         formApplicationRepository.saveAll(List.of(formApplication1, formApplication2));
 
-        Form savedForm2 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 1, 1), List.of(2020, 2, 1)));
+        Form savedForm2 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1)));
         FormApplication formApplication3 = FormApplicationFixture.create(savedForm2);
         formApplicationRepository.save(formApplication3);
 
-        Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 5, 1), List.of(2020, 6, 1)));
+        Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 5, 1), LocalDate.of(2020, 6, 1)));
 
         // when
         List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
