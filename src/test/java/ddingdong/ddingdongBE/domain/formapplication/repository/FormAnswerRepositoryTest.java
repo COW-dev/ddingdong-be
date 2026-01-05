@@ -26,7 +26,6 @@ import ddingdong.ddingdongBE.domain.formapplication.repository.dto.FileAnswerInf
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.TextAnswerInfo;
 import java.util.List;
 import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,16 +44,6 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     FormApplicationRepository formApplicationRepository;
     @Autowired
     FileMetaDataRepository fileMetaDataRepository;
-
-    @BeforeEach
-    void setUp() {
-        formAnswerRepository.deleteAllInBatch();
-        formFieldRepository.deleteAllInBatch();
-        formApplicationRepository.deleteAllInBatch();
-        formRepository.deleteAllInBatch();
-        clubRepository.deleteAllInBatch();
-        fileMetaDataRepository.deleteAllInBatch();
-    }
 
     @DisplayName("주어진 FormField와 연관된 FormAnswer의 value를 모두 반환한다.")
     @Test
@@ -76,7 +65,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     }
 
     @Test
-    @DisplayName("특정 질문에 대한 지원자 이름과 답변 내용을 조회한다")
+    @DisplayName("특정 질문에 답한 모든 지원자 이름과 답변 내용을 조회한다")
     void getTextAnswerInfosByFormFieldId() {
         // given
         Club savedClub = clubRepository.save(ClubFixture.createClub());
@@ -84,9 +73,9 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         FormField savedFormField = formFieldRepository.save(FormFieldFixture.create(savedForm));
 
         FormApplication savedApplication1 = formApplicationRepository.save(
-                FormApplicationFixture.createWithName(savedForm, "지원자A"));
+                FormApplicationFixture.create(savedForm, "지원자A", "학과"));
         FormApplication savedApplication2 = formApplicationRepository.save(
-                FormApplicationFixture.createWithName(savedForm, "지원자B"));
+                FormApplicationFixture.create(savedForm, "지원자B", "학과"));
 
         FormAnswer answer1 = FormAnswerFixture.create(savedApplication1, savedFormField,
                 List.of("답변A"));
@@ -115,7 +104,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         FormField fileField = formFieldRepository.save(FormFieldFixture.create(form));
 
         FormApplication formApplication = formApplicationRepository.save(
-                FormApplicationFixture.createWithName(form, "이름")
+                FormApplicationFixture.create(form, "이름", "학과")
         );
         FormAnswer savedAnswer = formAnswerRepository.save(
                 FormAnswerFixture.create(formApplication, fileField, List.of("filename.pdf"))
@@ -124,6 +113,7 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         FileMetaData fileMetaData = FileMetaDataFixture.create(
                 UUID.randomUUID(),
                 savedAnswer.getId(),
+                DomainType.FORM_FILE,
                 "filename.pdf"
         );
         fileMetaDataRepository.save(fileMetaData);
@@ -167,9 +157,9 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
         UUID fileId2 = UUID.randomUUID();
         UUID fileId3 = UUID.randomUUID();
 
-        FileMetaData fileMetaData1 = FileMetaDataFixture.create(fileId1, savedFormAnswer1.getId());
-        FileMetaData fileMetaData2 = FileMetaDataFixture.create(fileId2, savedFormAnswer2.getId());
-        FileMetaData fileMetaData3 = FileMetaDataFixture.create(fileId3, savedFormAnswer3.getId());
+        FileMetaData fileMetaData1 = FileMetaDataFixture.create(fileId1, savedFormAnswer1.getId(), DomainType.FORM_FILE);
+        FileMetaData fileMetaData2 = FileMetaDataFixture.create(fileId2, savedFormAnswer2.getId(), DomainType.FORM_FILE);
+        FileMetaData fileMetaData3 = FileMetaDataFixture.create(fileId3, savedFormAnswer3.getId(), DomainType.FORM_FILE);
         fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2, fileMetaData3));
 
         // when
@@ -190,16 +180,16 @@ class FormAnswerRepositoryTest extends DataJpaTestSupport {
     @Test
     void findAllFileApplicationInfo() {
         // given
-        FormApplication formApplication = FormApplicationFixture.createWithName(null, "이름1");
+        FormApplication formApplication = FormApplicationFixture.create(null, "이름1", "학과");
         FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         FormAnswer savedFormAnswer1 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication, null));
 
-        FormApplication formApplication2 = FormApplicationFixture.createWithName(null, "이름2");
+        FormApplication formApplication2 = FormApplicationFixture.create(null, "이름2", "학과");
         FormApplication savedFormApplication2 = formApplicationRepository.save(formApplication2);
         FormAnswer savedFormAnswer2 = formAnswerRepository.save(FormAnswerFixture.create(savedFormApplication2, null));
 
-        FileMetaData fileMetaData1 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름1");
-        FileMetaData fileMetaData2 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), "파일 이름2");
+        FileMetaData fileMetaData1 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), DomainType.FORM_FILE, "파일 이름1");
+        FileMetaData fileMetaData2 = FileMetaDataFixture.create(UUID.randomUUID(), savedFormAnswer1.getId(), DomainType.FORM_FILE, "파일 이름2");
         fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2));
         List<Long> ids = List.of(savedFormAnswer1.getId(), savedFormAnswer2.getId());
 

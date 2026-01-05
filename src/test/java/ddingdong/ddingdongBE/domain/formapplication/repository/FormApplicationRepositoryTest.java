@@ -8,25 +8,19 @@ import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
-import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
-import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.time.LocalDate;
 import java.util.List;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 class FormApplicationRepositoryTest extends DataJpaTestSupport {
-
-    @Autowired
-    private UserRepository userRepository;
 
     @Autowired
     private ClubRepository clubRepository;
@@ -37,21 +31,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
     @Autowired
     private FormApplicationRepository formApplicationRepository;
 
-    @Autowired
-    private FileMetaDataRepository fileMetaDataRepository;
-
-    @Autowired
-    private FormAnswerRepository formAnswerRepository;
-
-    @BeforeEach
-    void setUp() {
-        formAnswerRepository.deleteAllInBatch();
-        formApplicationRepository.deleteAllInBatch();
-        formRepository.deleteAllInBatch();
-        clubRepository.deleteAllInBatch();
-        userRepository.deleteAllInBatch();
-        fileMetaDataRepository.deleteAllInBatch();
-    }
 
     @DisplayName("특정 동아리 폼지 지원자의 학과 중 많은 학과 상위 n개를 조회한다.")
     @Test
@@ -61,13 +40,13 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
 
         List<FormApplication> applications = List.of(
-                FormApplicationFixture.createWithDepartment(savedForm, "융합소프트웨어학부"),
-                FormApplicationFixture.createWithDepartment(savedForm, "융합소프트웨어학부"),
-                FormApplicationFixture.createWithDepartment(savedForm, "디지털콘텐츠디자인학과"),
-                FormApplicationFixture.createWithDepartment(savedForm, "청소년지도학과"),
-                FormApplicationFixture.createWithDepartment(savedForm, "산업공학과"),
-                FormApplicationFixture.createWithDepartment(savedForm, "디지털콘텐츠디자인학과"),
-                FormApplicationFixture.createWithDepartment(savedForm, "융합소프트웨어학부")
+                FormApplicationFixture.create(savedForm, "이름", "융합소프트웨어학부"),
+                FormApplicationFixture.create(savedForm, "이름", "융합소프트웨어학부"),
+                FormApplicationFixture.create(savedForm, "이름", "디지털콘텐츠디자인학과"),
+                FormApplicationFixture.create(savedForm, "이름", "청소년지도학과"),
+                FormApplicationFixture.create(savedForm, "이름", "산업공학과"),
+                FormApplicationFixture.create(savedForm, "이름", "디지털콘텐츠디자인학과"),
+                FormApplicationFixture.create(savedForm, "이름", "융합소프트웨어학부")
         );
         formApplicationRepository.saveAll(applications);
 
