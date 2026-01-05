@@ -43,6 +43,7 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
                         LEFT JOIN form_application fa
                         ON recent_forms.id = fa.form_id
                         GROUP BY recent_forms.id
+                        ORDER BY start_date
             """, nativeQuery = true)
     List<RecentFormInfo> findRecentFormByDateWithApplicationCount(
             @Param("clubId") Long clubId,
