@@ -14,7 +14,6 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.DepartmentInfo;
 import ddingdong.ddingdongBE.domain.formapplication.repository.dto.RecentFormInfo;
-import jakarta.persistence.EntityManager;
 import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
@@ -31,10 +30,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
     private FormApplicationRepository formApplicationRepository;
-
-    @Autowired
-    EntityManager em;
-
 
     @DisplayName("특정 동아리 폼지 지원자의 학과 중 많은 학과 상위 n개를 조회한다.")
     @Test
@@ -86,9 +81,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         formApplicationRepository.save(formApplication3);
 
         Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, List.of(2020, 5, 1), List.of(2020, 6, 1)));
-
-        em.flush();
-        em.clear();
 
         // when
         List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
