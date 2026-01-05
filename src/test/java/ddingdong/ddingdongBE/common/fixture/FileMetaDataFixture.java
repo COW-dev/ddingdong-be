@@ -28,4 +28,25 @@ public class FileMetaDataFixture {
                 .entityId(entityId)
                 .build();
     }
+
+    public static FileMetaData createCoupledFileMetaData(UUID id, Long entityId, DomainType domainType,
+            String fileKey, String fileName) {
+        return FileMetaData.builder()
+                .id(id)
+                .fileKey(fileKey)
+                .fileStatus(FileStatus.COUPLED)
+                .fileName(fileName)
+                .domainType(domainType)
+                .entityId(entityId)
+                .build();
+    }
+
+    public static FileMetaData createFileMetaDataWithFileStatus(UUID id, FileStatus fileStatus) {
+        return FileMetaData.builder()
+                .id(id)
+                .fileKey("test")
+                .fileName("test")
+                .fileStatus(fileStatus)
+                .build();
+    }
 }

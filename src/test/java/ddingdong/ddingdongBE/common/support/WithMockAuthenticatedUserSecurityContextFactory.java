@@ -23,7 +23,7 @@ public class WithMockAuthenticatedUserSecurityContextFactory implements
 
         PrincipalDetails principalDetails = new PrincipalDetails(user);
         context.setAuthentication(new TestingAuthenticationToken(principalDetails, principalDetails.getPassword(),
-                String.valueOf(principalDetails.getAuthorities())));
+                principalDetails.getAuthorities()));
         return context;
     }
 }

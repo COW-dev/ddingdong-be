@@ -12,6 +12,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import ddingdong.ddingdongBE.common.support.WebApiUnitTestSupport;
 import ddingdong.ddingdongBE.common.support.WithMockAuthenticatedUser;
 import ddingdong.ddingdongBE.domain.documents.entity.Document;
+import ddingdong.ddingdongBE.domain.documents.service.FacadeDocumentService;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentListPagingQuery;
 import ddingdong.ddingdongBE.domain.documents.service.dto.query.DocumentQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
@@ -20,9 +21,13 @@ import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
+@WebMvcTest(controllers = DocumentController.class)
 class DocumentControllerUnitTest extends WebApiUnitTestSupport {
-
+    @MockitoBean
+    protected FacadeDocumentService facadeDocumentService;
 
     @WithMockAuthenticatedUser
     @DisplayName("documents 조회 요청을 수행한다.")
@@ -35,7 +40,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
         );
         Long totalPageCount = 10L;
         DocumentListPagingQuery queries = DocumentListPagingQuery.of(documents, totalPageCount);
-        when(facadeDocumentServiceImpl.getDocumentList(any())).thenReturn(queries);
+        when(facadeDocumentService.getDocumentList(any())).thenReturn(queries);
 
         //when //then
         mockMvc.perform(get("/server/documents?page=1&limit=10")
@@ -60,7 +65,7 @@ class DocumentControllerUnitTest extends WebApiUnitTestSupport {
             .fileInfoQueries(files)
             .createdAt(LocalDate.now()).build();
         Long documentId = 1L;
-        when(facadeDocumentServiceImpl.getDocument(documentId)).thenReturn(query);
+        when(facadeDocumentService.getDocument(documentId)).thenReturn(query);
 
         //when //then
         mockMvc.perform(get("/server/documents/{documentId}", 1L)

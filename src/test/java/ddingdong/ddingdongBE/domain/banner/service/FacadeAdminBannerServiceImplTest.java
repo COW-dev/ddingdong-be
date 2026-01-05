@@ -2,10 +2,13 @@ package ddingdong.ddingdongBE.domain.banner.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 import com.github.f4b6a3.uuid.UuidCreator;
-import com.navercorp.fixturemonkey.FixtureMonkey;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
+import ddingdong.ddingdongBE.common.fixture.BannerFixture;
+import ddingdong.ddingdongBE.common.fixture.FileMetaDataFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
@@ -17,7 +20,8 @@ import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
-import jakarta.persistence.EntityManager;
+import ddingdong.ddingdongBE.file.service.S3FileService;
+import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
@@ -26,6 +30,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
@@ -38,17 +43,15 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
     private UserRepository userRepository;
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
-    @Autowired
-    private EntityManager entityManager;
 
-    private final FixtureMonkey fixtureMonkey = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
-
+    @MockitoBean
+    private S3FileService s3FileService;
 
     @BeforeEach
-    void resetAutoIncrement() {
-        entityManager.createNativeQuery("ALTER TABLE banner AUTO_INCREMENT = 1").executeUpdate();
-        fileMetaDataRepository.deleteAll();
-        bannerRepository.deleteAll();
+    void setUp() {
+        fileMetaDataRepository.deleteAllInBatch();
+        bannerRepository.deleteAllInBatch();
+        userRepository.deleteAllInBatch();
     }
 
     @DisplayName("어드민: Banner 생성")
@@ -58,7 +61,7 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         String link = "testLink";
         UUID webImageId = UuidCreator.getTimeOrderedEpoch();
         UUID mobileImageId = UuidCreator.getTimeOrderedEpoch();
-        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
+        User savedUser = userRepository.save(UserFixture.createGeneralUser());
         CreateBannerCommand command = new CreateBannerCommand(
                 savedUser,
                 link,
@@ -67,20 +70,9 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         );
 
         fileMetaDataRepository.saveAll(List.of(
-                        FileMetaData.builder()
-                                .id(webImageId)
-                                .fileKey("test")
-                                .fileName("test")
-                                .fileStatus(FileStatus.PENDING)
-                                .build(),
-                        FileMetaData.builder()
-                                .id(mobileImageId)
-                                .fileKey("test")
-                                .fileName("test")
-                                .fileStatus(FileStatus.PENDING)
-                                .build()
-                )
-        );
+                FileMetaDataFixture.createFileMetaDataWithFileStatus(webImageId, FileStatus.PENDING),
+                FileMetaDataFixture.createFileMetaDataWithFileStatus(mobileImageId, FileStatus.PENDING)
+        ));
 
         //when
         Long createdBannerId = facadeAdminBannerService.create(command);
@@ -89,6 +81,7 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         Banner createdBanner = bannerRepository.findById(createdBannerId).orElseThrow();
         List<FileMetaData> fileMetaDataList = fileMetaDataRepository.findAllByEntityIdWithFileStatus(
                 createdBannerId, FileStatus.COUPLED);
+
         assertThat(createdBanner)
                 .extracting("id", "user.id", "link")
                 .contains(
@@ -104,94 +97,87 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
                 );
     }
 
-    @DisplayName("어드민: Banner 목록 조회")
+    @DisplayName("어드민: Banner 목록 조회 - 배너별로 web/mobile urlQuery가 정확히 매핑된다.")
     @Test
     void findAll() {
-        //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
-        bannerRepository.saveAll(List.of(
-                fixtureMonkey.giveMeBuilder(Banner.class)
-                        .setNull("id")
-                        .set("user", savedUser)
-                        .set("deletedAt", null)
-                        .sample(),
-                fixtureMonkey.giveMeBuilder(Banner.class)
-                        .setNull("id")
-                        .set("user", savedUser)
-                        .set("deletedAt", null)
-                        .sample()
-        ));
+        // given
+        User savedUser = userRepository.save(UserFixture.createGeneralUser());
 
-        FileMetaData fileMetaData1 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", UUID.randomUUID())
-                .set("entityId", 1L)
-                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
-                .set("domainType", DomainType.BANNER_WEB_IMAGE)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample();
-        FileMetaData fileMetaData2 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", UUID.randomUUID())
-                .set("entityId", 1L)
-                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
-                .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample();
-        FileMetaData fileMetaData3 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", UUID.randomUUID())
-                .set("entityId", 2L)
-                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
-                .set("domainType", DomainType.BANNER_WEB_IMAGE)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample();
-        FileMetaData fileMetaData4 = fixtureMonkey.giveMeBuilder(FileMetaData.class)
-                .set("id", UUID.randomUUID())
-                .set("entityId", 2L)
-                .set("fileKey", "/test/FILE/2024-01-01/cow/test")
-                .set("domainType", DomainType.BANNER_MOBILE_IMAGE)
-                .set("fileStatus", FileStatus.COUPLED)
-                .sample();
-        fileMetaDataRepository.saveAll(List.of(fileMetaData1, fileMetaData2, fileMetaData3, fileMetaData4));
+        Banner savedBanner1 = bannerRepository.save(BannerFixture.createBanner(savedUser));
+        Banner savedBanner2 = bannerRepository.save(BannerFixture.createBanner(savedUser));
 
-        //when
+        FileMetaData b1Web = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner1.getId(), DomainType.BANNER_WEB_IMAGE, "b1-web-key",
+                "b1-web.png"
+        );
+        FileMetaData b1Mobile = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner1.getId(), DomainType.BANNER_MOBILE_IMAGE, "b1-m-key",
+                "b1-m.png"
+        );
+        FileMetaData b2Web = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner2.getId(), DomainType.BANNER_WEB_IMAGE, "b2-web-key",
+                "b2-web.png"
+        );
+        FileMetaData b2Mobile = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner2.getId(), DomainType.BANNER_MOBILE_IMAGE, "b2-m-key",
+                "b2-m.png"
+        );
+        fileMetaDataRepository.saveAll(
+                List.of(b1Web, b1Mobile, b2Web, b2Mobile));
+
+        UploadedFileUrlAndNameQuery b1WebQuery = mock(UploadedFileUrlAndNameQuery.class);
+        UploadedFileUrlAndNameQuery b1MobileQuery = mock(UploadedFileUrlAndNameQuery.class);
+        UploadedFileUrlAndNameQuery b2WebQuery = mock(UploadedFileUrlAndNameQuery.class);
+        UploadedFileUrlAndNameQuery b2MobileQuery = mock(UploadedFileUrlAndNameQuery.class);
+
+        given(s3FileService.getUploadedFileUrlAndName("b1-web-key", "b1-web.png")).willReturn(
+                b1WebQuery);
+        given(s3FileService.getUploadedFileUrlAndName("b1-m-key", "b1-m.png")).willReturn(
+                b1MobileQuery);
+        given(s3FileService.getUploadedFileUrlAndName("b2-web-key", "b2-web.png")).willReturn(
+                b2WebQuery);
+        given(s3FileService.getUploadedFileUrlAndName("b2-m-key", "b2-m.png")).willReturn(
+                b2MobileQuery);
+
+        // when
         List<AdminBannerListQuery> result = facadeAdminBannerService.findAll();
 
-        //then
+        // then
         assertThat(result)
                 .hasSize(2)
-                .isSortedAccordingTo(Comparator.comparing(AdminBannerListQuery::id).reversed())
-                .satisfies(queries -> {
-                    AdminBannerListQuery firstBanner = queries.get(0);
-                    AdminBannerListQuery secondBanner = queries.get(1);
+                .isSortedAccordingTo(Comparator.comparing(AdminBannerListQuery::id).reversed());
 
-                    // id=2인 배너 검증 (역순이므로 첫 번째)
-                    assertThat(firstBanner)
-                            .satisfies(banner -> {
-                                assertThat(banner.id()).isEqualTo(2L);
-                                assertThat(banner.webImageUrlQuery()).isNotNull();
-                                assertThat(banner.mobileImageUrlQuery()).isNotNull();
-                            });
+        AdminBannerListQuery banner1Result = result.stream()
+                .filter(it -> it.id().equals(savedBanner1.getId()))
+                .findFirst()
+                .orElseThrow();
 
-                    // id=1인 배너 검증
-                    assertThat(secondBanner)
-                            .satisfies(banner -> {
-                                assertThat(banner.id()).isEqualTo(1L);
-                                assertThat(banner.webImageUrlQuery()).isNotNull();
-                                assertThat(banner.mobileImageUrlQuery()).isNotNull();
-                            });
-                });
+        AdminBannerListQuery banner2Result = result.stream()
+                .filter(it -> it.id().equals(savedBanner2.getId()))
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(banner1Result.webImageUrlQuery()).isEqualTo(b1WebQuery);
+        assertThat(banner1Result.mobileImageUrlQuery()).isEqualTo(b1MobileQuery);
+        assertThat(banner2Result.webImageUrlQuery()).isEqualTo(b2WebQuery);
+        assertThat(banner2Result.mobileImageUrlQuery()).isEqualTo(b2MobileQuery);
     }
 
     @DisplayName("어드민: Banner 삭제")
     @Test
     void delete() {
         //given
-        User savedUser = userRepository.save(fixtureMonkey.giveMeBuilder(User.class).set("id", null).sample());
-        Banner banner = fixtureMonkey.giveMeBuilder(Banner.class)
-                .setNull("id")
-                .set("user", savedUser)
-                .set("deletedAt", null)
-                .sample();
-        Banner savedBanner = bannerRepository.save(banner);
+        User savedUser = userRepository.save(UserFixture.createGeneralUser());
+        Banner savedBanner = bannerRepository.save(BannerFixture.createBanner(savedUser));
+        FileMetaData web = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner.getId(), DomainType.BANNER_WEB_IMAGE, "web-key",
+                "web.png"
+        );
+        FileMetaData mobile = FileMetaDataFixture.createCoupledFileMetaData(
+                UUID.randomUUID(), savedBanner.getId(), DomainType.BANNER_MOBILE_IMAGE, "m-key",
+                "m.png"
+        );
+        fileMetaDataRepository.saveAll(List.of(web, mobile));
 
         //when
         facadeAdminBannerService.delete(savedBanner.getId());
@@ -199,5 +185,15 @@ class FacadeAdminBannerServiceImplTest extends TestContainerSupport {
         //then
         List<Banner> result = bannerRepository.findAll();
         assertThat(result).isEmpty();
+
+        List<FileMetaData> deleted = fileMetaDataRepository.findAllByEntityIdWithFileStatus(
+                savedBanner.getId(), FileStatus.DELETED);
+
+        assertThat(deleted).hasSize(2)
+                .extracting(FileMetaData::getDomainType, FileMetaData::getFileStatus)
+                .containsExactlyInAnyOrder(
+                        tuple(DomainType.BANNER_WEB_IMAGE, FileStatus.DELETED),
+                        tuple(DomainType.BANNER_MOBILE_IMAGE, FileStatus.DELETED)
+                );
     }
 }
