@@ -27,8 +27,8 @@ public class GeneralFeedService implements FeedService {
     }
 
     @Override
-    public Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId) {
-        Slice<Feed> feedPages = feedRepository.findNewestPerClubPage(size + 1, currentCursorId);
+    public Slice<Feed> getAllFeedPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPages = feedRepository.getAllFeedPage(size + 1, currentCursorId);
         return buildSlice(feedPages, size);
     }
 
