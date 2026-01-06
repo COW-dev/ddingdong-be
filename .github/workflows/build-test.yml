@@ -33,4 +33,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: CI Test
-        run: ./gradlew clean test -Duser.timezone=Asia/Seoul
+        run: ./gradlew clean test -Duser.timezone=Asia/Seoul --stacktrace --info
