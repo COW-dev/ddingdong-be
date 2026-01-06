@@ -24,6 +24,18 @@ public class FormFixture {
                 .build();
     }
 
+    public static Form createForm(Club club, LocalDate startDate, LocalDate endDate) {
+        return Form.builder()
+                .title("모집 지원서")
+                .description("동아리 모집을 위한 지원서입니다.")
+                .startDate(startDate)
+                .endDate(endDate)
+                .hasInterview(true)
+                .sections(List.of("자기소개", "지원 동기", "경력 및 경험"))
+                .club(club)
+                .build();
+    }
+
     public static Form formWithClubNull() {
         return Form.builder()
                 .title("모집 지원서")
