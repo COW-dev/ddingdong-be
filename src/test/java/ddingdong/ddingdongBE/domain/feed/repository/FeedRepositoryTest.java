@@ -1,26 +1,19 @@
 package ddingdong.ddingdongBE.domain.feed.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import com.navercorp.fixturemonkey.FixtureMonkey;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.FeedFixture;
+import ddingdong.ddingdongBE.common.fixture.VodProcessingJobFixture;
 import ddingdong.ddingdongBE.common.support.DataJpaTestSupport;
-import ddingdong.ddingdongBE.common.support.FixtureMonkeyFactory;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
-import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
-import ddingdong.ddingdongBE.domain.scorehistory.entity.Score;
-import ddingdong.ddingdongBE.domain.vodprocessing.entity.ConvertJobStatus;
-import ddingdong.ddingdongBE.domain.vodprocessing.entity.VodProcessingJob;
 import ddingdong.ddingdongBE.domain.vodprocessing.repository.VodProcessingJobRepository;
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,10 +22,10 @@ import org.springframework.data.domain.Slice;
 class FeedRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
-    private ClubRepository clubRepository;
+    private FeedRepository feedRepository;
 
     @Autowired
-    private FeedRepository feedRepository;
+    private ClubRepository clubRepository;
 
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
@@ -40,342 +33,198 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     @Autowired
     private VodProcessingJobRepository vodProcessingJobRepository;
 
-    private final FixtureMonkey fixture = FixtureMonkeyFactory.getNotNullBuilderIntrospectorMonkey();
+    @DisplayName("클럽별 피드 페이지 조회 - IMAGE 타입 피드는 조회된다")
+    @Test
+    void findPageByClubIdOrderById_ImageFeeds() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed imageFeed1 = feedRepository.save(FeedFixture.createImageFeed(club, "이미지 피드 1"));
+        Feed imageFeed2 = feedRepository.save(FeedFixture.createImageFeed(club, "이미지 피드 2"));
 
-    @BeforeEach
-    void setUp() {
-        feedRepository.deleteAll();
+        // when
+        Slice<Feed> result = feedRepository.findPageByClubIdOrderById(club.getId(), 10, -1L);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(2);
+            softly.assertThat(result.getContent()).extracting(Feed::getActivityContent)
+                    .containsExactly("이미지 피드 2", "이미지 피드 1");
+        });
+    }
+
+    @DisplayName("클럽별 피드 페이지 조회 - VIDEO 타입 피드 중 VOD 처리 완료된 피드만 조회된다")
+    @Test
+    void findPageByClubIdOrderById_VideoFeedsWithCompleteVod() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed videoFeed1 = feedRepository.save(FeedFixture.createVideoFeed(club, "비디오 피드 1"));
+        Feed videoFeed2 = feedRepository.save(FeedFixture.createVideoFeed(club, "비디오 피드 2"));
+
+        // 첫 번째 비디오만 VOD 처리 완료
+        FileMetaData fileMetaData = fileMetaDataRepository.save(VodProcessingJobFixture.createFileMetaData(videoFeed1.getId()));
+        vodProcessingJobRepository.save(VodProcessingJobFixture.createCompleteVodProcessingJob(fileMetaData));
+
+        // when
+        Slice<Feed> result = feedRepository.findPageByClubIdOrderById(club.getId(), 10, -1L);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(1);
+            softly.assertThat(result.getContent().get(0).getActivityContent()).isEqualTo("비디오 피드 1");
+        });
+    }
+
+    @DisplayName("클럽별 피드 페이지 조회 - 커서 기반 페이지네이션이 동작한다")
+    @Test
+    void findPageByClubIdOrderById_CursorPagination() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed feed1 = feedRepository.save(FeedFixture.createImageFeed(club, "피드 1"));
+        Feed feed2 = feedRepository.save(FeedFixture.createImageFeed(club, "피드 2"));
+        Feed feed3 = feedRepository.save(FeedFixture.createImageFeed(club, "피드 3"));
+
+        // when
+        Slice<Feed> firstPage = feedRepository.findPageByClubIdOrderById(club.getId(), 2, -1L);
+        Long lastId = firstPage.getContent().get(firstPage.getContent().size() - 1).getId();
+        Slice<Feed> secondPage = feedRepository.findPageByClubIdOrderById(club.getId(), 2, lastId);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(firstPage.getContent()).hasSize(2);
+            softly.assertThat(secondPage.getContent()).hasSize(1);
+            softly.assertThat(secondPage.getContent().get(0).getActivityContent()).isEqualTo("피드 1");
+        });
+    }
+
+    @DisplayName("클럽별 피드 페이지 조회 - 삭제된 피드는 조회되지 않는다")
+    @Test
+    void findPageByClubIdOrderById_ExcludesDeletedFeeds() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed activeFeed = feedRepository.save(FeedFixture.createImageFeed(club, "활성 피드"));
+        Feed deletedFeed = feedRepository.save(FeedFixture.createImageFeed(club, "삭제된 피드"));
+
+        // 피드 삭제 (soft delete)
+        feedRepository.delete(deletedFeed);
         feedRepository.flush();
-        clubRepository.deleteAll();
-        clubRepository.flush();
-    }
 
-    @DisplayName("모든 동아리의 최신 피드 페이지를 주어진 정보에 맞춰 반환한다.")
-    @Test
-    void findNewestPerClubPage() {
-        // given
-        Club club1 = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우1")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club club2 = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우2")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club club3 = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우3")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub1 = clubRepository.save(club1);
-        Club savedClub2 = clubRepository.save(club2);
-        Club savedClub3 = clubRepository.save(club3);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub1)
-                .set("activityContent", "내용 1 올드")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub1)
-                .set("activityContent", "내용 1 최신")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub2)
-                .set("activityContent", "내용 2 올드")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub2)
-                .set("activityContent", "내용 2 최신")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed5 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub3)
-                .set("activityContent", "내용 3 올드")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed6 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub3)
-                .set("activityContent", "내용 3 최신")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4, feed5, feed6));
-
-        int size = 2;
-        Long currentCursorId = -1L;
         // when
-        Slice<Feed> newestFeeds = feedRepository.findNewestPerClubPage(size, currentCursorId);
+        Slice<Feed> result = feedRepository.findPageByClubIdOrderById(club.getId(), 10, -1L);
 
         // then
-        List<Feed> feeds = newestFeeds.getContent();
-        assertThat(feeds.size()).isEqualTo(2);
-        assertThat(feeds.get(0).getId()).isEqualTo(6);
-        assertThat(feeds.get(1).getId()).isEqualTo(4);
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(1);
+            softly.assertThat(result.getContent().get(0).getActivityContent()).isEqualTo("활성 피드");
+        });
     }
 
-    @DisplayName("size 개수보다 남은 feed의 개수가 적다면, 그 수만큼 페이지로 반환한다.")
+    @DisplayName("전체 최신 피드 페이지 조회 - IMAGE 타입 피드는 조회된다")
     @Test
-    void 페이지네이션_남은_개수가_사이즈보다_적은경우() {
+    void getAllFeedPage_ImageFeeds() {
         // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
+        Club club1 = clubRepository.save(ClubFixture.createClub());
+        Club club2 = clubRepository.save(ClubFixture.createClub());
+        Feed imageFeed1 = feedRepository.save(FeedFixture.createImageFeed(club1, "이미지 피드 1"));
+        Feed imageFeed2 = feedRepository.save(FeedFixture.createImageFeed(club2, "이미지 피드 2"));
 
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용1")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용2")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용3")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용4")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4));
-
-        Long clubId = savedClub.getId();
-        int size = 2;
-        Long cursorId = 2L;
         // when
-        Slice<Feed> page = feedRepository.findPageByClubIdOrderById(clubId, size, cursorId);
-        // then
-        List<Feed> feeds = page.getContent();
-        assertThat(feeds.size()).isEqualTo(1);
-        assertThat(feeds.get(0).getId()).isEqualTo(1);
-        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed1.getActivityContent());
-    }
-
-    @DisplayName("cursorId보다 작은 Feed를 size 개수만큼 페이지로 반환한다.")
-    @Test
-    void findPageByClubIdOrderById() {
-        // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용1")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용2")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed3 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용3")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        Feed feed4 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용4")
-                .set("feedType", FeedType.IMAGE)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2, feed3, feed4));
-
-        Long clubId = savedClub.getId();
-        int size = 2;
-        Long cursorId = 4L;
-        // when
-        Slice<Feed> page = feedRepository.findPageByClubIdOrderById(clubId, size, cursorId);
-        // then
-        List<Feed> feeds = page.getContent();
-        assertThat(feeds.size()).isEqualTo(2);
-        assertThat(feeds.get(0).getId()).isEqualTo(feed3.getId());
-        assertThat(feeds.get(0).getActivityContent()).isEqualTo(feed3.getActivityContent());
-        assertThat(feeds.get(1).getId()).isEqualTo(feed2.getId());
-        assertThat(feeds.get(1).getActivityContent()).isEqualTo(feed2.getActivityContent());
-    }
-
-    @DisplayName("동아리 피드 목록 조회 - VIDEO 피드일 경우 vodJopProcessingJob 상태가 COMPLETE인것만 조회 ")
-    @Test
-    void 동아리_피드_목록_조회() {
-        // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
-
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용1")
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용2")
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2));
-
-        UUID id = UUID.randomUUID();
-        UUID id2 = UUID.randomUUID();
-        DomainType domainType = DomainType.FEED_VIDEO;
-        FileMetaData fileMetaData = FileMetaData.builder()
-                .id(id)
-                .fileKey("123")
-                .fileName("1234.png")
-                .domainType(domainType)
-                .entityId(feed1.getId())
-                .fileStatus(FileStatus.COUPLED)
-                .build();
-        FileMetaData fileMetaData2 = FileMetaData.builder()
-                .id(id2)
-                .fileKey("123")
-                .fileName("1234.png")
-                .domainType(domainType)
-                .entityId(feed2.getId())
-                .fileStatus(FileStatus.COUPLED)
-                .build();
-        fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
-
-        VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", null)
-                .set("vodProcessingNotification", null)
-                .set("fileMetaData", fileMetaData)
-                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
-                .sample();
-        VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", null)
-                .set("vodProcessingNotification", null)
-                .set("fileMetaData", fileMetaData2)
-                .set("convertJobStatus", ConvertJobStatus.PENDING)
-                .sample();
-        vodProcessingJobRepository.saveAll(List.of(vodProcessingJob1, vodProcessingJob2));
-        Long clubId = savedClub.getId();
-        int size = 2;
-        Long currentCursorId = -1L;
-        // when
-        Slice<Feed> findFeedsByClub = feedRepository.findPageByClubIdOrderById(clubId, size, currentCursorId);
+        Slice<Feed> result = feedRepository.getAllFeedPage(10, -1L);
 
         // then
-        List<Feed> feeds = findFeedsByClub.getContent();
-        assertThat(feeds.size()).isEqualTo(1);
-        assertThat(feeds.get(0).getId()).isEqualTo(1);
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(2);
+            softly.assertThat(result.getContent()).extracting(Feed::getActivityContent)
+                    .containsExactly("이미지 피드 2", "이미지 피드 1");
+        });
     }
 
-    @DisplayName("모든 동아리 최신 피드 조회 - VIDEO 피드일 경우 vodJopProcessingJob 상태가 COMPLETE인것만 조회 ")
+    @DisplayName("전체 최신 피드 페이지 조회 - VIDEO 타입 피드 중 VOD 처리 완료된 피드만 조회된다")
     @Test
-    void 모든_동아리_최신_피드_조회() {
+    void getAllFeedPage_VideoFeedsWithCompleteVod() {
         // given
-        Club club = fixture.giveMeBuilder(Club.class)
-                .set("id", null)
-                .set("name", "카우")
-                .set("user", null)
-                .set("score", Score.from(BigDecimal.ZERO))
-                .set("clubMembers", null)
-                .sample();
-        Club savedClub = clubRepository.save(club);
+        Club club1 = clubRepository.save(ClubFixture.createClub());
+        Club club2 = clubRepository.save(ClubFixture.createClub());
+        Feed videoFeed1 = feedRepository.save(FeedFixture.createVideoFeed(club1, "비디오 피드 1"));
+        Feed videoFeed2 = feedRepository.save(FeedFixture.createVideoFeed(club2, "비디오 피드 2"));
 
-        Feed feed1 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용1")
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        Feed feed2 = fixture.giveMeBuilder(Feed.class)
-                .set("id", null)
-                .set("club", savedClub)
-                .set("activityContent", "내용2")
-                .set("feedType", FeedType.VIDEO)
-                .sample();
-        feedRepository.saveAll(List.of(feed1, feed2));
+        // 첫 번째 비디오만 VOD 처리 완료
+        FileMetaData fileMetaData = fileMetaDataRepository.save(VodProcessingJobFixture.createFileMetaData(videoFeed1.getId()));
+        vodProcessingJobRepository.save(VodProcessingJobFixture.createCompleteVodProcessingJob(fileMetaData));
 
-        UUID id = UUID.randomUUID();
-        UUID id2 = UUID.randomUUID();
-        DomainType domainType = DomainType.FEED_VIDEO;
-        FileMetaData fileMetaData = FileMetaData.builder()
-                .id(id)
-                .fileKey("123")
-                .fileName("1234.png")
-                .domainType(domainType)
-                .entityId(feed1.getId())
-                .fileStatus(FileStatus.COUPLED)
-                .build();
-        FileMetaData fileMetaData2 = FileMetaData.builder()
-                .id(id2)
-                .fileKey("123")
-                .fileName("1234.png")
-                .domainType(domainType)
-                .entityId(feed2.getId())
-                .fileStatus(FileStatus.COUPLED)
-                .build();
-        fileMetaDataRepository.saveAll(List.of(fileMetaData, fileMetaData2));
-
-        VodProcessingJob vodProcessingJob1 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", null)
-                .set("vodProcessingNotification", null)
-                .set("fileMetaData", fileMetaData)
-                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
-                .sample();
-        VodProcessingJob vodProcessingJob2 = fixture.giveMeBuilder(VodProcessingJob.class)
-                .set("id", null)
-                .set("vodProcessingNotification", null)
-                .set("fileMetaData", fileMetaData2)
-                .set("convertJobStatus", ConvertJobStatus.COMPLETE)
-                .sample();
-        vodProcessingJobRepository.saveAll(List.of(vodProcessingJob1, vodProcessingJob2));
-
-        int size = 2;
-        Long currentCursorId = -1L;
         // when
-        Slice<Feed> findFeedsByClub = feedRepository.findNewestPerClubPage(size, currentCursorId);
+        Slice<Feed> result = feedRepository.getAllFeedPage(10, -1L);
 
         // then
-        List<Feed> feeds = findFeedsByClub.getContent();
-        assertThat(feeds.size()).isEqualTo(1);
-        assertThat(feeds.get(0).getId()).isEqualTo(2);
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(1);
+            softly.assertThat(result.getContent().get(0).getActivityContent()).isEqualTo("비디오 피드 1");
+        });
     }
+
+    @DisplayName("전체 최신 피드 페이지 조회 - 커서 기반 페이지네이션이 동작한다")
+    @Test
+    void getAllFeedPage_CursorPagination() {
+        // given
+        Club club1 = clubRepository.save(ClubFixture.createClub());
+        Club club2 = clubRepository.save(ClubFixture.createClub());
+        Club club3 = clubRepository.save(ClubFixture.createClub());
+        Feed feed1 = feedRepository.save(FeedFixture.createImageFeed(club1, "피드 1"));
+        Feed feed12 = feedRepository.save(FeedFixture.createImageFeed(club1, "피드 12"));
+        Feed feed2 = feedRepository.save(FeedFixture.createImageFeed(club2, "피드 2"));
+        Feed feed3 = feedRepository.save(FeedFixture.createImageFeed(club3, "피드 3"));
+
+        // when
+        Slice<Feed> firstPage = feedRepository.getAllFeedPage(2, -1L);
+        Long lastId = firstPage.getContent().get(firstPage.getContent().size() - 1).getId();
+        Slice<Feed> secondPage = feedRepository.getAllFeedPage(2, lastId);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(firstPage.getContent()).hasSize(2);
+            softly.assertThat(secondPage.getContent()).hasSize(2);
+            softly.assertThat(secondPage.getContent().get(0).getActivityContent()).isEqualTo("피드 12");
+        });
+    }
+
+    @DisplayName("전체 최신 피드 페이지 조회 - 삭제된 피드는 조회되지 않는다")
+    @Test
+    void getAllFeedPage_ExcludesDeletedFeeds() {
+        // given
+        Club club1 = clubRepository.save(ClubFixture.createClub());
+        Club club2 = clubRepository.save(ClubFixture.createClub());
+        Feed activeFeed = feedRepository.save(FeedFixture.createImageFeed(club1, "활성 피드"));
+        Feed deletedFeed = feedRepository.save(FeedFixture.createImageFeed(club2, "삭제된 피드"));
+
+        // 피드 삭제 (soft delete)
+        feedRepository.delete(deletedFeed);
+        feedRepository.flush();
+
+        // when
+        Slice<Feed> result = feedRepository.getAllFeedPage(10, -1L);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.getContent()).hasSize(1);
+            softly.assertThat(result.getContent().get(0).getActivityContent()).isEqualTo("활성 피드");
+        });
+    }
+
+    @DisplayName("전체 최신 피드 페이지 조회 - 여러 클럽의 피드가 최신순으로 정렬된다")
+    @Test
+    void getAllFeedPage_OrderedByIdDesc() {
+        // given
+        Club club1 = clubRepository.save(ClubFixture.createClub());
+        Club club2 = clubRepository.save(ClubFixture.createClub());
+
+        Feed oldFeed = feedRepository.save(FeedFixture.createImageFeed(club1, "오래된 피드"));
+        Feed newFeed = feedRepository.save(FeedFixture.createImageFeed(club2, "최신 피드"));
+
+        // when
+        Slice<Feed> result = feedRepository.getAllFeedPage(10, -1L);
+
+        // then
+        List<Feed> feeds = result.getContent();
+        assertThat(feeds.get(0).getId()).isGreaterThan(feeds.get(1).getId());
+    }
+
 }
