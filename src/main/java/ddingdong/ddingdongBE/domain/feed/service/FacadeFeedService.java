@@ -6,7 +6,7 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedFileInfoQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.NewestFeedPerClubPageQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,10 +36,10 @@ public class FacadeFeedService {
         return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
-    public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
-        Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
+    public FeedPageQuery getAllFeedPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPage = feedService.getAllFeedPage(size, currentCursorId);
         if (feedPage == null) {
-            return NewestFeedPerClubPageQuery.createEmpty();
+            return FeedPageQuery.createEmpty();
         }
         List<Feed> completeFeeds = feedPage.getContent();
 
@@ -47,7 +47,7 @@ public class FacadeFeedService {
                 .toList();
         PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
-        return NewestFeedPerClubPageQuery.of(feedListQueries, pagingQuery);
+        return FeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
     public FeedQuery getById(Long feedId) {
