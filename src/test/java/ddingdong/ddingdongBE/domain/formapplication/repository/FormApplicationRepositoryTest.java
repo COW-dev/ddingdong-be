@@ -71,16 +71,16 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         // given
         Club savedClub = clubRepository.save(ClubFixture.createClub());
 
-        Form savedForm1 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 3, 10), LocalDate.of(2020, 4, 10)));
+        Form savedForm1 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 3, 1), LocalDate.of(2020, 4, 1)));
         FormApplication formApplication1 = FormApplicationFixture.create(savedForm1);
         FormApplication formApplication2 = FormApplicationFixture.create(savedForm1);
         formApplicationRepository.saveAll(List.of(formApplication1, formApplication2));
 
-        Form savedForm2 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 1, 10), LocalDate.of(2020, 2, 10)));
+        Form savedForm2 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 1, 1), LocalDate.of(2020, 2, 1)));
         FormApplication formApplication3 = FormApplicationFixture.create(savedForm2);
         formApplicationRepository.save(formApplication3);
 
-        Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 5, 10), LocalDate.of(2020, 6, 10)));
+        Form savedForm3 = formRepository.save(FormFixture.createForm(savedClub, LocalDate.of(2020, 5, 1), LocalDate.of(2020, 6, 1)));
 
         // when
         List<RecentFormInfo> recentFormInfos = formApplicationRepository.findRecentFormByDateWithApplicationCount(
@@ -89,25 +89,12 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 3
         );
 
-        System.out.println("================ [CI 디버깅 시작] ================");
-        System.out.println("결과 개수: " + recentFormInfos.size());
-
-        for (RecentFormInfo info : recentFormInfos) {
-            System.out.println("---------------------------------------------");
-            System.out.println("날짜(Date): " + info.getDate());
-            System.out.println("개수(Count): " + info.getCount());
-
-            if (info.getCount() != null) {
-                System.out.println("개수 타입: " + info.getCount().getClass().getName());
-            }
-        }
-        System.out.println("================ [CI 디버깅 끝] ================");
         // then
         assertThat(recentFormInfos.size()).isEqualTo(2);
         assertThat(recentFormInfos.get(0).getCount()).isEqualTo(1);
-        assertThat(recentFormInfos.get(0).getDate()).isEqualTo(LocalDate.of(2020, 1, 10));
+        assertThat(recentFormInfos.get(0).getDate()).isEqualTo(LocalDate.of(2020, 1, 1));
         assertThat(recentFormInfos.get(1).getCount()).isEqualTo(2);
-        assertThat(recentFormInfos.get(1).getDate()).isEqualTo(LocalDate.of(2020, 3, 10));
+        assertThat(recentFormInfos.get(1).getDate()).isEqualTo(LocalDate.of(2020, 3, 1));
     }
 
     @DisplayName("특정 동아리 폼지의 모든 최종 합격자 리스트를 반환한다.")
