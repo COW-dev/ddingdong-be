@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
@@ -48,8 +49,10 @@ class SesFormResultEmailSenderTest extends TestContainerSupport {
     @Test
     void sendResult_success() {
         // when
-        formResultEmailSender.sendResult(formApplication.getEmail(), formApplication.getName(), emailSendHistory.getId(),
+        FormResultSendingEmailInfo formResultSendingEmailInfo = new FormResultSendingEmailInfo(emailSendHistory.getId(),
+                formApplication.getEmail(), formApplication.getName(),
                 emailContent);
+        formResultEmailSender.sendResult(formResultSendingEmailInfo);
 
         // then
         EmailSendHistory updatedHistory = emailSendHistoryRepository.findById(emailSendHistory.getId()).orElseThrow();
