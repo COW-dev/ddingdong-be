@@ -36,8 +36,8 @@ public class FacadeFeedService {
         return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
-    public NewestFeedPerClubPageQuery getAllFeedPage(int size, Long currentCursorId) {
-        Slice<Feed> feedPage = feedService.getAllFeedPage(size, currentCursorId);
+    public NewestFeedPerClubPageQuery getNewestFeedPerClubPage(int size, Long currentCursorId) {
+        Slice<Feed> feedPage = feedService.getNewestFeedPerClubPage(size, currentCursorId);
         if (feedPage == null) {
             return NewestFeedPerClubPageQuery.createEmpty();
         }

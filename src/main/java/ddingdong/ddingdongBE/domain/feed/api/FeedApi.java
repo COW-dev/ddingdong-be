@@ -35,7 +35,7 @@ public interface FeedApi {
         content = @Content(schema = @Schema(implementation = NewestFeedPerClubPageResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/feeds")
-    NewestFeedPerClubPageResponse getAllFeedPage(
+    NewestFeedPerClubPageResponse getNewestFeedPerClub(
         @RequestParam(value = "size", defaultValue = "9") int size,
         @RequestParam(value = "currentCursorId", defaultValue = "-1") Long currentCursorId
     );
