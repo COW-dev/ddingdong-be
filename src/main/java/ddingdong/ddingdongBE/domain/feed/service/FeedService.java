@@ -8,7 +8,7 @@ public interface FeedService {
 
     Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId);
 
-    Slice<Feed> getAllFeedPage(int size, Long currentCursorId);
+    Slice<Feed> getNewestFeedPerClubPage(int size, Long currentCursorId);
 
     Feed getById(Long feedId);
 
