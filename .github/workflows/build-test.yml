@@ -34,3 +34,10 @@ jobs:
 
       - name: CI Test
         run: ./gradlew clean build
+
+      - name: test report save
+        if: always() # 성공하든 실패하든 무조건 실행
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: build/reports/tests/test/
