@@ -89,7 +89,6 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 3
         );
 
-        System.out.println("================ [CI 디버깅 끝] ================");
         // then
         assertThat(recentFormInfos.size()).isEqualTo(2);
         assertThat(recentFormInfos.get(0).getCount()).isEqualTo(1);
