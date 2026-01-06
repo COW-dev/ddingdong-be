@@ -33,4 +33,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: CI Test
-        run: ./gradlew clean build
+        run: ./gradlew clean test --stacktrace
