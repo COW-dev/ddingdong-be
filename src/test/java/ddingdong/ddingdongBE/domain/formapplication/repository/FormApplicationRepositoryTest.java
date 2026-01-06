@@ -88,6 +88,20 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
                 savedForm1.getEndDate(),
                 3
         );
+
+        System.out.println("================ [CI 디버깅 시작] ================");
+        System.out.println("결과 개수: " + recentFormInfos.size());
+
+        for (RecentFormInfo info : recentFormInfos) {
+            System.out.println("---------------------------------------------");
+            System.out.println("날짜(Date): " + info.getDate());
+            System.out.println("개수(Count): " + info.getCount());
+
+            if (info.getCount() != null) {
+                System.out.println("개수 타입: " + info.getCount().getClass().getName());
+            }
+        }
+        System.out.println("================ [CI 디버깅 끝] ================");
         // then
         assertThat(recentFormInfos.size()).isEqualTo(2);
         assertThat(recentFormInfos.get(0).getCount()).isEqualTo(1);
