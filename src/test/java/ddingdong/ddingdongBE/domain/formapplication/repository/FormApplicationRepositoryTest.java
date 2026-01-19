@@ -65,7 +65,7 @@ class FormApplicationRepositoryTest extends DataJpaTestSupport {
         assertThat(result.get(1).getCount()).isEqualTo(2L);
     }
 
-    @DisplayName("주어진 날짜를 기준으로 주어진 개수만큼 최신 폼지의 시작일과 지원 수를 반환한다.")
+    @DisplayName("특정 동아리의 기준 날짜 이전에 시작한 폼지들의 시작일과 지원 수를 조회한다.")
     @Test
     void findRecentFormByDateWithApplicationCount() {
         // given
