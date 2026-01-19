@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.common.fixture;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class FormApplicationFixture {
 
@@ -67,5 +68,18 @@ public class FormApplicationFixture {
                 .status(FormApplicationStatus.FIRST_PASS) // 예시 상태, 필요에 따라 바꿔도 됨
                 .deletedAt(null)
                 .build();
+    }
+
+    public static FormApplication createWithId(Long id) {
+        FormApplication formApplication = FormApplication.builder()
+                .name("테스트")
+                .studentNumber("20240001")
+                .department("테스트학과")
+                .phoneNumber("010-1234-5678")
+                .email("test@test.com")
+                .status(FormApplicationStatus.SUBMITTED)
+                .build();
+        ReflectionTestUtils.setField(formApplication, "id", id);
+        return formApplication;
     }
 }

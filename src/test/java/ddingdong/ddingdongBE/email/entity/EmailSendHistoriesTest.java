@@ -1,14 +1,15 @@
 package ddingdong.ddingdongBE.email.entity;
 
+import static ddingdong.ddingdongBE.common.fixture.EmailSendHistoryFixture.createWithIdAndSentAt;
+import static ddingdong.ddingdongBE.common.fixture.EmailSendHistoryFixture.createWithStatus;
+import static ddingdong.ddingdongBE.common.fixture.FormApplicationFixture.createWithId;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.util.ReflectionTestUtils;
 
 class EmailSendHistoriesTest {
 
@@ -16,9 +17,9 @@ class EmailSendHistoriesTest {
     @Test
     void getTotalCount() {
         // given
-        EmailSendHistory email1 = createEmailWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
-        EmailSendHistory email2 = createEmailWithStatus(EmailSendStatus.PERMANENT_FAILURE);
-        EmailSendHistory email3 = createEmailWithStatus(EmailSendStatus.PENDING);
+        EmailSendHistory email1 = createWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
+        EmailSendHistory email2 = createWithStatus(EmailSendStatus.PERMANENT_FAILURE);
+        EmailSendHistory email3 = createWithStatus(EmailSendStatus.PENDING);
         EmailSendHistories emailSendHistories = new EmailSendHistories(List.of(email1, email2, email3));
 
         // when
@@ -32,10 +33,10 @@ class EmailSendHistoriesTest {
     @Test
     void getSuccessCount() {
         // given
-        EmailSendHistory successEmail1 = createEmailWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
-        EmailSendHistory successEmail2 = createEmailWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
-        EmailSendHistory failEmail = createEmailWithStatus(EmailSendStatus.PERMANENT_FAILURE);
-        EmailSendHistory pendingEmail = createEmailWithStatus(EmailSendStatus.PENDING);
+        EmailSendHistory successEmail1 = createWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
+        EmailSendHistory successEmail2 = createWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
+        EmailSendHistory failEmail = createWithStatus(EmailSendStatus.PERMANENT_FAILURE);
+        EmailSendHistory pendingEmail = createWithStatus(EmailSendStatus.PENDING);
         EmailSendHistories emailSendHistories = new EmailSendHistories(
                 List.of(successEmail1, successEmail2, failEmail, pendingEmail));
 
@@ -50,11 +51,11 @@ class EmailSendHistoriesTest {
     @Test
     void getFailCount() {
         // given
-        EmailSendHistory successEmail = createEmailWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
-        EmailSendHistory temporaryFailEmail = createEmailWithStatus(EmailSendStatus.TEMPORARY_FAILURE);
-        EmailSendHistory permanentFailEmail = createEmailWithStatus(EmailSendStatus.PERMANENT_FAILURE);
-        EmailSendHistory bounceRejectEmail = createEmailWithStatus(EmailSendStatus.BOUNCE_REJECT);
-        EmailSendHistory complaintRejectEmail = createEmailWithStatus(EmailSendStatus.COMPLAINT_REJECT);
+        EmailSendHistory successEmail = createWithStatus(EmailSendStatus.DELIVERY_SUCCESS);
+        EmailSendHistory temporaryFailEmail = createWithStatus(EmailSendStatus.TEMPORARY_FAILURE);
+        EmailSendHistory permanentFailEmail = createWithStatus(EmailSendStatus.PERMANENT_FAILURE);
+        EmailSendHistory bounceRejectEmail = createWithStatus(EmailSendStatus.BOUNCE_REJECT);
+        EmailSendHistory complaintRejectEmail = createWithStatus(EmailSendStatus.COMPLAINT_REJECT);
         EmailSendHistories emailSendHistories = new EmailSendHistories(
                 List.of(successEmail, temporaryFailEmail, permanentFailEmail, bounceRejectEmail, complaintRejectEmail));
 
@@ -81,8 +82,8 @@ class EmailSendHistoriesTest {
     @Test
     void getPendingAndSendingAreNotSuccessOrFail() {
         // given
-        EmailSendHistory pendingEmail = createEmailWithStatus(EmailSendStatus.PENDING);
-        EmailSendHistory sendingEmail = createEmailWithStatus(EmailSendStatus.SENDING);
+        EmailSendHistory pendingEmail = createWithStatus(EmailSendStatus.PENDING);
+        EmailSendHistory sendingEmail = createWithStatus(EmailSendStatus.SENDING);
         EmailSendHistories emailSendHistories = new EmailSendHistories(List.of(pendingEmail, sendingEmail));
 
         // when & then
@@ -95,14 +96,14 @@ class EmailSendHistoriesTest {
     @Test
     void getLatestByFormApplication() {
         // given
-        FormApplication application1 = createFormApplication(1L);
-        FormApplication application2 = createFormApplication(2L);
+        FormApplication application1 = createWithId(1L);
+        FormApplication application2 = createWithId(2L);
 
-        EmailSendHistory oldEmail1 = createEmailWithFormApplication(
+        EmailSendHistory oldEmail1 = createWithIdAndSentAt(
                 application1, EmailSendStatus.PENDING, LocalDateTime.of(2024, 1, 1, 10, 0), 1L);
-        EmailSendHistory newEmail1 = createEmailWithFormApplication(
+        EmailSendHistory newEmail1 = createWithIdAndSentAt(
                 application1, EmailSendStatus.DELIVERY_SUCCESS, LocalDateTime.of(2024, 1, 2, 10, 0), 2L);
-        EmailSendHistory email2 = createEmailWithFormApplication(
+        EmailSendHistory email2 = createWithIdAndSentAt(
                 application2, EmailSendStatus.PERMANENT_FAILURE, LocalDateTime.of(2024, 1, 1, 10, 0), 3L);
 
         EmailSendHistories emailSendHistories = new EmailSendHistories(
@@ -121,12 +122,12 @@ class EmailSendHistoriesTest {
     @Test
     void getLatestByFormApplicationWithSameSentAt() {
         // given
-        FormApplication application = createFormApplication(1L);
+        FormApplication application = createWithId(1L);
         LocalDateTime sameSentAt = LocalDateTime.of(2024, 1, 1, 10, 0);
 
-        EmailSendHistory smallerIdEmail = createEmailWithFormApplication(
+        EmailSendHistory smallerIdEmail = createWithIdAndSentAt(
                 application, EmailSendStatus.PENDING, sameSentAt, 1L);
-        EmailSendHistory largerIdEmail = createEmailWithFormApplication(
+        EmailSendHistory largerIdEmail = createWithIdAndSentAt(
                 application, EmailSendStatus.DELIVERY_SUCCESS, sameSentAt, 2L);
 
         EmailSendHistories emailSendHistories = new EmailSendHistories(
@@ -144,11 +145,11 @@ class EmailSendHistoriesTest {
     @Test
     void getLatestByFormApplicationWithNullSentAt() {
         // given
-        FormApplication application = createFormApplication(1L);
+        FormApplication application = createWithId(1L);
 
-        EmailSendHistory nullSentAtEmail = createEmailWithFormApplication(
+        EmailSendHistory nullSentAtEmail = createWithIdAndSentAt(
                 application, EmailSendStatus.PENDING, null, 1L);
-        EmailSendHistory nonNullSentAtEmail = createEmailWithFormApplication(
+        EmailSendHistory nonNullSentAtEmail = createWithIdAndSentAt(
                 application, EmailSendStatus.DELIVERY_SUCCESS, LocalDateTime.of(2024, 1, 1, 10, 0), 2L);
 
         EmailSendHistories emailSendHistories = new EmailSendHistories(
@@ -173,40 +174,5 @@ class EmailSendHistoriesTest {
 
         // then
         assertThat(latestHistories.getTotalCount()).isEqualTo(0);
-    }
-
-    private EmailSendHistory createEmailWithStatus(EmailSendStatus status) {
-        return EmailSendHistory.builder()
-                .status(status)
-                .retryCount(0)
-                .build();
-    }
-
-    private EmailSendHistory createEmailWithFormApplication(
-            FormApplication formApplication,
-            EmailSendStatus status,
-            LocalDateTime sentAt,
-            Long id) {
-        EmailSendHistory emailSendHistory = EmailSendHistory.builder()
-                .formApplication(formApplication)
-                .status(status)
-                .retryCount(0)
-                .sentAt(sentAt)
-                .build();
-        ReflectionTestUtils.setField(emailSendHistory, "id", id);
-        return emailSendHistory;
-    }
-
-    private FormApplication createFormApplication(Long id) {
-        FormApplication formApplication = FormApplication.builder()
-                .name("테스트")
-                .studentNumber("20240001")
-                .department("테스트학과")
-                .phoneNumber("010-1234-5678")
-                .email("test@test.com")
-                .status(FormApplicationStatus.SUBMITTED)
-                .build();
-        ReflectionTestUtils.setField(formApplication, "id", id);
-        return formApplication;
     }
 }
