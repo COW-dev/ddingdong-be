@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.domain.form.entity;
 
+import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -17,7 +19,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FormEmailSendHistory {
+public class FormEmailSendHistory extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,7 @@ public class FormEmailSendHistory {
     @Enumerated(EnumType.STRING)
     private FormApplicationStatus formApplicationStatus;
 
+    @Column(columnDefinition = "TEXT")
     private String emailContent;
 
     @ManyToOne(fetch = FetchType.LAZY)

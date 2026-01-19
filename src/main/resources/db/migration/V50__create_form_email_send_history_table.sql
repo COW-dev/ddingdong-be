@@ -5,6 +5,8 @@ CREATE TABLE form_email_send_history
     form_application_status VARCHAR(255) NOT NULL,
     email_content           TEXT         NULL,
     form_id                 BIGINT       NOT NULL,
+    created_at              TIMESTAMP    NULL,
+    updated_at              TIMESTAMP    NULL,
     FOREIGN KEY (form_id) REFERENCES form (id) ON DELETE CASCADE
 );
 

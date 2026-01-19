@@ -195,11 +195,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.formId(),
                 command.target()
         );
+        Form form = formService.getById(command.formId());
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
+        FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(form, command.target(),
+                command.message());
+
         List<FormResultSendingEmailInfo> formResultSendingEmailInfos = formApplications.stream()
                 .map(application -> {
                     EmailSendHistory emailSendHistory = emailSendHistoryService.save(
-                            EmailSendHistory.createPending(application));
+                            EmailSendHistory.createPending(application, formEmailSendHistory));
                     return new FormResultSendingEmailInfo(emailSendHistory.getId(), application.getEmail(),
                             application.getName(), emailContent);
                 })

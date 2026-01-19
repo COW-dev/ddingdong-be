@@ -1,3 +1,5 @@
+package ddingdong.ddingdongBE.domain.formapplication.entity;
+
 import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PENDING;
 import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PERMANENT_FAILURE;
 import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
@@ -5,8 +7,9 @@ import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILU
 import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
+import ddingdong.ddingdongBE.common.fixture.FormEmailSendHistoryFixture;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -16,17 +19,19 @@ class EmailSendHistoryTest {
 
     private EmailSendHistory emailSendHistory;
     private FormApplication formApplication;
+    private FormEmailSendHistory formEmailSendHistory;
 
     @BeforeEach
     void setUp() {
         formApplication = FormApplicationFixture.pendingFormApplication();
+        formEmailSendHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(null);
     }
 
     @DisplayName("PENDING 상태로 EmailSendHistory를 생성할 수 있다")
     @Test
     void createPending() {
         // when
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
 
         // then
         assertThat(emailSendHistory.getStatus()).isEqualTo(PENDING);
@@ -40,7 +45,7 @@ class EmailSendHistoryTest {
     @Test
     void trySend_from_pending() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
         LocalDateTime beforeCall = LocalDateTime.now().minusSeconds(1);
 
         // when
@@ -57,7 +62,7 @@ class EmailSendHistoryTest {
     @Test
     void trySend_from_sending() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
         emailSendHistory.trySend(); // PENDING -> SENDING
         LocalDateTime firstSentAt = emailSendHistory.getSentAt();
 
@@ -74,7 +79,7 @@ class EmailSendHistoryTest {
     @Test
     void trySend_multiple_retries() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
         emailSendHistory.trySend(); // PENDING -> SENDING
 
         // when & then
@@ -89,7 +94,7 @@ class EmailSendHistoryTest {
     @Test
     void markRetryFail() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
 
         // when
         emailSendHistory.markRetryFail();
@@ -102,7 +107,7 @@ class EmailSendHistoryTest {
     @Test
     void markNonRetryFail() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
 
         // when
         emailSendHistory.markNonRetryFail();
@@ -115,7 +120,7 @@ class EmailSendHistoryTest {
     @Test
     void updateMessageTrackingId() {
         // given
-        emailSendHistory = EmailSendHistory.createPending(formApplication);
+        emailSendHistory = EmailSendHistory.createPending(formApplication, formEmailSendHistory);
         String messageId = "test-message-id-12345";
 
         // when
