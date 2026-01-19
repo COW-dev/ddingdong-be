@@ -4,8 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
+import ddingdong.ddingdongBE.common.fixture.FormEmailSendHistoryFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
+import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
@@ -30,9 +33,13 @@ class SesFormResultEmailSenderTest extends TestContainerSupport {
     @Autowired
     private FormApplicationRepository formApplicationRepository;
 
+    @Autowired
+    private FormEmailSendHistoryRepository formEmailSendHistoryRepository;
+
     private FormApplication formApplication;
     private EmailContent emailContent;
     private EmailSendHistory emailSendHistory;
+    private FormEmailSendHistory formEmailSendHistory;
 
     @BeforeEach
     void setUp() {
@@ -40,8 +47,11 @@ class SesFormResultEmailSenderTest extends TestContainerSupport {
         FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         emailContent = EmailContent.of("테스트 제목", "테스트 내용입니다. 안녕하세요 {지원자명}님", ClubFixture.createClub());
 
+        formEmailSendHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(null);
+        formEmailSendHistory = formEmailSendHistoryRepository.save(formEmailSendHistory);
+
         // 실제 EmailSendHistory 엔티티 생성
-        emailSendHistory = EmailSendHistory.createPending(savedFormApplication);
+        emailSendHistory = EmailSendHistory.createPending(savedFormApplication, formEmailSendHistory);
         emailSendHistory = emailSendHistoryRepository.save(emailSendHistory);
     }
 

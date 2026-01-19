@@ -148,8 +148,8 @@ public interface CentralFormApi {
             content = @Content(schema = @Schema(implementation = EmailSendCountResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/forms/emails/{emailSendHistoryId}/counts")
+    @GetMapping("/my/forms/emails/{formEmailSendHistoryId}/counts")
     EmailSendCountResponse getEmailSendCount(
-            @PathVariable("emailSendHistoryId") Long emailSendHistoryId
+            @PathVariable("formEmailSendHistoryId") Long formEmailSendHistoryId
     );
 }
