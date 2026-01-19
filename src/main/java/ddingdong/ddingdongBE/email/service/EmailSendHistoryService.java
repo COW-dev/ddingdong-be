@@ -1,11 +1,9 @@
 package ddingdong.ddingdongBE.email.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
-import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +71,7 @@ public class EmailSendHistoryService {
     }
 
     public EmailSendHistories getAllByFormEmailSendHistoryIds(List<Long> formEmailSendHistoryIds) {
-        List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAllFetchedByFormEmailSendHistoryIdIn(
+        List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAllByFormEmailSendHistoryIdIn(
                 formEmailSendHistoryIds);
         return new EmailSendHistories(emailSendHistories);
     }

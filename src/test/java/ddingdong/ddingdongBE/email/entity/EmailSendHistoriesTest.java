@@ -2,9 +2,13 @@ package ddingdong.ddingdongBE.email.entity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.test.util.ReflectionTestUtils;
 
 class EmailSendHistoriesTest {
 
@@ -87,10 +91,122 @@ class EmailSendHistoriesTest {
         assertThat(emailSendHistories.getFailCount()).isEqualTo(0);
     }
 
+    @DisplayName("FormApplication별로 가장 최신 EmailSendHistory만 반환한다")
+    @Test
+    void getLatestByFormApplication() {
+        // given
+        FormApplication application1 = createFormApplication(1L);
+        FormApplication application2 = createFormApplication(2L);
+
+        EmailSendHistory oldEmail1 = createEmailWithFormApplication(
+                application1, EmailSendStatus.PENDING, LocalDateTime.of(2024, 1, 1, 10, 0), 1L);
+        EmailSendHistory newEmail1 = createEmailWithFormApplication(
+                application1, EmailSendStatus.DELIVERY_SUCCESS, LocalDateTime.of(2024, 1, 2, 10, 0), 2L);
+        EmailSendHistory email2 = createEmailWithFormApplication(
+                application2, EmailSendStatus.PERMANENT_FAILURE, LocalDateTime.of(2024, 1, 1, 10, 0), 3L);
+
+        EmailSendHistories emailSendHistories = new EmailSendHistories(
+                List.of(oldEmail1, newEmail1, email2));
+
+        // when
+        EmailSendHistories latestHistories = emailSendHistories.getLatestByFormApplication();
+
+        // then
+        assertThat(latestHistories.getTotalCount()).isEqualTo(2);
+        assertThat(latestHistories.getSuccessCount()).isEqualTo(1);
+        assertThat(latestHistories.getFailCount()).isEqualTo(1);
+    }
+
+    @DisplayName("sentAt이 같으면 id가 큰 것을 최신으로 판단한다")
+    @Test
+    void getLatestByFormApplicationWithSameSentAt() {
+        // given
+        FormApplication application = createFormApplication(1L);
+        LocalDateTime sameSentAt = LocalDateTime.of(2024, 1, 1, 10, 0);
+
+        EmailSendHistory smallerIdEmail = createEmailWithFormApplication(
+                application, EmailSendStatus.PENDING, sameSentAt, 1L);
+        EmailSendHistory largerIdEmail = createEmailWithFormApplication(
+                application, EmailSendStatus.DELIVERY_SUCCESS, sameSentAt, 2L);
+
+        EmailSendHistories emailSendHistories = new EmailSendHistories(
+                List.of(smallerIdEmail, largerIdEmail));
+
+        // when
+        EmailSendHistories latestHistories = emailSendHistories.getLatestByFormApplication();
+
+        // then
+        assertThat(latestHistories.getTotalCount()).isEqualTo(1);
+        assertThat(latestHistories.getSuccessCount()).isEqualTo(1);
+    }
+
+    @DisplayName("sentAt이 null인 경우 null이 아닌 것을 최신으로 판단한다")
+    @Test
+    void getLatestByFormApplicationWithNullSentAt() {
+        // given
+        FormApplication application = createFormApplication(1L);
+
+        EmailSendHistory nullSentAtEmail = createEmailWithFormApplication(
+                application, EmailSendStatus.PENDING, null, 1L);
+        EmailSendHistory nonNullSentAtEmail = createEmailWithFormApplication(
+                application, EmailSendStatus.DELIVERY_SUCCESS, LocalDateTime.of(2024, 1, 1, 10, 0), 2L);
+
+        EmailSendHistories emailSendHistories = new EmailSendHistories(
+                List.of(nullSentAtEmail, nonNullSentAtEmail));
+
+        // when
+        EmailSendHistories latestHistories = emailSendHistories.getLatestByFormApplication();
+
+        // then
+        assertThat(latestHistories.getTotalCount()).isEqualTo(1);
+        assertThat(latestHistories.getSuccessCount()).isEqualTo(1);
+    }
+
+    @DisplayName("빈 목록에서 getLatestByFormApplication을 호출하면 빈 결과를 반환한다")
+    @Test
+    void getLatestByFormApplicationWithEmptyList() {
+        // given
+        EmailSendHistories emailSendHistories = new EmailSendHistories(List.of());
+
+        // when
+        EmailSendHistories latestHistories = emailSendHistories.getLatestByFormApplication();
+
+        // then
+        assertThat(latestHistories.getTotalCount()).isEqualTo(0);
+    }
+
     private EmailSendHistory createEmailWithStatus(EmailSendStatus status) {
         return EmailSendHistory.builder()
                 .status(status)
                 .retryCount(0)
                 .build();
+    }
+
+    private EmailSendHistory createEmailWithFormApplication(
+            FormApplication formApplication,
+            EmailSendStatus status,
+            LocalDateTime sentAt,
+            Long id) {
+        EmailSendHistory emailSendHistory = EmailSendHistory.builder()
+                .formApplication(formApplication)
+                .status(status)
+                .retryCount(0)
+                .sentAt(sentAt)
+                .build();
+        ReflectionTestUtils.setField(emailSendHistory, "id", id);
+        return emailSendHistory;
+    }
+
+    private FormApplication createFormApplication(Long id) {
+        FormApplication formApplication = FormApplication.builder()
+                .name("테스트")
+                .studentNumber("20240001")
+                .department("테스트학과")
+                .phoneNumber("010-1234-5678")
+                .email("test@test.com")
+                .status(FormApplicationStatus.SUBMITTED)
+                .build();
+        ReflectionTestUtils.setField(formApplication, "id", id);
+        return formApplication;
     }
 }
