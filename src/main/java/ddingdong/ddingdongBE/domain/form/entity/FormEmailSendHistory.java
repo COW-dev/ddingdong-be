@@ -31,7 +31,6 @@ public class FormEmailSendHistory {
     @ManyToOne(fetch = FetchType.LAZY)
     private Form form;
 
-
     @Builder
     public FormEmailSendHistory(FormApplicationStatus formApplicationStatus, String emailContent, Form form) {
         this.formApplicationStatus = formApplicationStatus;
