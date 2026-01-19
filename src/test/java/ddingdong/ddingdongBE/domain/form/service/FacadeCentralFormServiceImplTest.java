@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.ClubMemberFixture;
 import ddingdong.ddingdongBE.common.fixture.EmailSendHistoryFixture;
+import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.fixture.FormEmailSendHistoryFixture;
 import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
@@ -17,13 +18,16 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayName;
@@ -31,6 +35,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.NONE)
 class FacadeCentralFormServiceImplTest extends TestContainerSupport {
@@ -58,6 +64,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
 
     @Autowired
     private FacadeCentralFormService facadeCentralFormService;
+
+    @MockitoBean
+    private ApplicationEventPublisher applicationEventPublisher;
 
     @DisplayName("지원자를 동아리원 명단에 등록할 수 있다")
     @Test
@@ -181,5 +190,82 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(result.totalCount()).isEqualTo(0);
         assertThat(result.successCount()).isEqualTo(0);
         assertThat(result.failCount()).isEqualTo(0);
+    }
+
+    @DisplayName("이메일 전송 시 FormEmailSendHistory가 생성된다")
+    @Test
+    void sendApplicationResultEmailCreatesFormEmailSendHistory() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+
+        FormApplication formApplication1 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        FormApplication formApplication2 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        formApplicationRepository.save(formApplication1);
+        formApplicationRepository.save(formApplication2);
+
+        SendApplicationResultEmailCommand command = new SendApplicationResultEmailCommand(
+                savedUser.getId(),
+                savedForm.getId(),
+                "1차 합격 안내",
+                FormApplicationStatus.FIRST_PASS,
+                "축하합니다. 1차 합격하셨습니다."
+        );
+
+        // when
+        facadeCentralFormService.sendApplicationResultEmail(command);
+
+        // then
+        List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryRepository.findAll();
+        assertThat(formEmailSendHistories).hasSize(1);
+
+        FormEmailSendHistory savedHistory = formEmailSendHistories.get(0);
+        assertThat(savedHistory.getFormApplicationStatus()).isEqualTo(FormApplicationStatus.FIRST_PASS);
+        assertThat(savedHistory.getEmailContent()).isEqualTo("축하합니다. 1차 합격하셨습니다.");
+        assertThat(savedHistory.getForm().getId()).isEqualTo(savedForm.getId());
+    }
+
+    @DisplayName("이메일 전송 시 각 지원자에 대해 EmailSendHistory가 생성된다")
+    @Test
+    void sendApplicationResultEmailCreatesEmailSendHistoryForEachApplication() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+
+        FormApplication formApplication1 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        FormApplication formApplication2 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        FormApplication formApplication3 = FormApplicationFixture.create(savedForm, FormApplicationStatus.SUBMITTED);
+        formApplicationRepository.save(formApplication1);
+        formApplicationRepository.save(formApplication2);
+        formApplicationRepository.save(formApplication3);
+
+        SendApplicationResultEmailCommand command = new SendApplicationResultEmailCommand(
+                savedUser.getId(),
+                savedForm.getId(),
+                "1차 합격 안내",
+                FormApplicationStatus.FIRST_PASS,
+                "축하합니다. 1차 합격하셨습니다."
+        );
+
+        // when
+        facadeCentralFormService.sendApplicationResultEmail(command);
+
+        // then
+        List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAll();
+        assertThat(emailSendHistories).hasSize(2);
+
+        FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryRepository.findAll().get(0);
+        assertThat(emailSendHistories)
+                .allMatch(history -> history.getFormEmailSendHistory().getId().equals(formEmailSendHistory.getId()));
     }
 }
