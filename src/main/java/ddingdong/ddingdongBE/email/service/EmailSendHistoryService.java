@@ -2,7 +2,9 @@ package ddingdong.ddingdongBE.email.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,5 +59,11 @@ public class EmailSendHistoryService {
         return emailSendHistoryRepository.findById(emailSendHistoryId)
                 .orElseThrow(() -> new ResourceNotFound(
                         "해당 emailSendHistoryId(id = " + emailSendHistoryId + ")로 이메일을 찾을 수 없습니다."));
+    }
+
+    public EmailSendHistories getAllByFormEmailSendHistoryId(Long formEmailSendHistoryId) {
+        List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAllByFormEmailSendHistoryId(
+                formEmailSendHistoryId);
+        return new EmailSendHistories(emailSendHistories);
     }
 }

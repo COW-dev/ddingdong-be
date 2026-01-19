@@ -11,7 +11,9 @@ import ddingdong.ddingdongBE.domain.clubmember.service.ClubMemberService;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
+import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
@@ -19,6 +21,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResu
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
@@ -29,13 +32,13 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisti
 import ddingdong.ddingdongBE.domain.form.service.dto.query.MultipleFieldStatisticsQuery.OptionStatisticQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
-import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.service.event.SendFormResultEvent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
+import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
@@ -63,6 +66,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final FileMetaDataService fileMetaDataService;
     private final ClubMemberService clubMemberService;
     private final EmailSendHistoryService emailSendHistoryService;
+    private final FormEmailSendHistoryService formEmailSendHistoryService;
     private final ApplicationEventPublisher applicationEventPublisher;
 
     @Transactional
@@ -194,8 +198,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
         List<FormResultSendingEmailInfo> formResultSendingEmailInfos = formApplications.stream()
                 .map(application -> {
-                    EmailSendHistory emailSendHistory = emailSendHistoryService.save(EmailSendHistory.createPending(application));
-                    return new FormResultSendingEmailInfo(emailSendHistory.getId(), application.getEmail(), application.getName(), emailContent);
+                    EmailSendHistory emailSendHistory = emailSendHistoryService.save(
+                            EmailSendHistory.createPending(application));
+                    return new FormResultSendingEmailInfo(emailSendHistory.getId(), application.getEmail(),
+                            application.getName(), emailContent);
                 })
                 .toList();
         applicationEventPublisher.publishEvent(new SendFormResultEvent(formResultSendingEmailInfos));
@@ -209,6 +215,19 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         validateEndDate(form.getStartDate(), command.endDate());
         validateDuplicationDateExcludingSelf(club, form.getStartDate(), command.endDate(), command.formId());
         form.updateEndDate(command.endDate());
+    }
+
+    @Override
+    public EmailSendCountQuery getEmailSendCountByFormEmailSendHistoryId(Long formEmailSendHistoryId) {
+        FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.getById(formEmailSendHistoryId);
+        EmailSendHistories emailSendHistories = emailSendHistoryService.getAllByFormEmailSendHistoryId(
+                formEmailSendHistory.getId());
+
+        return new EmailSendCountQuery(
+                emailSendHistories.getTotalCount(),
+                emailSendHistories.getSuccessCount(),
+                emailSendHistories.getFailCount()
+        );
     }
 
     private void validateEqualsClub(Club club, Form form) {
