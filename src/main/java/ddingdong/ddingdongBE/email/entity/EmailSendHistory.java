@@ -65,12 +65,14 @@ public class EmailSendHistory extends BaseEntity {
         this.sentAt = sentAt;
     }
 
-    public EmailSendHistory(FormApplication formApplication, EmailSendStatus status) {
-        this(formApplication, null, status, 0, null);
+    public EmailSendHistory(FormApplication formApplication, FormEmailSendHistory formEmailSendHistory,
+            EmailSendStatus status) {
+        this(formApplication, formEmailSendHistory, status, 0, null);
     }
 
-    public static EmailSendHistory createPending(FormApplication formApplication) {
-        return new EmailSendHistory(formApplication, PENDING);
+    public static EmailSendHistory createPending(FormApplication formApplication,
+            FormEmailSendHistory formEmailSendHistory) {
+        return new EmailSendHistory(formApplication, formEmailSendHistory, PENDING);
     }
 
     public void trySend() {
