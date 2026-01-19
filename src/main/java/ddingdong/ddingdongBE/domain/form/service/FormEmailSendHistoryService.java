@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +22,14 @@ public class FormEmailSendHistoryService {
                 .orElseThrow(() -> new ResourceNotFound("이메일 전송 기록을 찾을 수 없습니다. (id: " + id + ")"));
     }
 
+
+
     @Transactional
     public FormEmailSendHistory create(Form form, FormApplicationStatus formApplicationStatus, String emailContent) {
         return formEmailSendHistoryRepository.save(new FormEmailSendHistory(formApplicationStatus, emailContent, form));
+    }
+
+    public List<FormEmailSendHistory> getAllByFormId(Long formId) {
+        return formEmailSendHistoryRepository.getAllByFormId(formId);
     }
 }

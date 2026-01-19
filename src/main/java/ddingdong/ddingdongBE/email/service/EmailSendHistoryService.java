@@ -1,7 +1,9 @@
 package ddingdong.ddingdongBE.email.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
-import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import java.util.List;
@@ -44,9 +46,12 @@ public class EmailSendHistoryService {
 
     @Transactional
     public void updateEmailSendStatus(String eventType, String messageId) {
-        EmailSendHistory emailSendHistory = emailSendHistoryRepository.findByMessageTrackingId(messageId)
-                .orElseThrow(() -> new ResourceNotFound( "해당 messageId(id = " + messageId + ")로 이메일을 찾을 수 없습니다."));
-        log.info("이메일(id = {}) 상태 변경 {} -> {}", emailSendHistory.getId(), emailSendHistory.getStatus(), eventType);
+        EmailSendHistory emailSendHistory = emailSendHistoryRepository.findByMessageTrackingId(
+                        messageId)
+                .orElseThrow(() -> new ResourceNotFound(
+                        "해당 messageId(id = " + messageId + ")로 이메일을 찾을 수 없습니다."));
+        log.info("이메일(id = {}) 상태 변경 {} -> {}", emailSendHistory.getId(),
+                emailSendHistory.getStatus(), eventType);
         emailSendHistory.updateStatusTo(eventType);
     }
 
@@ -64,6 +69,12 @@ public class EmailSendHistoryService {
     public EmailSendHistories getAllByFormEmailSendHistoryId(Long formEmailSendHistoryId) {
         List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAllByFormEmailSendHistoryId(
                 formEmailSendHistoryId);
+        return new EmailSendHistories(emailSendHistories);
+    }
+
+    public EmailSendHistories getAllByFormEmailSendHistoryIds(List<Long> formEmailSendHistoryIds) {
+        List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findAllFetchedByFormEmailSendHistoryIdIn(
+                formEmailSendHistoryIds);
         return new EmailSendHistories(emailSendHistories);
     }
 }
