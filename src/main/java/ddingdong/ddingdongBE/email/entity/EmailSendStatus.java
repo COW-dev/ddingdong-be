@@ -25,4 +25,13 @@ public enum EmailSendStatus {
                 .findFirst()
                 .orElseThrow(() -> new ResourceNotFound("해당 값(value = " + value + ")로 상태를 찾을 수 없습니다."));
     }
+
+    public boolean isSuccess() {
+        return this == DELIVERY_SUCCESS;
+    }
+
+    public boolean isFail() {
+        return this == TEMPORARY_FAILURE || this == PERMANENT_FAILURE ||
+                this == BOUNCE_REJECT || this == COMPLAINT_REJECT;
+    }
 }

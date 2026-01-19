@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendCountResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
@@ -140,5 +141,15 @@ public interface CentralFormApi {
             @Valid @RequestBody UpdateFormEndDateRequest updateFormEndDateRequest,
             @PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    @Operation(summary = "동아리 폼지 이메일 전송현황 카운트 조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리 폼지 이메일 전송현황 카운트 조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendCountResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/emails/{emailSendHistoryId}/counts")
+    EmailSendCountResponse getEmailSendCount(
+            @PathVariable("emailSendHistoryId") Long emailSendHistoryId
     );
 }

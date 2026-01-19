@@ -6,7 +6,9 @@ import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
 import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILURE;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +20,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
-import jakarta.annotation.Nullable;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -38,6 +39,10 @@ public class EmailSendHistory extends BaseEntity {
     @JoinColumn(name = "form_application_id")
     private FormApplication formApplication;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_email_send_history_id")
+    private FormEmailSendHistory formEmailSendHistory;
+
     @Enumerated(EnumType.STRING)
     private EmailSendStatus status;
 
@@ -51,16 +56,17 @@ public class EmailSendHistory extends BaseEntity {
     private LocalDateTime sentAt;
 
     @Builder
-    public EmailSendHistory(FormApplication formApplication, EmailSendStatus status,
-            int retryCount, LocalDateTime sentAt) {
+    public EmailSendHistory(FormApplication formApplication, FormEmailSendHistory formEmailSendHistory,
+            EmailSendStatus status, int retryCount, LocalDateTime sentAt) {
         this.formApplication = formApplication;
+        this.formEmailSendHistory = formEmailSendHistory;
         this.status = status;
         this.retryCount = retryCount;
         this.sentAt = sentAt;
     }
 
     public EmailSendHistory(FormApplication formApplication, EmailSendStatus status) {
-        this(formApplication, status, 0, null);
+        this(formApplication, null, status, 0, null);
     }
 
     public static EmailSendHistory createPending(FormApplication formApplication) {
@@ -90,5 +96,13 @@ public class EmailSendHistory extends BaseEntity {
 
     public void updateMessageTrackingId(String messageId) {
         this.messageTrackingId = messageId;
+    }
+
+    public boolean isSuccess() {
+        return this.status.isSuccess();
+    }
+
+    public boolean isFail() {
+        return this.status.isFail();
     }
 }

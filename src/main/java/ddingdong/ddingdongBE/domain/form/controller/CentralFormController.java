@@ -6,12 +6,14 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormReques
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendCountResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
@@ -112,5 +114,12 @@ public class CentralFormController implements CentralFormApi {
             PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
         facadeCentralFormService.updateFormEndDate(updateFormEndDateRequest.toCommand(user, formId));
+    }
+
+    @Override
+    public EmailSendCountResponse getEmailSendCount(Long formEmailSendHistoryId) {
+        EmailSendCountQuery query = facadeCentralFormService.getEmailSendCountByFormEmailSendHistoryId(
+                formEmailSendHistoryId);
+        return EmailSendCountResponse.from(query);
     }
 }
