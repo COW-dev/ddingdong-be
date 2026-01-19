@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.entity;
 
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -26,6 +27,7 @@ public class FormEmailSendHistory {
     @Enumerated(EnumType.STRING)
     private FormApplicationStatus formApplicationStatus;
 
+    @Column(columnDefinition = "TEXT")
     private String emailContent;
 
     @ManyToOne(fetch = FetchType.LAZY)
