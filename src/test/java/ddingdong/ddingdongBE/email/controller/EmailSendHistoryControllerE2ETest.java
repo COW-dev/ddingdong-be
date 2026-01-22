@@ -7,7 +7,7 @@ import ddingdong.ddingdongBE.common.fixture.EmailSendHistoryFixture;
 import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
-import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.email.controller.dto.UpdateEmailSendStatusRequest;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;

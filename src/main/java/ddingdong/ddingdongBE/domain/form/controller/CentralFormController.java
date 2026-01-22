@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.api.CentralFormApi;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
@@ -14,6 +15,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldSt
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormStatisticsQuery;
@@ -106,14 +108,16 @@ public class CentralFormController implements CentralFormApi {
             SendApplicationResultEmailRequest request
     ) {
         User user = principalDetails.getUser();
-        facadeCentralFormService.sendApplicationResultEmail(request.toCommand(user.getId(), formId));
+        facadeCentralFormService.sendApplicationResultEmail(
+                request.toCommand(user.getId(), formId));
     }
 
     @Override
     public void updateFormEndDate(UpdateFormEndDateRequest updateFormEndDateRequest, Long formId,
             PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        facadeCentralFormService.updateFormEndDate(updateFormEndDateRequest.toCommand(user, formId));
+        facadeCentralFormService.updateFormEndDate(
+                updateFormEndDateRequest.toCommand(user, formId));
     }
 
     @Override
@@ -121,5 +125,11 @@ public class CentralFormController implements CentralFormApi {
         EmailSendCountQuery query = facadeCentralFormService.getEmailSendCountByFormEmailSendHistoryId(
                 formEmailSendHistoryId);
         return EmailSendCountResponse.from(query);
+    }
+
+    @Override
+    public EmailSendStatusResponse getEmailSendStatus(Long formId) {
+        EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormId(formId);
+        return EmailSendStatusResponse.from(query);
     }
 }

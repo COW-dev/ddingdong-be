@@ -20,9 +20,11 @@ import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryReposito
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery.EmailSendStatusInfoQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
-import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -267,5 +269,98 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryRepository.findAll().get(0);
         assertThat(emailSendHistories)
                 .allMatch(history -> history.getFormEmailSendHistory().getId().equals(formEmailSendHistory.getId()));
+    }
+
+    @DisplayName("폼 ID로 이메일 전송 현황을 조회할 수 있다")
+    @Test
+    void getEmailSendStatusByFormId() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+
+        FormEmailSendHistory formEmailSendHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(
+                savedForm);
+        FormEmailSendHistory savedFormEmailSendHistory = formEmailSendHistoryRepository.save(formEmailSendHistory);
+
+        FormApplication formApplication1 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        FormApplication formApplication2 = FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS);
+        formApplicationRepository.save(formApplication1);
+        formApplicationRepository.save(formApplication2);
+
+        EmailSendHistory successEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
+                formApplication1, savedFormEmailSendHistory);
+        EmailSendHistory failEmail = EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(
+                formApplication2, savedFormEmailSendHistory);
+        emailSendHistoryRepository.save(successEmail);
+        emailSendHistoryRepository.save(failEmail);
+
+        // when
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(savedForm.getId());
+
+        // then
+        assertThat(result.emailSendStatusInfoQueries()).hasSize(2);
+    }
+
+    @DisplayName("같은 지원자에게 여러 번 이메일을 전송한 경우 가장 최신 전송 기록만 조회된다")
+    @Test
+    void getEmailSendStatusByFormIdReturnsLatestOnly() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+
+        FormEmailSendHistory firstPassHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(
+                savedForm);
+        FormEmailSendHistory finalPassHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFinalPass(
+                savedForm);
+        FormEmailSendHistory savedFirstPassHistory = formEmailSendHistoryRepository.save(firstPassHistory);
+        FormEmailSendHistory savedFinalPassHistory = formEmailSendHistoryRepository.save(finalPassHistory);
+
+        FormApplication formApplication = FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS);
+        formApplicationRepository.save(formApplication);
+
+        // 같은 지원자에게 1차 합격, 최종 합격 이메일 전송
+        EmailSendHistory firstPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
+                formApplication, savedFirstPassHistory);
+        EmailSendHistory finalPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
+                formApplication, savedFinalPassHistory);
+        emailSendHistoryRepository.save(firstPassEmail);
+        emailSendHistoryRepository.save(finalPassEmail);
+
+        // when
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(savedForm.getId());
+
+        // then
+        assertThat(result.emailSendStatusInfoQueries()).hasSize(1);
+        EmailSendStatusInfoQuery statusInfo = result.emailSendStatusInfoQueries().get(0);
+        assertThat(statusInfo.formApplicationStatus()).isEqualTo(FormApplicationStatus.FINAL_PASS);
+    }
+
+    @DisplayName("이메일 전송 기록이 없으면 빈 목록을 반환한다")
+    @Test
+    void getEmailSendStatusByFormIdWithNoEmails() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+
+        // when
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(savedForm.getId());
+
+        // then
+        assertThat(result.emailSendStatusInfoQueries()).isEmpty();
     }
 }

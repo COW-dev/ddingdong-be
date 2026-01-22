@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class EmailSendHistoryFixture {
 
@@ -141,5 +142,27 @@ public class EmailSendHistoryFixture {
                 .retryCount(0)
                 .sentAt(null)
                 .build();
+    }
+
+    public static EmailSendHistory createWithStatus(EmailSendStatus status) {
+        return EmailSendHistory.builder()
+                .status(status)
+                .retryCount(0)
+                .build();
+    }
+
+    public static EmailSendHistory createWithIdAndSentAt(
+            FormApplication formApplication,
+            EmailSendStatus status,
+            LocalDateTime sentAt,
+            Long id) {
+        EmailSendHistory emailSendHistory = EmailSendHistory.builder()
+                .formApplication(formApplication)
+                .status(status)
+                .retryCount(0)
+                .sentAt(sentAt)
+                .build();
+        ReflectionTestUtils.setField(emailSendHistory, "id", id);
+        return emailSendHistory;
     }
 }

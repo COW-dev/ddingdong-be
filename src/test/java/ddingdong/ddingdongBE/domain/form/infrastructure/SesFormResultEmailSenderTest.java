@@ -11,7 +11,7 @@ import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.form.service.FormResultEmailSender;
-import ddingdong.ddingdongBE.domain.formapplication.repository.EmailSendHistoryRepository;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
