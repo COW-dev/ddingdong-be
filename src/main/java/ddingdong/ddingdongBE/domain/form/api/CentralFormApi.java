@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
@@ -129,8 +130,8 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/results/email")
     void sendApplicationResultEmail(@PathVariable("formId") Long formId,
-                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @RequestBody SendApplicationResultEmailRequest request);
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @RequestBody SendApplicationResultEmailRequest request);
 
     @Operation(summary = "동아리 폼지 종료일자 수정 API")
     @ApiResponse(responseCode = "204", description = "동아리 폼지 지원기간 마감일자 수정 성공")
@@ -151,5 +152,15 @@ public interface CentralFormApi {
     @GetMapping("/my/forms/emails/{formEmailSendHistoryId}/counts")
     EmailSendCountResponse getEmailSendCount(
             @PathVariable("formEmailSendHistoryId") Long formEmailSendHistoryId
+    );
+
+    @Operation(summary = "이메일 전송 현황 조회 API")
+    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendStatusResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/emails/status")
+    EmailSendStatusResponse getEmailSendStatus(
+            @PathVariable("formId") Long formId
     );
 }
