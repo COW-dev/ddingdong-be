@@ -271,7 +271,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         List<EmailSendStatus> resendTargetStatuses = List.of(EmailSendStatus.TEMPORARY_FAILURE);
         EmailSendHistories latestEmailSendHistories = emailSendHistoryService.findLatestEmailSendHistoryByFormIdAndStatuses(
-                command.formId(), resendTargetStatuses);
+                command.formId(), resendTargetStatuses, command.target());
 
         List<FormApplication> formApplications = latestEmailSendHistories.getAll().stream()
                 .map(EmailSendHistory::getFormApplication)

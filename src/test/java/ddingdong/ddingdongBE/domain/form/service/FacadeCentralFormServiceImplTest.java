@@ -361,7 +361,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(pending.getFormApplication().getId()).isEqualTo(formApplication2.getId());
     }
 
-    @DisplayName("재전송 대상이 없으면 NoEmailSendTargetException이 발생하고 FormEmailSendHistory가 추가로 생성되지 않는다")
+    @DisplayName("재전송 대상이 없으면 NoEmailReSendTargetException이 발생하고 FormEmailSendHistory가 추가로 생성되지 않는다")
     @Test
     void resendApplicationResultEmailThrowsExceptionWhenNoTargets() {
         // given
