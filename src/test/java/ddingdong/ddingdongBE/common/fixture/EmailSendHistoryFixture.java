@@ -28,7 +28,8 @@ public class EmailSendHistoryFixture {
                 .build();
     }
 
-    public static EmailSendHistory sendingEmailSendHistoryWithMessageId(FormApplication formApplication) {
+    public static EmailSendHistory sendingEmailSendHistoryWithMessageId(
+            FormApplication formApplication) {
         EmailSendHistory emailSendHistory = EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.SENDING)
@@ -39,7 +40,8 @@ public class EmailSendHistoryFixture {
         return emailSendHistory;
     }
 
-    public static EmailSendHistory deliverySuccessEmailSendHistory(FormApplication formApplication) {
+    public static EmailSendHistory deliverySuccessEmailSendHistory(
+            FormApplication formApplication) {
         EmailSendHistory emailSendHistory = EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.DELIVERY_SUCCESS)
@@ -61,7 +63,8 @@ public class EmailSendHistoryFixture {
         return emailSendHistory;
     }
 
-    public static EmailSendHistory complaintRejectEmailSendHistory(FormApplication formApplication) {
+    public static EmailSendHistory complaintRejectEmailSendHistory(
+            FormApplication formApplication) {
         EmailSendHistory emailSendHistory = EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.COMPLAINT_REJECT)
@@ -72,7 +75,8 @@ public class EmailSendHistoryFixture {
         return emailSendHistory;
     }
 
-    public static EmailSendHistory temporaryFailureEmailSendHistory(FormApplication formApplication) {
+    public static EmailSendHistory temporaryFailureEmailSendHistory(
+            FormApplication formApplication) {
         return EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.TEMPORARY_FAILURE)
@@ -81,7 +85,21 @@ public class EmailSendHistoryFixture {
                 .build();
     }
 
-    public static EmailSendHistory permanentFailureEmailSendHistory(FormApplication formApplication) {
+    public static EmailSendHistory temporaryFailureWithFormEmailSendHistory(
+            FormApplication formApplication,
+            FormEmailSendHistory formEmailSendHistory) {
+        return EmailSendHistory.builder()
+                .formApplication(formApplication)
+                .formEmailSendHistory(formEmailSendHistory)
+                .status(EmailSendStatus.TEMPORARY_FAILURE)
+                .retryCount(3)
+                .sentAt(LocalDateTime.now())
+                .build();
+    }
+
+
+    public static EmailSendHistory permanentFailureEmailSendHistory(
+            FormApplication formApplication) {
         return EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.PERMANENT_FAILURE)
@@ -90,7 +108,8 @@ public class EmailSendHistoryFixture {
                 .build();
     }
 
-    public static EmailSendHistory createWithMessageId(FormApplication formApplication, String messageId) {
+    public static EmailSendHistory createWithMessageId(FormApplication formApplication,
+            String messageId) {
         EmailSendHistory emailSendHistory = EmailSendHistory.builder()
                 .formApplication(formApplication)
                 .status(EmailSendStatus.SENDING)
