@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.EmailException.EmailTemplateNotFoundException;
-import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailSendTargetException;
+import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailReSendTargetException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
 import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
@@ -291,7 +291,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     private static void validateEmailSendTarget(List<FormApplication> formApplications) {
         if (formApplications.isEmpty()) {
-            throw new NoEmailSendTargetException();
+            throw new NoEmailReSendTargetException();
         }
     }
 
