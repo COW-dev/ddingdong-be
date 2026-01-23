@@ -205,7 +205,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.formId(),
                 command.target()
         );
-        validateEmailSendTarget(formApplications);
         Form form = formService.getById(command.formId());
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
         FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(form,
