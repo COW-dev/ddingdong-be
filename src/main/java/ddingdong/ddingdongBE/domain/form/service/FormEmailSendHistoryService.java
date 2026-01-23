@@ -23,6 +23,8 @@ public class FormEmailSendHistoryService {
                 .orElseThrow(() -> new ResourceNotFound("이메일 전송 기록을 찾을 수 없습니다. (id: " + id + ")"));
     }
 
+
+
     @Transactional
     public FormEmailSendHistory create(Form form, FormApplicationStatus formApplicationStatus,
             String emailContent) {
@@ -38,5 +40,9 @@ public class FormEmailSendHistoryService {
             Long formId, FormApplicationStatus formApplicationStatus) {
         return formEmailSendHistoryRepository.findTopByFormIdAndFormApplicationStatusOrderByIdDesc(
                 formId, formApplicationStatus);
+    }
+
+    public List<FormEmailSendHistory> getAllByFormId(Long formId) {
+        return formEmailSendHistoryRepository.getAllByFormId(formId);
     }
 }

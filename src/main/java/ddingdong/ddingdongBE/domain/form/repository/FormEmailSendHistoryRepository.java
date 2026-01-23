@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.repository;
 
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import java.util.List;
 import java.util.Optional;

@@ -8,6 +8,8 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     steps:
       - name: Check Out Repository
         uses: actions/checkout@v4
@@ -32,7 +34,7 @@ jobs:
         run: chmod +x gradlew
 
       - name: CI Test
-        run: ./gradlew clean test --no-build-cache
+        run: ./gradlew clean test --no-build-cache -Duser.timezone=Asia/Seoul
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
