@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.ReSendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
@@ -12,6 +13,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -32,6 +34,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Form - Club", description = "Form API")
@@ -162,5 +165,16 @@ public interface CentralFormApi {
     @GetMapping("/my/forms/{formId}/emails/status")
     EmailSendStatusResponse getEmailSendStatus(
             @PathVariable("formId") Long formId
+    );
+
+    @Operation(summary = "동아리 지원 결과 상태별 이메일 재전송 API")
+    @ApiResponse(responseCode = "201", description = "동아리 지원 결과 상태별 이메일 재전송 성공")
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @PostMapping("/my/forms/{formId}/results/email/re-send")
+    void resendApplicationResultEmail(
+            @PathVariable("formId") Long formId,
+            @RequestBody ReSendApplicationResultEmailRequest request,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 }

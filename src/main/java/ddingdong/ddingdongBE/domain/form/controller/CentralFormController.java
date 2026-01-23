@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.controller;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.api.CentralFormApi;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.ReSendApplicationResultEmailRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
@@ -131,5 +132,14 @@ public class CentralFormController implements CentralFormApi {
     public EmailSendStatusResponse getEmailSendStatus(Long formId) {
         EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormId(formId);
         return EmailSendStatusResponse.from(query);
+    }
+
+    @Override
+    public void resendApplicationResultEmail(Long formId,
+            ReSendApplicationResultEmailRequest request,
+            PrincipalDetails principalDetails) {
+        User user = principalDetails.getUser();
+        facadeCentralFormService.reSendApplicationResultEmail(
+                request.toCommand(user.getId(), formId));
     }
 }
