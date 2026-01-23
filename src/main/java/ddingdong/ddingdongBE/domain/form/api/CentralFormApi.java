@@ -171,7 +171,7 @@ public interface CentralFormApi {
     @ApiResponse(responseCode = "201", description = "동아리 지원 결과 상태별 이메일 재전송 성공")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @PostMapping("/my/forms/{formId}/results/email/re-send")
+    @PostMapping("/my/forms/{formId}/results/email/resends")
     void resendApplicationResultEmail(
             @PathVariable("formId") Long formId,
             @RequestBody ReSendApplicationResultEmailRequest request,
