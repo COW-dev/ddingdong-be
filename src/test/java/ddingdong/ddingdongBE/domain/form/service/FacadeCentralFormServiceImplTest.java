@@ -336,7 +336,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         );
 
         // when
-        facadeCentralFormService.reSendApplicationResultEmail(command);
+        facadeCentralFormService.resendApplicationResultEmail(command);
 
         // then
         List<FormEmailSendHistory> histories = formEmailSendHistoryRepository.findAll();
@@ -392,7 +392,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         );
 
         // when & then
-        assertThatThrownBy(() -> facadeCentralFormService.reSendApplicationResultEmail(command))
+        assertThatThrownBy(() -> facadeCentralFormService.resendApplicationResultEmail(command))
                 .isInstanceOf(NoEmailReSendTargetException.class)
                 .hasMessage("재전송할 이메일 대상이 없습니다.");
 

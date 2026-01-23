@@ -260,7 +260,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void reSendApplicationResultEmail(ReSendApplicationResultEmailCommand command) {
+    public void resendApplicationResultEmail(ReSendApplicationResultEmailCommand command) {
         Club club = clubService.getByUserId(command.userId());
         FormEmailSendHistory latestHistory = formEmailSendHistoryService
                 .findLatestByFormIdAndApplicationStatus(command.formId(), command.target())

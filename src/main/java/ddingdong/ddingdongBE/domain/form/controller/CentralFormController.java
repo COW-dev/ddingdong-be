@@ -139,7 +139,7 @@ public class CentralFormController implements CentralFormApi {
             ReSendApplicationResultEmailRequest request,
             PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        facadeCentralFormService.reSendApplicationResultEmail(
+        facadeCentralFormService.resendApplicationResultEmail(
                 request.toCommand(user.getId(), formId));
     }
 }
