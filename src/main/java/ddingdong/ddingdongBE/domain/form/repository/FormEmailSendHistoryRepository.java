@@ -11,4 +11,8 @@ public interface FormEmailSendHistoryRepository extends JpaRepository<FormEmailS
 
     List<FormEmailSendHistory> getAllByFormId(Long formId);
 
+    Optional<FormEmailSendHistory> findTopByFormIdAndFormApplicationStatusOrderByIdDesc(
+            Long FormId,
+            FormApplicationStatus formApplicationStatus
+    );
 }
