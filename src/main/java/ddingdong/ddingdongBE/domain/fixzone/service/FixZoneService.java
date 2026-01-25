@@ -15,6 +15,6 @@ public interface FixZoneService {
 
     void delete(Long fixZoneId);
 
-
+    void deleteAllByClubId(Long clubId);
 
 }
