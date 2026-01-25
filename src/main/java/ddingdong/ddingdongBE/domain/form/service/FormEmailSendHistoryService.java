@@ -41,8 +41,4 @@ public class FormEmailSendHistoryService {
         return formEmailSendHistoryRepository.findTopByFormIdAndFormApplicationStatusOrderByIdDesc(
                 formId, formApplicationStatus);
     }
-
-    public List<FormEmailSendHistory> getAllByFormId(Long formId) {
-        return formEmailSendHistoryRepository.getAllByFormId(formId);
-    }
 }

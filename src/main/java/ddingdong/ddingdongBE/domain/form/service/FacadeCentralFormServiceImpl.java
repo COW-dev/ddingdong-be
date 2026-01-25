@@ -201,11 +201,13 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
         Club club = clubService.getByUserId(command.userId());
+        Form form = formService.getById(command.formId());
+        validateEqualsClub(club, form);
+
         List<FormApplication> formApplications = formApplicationService.getAllByFormIdAndFormApplicationStatus(
                 command.formId(),
                 command.target()
         );
-        Form form = formService.getById(command.formId());
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
         FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(form,
                 command.target(),
@@ -223,6 +225,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     public void updateFormEndDate(UpdateFormEndDateCommand command) {
         Club club = clubService.getByUserId(command.user().getId());
         Form form = formService.getById(command.formId());
+        validateEqualsClub(club, form);
         validateEndDate(form.getStartDate(), command.endDate());
         validateDuplicationDateExcludingSelf(club, form.getStartDate(), command.endDate(),
                 command.formId());
@@ -262,6 +265,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Override
     public void resendApplicationResultEmail(ReSendApplicationResultEmailCommand command) {
         Club club = clubService.getByUserId(command.userId());
+        Form form = formService.getById(command.formId());
+        validateEqualsClub(club, form);
+
         FormEmailSendHistory latestHistory = formEmailSendHistoryService
                 .findLatestByFormIdAndApplicationStatus(command.formId(), command.target())
                 .orElseThrow(EmailTemplateNotFoundException::new);
@@ -279,7 +285,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         validateEmailSendTarget(formApplications);
 
-        Form form = formService.getById(command.formId());
         FormEmailSendHistory newFormEmailSendHistory = formEmailSendHistoryService.create(
                 form, command.target(), latestHistoryEmailContent);
 
