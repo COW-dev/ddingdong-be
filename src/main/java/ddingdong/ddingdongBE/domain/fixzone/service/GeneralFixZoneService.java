@@ -30,7 +30,7 @@ public class GeneralFixZoneService implements FixZoneService {
 
     @Override
     public List<FixZone> findAll() {
-        return fixZoneRepository.findAll();
+        return fixZoneRepository.findAllWithActiveClub();
     }
 
     @Override
@@ -43,5 +43,11 @@ public class GeneralFixZoneService implements FixZoneService {
     public void delete(Long fixZoneId) {
         FixZone fixZone = getById(fixZoneId);
         this.fixZoneRepository.delete(fixZone);
+    }
+
+    @Override
+    @Transactional
+    public void deleteAllByClubId(Long clubId) {
+        fixZoneRepository.deleteAllByClubId(clubId);
     }
 }
