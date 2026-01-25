@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.club.service.dto.command.CreateClubCommand;
 import ddingdong.ddingdongBE.domain.club.service.dto.query.AdminClubListQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
+import ddingdong.ddingdongBE.domain.fixzone.service.FixZoneService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
@@ -23,6 +24,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
     private final AuthService authService;
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
+    private final FixZoneService fixZoneService;
 
 
     @Override
@@ -52,6 +54,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
     @Override
     @Transactional
     public void deleteClub(Long clubId) {
+        fixZoneService.deleteAllByClubId(clubId);
         clubService.delete(clubId);
     }
 }
