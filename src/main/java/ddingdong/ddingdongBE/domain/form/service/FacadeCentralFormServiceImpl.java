@@ -56,7 +56,6 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import software.amazon.awssdk.services.s3.endpoints.internal.Value.Str;
 
 @Service
 @RequiredArgsConstructor
@@ -256,7 +255,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         FormApplicationStatus formApplicationStatus = FormApplicationStatus.findStatus(status);
 
         if (formApplicationStatus == FormApplicationStatus.SUBMITTED) {
-            throw new InvalidatedEnumValue("최종 합격자는 이메일 전송 현황 조회 대상이 아닙니다.");
+            throw new InvalidatedEnumValue("지원 결과 상태만 조회할 수 있습니다.");
         }
 
         List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryService.getAllByFormIdAndFormApplicationStatus(

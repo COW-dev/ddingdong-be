@@ -132,7 +132,7 @@ public interface CentralFormApi {
     @PostMapping("/my/forms/{formId}/results/email")
     void sendApplicationResultEmail(@PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @RequestBody EmailSendApplicationResultRequest request);
+            @Valid @RequestBody EmailSendApplicationResultRequest request);
 
     @Operation(summary = "동아리 폼지 종료일자 수정 API")
     @ApiResponse(responseCode = "204", description = "동아리 폼지 지원기간 마감일자 수정 성공")
@@ -173,7 +173,7 @@ public interface CentralFormApi {
     @PostMapping("/my/forms/{formId}/results/email/resends")
     void resendApplicationResultEmail(
             @PathVariable("formId") Long formId,
-            @RequestBody EmailResendApplicationResultRequest request,
+            @Valid @RequestBody EmailResendApplicationResultRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 }
