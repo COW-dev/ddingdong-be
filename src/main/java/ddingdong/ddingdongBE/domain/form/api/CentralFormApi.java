@@ -155,8 +155,8 @@ public interface CentralFormApi {
             @PathVariable("formEmailSendHistoryId") Long formEmailSendHistoryId
     );
 
-    @Operation(summary = "이메일 전송 현황 조회 API")
-    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 조회 성공",
+    @Operation(summary = "이메일 전송 현황 상세조회 API")
+    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 상세조회 성공",
             content = @Content(schema = @Schema(implementation = EmailSendStatusResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
