@@ -10,6 +10,7 @@ public class FormEmailSendHistoryFixture {
         return FormEmailSendHistory.builder()
                 .form(form)
                 .formApplicationStatus(status)
+                .title("테스트 이메일 제목입니다.")
                 .emailContent("테스트 이메일 내용입니다.")
                 .build();
     }

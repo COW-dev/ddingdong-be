@@ -5,7 +5,7 @@ import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-public record SendApplicationResultEmailRequest(
+public record EmailSendApplicationResultRequest(
 
         @Schema(description = "메일 제목", example = "제목")
         @NotNull(message = "메일 제목은 필수입니다.")

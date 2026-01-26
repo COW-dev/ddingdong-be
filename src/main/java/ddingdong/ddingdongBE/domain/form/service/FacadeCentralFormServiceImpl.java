@@ -19,7 +19,7 @@ import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.ReSendApplicationResultEmailCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.ResendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
@@ -209,7 +209,9 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.target()
         );
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
-        FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(form,
+        FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(
+                form,
+                command.title(),
                 command.target(),
                 command.message());
 
@@ -263,41 +265,42 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void resendApplicationResultEmail(ReSendApplicationResultEmailCommand command) {
+    public void resendApplicationResultEmail(ResendApplicationResultEmailCommand command) {
         Club club = clubService.getByUserId(command.userId());
         Form form = formService.getById(command.formId());
         validateEqualsClub(club, form);
 
-        FormEmailSendHistory latestHistory = formEmailSendHistoryService
-                .findLatestByFormIdAndApplicationStatus(command.formId(), command.target())
-                .orElseThrow(EmailTemplateNotFoundException::new);
-        String latestHistoryEmailContent = latestHistory.getEmailContent();
-        EmailContent emailContent = EmailContent.of(
-                command.title(), latestHistoryEmailContent, club);
+        FormEmailSendHistory latestFormEmailHistory = formEmailSendHistoryService.getLatestByFormIdAndApplicationStatus(
+                command.formId(),
+                command.target());
 
-        List<EmailSendStatus> resendTargetStatuses = List.of(EmailSendStatus.TEMPORARY_FAILURE);
-        EmailSendHistories latestEmailSendHistories = emailSendHistoryService.findLatestEmailSendHistoryByFormIdAndStatuses(
-                command.formId(), resendTargetStatuses, command.target());
+        String latestTitle = latestFormEmailHistory.getTitle();
+        String latestFormEmailHistoryEmailContent = latestFormEmailHistory.getEmailContent();
+
+        EmailContent emailContent = EmailContent.of(
+                latestTitle, latestFormEmailHistoryEmailContent, club);
+
+        List<EmailSendStatus> resendTargetStatuses = EmailSendStatus.resendTargets();
+
+        EmailSendHistories latestEmailSendHistories =
+                emailSendHistoryService.findLatestEmailSendHistoryByFormIdAndStatuses(
+                        command.formId(), resendTargetStatuses, command.target());
 
         List<FormApplication> formApplications = latestEmailSendHistories.getAll().stream()
                 .map(EmailSendHistory::getFormApplication)
                 .toList();
 
-        validateEmailSendTarget(formApplications);
+        if (formApplications.isEmpty()) {
+            throw new NoEmailReSendTargetException();
+        }
 
         FormEmailSendHistory newFormEmailSendHistory = formEmailSendHistoryService.create(
-                form, command.target(), latestHistoryEmailContent);
+                form, latestTitle, command.target(), latestFormEmailHistoryEmailContent);
 
         List<FormResultSendingEmailInfo> reSendingEmailInfos = createPendingEmailInfos(
                 formApplications, newFormEmailSendHistory, emailContent);
 
         applicationEventPublisher.publishEvent(new SendFormResultEvent(reSendingEmailInfos));
-    }
-
-    private static void validateEmailSendTarget(List<FormApplication> formApplications) {
-        if (formApplications.isEmpty()) {
-            throw new NoEmailReSendTargetException();
-        }
     }
 
     private List<FormResultSendingEmailInfo> createPendingEmailInfos(

@@ -27,7 +27,7 @@ public record EmailSendStatusResponse(
             @Schema(description = "학번", example = "60221300")
             String studentNumber,
             @Schema(description = "이메일 전송 일시", example = "2025.12.13 13:00")
-            LocalDateTime sendAt, // TODO: 재전송 시 Update 해주기
+            LocalDateTime sendAt,
             @Schema(description = "이메일 전송 상태", example = "Sending")
             EmailSendStatus emailSendStatus,
             @Schema(description = "지원자 서류/면접 합불 상태", example = "FIRST_PASS")
