@@ -41,7 +41,7 @@ public interface FacadeCentralFormService {
 
     EmailSendCountQuery getEmailSendCountByFormEmailSendHistoryId(Long formEmailSendHistoryId);
 
-    EmailSendStatusQuery getEmailSendStatusByFormId(Long formId);
+    EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String formApplicationStatus);
 
     void resendApplicationResultEmail(ResendApplicationResultEmailCommand command);
 }

@@ -129,8 +129,8 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public EmailSendStatusResponse getEmailSendStatus(Long formId) {
-        EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormId(formId);
+    public EmailSendStatusResponse getEmailSendStatus(Long formId, String status) {
+        EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(formId, status);
         return EmailSendStatusResponse.from(query);
     }
 

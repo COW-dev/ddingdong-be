@@ -398,9 +398,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(formEmailSendHistoryRepository.findAll()).hasSize(1);
     }
 
-    @DisplayName("폼 ID로 이메일 전송 현황을 조회할 수 있다")
+    @DisplayName("폼 ID와 지원 결과 상태로 이메일 전송 현황을 조회할 수 있다")
     @Test
-    void getEmailSendStatusByFormId() {
+    void getEmailSendStatusByFormIdAndFormApplicationStatus() {
         // given
         User user = UserFixture.createClubUser();
         User savedUser = userRepository.save(user);
@@ -430,16 +430,16 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         emailSendHistoryRepository.save(failEmail);
 
         // when
-        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(
-                savedForm.getId());
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(
+                savedForm.getId(), FormApplicationStatus.FIRST_PASS.name());
 
         // then
         assertThat(result.emailSendStatusInfoQueries()).hasSize(2);
     }
 
-    @DisplayName("같은 지원자에게 여러 번 이메일을 전송한 경우 가장 최신 전송 기록만 조회된다")
+    @DisplayName("같은 지원자에게 여러 번 이메일을 전송한 경우, 같은 상태 내에서 가장 최신 전송 기록만 조회된다")
     @Test
-    void getEmailSendStatusByFormIdReturnsLatestOnly() {
+    void getEmailSendStatusByFormIdAndFormApplicationStatusReturnsLatestOnly() {
         // given
         User user = UserFixture.createClubUser();
         User savedUser = userRepository.save(user);
@@ -449,12 +449,8 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         Form form = FormFixture.createForm(savedClub);
         Form savedForm = formRepository.save(form);
 
-        FormEmailSendHistory firstPassHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(
-                savedForm);
         FormEmailSendHistory finalPassHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFinalPass(
                 savedForm);
-        FormEmailSendHistory savedFirstPassHistory = formEmailSendHistoryRepository.save(
-                firstPassHistory);
         FormEmailSendHistory savedFinalPassHistory = formEmailSendHistoryRepository.save(
                 finalPassHistory);
 
@@ -462,17 +458,17 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 FormApplicationStatus.FINAL_PASS);
         formApplicationRepository.save(formApplication);
 
-        // 같은 지원자에게 1차 합격, 최종 합격 이메일 전송
-        EmailSendHistory firstPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
-                formApplication, savedFirstPassHistory);
-        EmailSendHistory finalPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
+        // 같은 지원자에게 최종 합격 이메일을 2번 전송
+        EmailSendHistory olderFinalPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
                 formApplication, savedFinalPassHistory);
-        emailSendHistoryRepository.save(firstPassEmail);
-        emailSendHistoryRepository.save(finalPassEmail);
+        EmailSendHistory latestFinalPassEmail = EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(
+                formApplication, savedFinalPassHistory);
+        emailSendHistoryRepository.save(olderFinalPassEmail);
+        emailSendHistoryRepository.save(latestFinalPassEmail);
 
         // when
-        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(
-                savedForm.getId());
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(
+                savedForm.getId(), FormApplicationStatus.FINAL_PASS.name());
 
         // then
         assertThat(result.emailSendStatusInfoQueries()).hasSize(1);
@@ -493,8 +489,8 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         Form savedForm = formRepository.save(form);
 
         // when
-        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormId(
-                savedForm.getId());
+        EmailSendStatusQuery result = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(
+                savedForm.getId(), FormApplicationStatus.FIRST_PASS.name());
 
         // then
         assertThat(result.emailSendStatusInfoQueries()).isEmpty();

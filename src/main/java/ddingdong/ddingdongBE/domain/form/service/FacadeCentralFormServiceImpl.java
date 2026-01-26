@@ -1,11 +1,11 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
-import ddingdong.ddingdongBE.common.exception.EmailException.EmailTemplateNotFoundException;
 import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailReSendTargetException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
 import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
 import ddingdong.ddingdongBE.common.exception.FormException.OverlapFormPeriodException;
+import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
@@ -38,6 +38,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatistics
 import ddingdong.ddingdongBE.domain.form.service.dto.query.SingleFieldStatisticsQuery.SingleStatisticsQuery;
 import ddingdong.ddingdongBE.domain.form.service.event.SendFormResultEvent;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormAnswerService;
 import ddingdong.ddingdongBE.domain.formapplication.service.FormApplicationService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
@@ -55,6 +56,7 @@ import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import software.amazon.awssdk.services.s3.endpoints.internal.Value.Str;
 
 @Service
 @RequiredArgsConstructor
@@ -250,9 +252,15 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
-    public EmailSendStatusQuery getEmailSendStatusByFormId(Long formId) {
-        List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryService.getAllByFormId(
-                formId);
+    public EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String status) {
+        FormApplicationStatus formApplicationStatus = FormApplicationStatus.findStatus(status);
+
+        if (formApplicationStatus == FormApplicationStatus.SUBMITTED) {
+            throw new InvalidatedEnumValue("최종 합격자는 이메일 전송 현황 조회 대상이 아닙니다.");
+        }
+
+        List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryService.getAllByFormIdAndFormApplicationStatus(
+                formId, formApplicationStatus);
         List<Long> formEmailSendHistoryIds = formEmailSendHistories.stream()
                 .map(FormEmailSendHistory::getId)
                 .toList();

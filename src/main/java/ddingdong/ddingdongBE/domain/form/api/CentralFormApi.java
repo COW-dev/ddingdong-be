@@ -162,7 +162,8 @@ public interface CentralFormApi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/my/forms/{formId}/emails/status")
     EmailSendStatusResponse getEmailSendStatus(
-            @PathVariable("formId") Long formId
+            @PathVariable("formId") Long formId,
+            @RequestParam("status") String status
     );
 
     @Operation(summary = "동아리 지원 결과 상태별 이메일 재전송 API")
