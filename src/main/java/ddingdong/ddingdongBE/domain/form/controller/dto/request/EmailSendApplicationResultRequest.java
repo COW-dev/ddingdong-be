@@ -1,6 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicationResultCommand;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
@@ -23,8 +23,8 @@ public record EmailSendApplicationResultRequest(
         String message
 ) {
 
-    public SendApplicationResultEmailCommand toCommand(Long userId, Long formId) {
-        return new SendApplicationResultEmailCommand(userId, formId, title, target, message);
+    public EmailSendApplicationResultCommand toCommand(Long userId, Long formId) {
+        return new EmailSendApplicationResultCommand(userId, formId, title, target, message);
     }
 
 

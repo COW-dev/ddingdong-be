@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.common.exception.EmailException;
+import ddingdong.ddingdongBE.common.exception.EmailException.InvalidFormApplicationStatusQueryException;
 import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailReSendTargetException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
@@ -19,8 +21,8 @@ import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.ResendApplicationResultEmailCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicationResultCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
@@ -200,7 +202,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void sendApplicationResultEmail(SendApplicationResultEmailCommand command) {
+    public void sendApplicationResultEmail(EmailSendApplicationResultCommand command) {
         Club club = clubService.getByUserId(command.userId());
         Form form = formService.getById(command.formId());
         validateEqualsClub(club, form);
@@ -255,7 +257,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         FormApplicationStatus formApplicationStatus = FormApplicationStatus.findStatus(status);
 
         if (formApplicationStatus == FormApplicationStatus.SUBMITTED) {
-            throw new InvalidatedEnumValue("지원 결과 상태만 조회할 수 있습니다.");
+            throw new InvalidFormApplicationStatusQueryException();
         }
 
         List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryService.getAllByFormIdAndFormApplicationStatus(
@@ -272,7 +274,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void resendApplicationResultEmail(ResendApplicationResultEmailCommand command) {
+    public void resendApplicationResultEmail(EmailResendApplicationResultCommand command) {
         Club club = clubService.getByUserId(command.userId());
         Form form = formService.getById(command.formId());
         validateEqualsClub(club, form);
@@ -290,7 +292,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         List<EmailSendStatus> resendTargetStatuses = EmailSendStatus.resendTargets();
 
         EmailSendHistories latestEmailSendHistories =
-                emailSendHistoryService.findLatestEmailSendHistoryByFormIdAndStatuses(
+                emailSendHistoryService.findLatestByFormIdAndStatuses(
                         command.formId(), resendTargetStatuses, command.target());
 
         List<FormApplication> formApplications = latestEmailSendHistories.getAll().stream()

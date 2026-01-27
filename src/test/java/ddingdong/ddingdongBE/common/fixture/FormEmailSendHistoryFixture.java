@@ -15,19 +15,19 @@ public class FormEmailSendHistoryFixture {
                 .build();
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFirstPass(Form form) {
+    public static FormEmailSendHistory createFirstPass(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FIRST_PASS);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFinalPass(Form form) {
+    public static FormEmailSendHistory createFinalPass(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FINAL_PASS);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFirstFail(Form form) {
+    public static FormEmailSendHistory createFirstFail(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FIRST_FAIL);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFinalFail(Form form) {
+    public static FormEmailSendHistory createFinalFail(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FINAL_FAIL);
     }
 }

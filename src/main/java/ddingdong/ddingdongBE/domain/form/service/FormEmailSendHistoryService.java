@@ -36,7 +36,7 @@ public class FormEmailSendHistoryService {
     }
 
     public List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(Long formId, FormApplicationStatus status) {
-        return formEmailSendHistoryRepository.getAllByFormIdAndFormApplicationStatus(formId, status);
+        return formEmailSendHistoryRepository.findAllByFormIdAndFormApplicationStatus(formId, status);
     }
 
     public FormEmailSendHistory getLatestByFormIdAndApplicationStatus(

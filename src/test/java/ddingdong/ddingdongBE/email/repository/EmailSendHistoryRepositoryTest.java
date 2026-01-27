@@ -54,12 +54,12 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
 
         // FIRST_PASS 지원서
         FormEmailSendHistory firstPassHistory = formEmailSendHistoryRepository.save(
-                FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(savedForm)
+                FormEmailSendHistoryFixture.createFirstPass(savedForm)
         );
 
         // FINAL_PASS 지원서 - applicationStatus 필터링 검증용
         FormEmailSendHistory finalPassHistory = formEmailSendHistoryRepository.save(
-                FormEmailSendHistoryFixture.createFormEmailSendHistoryForFinalPass(savedForm)
+                FormEmailSendHistoryFixture.createFinalPass(savedForm)
         );
 
         FormApplication formApplication1 = formApplicationRepository.save(
@@ -74,12 +74,12 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
 
         // formApplication1: 성공적으로 전송된 이메일 History -> 결과에서 제외
         EmailSendHistory formApplication1Latest = emailSendHistoryRepository.save(
-                EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(formApplication1, firstPassHistory)
+                EmailSendHistoryFixture.deliverySuccess(formApplication1, firstPassHistory)
         );
 
         // formApplication2: 재전송 시 TEMPORARY_FAILURE -> 결과에 포함
         emailSendHistoryRepository.save(
-                EmailSendHistoryFixture.deliverySuccessWithFormEmailSendHistory(formApplication2,
+                EmailSendHistoryFixture.deliverySuccess(formApplication2,
                         firstPassHistory)
         );
         EmailSendHistory formApplication2Latest = emailSendHistoryRepository.save(

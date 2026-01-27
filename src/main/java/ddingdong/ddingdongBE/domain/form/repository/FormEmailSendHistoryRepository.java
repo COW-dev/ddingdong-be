@@ -8,9 +8,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FormEmailSendHistoryRepository extends JpaRepository<FormEmailSendHistory, Long> {
 
-    List<FormEmailSendHistory> getAllByFormId(Long formId);
+    List<FormEmailSendHistory> findAllByFormId(Long formId);
 
-    List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(
+    List<FormEmailSendHistory> findAllByFormIdAndFormApplicationStatus(
             Long formId, FormApplicationStatus status
     );
 

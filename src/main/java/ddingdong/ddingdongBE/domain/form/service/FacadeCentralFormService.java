@@ -1,8 +1,8 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.ResendApplicationResultEmailCommand;
-import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicationResultCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
@@ -35,7 +35,7 @@ public interface FacadeCentralFormService {
 
     SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId);
 
-    void sendApplicationResultEmail(SendApplicationResultEmailCommand command);
+    void sendApplicationResultEmail(EmailSendApplicationResultCommand command);
 
     void updateFormEndDate(UpdateFormEndDateCommand command);
 
@@ -43,5 +43,5 @@ public interface FacadeCentralFormService {
 
     EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String formApplicationStatus);
 
-    void resendApplicationResultEmail(ResendApplicationResultEmailCommand command);
+    void resendApplicationResultEmail(EmailResendApplicationResultCommand command);
 }
