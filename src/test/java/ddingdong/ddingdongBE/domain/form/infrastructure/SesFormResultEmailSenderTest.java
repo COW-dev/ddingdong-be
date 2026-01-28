@@ -47,7 +47,7 @@ class SesFormResultEmailSenderTest extends TestContainerSupport {
         FormApplication savedFormApplication = formApplicationRepository.save(formApplication);
         emailContent = EmailContent.of("테스트 제목", "테스트 내용입니다. 안녕하세요 {지원자명}님", ClubFixture.createClub());
 
-        formEmailSendHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(null);
+        formEmailSendHistory = FormEmailSendHistoryFixture.createFirstPass(null);
         formEmailSendHistory = formEmailSendHistoryRepository.save(formEmailSendHistory);
 
         // 실제 EmailSendHistory 엔티티 생성
