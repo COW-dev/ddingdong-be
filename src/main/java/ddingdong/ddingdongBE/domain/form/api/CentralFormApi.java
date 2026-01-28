@@ -161,7 +161,7 @@ public interface CentralFormApi {
             content = @Content(schema = @Schema(implementation = EmailSendStatusOverviewResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/my/forms/{formId}/emails/status")
+    @GetMapping("/my/forms/{formId}/emails/status/overview")
     EmailSendStatusOverviewResponse getEmailSendStatusOverview(
             @PathVariable("formId") Long formId
     );
