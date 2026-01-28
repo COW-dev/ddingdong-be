@@ -6,7 +6,9 @@ import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,5 +46,16 @@ public class FormEmailSendHistoryService {
         return formEmailSendHistoryRepository
                 .findTopByFormIdAndFormApplicationStatusOrderByIdDesc(formId, status)
                 .orElseThrow(EmailTemplateNotFoundException::new);
+    }
+
+    public Map<FormApplicationStatus, Long> getLatestIdsByFormIdAndStatuses(
+            Long formId, List<FormApplicationStatus> statuses) {
+        Map<FormApplicationStatus, Long> result = new EnumMap<>(FormApplicationStatus.class);
+        for (FormApplicationStatus status : statuses) {
+            formEmailSendHistoryRepository
+                    .findTopByFormIdAndFormApplicationStatusOrderByIdDesc(formId, status)
+                    .ifPresent(history -> result.put(status, history.getId()));
+        }
+        return result;
     }
 }
