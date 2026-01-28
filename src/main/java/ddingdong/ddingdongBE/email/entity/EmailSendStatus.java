@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.email.entity;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 
@@ -23,7 +24,12 @@ public enum EmailSendStatus {
         return Arrays.stream(EmailSendStatus.values())
                 .filter(emailSendStatus -> Objects.equals(emailSendStatus.value, value))
                 .findFirst()
-                .orElseThrow(() -> new ResourceNotFound("해당 값(value = " + value + ")로 상태를 찾을 수 없습니다."));
+                .orElseThrow(
+                        () -> new ResourceNotFound("해당 값(value = " + value + ")로 상태를 찾을 수 없습니다."));
+    }
+
+    public static List<EmailSendStatus> resendTargets() {
+        return List.of(TEMPORARY_FAILURE, BOUNCE_REJECT);
     }
 
     public boolean isSuccess() {

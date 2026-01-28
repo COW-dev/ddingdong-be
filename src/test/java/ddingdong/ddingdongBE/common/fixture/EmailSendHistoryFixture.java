@@ -121,7 +121,7 @@ public class EmailSendHistoryFixture {
         return emailSendHistory;
     }
 
-    public static EmailSendHistory deliverySuccessWithFormEmailSendHistory(
+    public static EmailSendHistory deliverySuccess(
             FormApplication formApplication,
             FormEmailSendHistory formEmailSendHistory) {
         EmailSendHistory emailSendHistory = EmailSendHistory.builder()

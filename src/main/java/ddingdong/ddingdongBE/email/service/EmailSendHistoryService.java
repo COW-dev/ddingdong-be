@@ -78,7 +78,7 @@ public class EmailSendHistoryService {
         return new EmailSendHistories(emailSendHistories);
     }
 
-    public EmailSendHistories findLatestEmailSendHistoryByFormIdAndStatuses(Long formId,
+    public EmailSendHistories findLatestByFormIdAndStatuses(Long formId,
             List<EmailSendStatus> resendTargetStatuses, FormApplicationStatus target) {
         List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findLatestByFormIdAndStatusesAndApplicationStatus(
                 formId, resendTargetStatuses, target);
