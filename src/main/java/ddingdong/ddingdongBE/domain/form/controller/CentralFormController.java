@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.form.controller;
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.api.CentralFormApi;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailResendApplicationResultRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusOverviewResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailSendApplicationResultRequest;
@@ -16,6 +17,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldSt
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusOverviewQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
@@ -129,8 +131,16 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
+    public EmailSendStatusOverviewResponse getEmailSendStatusOverview(Long formId) {
+        EmailSendStatusOverviewQuery query = facadeCentralFormService.getEmailSendStatusOverviewByFormId(
+                formId);
+        return EmailSendStatusOverviewResponse.from(query);
+    }
+
+    @Override
     public EmailSendStatusResponse getEmailSendStatus(Long formId, String status) {
-        EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(formId, status);
+        EmailSendStatusQuery query = facadeCentralFormService.getEmailSendStatusByFormIdAndFormApplicationStatus(
+                formId, status);
         return EmailSendStatusResponse.from(query);
     }
 

@@ -19,6 +19,7 @@ import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
+import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
@@ -27,6 +28,8 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand.UpdateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusOverviewQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusOverviewQuery.EmailSendStatusOverviewInfoQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
@@ -48,9 +51,15 @@ import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
+import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
@@ -76,6 +85,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     private final EmailSendHistoryService emailSendHistoryService;
     private final FormEmailSendHistoryService formEmailSendHistoryService;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final FormEmailSendHistoryRepository formEmailSendHistoryRepository;
+    private final EmailSendHistoryRepository emailSendHistoryRepository;
 
     @Transactional
     @Override
@@ -253,7 +264,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     }
 
     @Override
-    public EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String status) {
+    public EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId,
+            String status) {
         FormApplicationStatus formApplicationStatus = FormApplicationStatus.findStatus(status);
 
         if (formApplicationStatus == FormApplicationStatus.SUBMITTED) {
@@ -312,8 +324,68 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         applicationEventPublisher.publishEvent(new SendFormResultEvent(reSendingEmailInfos));
     }
 
+    @Override
+    public EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId) {
+        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus =
+                new EnumMap<>(FormApplicationStatus.class);
+
+        for (FormApplicationStatus status : FormApplicationStatus.APPLICATION_RESULT_STATUSES) {
+            formEmailSendHistoryRepository
+                    .findTopByFormIdAndFormApplicationStatusOrderByIdDesc(formId, status)
+                    .ifPresent(history -> latestFormEmailSendHistoryIdByStatus.put(
+                            status, history.getId()));
+        }
+
+        List<Long> latestHistoryIds = List.copyOf(latestFormEmailSendHistoryIdByStatus.values());
+
+        List<EmailSendHistory> fetchedHistories = latestHistoryIds.isEmpty()
+                ? List.of()
+                : emailSendHistoryRepository.findAllFetchedByFormEmailSendHistoryIdIn(
+                        latestHistoryIds);
+
+        Map<Long, EmailSendHistories> emailSendHistoriesByFormEmailSendHistoryId = fetchedHistories.stream()
+                .collect(Collectors.groupingBy(
+                        history -> history.getFormEmailSendHistory().getId(),
+                        Collectors.collectingAndThen(Collectors.toList(), EmailSendHistories::new)
+                ));
+
+        List<EmailSendStatusOverviewInfoQuery> infos = FormApplicationStatus.APPLICATION_RESULT_STATUSES
+                .stream()
+                .map(status -> {
+                    Long formEmailSendHistoryId = latestFormEmailSendHistoryIdByStatus.get(status);
+
+                    if (formEmailSendHistoryId == null) {
+                        return EmailSendStatusOverviewInfoQuery.empty(status);
+                    }
+
+                    EmailSendHistories histories = emailSendHistoriesByFormEmailSendHistoryId.getOrDefault(
+                            formEmailSendHistoryId,
+                            new EmailSendHistories(List.of())
+                    );
+
+                    EmailSendHistories latestHistoriesByFormApplication = histories.getLatestByFormApplication();
+
+                    LocalDateTime lastSentAt = latestHistoriesByFormApplication.getAll()
+                            .stream()
+                            .map(EmailSendHistory::getSentAt)
+                            .filter(Objects::nonNull)
+                            .max(LocalDateTime::compareTo)
+                            .orElse(null);
+
+                    return EmailSendStatusOverviewInfoQuery.of(
+                            status,
+                            lastSentAt,
+                            latestHistoriesByFormApplication.getSuccessCount(),
+                            latestHistoriesByFormApplication.getFailCount());
+                }).toList();
+
+        return EmailSendStatusOverviewQuery.of(infos);
+    }
+
+
     private List<FormResultSendingEmailInfo> createPendingEmailInfos(
-            List<FormApplication> formApplications, FormEmailSendHistory newFormEmailSendHistory,
+            List<FormApplication> formApplications, FormEmailSendHistory
+                    newFormEmailSendHistory,
             EmailContent emailContent) {
         return formApplications.stream()
                 .map(application -> {
@@ -329,7 +401,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 })
                 .toList();
     }
-
 
     private void validateEqualsClub(Club club, Form form) {
         if (form.isNotEqualClubId(club.getId())) {
