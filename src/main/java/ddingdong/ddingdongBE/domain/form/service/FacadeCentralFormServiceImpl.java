@@ -17,7 +17,6 @@ import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
-import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
@@ -49,13 +48,11 @@ import ddingdong.ddingdongBE.email.entity.EmailContent;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistories;
 import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
-import ddingdong.ddingdongBE.email.repository.EmailSendHistoryRepository;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -321,7 +318,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     public EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId) {
-        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus = formEmailSendHistoryService.getLatestIdsByFormIdAndStatuses(
+        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus = formEmailSendHistoryService.getLatestIdsByFormIdAndApplicationStatuses(
                 formId, FormApplicationStatus.APPLICATION_RESULT_STATUSES);
 
         List<Long> latestHistoryIds = List.copyOf(latestFormEmailSendHistoryIdByStatus.values());

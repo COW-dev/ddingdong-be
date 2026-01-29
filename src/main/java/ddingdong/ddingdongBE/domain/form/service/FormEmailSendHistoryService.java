@@ -37,8 +37,10 @@ public class FormEmailSendHistoryService {
                 new FormEmailSendHistory(title, formApplicationStatus, emailContent, form));
     }
 
-    public List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(Long formId, FormApplicationStatus status) {
-        return formEmailSendHistoryRepository.findAllByFormIdAndFormApplicationStatus(formId, status);
+    public List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(Long formId,
+            FormApplicationStatus status) {
+        return formEmailSendHistoryRepository.findAllByFormIdAndFormApplicationStatus(formId,
+                status);
     }
 
     public FormEmailSendHistory getLatestByFormIdAndApplicationStatus(
@@ -48,14 +50,17 @@ public class FormEmailSendHistoryService {
                 .orElseThrow(EmailTemplateNotFoundException::new);
     }
 
-    public Map<FormApplicationStatus, Long> getLatestIdsByFormIdAndStatuses(
+    public Map<FormApplicationStatus, Long> getLatestIdsByFormIdAndApplicationStatuses(
             Long formId, List<FormApplicationStatus> statuses) {
+        List<FormEmailSendHistory> latestHistories = formEmailSendHistoryRepository.findLatestByFormIdAndStatuses(
+                formId, statuses);
+
         Map<FormApplicationStatus, Long> result = new EnumMap<>(FormApplicationStatus.class);
-        for (FormApplicationStatus status : statuses) {
-            formEmailSendHistoryRepository
-                    .findTopByFormIdAndFormApplicationStatusOrderByIdDesc(formId, status)
-                    .ifPresent(history -> result.put(status, history.getId()));
+
+        for (FormEmailSendHistory history : latestHistories) {
+            result.put(history.getFormApplicationStatus(), history.getId());
         }
+
         return result;
     }
 }
