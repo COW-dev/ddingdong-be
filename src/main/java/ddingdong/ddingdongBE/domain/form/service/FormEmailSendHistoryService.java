@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.EmailException.EmailTemplateNotFoundException;
+import ddingdong.ddingdongBE.common.exception.EmailException.EmptyStatusesForQueryException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
@@ -52,6 +53,10 @@ public class FormEmailSendHistoryService {
 
     public Map<FormApplicationStatus, Long> getLatestIdsByFormIdAndApplicationStatuses(
             Long formId, List<FormApplicationStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            throw new EmptyStatusesForQueryException();
+        }
+
         List<FormEmailSendHistory> latestHistories = formEmailSendHistoryRepository.findLatestByFormIdAndStatuses(
                 formId, statuses);
 
