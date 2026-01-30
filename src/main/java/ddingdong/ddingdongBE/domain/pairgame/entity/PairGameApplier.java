@@ -28,7 +28,7 @@ public class PairGameApplier extends BaseEntity {
     @Column(nullable = false, length = 50)
     private String department;
 
-    @Column(nullable = false, length = 50)
+    @Column(unique = true, nullable = false, length = 50)
     private String studentNumber;
 
     @Column(nullable = false, length = 50)
