@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@SQLDelete(sql = "update applier set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLDelete(sql = "update pair_game_applier set deleted_at = CURRENT_TIMESTAMP where id=?")
 @SQLRestriction("deleted_at IS NULL")
 public class PairGameApplier extends BaseEntity {
 

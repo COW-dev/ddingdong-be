@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.file.service;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import ddingdong.ddingdongBE.common.exception.FileException.FileReadingException;
 import org.springframework.web.multipart.MultipartFile;
 import software.amazon.awssdk.core.exception.SdkException;
 import software.amazon.awssdk.core.sync.RequestBody;
@@ -129,7 +130,7 @@ public class S3FileService {
                     RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
             return key;
         } catch (IOException e) {
-            throw new RuntimeException("파일 읽기 실패", e);
+            throw new FileReadingException();
         } catch (SdkException e) {
             log.error("AWS Service Error : {}", e.getMessage());
             throw new AwsService();

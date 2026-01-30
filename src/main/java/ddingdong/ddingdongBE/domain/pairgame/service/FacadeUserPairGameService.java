@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.pairgame.service;
 
+import ddingdong.ddingdongBE.common.exception.FileException.UploadedFileNotFoundException;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
@@ -28,6 +29,9 @@ public class FacadeUserPairGameService {
 
     @Transactional
     public void createApplier(CreatePairGameApplierCommand createPairGameApplierCommand, MultipartFile studentFeeImageFile) {
+        if (studentFeeImageFile == null || studentFeeImageFile.isEmpty()) {
+            throw new UploadedFileNotFoundException();
+        }
         String key = s3FileService.uploadMultipartFile(studentFeeImageFile, LocalDateTime.now(), "pair-game");
         String studentFeeImageUrl = s3FileService.getUploadedFileUrl(key).cdnUrl();
         pairGameService.create(createPairGameApplierCommand.toEntity(studentFeeImageUrl));

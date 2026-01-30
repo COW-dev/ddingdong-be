@@ -20,7 +20,7 @@ public class PairGameService {
     }
 
     public PairGameApplierAmountQuery getPairGameApplierAmount() {
-        int amount = pairGameRepository.findAll().size();
+        int amount = (int) pairGameRepository.count();
         return PairGameApplierAmountQuery.of(amount);
     }
 }
