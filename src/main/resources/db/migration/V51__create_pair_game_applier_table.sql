@@ -7,6 +7,6 @@ CREATE TABLE pair_game_applier
     phone_number             VARCHAR(50)  NOT NULL,
     student_fee_image_url    VARCHAR(255) NOT NULL,
     created_at               TIMESTAMP DEFAULT CURRENT_TIMESTAMP NULL,
-    updated_at               TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL
+    updated_at               TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NULL,
     deleted_at               TIMESTAMP NULL DEFAULT NULL
 );
