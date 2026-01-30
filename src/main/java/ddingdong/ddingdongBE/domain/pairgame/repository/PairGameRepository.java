@@ -5,4 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 
 public interface PairGameRepository extends JpaRepository<PairGameApplier, Long> {
+    boolean existsByStudentNumber(String studentNumber);
 }
