@@ -90,15 +90,6 @@ public class S3FileService {
         return new UploadedFileUrlQuery(splitKey[splitKey.length - 1], originUrl, cdnUrl);
     }
 
-    public String getUploadedMultipartFileUrl(String key) {
-        if (key == null) {
-            return null;
-        }
-        return s3Client.utilities()
-                .getUrl(builder -> builder.bucket(inputBucket).key(key))
-                .toExternalForm();
-    }
-
     public UploadedFileUrlAndNameQuery getUploadedFileUrlAndName(String key, String fileName) {
         UploadedFileUrlQuery fileUrlQuery = getUploadedFileUrl(key);
         return new UploadedFileUrlAndNameQuery(

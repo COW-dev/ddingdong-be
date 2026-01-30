@@ -29,7 +29,7 @@ public class FacadeUserPairGameService {
     @Transactional
     public void createApplier(CreatePairGameApplierCommand createPairGameApplierCommand, MultipartFile studentFeeImageFile) {
         String key = s3FileService.uploadMultipartFile(studentFeeImageFile, LocalDateTime.now(), "pair-game");
-        String studentFeeImageUrl = s3FileService.getUploadedMultipartFileUrl(key);
+        String studentFeeImageUrl = s3FileService.getUploadedFileUrl(key).cdnUrl();
         pairGameService.create(createPairGameApplierCommand.toEntity(studentFeeImageUrl));
     }
 
