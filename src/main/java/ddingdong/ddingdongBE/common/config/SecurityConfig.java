@@ -51,11 +51,13 @@ public class SecurityConfig {
                                 API_PREFIX + "/questions/**",
                                 API_PREFIX + "/feeds/**",
                                 API_PREFIX + "/forms/**",
-                                API_PREFIX + "/file/upload-url/form-application"
+                                API_PREFIX + "/file/upload-url/form-application",
+                                API_PREFIX + "/pair-game/**"
                                 )
                         .permitAll()
                         .requestMatchers(POST,
-                                API_PREFIX + "/forms/{formId}/applications"
+                                API_PREFIX + "/forms/{formId}/applications",
+                                API_PREFIX + "/pair-game/appliers"
                                 )
                         .permitAll()
                         .requestMatchers(API_PREFIX + "/internal/**")
