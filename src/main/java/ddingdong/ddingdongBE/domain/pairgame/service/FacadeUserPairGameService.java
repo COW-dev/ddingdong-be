@@ -34,8 +34,7 @@ public class FacadeUserPairGameService {
         }
         pairGameService.validateStudentNumberUnique(createPairGameApplierCommand.studentNumber());
         String key = s3FileService.uploadMultipartFile(studentFeeImageFile, LocalDateTime.now(), "pair-game");
-        String studentFeeImageUrl = s3FileService.getUploadedFileUrl(key).cdnUrl();
-        pairGameService.create(createPairGameApplierCommand.toEntity(studentFeeImageUrl));
+        pairGameService.create(createPairGameApplierCommand.toEntity(key));
     }
 
     public PairGameApplierAmountQuery getPairGameApplierAmount() {
