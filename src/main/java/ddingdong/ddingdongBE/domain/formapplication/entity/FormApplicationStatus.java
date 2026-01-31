@@ -11,7 +11,6 @@ public enum FormApplicationStatus {
     FIRST_FAIL,
     FINAL_FAIL;
 
-
     public static FormApplicationStatus findStatus(String status) {
         return Arrays.stream(values())
                 .filter(findStatus -> findStatus.name().equals(status))

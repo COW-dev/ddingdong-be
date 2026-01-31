@@ -56,6 +56,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
@@ -318,13 +319,12 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     public EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId) {
-        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus = formEmailSendHistoryService.getLatestIdsByFormIdAndApplicationStatuses(
-                formId, FormApplicationStatus.APPLICATION_RESULT_STATUSES);
-
-        List<Long> latestHistoryIds = List.copyOf(latestFormEmailSendHistoryIdByStatus.values());
+        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus =
+                formEmailSendHistoryService.getLatestIdsByFormIdAndApplicationStatuses(
+                        formId, FormApplicationStatus.APPLICATION_RESULT_STATUSES);
 
         List<EmailSendHistory> fetchedHistories = emailSendHistoryService.getAllFetchedByFormEmailSendHistoryIds(
-                latestHistoryIds);
+                List.copyOf(latestFormEmailSendHistoryIdByStatus.values()));
 
         Map<Long, EmailSendHistories> emailSendHistoriesByFormEmailSendHistoryId = fetchedHistories.stream()
                 .collect(Collectors.groupingBy(
@@ -332,8 +332,20 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                         Collectors.collectingAndThen(Collectors.toList(), EmailSendHistories::new)
                 ));
 
-        List<EmailSendStatusOverviewInfoQuery> infos = FormApplicationStatus.APPLICATION_RESULT_STATUSES
-                .stream()
+        List<EmailSendStatusOverviewInfoQuery> infos = getEmailSendStatusOverviewInfoQueries(
+                FormApplicationStatus.APPLICATION_RESULT_STATUSES,
+                latestFormEmailSendHistoryIdByStatus,
+                emailSendHistoriesByFormEmailSendHistoryId);
+
+        return EmailSendStatusOverviewQuery.of(infos);
+    }
+
+    private List<EmailSendStatusOverviewInfoQuery> getEmailSendStatusOverviewInfoQueries(
+            List<FormApplicationStatus> statuses,
+            Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus,
+            Map<Long, EmailSendHistories> emailSendHistoriesByFormEmailSendHistoryId) {
+
+        return statuses.stream()
                 .map(status -> {
                     Long formEmailSendHistoryId = latestFormEmailSendHistoryIdByStatus.get(status);
 
@@ -355,8 +367,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                             latestHistoriesByFormApplication.getSuccessCount(),
                             latestHistoriesByFormApplication.getFailCount());
                 }).toList();
-
-        return EmailSendStatusOverviewQuery.of(infos);
     }
 
     private List<FormResultSendingEmailInfo> createPendingEmailInfos(
