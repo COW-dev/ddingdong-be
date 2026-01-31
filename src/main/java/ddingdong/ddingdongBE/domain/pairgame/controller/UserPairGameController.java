@@ -19,7 +19,7 @@ public class UserPairGameController implements UserPairGameApi {
 
     @Override
     public void createPairGameApplier(CreatePairGameApplierRequest createPairGameApplierRequest, MultipartFile studentFeeImageFile) {
-        facadeUserPairGameService.createApplier(createPairGameApplierRequest.toCommand(), studentFeeImageFile);
+        facadeUserPairGameService.createPairGameApplier(createPairGameApplierRequest.toCommand(studentFeeImageFile));
     }
 
     @Override

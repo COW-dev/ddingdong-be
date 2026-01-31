@@ -28,7 +28,8 @@ public class FacadeUserPairGameService {
     private final FileMetaDataService fileMetaDataService;
 
     @Transactional
-    public void createApplier(CreatePairGameApplierCommand createPairGameApplierCommand, MultipartFile studentFeeImageFile) {
+    public void createPairGameApplier(CreatePairGameApplierCommand createPairGameApplierCommand) {
+        MultipartFile studentFeeImageFile = createPairGameApplierCommand.studentFeeImageFile();
         if (studentFeeImageFile == null || studentFeeImageFile.isEmpty()) {
             throw new UploadedFileNotFoundException();
         }

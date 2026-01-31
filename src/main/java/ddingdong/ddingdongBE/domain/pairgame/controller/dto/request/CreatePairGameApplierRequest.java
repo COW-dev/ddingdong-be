@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.pairgame.controller.dto.request;
 import ddingdong.ddingdongBE.domain.pairgame.service.dto.command.CreatePairGameApplierCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
+import org.springframework.web.multipart.MultipartFile;
 
 public record CreatePairGameApplierRequest (
 
@@ -22,12 +23,13 @@ public record CreatePairGameApplierRequest (
     @Schema(description = "응모자 전화번호", example = "010-0000-0000")
     String phoneNumber
     ) {
-    public CreatePairGameApplierCommand toCommand() {
+    public CreatePairGameApplierCommand toCommand(MultipartFile studentFeeImageFile) {
         return CreatePairGameApplierCommand.builder()
                 .name(name)
                 .department(department)
                 .studentNumber(studentNumber)
                 .phoneNumber(phoneNumber)
+                .studentFeeImageFile(studentFeeImageFile)
                 .build();
     }
 }
