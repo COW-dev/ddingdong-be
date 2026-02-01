@@ -18,6 +18,7 @@ public interface FormFieldRepository extends JpaRepository<FormField, Long> {
                     SELECT *
                     FROM form_field field
                     WHERE field.form_id = :formId
+                    AND field.deleted_at IS NULL
             ) AS f
             LEFT JOIN form_answer AS fa
             ON fa.field_id = f.id
@@ -31,6 +32,7 @@ public interface FormFieldRepository extends JpaRepository<FormField, Long> {
               FROM form_field f
               WHERE f.form_id = :formId 
                 AND (f.section = :section OR f.section = :defaultSection)
+                AND f.deleted_at IS NULL
             """, nativeQuery = true)
     List<FormField> findAllByFormAndSection(
             @Param("formId") Long formId,
