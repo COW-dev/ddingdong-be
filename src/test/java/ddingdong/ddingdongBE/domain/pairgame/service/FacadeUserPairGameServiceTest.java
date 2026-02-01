@@ -21,6 +21,7 @@ import org.springframework.mock.web.MockMultipartFile;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.IntStream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -86,6 +87,7 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
         // given
         List<FileMetaData> metaDataList = IntStream.range(0, 20)
                 .mapToObj(i -> FileMetaData.builder()
+                        .id(UUID.randomUUID())
                         .domainType(DomainType.CLUB_PROFILE)
                         .fileKey("key" + i)
                         .fileName("test.jpg")
