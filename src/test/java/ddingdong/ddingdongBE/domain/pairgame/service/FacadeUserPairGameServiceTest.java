@@ -2,6 +2,8 @@ package ddingdong.ddingdongBE.domain.pairgame.service;
 
 import ddingdong.ddingdongBE.common.exception.FileException.UploadedFileNotFoundException;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
@@ -41,6 +43,9 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
 
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
+
+    @Autowired
+    private ClubRepository clubRepository;
 
     @MockitoBean
     private S3FileService s3FileService;
@@ -82,13 +87,22 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
     }
 
     @Test
-    @DisplayName("유저: 동아리 로고 이미지를 랜덤으로 18개 조회할 수 있다.")
+    @DisplayName("유저: 동아리 로고 이미지 URL과 이름을 랜덤으로 18개 조회할 수 있다.")
     void getPairGameMetaData_Integration() {
         // given
+        List<Club> clubs = IntStream.range(0, 20)
+                .mapToObj(i -> Club.builder()
+                        .name("동아리" + i)
+                        .leader("회장" + i)
+                        .build())
+                .toList();
+        clubRepository.saveAll(clubs);
+
         List<FileMetaData> metaDataList = IntStream.range(0, 20)
                 .mapToObj(i -> FileMetaData.builder()
                         .id(UUID.randomUUID())
                         .domainType(DomainType.CLUB_PROFILE)
+                        .entityId(clubs.get(i).getId())
                         .fileKey("key" + i)
                         .fileName("test.jpg")
                         .fileStatus(FileStatus.COUPLED)
@@ -103,7 +117,11 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
         PairGameMetaDataQuery result = facadeUserPairGameService.getPairGameMetaData();
 
         // then
-        assertThat(result.images()).hasSize(18);
-        assertThat(result.images().get(0)).isEqualTo("cdnUrl");
+        assertThat(result.metaData()).hasSize(18);
+        String firstClubName = result.metaData().get(0).clubName();
+        String firstImageUrl = result.metaData().get(0).imageUrl();
+
+        assertThat(firstClubName).startsWith("동아리");
+        assertThat(firstImageUrl).isEqualTo("cdnUrl");
     }
 }

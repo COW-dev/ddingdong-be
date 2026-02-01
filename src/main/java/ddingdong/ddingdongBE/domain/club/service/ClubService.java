@@ -14,6 +14,8 @@ public interface ClubService {
 
     List<Club> findAll();
 
+    List<Club> getAllByIds(List<Long> clubIds);
+
     void update(Club club, Club updatedClub);
 
     void delete(Long clubId);

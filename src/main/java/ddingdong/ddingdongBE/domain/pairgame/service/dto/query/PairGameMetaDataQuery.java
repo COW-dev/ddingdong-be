@@ -6,11 +6,23 @@ import java.util.List;
 
 @Builder
 public record PairGameMetaDataQuery(
-        List<String> images
+        List<PairGameClubAndImageQuery> metaData
 ) {
-    public static PairGameMetaDataQuery of(List<String> images) {
+    @Builder
+    public record PairGameClubAndImageQuery(
+            String clubName,
+            String imageUrl
+    ) {
+        public static PairGameClubAndImageQuery of(String clubName, String imageUrl) {
+            return PairGameClubAndImageQuery.builder()
+                    .clubName(clubName)
+                    .imageUrl(imageUrl)
+                    .build();
+        }
+    }
+    public static PairGameMetaDataQuery of(List<PairGameClubAndImageQuery> metaData) {
         return PairGameMetaDataQuery.builder()
-                .images(images)
+                .metaData(metaData)
                 .build();
     }
 }

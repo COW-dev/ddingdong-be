@@ -57,6 +57,11 @@ public class GeneralClubService implements ClubService {
     }
 
     @Override
+    public List<Club> getAllByIds(List<Long> clubIds) {
+        return clubRepository.findAllById(clubIds);
+    }
+
+    @Override
     @Transactional
     public void update(Club club, Club updatedClub) {
         club.updateClubInfo(updatedClub);
