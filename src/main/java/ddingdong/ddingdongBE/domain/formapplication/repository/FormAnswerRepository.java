@@ -21,6 +21,7 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
             SELECT fa.value
             FROM form_answer fa
             WHERE fa.field_id = :fieldId
+            AND fa.deleted_at IS NULL
             """, nativeQuery = true)
     List<String> findAllValueByFormFieldId(@Param("fieldId") Long fieldId);
 
@@ -30,9 +31,11 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
                 SELECT *
                 FROM form_answer fa
                 WHERE fa.field_id = :fieldId
+                AND fa.deleted_at IS NULL
                 ) field_answer
             JOIN form_application fap
             ON fap.id = field_answer.application_id
+            AND fap.deleted_at IS NULL
             ORDER BY fap.id
             """, nativeQuery = true)
     List<TextAnswerInfo> getTextAnswerInfosByFormFieldId(Long fieldId);
@@ -41,6 +44,7 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
             SELECT DISTINCT fa.id
             FROM form_answer fa
             WHERE fa.field_id = :fieldId
+            AND fa.deleted_at IS NULL
             """, nativeQuery = true)
     List<Long> findAllAnswerByFormFieldId(@Param("fieldId") Long fieldId);
 
@@ -54,6 +58,8 @@ public interface FormAnswerRepository extends JpaRepository<FormAnswer, Long> {
             WHERE fmd.domain_type = :domainType
             AND fmd.entity_id IN (:answerIds)
             AND fmd.file_status = :fileStatus
+            AND fa.deleted_at IS NULL
+            AND fap.deleted_at IS NULL
             ORDER BY fmd.file_name
             """, nativeQuery = true)
     List<FileAnswerInfo> findAllFileAnswerInfo(
