@@ -12,7 +12,7 @@ public interface ClubService {
 
     Club getByUserId(Long userId);
 
-    List<Club> findAll();
+    List<Club> getAll();
 
     List<Club> getAllByIds(List<Long> clubIds);
 
@@ -22,5 +22,5 @@ public interface ClubService {
 
     Club getByUserIdWithFetch(Long userId);
 
-    List<UserClubListInfo> findAllClubListInfo();
+    List<UserClubListInfo> getAllClubListInfo();
 }
