@@ -78,10 +78,18 @@ public class EmailSendHistoryService {
         return new EmailSendHistories(emailSendHistories);
     }
 
-    public EmailSendHistories findLatestByFormIdAndStatuses(Long formId,
+    public EmailSendHistories getLatestByFormIdAndStatuses(Long formId,
             List<EmailSendStatus> resendTargetStatuses, FormApplicationStatus target) {
         List<EmailSendHistory> emailSendHistories = emailSendHistoryRepository.findLatestByFormIdAndStatusesAndApplicationStatus(
                 formId, resendTargetStatuses, target);
         return new EmailSendHistories(emailSendHistories);
     }
+
+    public List<EmailSendHistory> getAllFetchedByFormEmailSendHistoryIds(List<Long> ids) {
+        if (ids.isEmpty()) {
+            return List.of();
+        }
+        return emailSendHistoryRepository.findAllFetchedByFormEmailSendHistoryIdIn(ids);
+    }
+
 }

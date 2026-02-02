@@ -1,12 +1,15 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.EmailException.EmailTemplateNotFoundException;
+import ddingdong.ddingdongBE.common.exception.EmailException.EmptyStatusesForQueryException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,8 +38,10 @@ public class FormEmailSendHistoryService {
                 new FormEmailSendHistory(title, formApplicationStatus, emailContent, form));
     }
 
-    public List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(Long formId, FormApplicationStatus status) {
-        return formEmailSendHistoryRepository.findAllByFormIdAndFormApplicationStatus(formId, status);
+    public List<FormEmailSendHistory> getAllByFormIdAndFormApplicationStatus(Long formId,
+            FormApplicationStatus status) {
+        return formEmailSendHistoryRepository.findAllByFormIdAndFormApplicationStatus(formId,
+                status);
     }
 
     public FormEmailSendHistory getLatestByFormIdAndApplicationStatus(
@@ -44,5 +49,23 @@ public class FormEmailSendHistoryService {
         return formEmailSendHistoryRepository
                 .findTopByFormIdAndFormApplicationStatusOrderByIdDesc(formId, status)
                 .orElseThrow(EmailTemplateNotFoundException::new);
+    }
+
+    public Map<FormApplicationStatus, Long> getLatestIdsByFormIdAndApplicationStatuses(
+            Long formId, List<FormApplicationStatus> statuses) {
+        if (statuses == null || statuses.isEmpty()) {
+            throw new EmptyStatusesForQueryException();
+        }
+
+        List<FormEmailSendHistory> latestHistories = formEmailSendHistoryRepository.findLatestByFormIdAndStatuses(
+                formId, statuses);
+
+        Map<FormApplicationStatus, Long> result = new EnumMap<>(FormApplicationStatus.class);
+
+        for (FormEmailSendHistory history : latestHistories) {
+            result.put(history.getFormApplicationStatus(), history.getId());
+        }
+
+        return result;
     }
 }
