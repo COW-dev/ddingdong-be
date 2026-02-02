@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicatio
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.UpdateFormEndDateCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
+import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusOverviewQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormListQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormQuery;
@@ -44,4 +45,6 @@ public interface FacadeCentralFormService {
     EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String formApplicationStatus);
 
     void resendApplicationResultEmail(EmailResendApplicationResultCommand command);
+
+    EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId);
 }

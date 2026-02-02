@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailResendApplicationResultRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusOverviewResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailSendApplicationResultRequest;
@@ -153,6 +154,16 @@ public interface CentralFormApi {
     @GetMapping("/my/forms/emails/{formEmailSendHistoryId}/counts")
     EmailSendCountResponse getEmailSendCount(
             @PathVariable("formEmailSendHistoryId") Long formEmailSendHistoryId
+    );
+
+    @Operation(summary = "이메일 전송 현황 전체조회 API")
+    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 전체조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendStatusOverviewResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/emails/status/overview")
+    EmailSendStatusOverviewResponse getEmailSendStatusOverview(
+            @PathVariable("formId") Long formId
     );
 
     @Operation(summary = "이메일 전송 현황 상세조회 API")

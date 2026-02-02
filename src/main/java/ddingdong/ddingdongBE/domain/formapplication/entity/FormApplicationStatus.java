@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.formapplication.entity;
 
 import ddingdong.ddingdongBE.common.exception.InvalidatedMappingException.InvalidatedEnumValue;
 import java.util.Arrays;
+import java.util.List;
 
 public enum FormApplicationStatus {
     SUBMITTED,
@@ -17,4 +18,11 @@ public enum FormApplicationStatus {
                 .orElseThrow(() -> new InvalidatedEnumValue(
                         "FormApplicationStatus (status=" + status + ")를 찾을 수 없습니다."));
     }
+
+    public static final List<FormApplicationStatus> APPLICATION_RESULT_STATUSES = List.of(
+            FIRST_PASS,
+            FIRST_FAIL,
+            FINAL_PASS,
+            FINAL_FAIL
+    );
 }
