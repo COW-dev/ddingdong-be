@@ -54,14 +54,17 @@ public class FacadeUserPairGameService {
 
         List<Long> clubIds = selectedMetaData.stream().map(FileMetaData::getEntityId).toList();
         List<Club> clubs = clubService.getAllByIds(clubIds);
-        Map<Long, String> clubNameMap = clubs.stream().collect(Collectors.toMap(Club::getId, Club::getName));
+
+        Map<Long, Club> clubMap = clubs.stream().collect(Collectors.toMap(Club::getId, club -> club));
 
         List<PairGameClubAndImageQuery> pairGameMetaData = selectedMetaData.stream().map(file -> {
-            String name = clubNameMap.get(file.getEntityId());
-            String imageUrl = s3FileService.getUploadedFileUrl(file.getFileKey()).cdnUrl();
-            return PairGameClubAndImageQuery.builder().clubName(name).imageUrl(imageUrl).build();
+            Club club = clubMap.get(file.getEntityId());
+            return PairGameClubAndImageQuery.of(
+                    club.getName(),
+                    club.getCategory(),
+                    s3FileService.getUploadedFileUrl(file.getFileKey()).cdnUrl()
+            );
         }).toList();
-
-        return PairGameMetaDataQuery.builder().metaData(pairGameMetaData).build();
+        return PairGameMetaDataQuery.of(pairGameMetaData);
     }
 }

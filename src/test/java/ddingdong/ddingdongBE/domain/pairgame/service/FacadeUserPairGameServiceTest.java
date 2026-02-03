@@ -93,6 +93,7 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
         List<Club> clubs = IntStream.range(0, 20)
                 .mapToObj(i -> Club.builder()
                         .name("동아리" + i)
+                        .category("분과" + i)
                         .leader("회장" + i)
                         .build())
                 .toList();
@@ -119,9 +120,11 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
         // then
         assertThat(result.metaData()).hasSize(18);
         String firstClubName = result.metaData().get(0).clubName();
+        String firstClubCategory = result.metaData().get(0).category();
         String firstImageUrl = result.metaData().get(0).imageUrl();
 
-        assertThat(firstClubName).startsWith("동아리");
+        assertThat(firstClubName).isEqualTo("동아리0");
+        assertThat(firstClubCategory).isEqualTo("분과0");
         assertThat(firstImageUrl).isEqualTo("cdnUrl");
     }
 }

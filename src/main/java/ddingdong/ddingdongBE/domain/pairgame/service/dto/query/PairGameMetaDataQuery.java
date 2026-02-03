@@ -11,11 +11,13 @@ public record PairGameMetaDataQuery(
     @Builder
     public record PairGameClubAndImageQuery(
             String clubName,
+            String category,
             String imageUrl
     ) {
-        public static PairGameClubAndImageQuery of(String clubName, String imageUrl) {
+        public static PairGameClubAndImageQuery of(String clubName, String category, String imageUrl) {
             return PairGameClubAndImageQuery.builder()
                     .clubName(clubName)
+                    .category(category)
                     .imageUrl(imageUrl)
                     .build();
         }

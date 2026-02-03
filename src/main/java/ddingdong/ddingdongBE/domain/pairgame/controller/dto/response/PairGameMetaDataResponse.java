@@ -17,12 +17,15 @@ public record PairGameMetaDataResponse(
     public record PairGameClubAndImageResponse(
             @Schema(description = "동아리 이름", example = "COW")
             String clubName,
+            @Schema(description = "동아리 분과", example = "사회연구")
+            String category,
             @Schema(description = "동아리 로고 이미지 CDN URL", example = "https://cdn.com")
             String imageUrl
     ) {
         public static PairGameClubAndImageResponse from(PairGameClubAndImageQuery query) {
             return PairGameClubAndImageResponse.builder()
                     .clubName(query.clubName())
+                    .category(query.category())
                     .imageUrl(query.imageUrl())
                     .build();
         }
