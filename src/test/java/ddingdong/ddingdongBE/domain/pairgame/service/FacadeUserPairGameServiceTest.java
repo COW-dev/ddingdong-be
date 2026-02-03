@@ -87,7 +87,7 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
     }
 
     @Test
-    @DisplayName("유저: 동아리 로고 이미지 URL과 이름을 랜덤으로 18개 조회할 수 있다.")
+    @DisplayName("유저: 동아리 로고 이미지 URL, 분과, 이름을 랜덤으로 18개 조회할 수 있다.")
     void getPairGameMetaData_Integration() {
         // given
         List<Club> clubs = IntStream.range(0, 20)
@@ -123,8 +123,8 @@ class FacadeUserPairGameServiceTest extends TestContainerSupport {
         String firstClubCategory = result.metaData().get(0).category();
         String firstImageUrl = result.metaData().get(0).imageUrl();
 
-        assertThat(firstClubName).isEqualTo("동아리0");
-        assertThat(firstClubCategory).isEqualTo("분과0");
+        assertThat(firstClubName).startsWith("동아리");
+        assertThat(firstClubCategory).startsWith("분과");
         assertThat(firstImageUrl).isEqualTo("cdnUrl");
     }
 }
