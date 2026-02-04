@@ -50,27 +50,21 @@ public class FacadeUserPairGameService {
     public PairGameMetaDataQuery getPairGameMetaData() {
         List<FileMetaData> allClubProfileMetaData = fileMetaDataService.getCoupledAllByDomainType(DomainType.CLUB_PROFILE);
         Collections.shuffle(allClubProfileMetaData);
-        List<FileMetaData> selectedFiles = allClubProfileMetaData.stream().limit(18).toList();
+        List<FileMetaData> selectedMetaData = allClubProfileMetaData.stream().limit(18).toList();
 
-        List<Long> clubIds = selectedFiles.stream().map(FileMetaData::getEntityId).toList();
+        List<Long> clubIds = selectedMetaData.stream().map(FileMetaData::getEntityId).toList();
         List<Club> clubs = clubService.getAllByIds(clubIds);
 
         Map<Long, Club> clubMap = clubs.stream().collect(Collectors.toMap(Club::getId, club -> club));
 
-        List<PairGameClubAndImageQuery> pairGameMetaData = assembleMetaData(selectedFiles, clubMap);
-
+        List<PairGameClubAndImageQuery> pairGameMetaData = selectedMetaData.stream().map(file -> {
+            Club club = clubMap.get(file.getEntityId());
+            return PairGameClubAndImageQuery.of(
+                club.getName(),
+                club.getCategory(),
+                s3FileService.getUploadedFileUrl(file.getFileKey()).cdnUrl()
+            );
+        }).toList();
         return PairGameMetaDataQuery.of(pairGameMetaData);
-    }
-
-    private List<PairGameClubAndImageQuery> assembleMetaData(List<FileMetaData> files, Map<Long, Club> clubMap) {
-        return files.stream()
-                .map(file -> {
-                    Club club = clubMap.get(file.getEntityId());
-                    String name = club.getName();
-                    String category = club.getCategory();
-                    String imageUrl = s3FileService.getUploadedFileUrl(file.getFileKey()).cdnUrl();
-                    return PairGameClubAndImageQuery.of(name, category, imageUrl);
-                })
-                .toList();
     }
 }
