@@ -12,13 +12,13 @@ public record CreatePairGameApplierCommand(
         String phoneNumber,
         MultipartFile studentFeeImageFile
 ){
-    public PairGameApplier toEntity(String studentFeeImageUrl) {
+    public PairGameApplier toEntity(String studentFeeImageKey) {
         return PairGameApplier.builder()
                 .name(name)
                 .department(department)
                 .studentNumber(studentNumber)
                 .phoneNumber(phoneNumber)
-                .studentFeeImageUrl(studentFeeImageUrl)
+                .studentFeeImageKey(studentFeeImageKey)
                 .build();
     }
 }
