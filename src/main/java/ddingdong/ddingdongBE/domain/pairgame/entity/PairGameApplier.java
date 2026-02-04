@@ -35,18 +35,18 @@ public class PairGameApplier extends BaseEntity {
     private String phoneNumber;
 
     @Column(nullable = false)
-    private String studentFeeImageUrl;
+    private String studentFeeImageKey;
 
     @Column(columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    private PairGameApplier(String name, String department, String studentNumber, String phoneNumber, String studentFeeImageUrl) {
+    private PairGameApplier(String name, String department, String studentNumber, String phoneNumber, String studentFeeImageKey) {
         this.name = name;
         this.department = department;
         this.studentNumber = studentNumber;
         this.phoneNumber = phoneNumber;
-        this.studentFeeImageUrl = studentFeeImageUrl;
+        this.studentFeeImageKey = studentFeeImageKey;
     }
 
 }
