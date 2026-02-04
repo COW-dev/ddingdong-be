@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -18,7 +19,9 @@ public interface UserPairGameApi {
     @Operation(summary = "응모자 생성 API")
     @ApiResponse(responseCode = "201", description = "응모자 생성 성공")
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping("/pair-game/appliers")
+    @PostMapping(
+            value = "/pair-game/appliers",
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     void createPairGameApplier(
             @Valid @RequestPart("request") CreatePairGameApplierRequest request,
             @RequestPart("file") MultipartFile file
