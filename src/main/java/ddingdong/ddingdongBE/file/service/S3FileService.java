@@ -1,6 +1,10 @@
 package ddingdong.ddingdongBE.file.service;
 
 import com.github.f4b6a3.uuid.UuidCreator;
+import ddingdong.ddingdongBE.common.exception.FileException.FileReadingException;
+import org.springframework.web.multipart.MultipartFile;
+import software.amazon.awssdk.core.exception.SdkException;
+import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.presigner.S3Presigner;
 import software.amazon.awssdk.services.s3.presigner.model.PutObjectPresignRequest;
@@ -17,6 +21,8 @@ import ddingdong.ddingdongBE.file.service.dto.query.GeneratePreSignedUrlRequestQ
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedVideoUrlQuery;
+
+import java.io.IOException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -108,6 +114,29 @@ public class S3FileService {
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
     }
 
+    public String uploadMultipartFile(MultipartFile file, LocalDateTime dateTime, String directory) {
+        UUID fileName = UuidCreator.getTimeOrderedEpoch();
+        String extension = extractFileExtension(file.getOriginalFilename());
+        ContentType contentType = ContentType.fromExtension(extension);
+
+        String key = generateKey(contentType, dateTime, directory, fileName);
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(inputBucket)
+                    .key(key)
+                    .contentType(file.getContentType())
+                    .build();
+            s3Client.putObject(putObjectRequest,
+                    RequestBody.fromInputStream(file.getInputStream(), file.getSize()));
+            return key;
+        } catch (IOException e) {
+            throw new FileReadingException();
+        } catch (SdkException e) {
+            log.error("AWS Service Error : {}", e.getMessage());
+            throw new AwsService();
+        }
+    }
+
     private GeneratePreSignedUrlRequestQuery buildPresignedUrlRequest(GeneratePreSignedUrlRequestCommand command, ContentType contentType) {
         UUID id = UuidCreator.getTimeOrderedEpoch();
         String key = generateKey(contentType, command, id);
@@ -134,6 +163,15 @@ public class S3FileService {
                 contentType.getKeyMediaType(),
                 formatDate(command.generatedAt()),
                 command.userId(),
+                uploadFileName.toString());
+    }
+
+    private String generateKey(ContentType contentType, LocalDateTime dateTime, String directory, UUID uploadFileName) {
+        return String.format("%s/%s/%s/%s/%s",
+                serverProfile,
+                contentType.getKeyMediaType(),
+                formatDate(dateTime),
+                directory,
                 uploadFileName.toString());
     }
 

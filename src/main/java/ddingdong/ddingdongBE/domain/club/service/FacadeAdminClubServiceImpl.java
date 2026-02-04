@@ -38,7 +38,7 @@ public class FacadeAdminClubServiceImpl implements FacadeAdminClubService {
 
     @Override
     public List<AdminClubListQuery> findAll() {
-        return clubService.findAll().stream()
+        return clubService.getAll().stream()
                 .map(club -> {
                     UploadedFileUrlAndNameQuery clubProfileImageQuery = fileMetaDataService.getCoupledAllByDomainTypeAndEntityId(
                                     DomainType.CLUB_PROFILE, club.getId())

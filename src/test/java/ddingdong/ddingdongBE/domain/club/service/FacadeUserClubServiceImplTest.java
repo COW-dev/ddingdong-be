@@ -49,7 +49,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("유저: 동아리 목록 조회 - 모집 전")
     @Test
-    void findAllWithRecruitTimeCheckPointBeforeRecruit() {
+    void getAllWithRecruitTimeCheckPointBeforeRecruit() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 31);
@@ -75,7 +75,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("유저: 동아리 목록 조회 - 모집 가능")
     @Test
-    void findAllWithRecruitTimeCheckPointRecruiting() {
+    void getAllWithRecruitTimeCheckPointRecruiting() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 31);
@@ -101,7 +101,7 @@ class FacadeUserClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("유저: 동아리 목록 조회 - 모집 마감")
     @Test
-    void findAllWithRecruitTimeCheckPointEndRecruit() {
+    void getAllWithRecruitTimeCheckPointEndRecruit() {
         // given
         LocalDate startRecruitingDate = LocalDate.of(2025, 9, 1);
         LocalDate endRecruitingDate = LocalDate.of(2025, 12, 1);

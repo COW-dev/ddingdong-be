@@ -66,7 +66,7 @@ class FacadeAdminClubServiceImplTest extends TestContainerSupport {
 
     @DisplayName("어드민: 동아리 목록 조회")
     @Test
-    void findAll() {
+    void getAll() {
         // given
         List<Club> clubs = new ArrayList<>();
 
