@@ -25,6 +25,9 @@ public class FormEmailSendHistory extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String title;
+
     @Enumerated(EnumType.STRING)
     private FormApplicationStatus formApplicationStatus;
 
@@ -35,7 +38,8 @@ public class FormEmailSendHistory extends BaseEntity {
     private Form form;
 
     @Builder
-    public FormEmailSendHistory(FormApplicationStatus formApplicationStatus, String emailContent, Form form) {
+    public FormEmailSendHistory(String title, FormApplicationStatus formApplicationStatus, String emailContent, Form form) {
+        this.title = title;
         this.formApplicationStatus = formApplicationStatus;
         this.emailContent = emailContent;
         this.form = form;

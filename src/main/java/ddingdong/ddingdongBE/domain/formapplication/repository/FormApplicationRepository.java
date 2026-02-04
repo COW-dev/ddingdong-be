@@ -21,6 +21,7 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
                 SELECT f.department, COUNT(f.id) AS count
                 FROM form_application f
                 WHERE f.form_id = :formId
+                AND f.deleted_at IS NULL
                 GROUP BY f.department
                 ORDER BY count DESC
                 LIMIT :size
@@ -37,11 +38,13 @@ public interface FormApplicationRepository extends JpaRepository<FormApplication
                             FROM form
                             WHERE club_id = :clubId
                             AND start_date <= :date
+                            AND deleted_at IS NULL
                             ORDER BY start_date
                             LIMIT :size
                         ) AS recent_forms
                         LEFT JOIN form_application fa
                         ON recent_forms.id = fa.form_id
+                        AND fa.deleted_at IS NULL
                         GROUP BY recent_forms.id, recent_forms.start_date
                         ORDER BY date ASC
             """, nativeQuery = true)

@@ -1,9 +1,11 @@
 package ddingdong.ddingdongBE.email.entity;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 
@@ -37,6 +39,14 @@ public class EmailSendHistories {
                 ));
 
         return new EmailSendHistories(List.copyOf(latestByApplicationId.values()));
+    }
+
+    public LocalDateTime getLastSentAt() {
+        return emailSendHistories.stream()
+                .map(EmailSendHistory::getSentAt)
+                .filter(Objects::nonNull)
+                .max(LocalDateTime::compareTo)
+                .orElse(null);
     }
 
     private static EmailSendHistory pickLatest(EmailSendHistory a, EmailSendHistory b) {

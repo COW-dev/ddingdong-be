@@ -24,7 +24,7 @@ class EmailSendHistoryTest {
     @BeforeEach
     void setUp() {
         formApplication = FormApplicationFixture.pendingFormApplication();
-        formEmailSendHistory = FormEmailSendHistoryFixture.createFormEmailSendHistoryForFirstPass(null);
+        formEmailSendHistory = FormEmailSendHistoryFixture.createFirstPass(null);
     }
 
     @DisplayName("PENDING 상태로 EmailSendHistory를 생성할 수 있다")

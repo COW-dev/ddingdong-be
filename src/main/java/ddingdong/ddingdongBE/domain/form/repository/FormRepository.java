@@ -15,7 +15,8 @@ public interface FormRepository extends JpaRepository<Form, Long> {
     @Query(value = "SELECT * FROM form f " +
             "WHERE f.club_id = :clubId " +
             "AND f.start_date <= :endDate " +
-            "AND f.end_date >= :startDate",
+            "AND f.end_date >= :startDate " +
+            "AND f.deleted_at IS NULL",
             nativeQuery = true)
     List<Form> findOverlappingForms(
             @Param("clubId") Long clubId,
