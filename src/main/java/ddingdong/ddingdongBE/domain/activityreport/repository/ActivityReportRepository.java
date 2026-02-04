@@ -28,6 +28,7 @@ public interface ActivityReportRepository extends JpaRepository<ActivityReport, 
             where YEAR(ac.createdAt) = :currentYear
             and ac.term = :term
             and c = :club
+            and c.deletedAt is null
             """)
     List<ActivityReport> findByClubAndTerm(
             @Param("club") Club club,
@@ -40,6 +41,7 @@ public interface ActivityReportRepository extends JpaRepository<ActivityReport, 
             join fetch ac.club c
             where YEAR(ac.createdAt) = :currentYear
             and c = :club
+            and c.deletedAt is null
             """)
     List<ActivityReport> findAllByClub(@Param("club") Club club, @Param("currentYear") int currentYear);
 

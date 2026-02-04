@@ -10,23 +10,24 @@ public class FormEmailSendHistoryFixture {
         return FormEmailSendHistory.builder()
                 .form(form)
                 .formApplicationStatus(status)
+                .title("테스트 이메일 제목입니다.")
                 .emailContent("테스트 이메일 내용입니다.")
                 .build();
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFirstPass(Form form) {
+    public static FormEmailSendHistory createFirstPass(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FIRST_PASS);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFinalPass(Form form) {
+    public static FormEmailSendHistory createFinalPass(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FINAL_PASS);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFirstFail(Form form) {
+    public static FormEmailSendHistory createFirstFail(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FIRST_FAIL);
     }
 
-    public static FormEmailSendHistory createFormEmailSendHistoryForFinalFail(Form form) {
+    public static FormEmailSendHistory createFinalFail(Form form) {
         return createFormEmailSendHistory(form, FormApplicationStatus.FINAL_FAIL);
     }
 }
