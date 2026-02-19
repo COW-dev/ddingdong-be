@@ -36,7 +36,7 @@ public interface FacadeCentralFormService {
 
     SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId);
 
-    void sendApplicationResultEmail(EmailSendApplicationResultCommand command);
+    Long sendApplicationResultEmail(EmailSendApplicationResultCommand command);
 
     void updateFormEndDate(UpdateFormEndDateCommand command);
 
@@ -44,7 +44,7 @@ public interface FacadeCentralFormService {
 
     EmailSendStatusQuery getEmailSendStatusByFormIdAndFormApplicationStatus(Long formId, String formApplicationStatus);
 
-    void resendApplicationResultEmail(EmailResendApplicationResultCommand command);
+    Long resendApplicationResultEmail(EmailResendApplicationResultCommand command);
 
     EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId);
 }

@@ -9,6 +9,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailSendApplica
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendCountResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendRequestAcceptedResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
@@ -127,11 +128,12 @@ public interface CentralFormApi {
     );
 
     @Operation(summary = "동아리 지원 결과 이메일 전송 API")
-    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 이메일 전송 성공")
+    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 이메일 전송 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendRequestAcceptedResponse.class)))
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/results/email")
-    void sendApplicationResultEmail(@PathVariable("formId") Long formId,
+    EmailSendRequestAcceptedResponse sendApplicationResultEmail(@PathVariable("formId") Long formId,
             @AuthenticationPrincipal PrincipalDetails principalDetails,
             @Valid @RequestBody EmailSendApplicationResultRequest request);
 
@@ -178,11 +180,12 @@ public interface CentralFormApi {
     );
 
     @Operation(summary = "동아리 지원 결과 상태별 이메일 재전송 API")
-    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 상태별 이메일 재전송 성공")
+    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 상태별 이메일 재전송 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendRequestAcceptedResponse.class)))
     @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/results/email/resends")
-    void resendApplicationResultEmail(
+    EmailSendRequestAcceptedResponse resendApplicationResultEmail(
             @PathVariable("formId") Long formId,
             @Valid @RequestBody EmailResendApplicationResultRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
