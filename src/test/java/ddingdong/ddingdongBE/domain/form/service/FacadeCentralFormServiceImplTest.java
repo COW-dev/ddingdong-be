@@ -204,9 +204,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(result.failCount()).isEqualTo(0);
     }
 
-    @DisplayName("이메일 전송 시 FormEmailSendHistory가 생성된다")
+    @DisplayName("이메일 전송 시 FormEmailSendHistory가 생성되고 해당 ID가 반환된다")
     @Test
-    void sendApplicationResultEmailCreatesFormEmailSendHistory() {
+    void sendApplicationResultEmailCreatesFormEmailSendHistoryAndReturnsId() {
         // given
         User user = UserFixture.createClubUser();
         User savedUser = userRepository.save(user);
@@ -232,13 +232,16 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         );
 
         // when
-        facadeCentralFormService.sendApplicationResultEmail(command);
+        Long returnedHistoryId = facadeCentralFormService.sendApplicationResultEmail(command);
 
         // then
+        assertThat(returnedHistoryId).isNotNull();
+
         List<FormEmailSendHistory> formEmailSendHistories = formEmailSendHistoryRepository.findAll();
         assertThat(formEmailSendHistories).hasSize(1);
 
         FormEmailSendHistory savedHistory = formEmailSendHistories.get(0);
+        assertThat(returnedHistoryId).isEqualTo(savedHistory.getId());
         assertThat(savedHistory.getFormApplicationStatus()).isEqualTo(
                 FormApplicationStatus.FIRST_PASS);
         assertThat(savedHistory.getEmailContent()).isEqualTo("축하합니다. 1차 합격하셨습니다.");
@@ -289,9 +292,9 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
     }
 
 
-    @DisplayName("재전송 시 기존 전송 이력의 제목/본문을 재사용해 새 FormEmailSendHistory가 생성되고, 재전송 대상에 대한 EmailSendHistory가 생성된다.")
+    @DisplayName("재전송 시 기존 전송 이력의 제목/본문을 재사용해 새 FormEmailSendHistory가 생성되고 해당 ID가 반환된다")
     @Test
-    void resendApplicationResultEmail_CreatesNewHistoriesBasedOnLatestHistoryAndCreatesPendingEmailSendHistory() {
+    void resendApplicationResultEmail_CreatesNewHistoriesBasedOnLatestHistoryAndReturnsId() {
         // given
         User savedUser = userRepository.save(UserFixture.createClubUser());
         Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
@@ -337,9 +340,11 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         );
 
         // when
-        facadeCentralFormService.resendApplicationResultEmail(command);
+        Long returnedHistoryId = facadeCentralFormService.resendApplicationResultEmail(command);
 
         // then
+        assertThat(returnedHistoryId).isNotNull();
+
         List<FormEmailSendHistory> histories = formEmailSendHistoryRepository.findAll();
         assertThat(histories).hasSize(2);
 
@@ -348,6 +353,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 .findFirst()
                 .orElseThrow();
 
+        assertThat(returnedHistoryId).isEqualTo(newHistory.getId());
         assertThat(newHistory.getForm().getId()).isEqualTo(savedForm.getId());
         assertThat(newHistory.getFormApplicationStatus()).isEqualTo(
                 FormApplicationStatus.FIRST_PASS);
