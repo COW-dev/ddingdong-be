@@ -39,3 +39,8 @@ out/
 
 ### QClass ###
 src/main/generated/**
+
+### AI Tools ###
+.env
+.omc/
+CLAUDE.local.md
