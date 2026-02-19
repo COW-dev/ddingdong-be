@@ -206,7 +206,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void sendApplicationResultEmail(EmailSendApplicationResultCommand command) {
+    public Long sendApplicationResultEmail(EmailSendApplicationResultCommand command) {
         Club club = clubService.getByUserId(command.userId());
         Form form = formService.getById(command.formId());
         validateEqualsClub(club, form);
@@ -227,6 +227,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
         applicationEventPublisher.publishEvent(
                 new SendFormResultEvent(formResultSendingEmailInfos));
+
+        return formEmailSendHistory.getId();
     }
 
     @Transactional
@@ -279,7 +281,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Transactional
     @Override
-    public void resendApplicationResultEmail(EmailResendApplicationResultCommand command) {
+    public Long resendApplicationResultEmail(EmailResendApplicationResultCommand command) {
         Club club = clubService.getByUserId(command.userId());
         Form form = formService.getById(command.formId());
         validateEqualsClub(club, form);
@@ -315,6 +317,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 formApplications, newFormEmailSendHistory, emailContent);
 
         applicationEventPublisher.publishEvent(new SendFormResultEvent(reSendingEmailInfos));
+
+        return newFormEmailSendHistory.getId();
     }
 
     @Override

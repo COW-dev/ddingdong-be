@@ -10,6 +10,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailSendApplica
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendCountResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendRequestAcceptedResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
@@ -105,14 +106,15 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void sendApplicationResultEmail(
+    public EmailSendRequestAcceptedResponse sendApplicationResultEmail(
             Long formId,
             PrincipalDetails principalDetails,
             EmailSendApplicationResultRequest request
     ) {
         User user = principalDetails.getUser();
-        facadeCentralFormService.sendApplicationResultEmail(
+        Long formEmailSendHistoryId = facadeCentralFormService.sendApplicationResultEmail(
                 request.toCommand(user.getId(), formId));
+        return EmailSendRequestAcceptedResponse.from(formEmailSendHistoryId);
     }
 
     @Override
@@ -145,11 +147,12 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void resendApplicationResultEmail(Long formId,
+    public EmailSendRequestAcceptedResponse resendApplicationResultEmail(Long formId,
             EmailResendApplicationResultRequest request,
             PrincipalDetails principalDetails) {
         User user = principalDetails.getUser();
-        facadeCentralFormService.resendApplicationResultEmail(
+        Long formEmailSendHistoryId = facadeCentralFormService.resendApplicationResultEmail(
                 request.toCommand(user.getId(), formId));
+        return EmailSendRequestAcceptedResponse.from(formEmailSendHistoryId);
     }
 }
