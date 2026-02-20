@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import ddingdong.ddingdongBE.common.exception.EmailException.InvalidFormApplicationStatusQueryException;
 import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailReSendTargetException;
+import ddingdong.ddingdongBE.common.exception.EmailException.NoEmailSendTargetException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFieldTypeException;
 import ddingdong.ddingdongBE.common.exception.FormException.InvalidFormEndDateException;
 import ddingdong.ddingdongBE.common.exception.FormException.NonHaveFormAuthority;
@@ -204,6 +205,7 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
+    // TODO: command.target 상태를 가진 formApplications이 0개일 때 이메일 전송을 막기
     @Transactional
     @Override
     public Long sendApplicationResultEmail(EmailSendApplicationResultCommand command) {
@@ -215,6 +217,11 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 command.formId(),
                 command.target()
         );
+
+        if (formApplications.isEmpty()) {
+            throw new NoEmailSendTargetException();
+        }
+
         EmailContent emailContent = EmailContent.of(command.title(), command.message(), club);
         FormEmailSendHistory formEmailSendHistory = formEmailSendHistoryService.create(
                 form,
