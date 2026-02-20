@@ -20,6 +20,9 @@ public class SesFormResultEmailSender implements FormResultEmailSender {
     @Value("${cloud.aws.ses.sender-email}")
     private String senderEmail;
 
+    @Value("${cloud.aws.ses.configuration-set-name}")
+    private String configurationSetName;
+
     private final SesEmailSender sesEmailSender;
 
     @Override
@@ -38,7 +41,7 @@ public class SesFormResultEmailSender implements FormResultEmailSender {
                 .destination(Destination.builder()
                         .toAddresses(destinationEmail)
                         .build())
-                .configurationSetName("ddingdong-form-application-result-set")
+                .configurationSetName(configurationSetName)
                 .message(Message.builder()
                         .subject(Content.builder()
                                 .charset("UTF-8")

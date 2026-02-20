@@ -102,3 +102,8 @@ management:
     metrics:
       export:
         enabled: true
+
+cloud:
+  aws:
+    ses:
+      configuration-set-name: "ddingdong-form-application-result-set-prod"
