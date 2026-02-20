@@ -260,17 +260,17 @@ SKILL.md 작성 시 답해야 할 질문:
    (모든 리소스를 참조하도록 지침 포함)
 ```
 
-### Step 5: 패키징 및 검증
+### Step 5: 검증 체크리스트
 
-```bash
-# 검증 + 패키징
-python scripts/package_skill.py .claude/skills/my-skill
+스킬 완성 전 아래 항목을 수동으로 확인한다:
 
-# 출력 디렉토리 지정
-python scripts/package_skill.py .claude/skills/my-skill ./dist
-```
+- [ ] `SKILL.md` 프론트매터에 `name`, `description` 필드 존재
+- [ ] `description`에 `<example>` 블록 최소 1개 포함
+- [ ] 참조 파일이 있다면 `references/` 하위에 위치
+- [ ] 슬래시 커맨드명이 소문자·하이픈만 사용 (`my-skill` 형식)
+- [ ] Claude Code에서 `/my-skill` 입력 시 정상 트리거 확인
 
-**자동 검증 항목:**
+**검증 항목:**
 - YAML 프론트매터 형식 및 필수 필드
 - 네이밍 컨벤션 및 디렉토리 구조
 - description 완성도

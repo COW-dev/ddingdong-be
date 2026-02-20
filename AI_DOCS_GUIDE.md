@@ -130,9 +130,8 @@ ddingdong-be/
 ├── AI_DOCS_GUIDE.md       # 이 파일 (작성 지침)
 ├── .claude/               # Claude Code 도구 설정 (git 커밋)
 │   ├── settings.json      # hooks, permissions 등 도구 설정
-│   └── rules/             # (선택) 규칙을 파일별로 분리할 때
-│       ├── architecture.md
-│       └── security.md
+│   ├── agents/            # 서브 에이전트 정의 (*.md)
+│   └── skills/            # 슬래시 커맨드 스킬 (*/SKILL.md)
 └── CLAUDE.local.md        # 개인 전용 메모 → .gitignore에 추가, 커밋 X
 ```
 

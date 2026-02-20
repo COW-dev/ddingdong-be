@@ -141,7 +141,7 @@ aws lambda list-functions --query 'Functions[*].[FunctionName,Runtime,LastModifi
 ## Terraform Patterns
 
 ### Project structure
-```
+```text
 infra/
 ├── main.tf
 ├── variables.tf
@@ -206,7 +206,7 @@ terraform destroy    # 전체 삭제 (위험 — 반드시 확인)
 ## Output Format
 
 ### For AWS CLI operations:
-```
+```text
 ## 작업 계획
 - 수행할 작업: [설명]
 - 대상 리전: [region]
@@ -220,7 +220,7 @@ terraform destroy    # 전체 삭제 (위험 — 반드시 확인)
 ```
 
 ### For Terraform:
-```
+```text
 ## 인프라 설계
 - 생성할 리소스: [목록]
 - 아키텍처 설명: [설명]

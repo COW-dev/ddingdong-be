@@ -1,7 +1,6 @@
 HELP.md
 .gradle
 build/
-.gemini/
 !gradle/wrapper/gradle-wrapper.jar
 !**/src/main/**/build/
 !**/src/test/**/build/
@@ -43,5 +42,6 @@ src/main/generated/**
 ### AI Tools ###
 .env
 .omc/
+.gemini/
 CLAUDE.local.md
 .claude/settings.local.json

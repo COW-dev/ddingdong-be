@@ -27,7 +27,7 @@ Claude Code에서 고품질 에이전트를 만들기 위한 완전한 레퍼런
 
 ## 파일 구조
 
-```
+```text
 .claude/
 └── agents/
     └── my-agent.md       ← 에이전트 파일 위치

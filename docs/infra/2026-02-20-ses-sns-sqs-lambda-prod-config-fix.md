@@ -4,8 +4,8 @@
 > **카테고리**: infra
 > **관련 리소스**:
 > - Lambda: `ddingdong-ses-status-update-prod`
-> - SNS: `arn:aws:sns:ap-northeast-2:531444319321:ddingdong-email-ses-event-prod`
-> - SQS: `https://sqs.ap-northeast-2.amazonaws.com/531444319321/ddingdong-ses-queue-prod`
+> - SNS: `arn:aws:sns:ap-northeast-2:<ACCOUNT_ID>:ddingdong-email-ses-event-prod`
+> - SQS: `https://sqs.ap-northeast-2.amazonaws.com/<ACCOUNT_ID>/ddingdong-ses-queue-prod`
 
 ## 작업 요약
 
@@ -41,7 +41,7 @@ aws lambda update-function-configuration \
 "Principal": {"Service": "ses.amazonaws.com"},
 "Action": "SNS:Publish",
 "Condition": {
-  "StringEquals": {"AWS:SourceAccount": "531444319321"},
+  "StringEquals": {"AWS:SourceAccount": "<ACCOUNT_ID>"},
   "StringLike": {"AWS:SourceArn": "arn:aws:ses:*"}
 }
 ```

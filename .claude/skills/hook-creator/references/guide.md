@@ -97,13 +97,13 @@ Claude Code 훅을 만들기 위한 완전한 레퍼런스.
 ```json
 {
   "type": "prompt",
-  "prompt": "Command: $TOOL_INPUT.command. If contains 'rm -rf', return deny. Otherwise approve.",
+  "prompt": "Review the following tool use request: $ARGUMENTS. If contains 'rm -rf', return deny. Otherwise approve.",
   "timeout": 30
 }
 ```
 
 - **용도:** 복잡한 판단이 필요한 경우, 컨텍스트 인식 검증
-- **변수:** `$TOOL_INPUT`, `$TOOL_INPUT.command`, `$TRANSCRIPT_PATH` 등
+- **변수:** `$ARGUMENTS` (전체 JSON 입력), `$TRANSCRIPT_PATH` 등 — `$TOOL_INPUT`은 command 훅 stdin 전용
 - **응답:** `approve` / `deny` / `ask` 반환
 
 ### 선택 기준
@@ -129,8 +129,8 @@ exit 0
 echo '{"decision": "deny", "reason": "위험한 경로 감지"}' >&2
 exit 2
 
-# 사용자에게 메시지 전달
-echo '{"continue": true, "systemMessage": "경고: 보안 파일 수정됨"}' >&2
+# 사용자에게 메시지 전달 (구조화된 JSON은 stdout으로 출력)
+echo '{"continue": true, "systemMessage": "경고: 보안 파일 수정됨"}'
 exit 0
 ```
 
@@ -175,7 +175,7 @@ ask              → 사용자에게 확인 요청
     "matcher": "Write|Edit",
     "hooks": [{
       "type": "prompt",
-      "prompt": "File path: $TOOL_INPUT.file_path. Verify: 1) Not in /etc or system directories 2) Not .env or credentials file 3) No '..' path traversal. Return 'approve' or 'deny'."
+      "prompt": "File path: $ARGUMENTS.file_path. Verify: 1) Not in /etc or system directories 2) Not .env or credentials file 3) No '..' path traversal. Return 'approve' or 'deny'."
     }]
   }]
 }
@@ -189,7 +189,7 @@ ask              → 사용자에게 확인 요청
     "matcher": "Bash",
     "hooks": [{
       "type": "prompt",
-      "prompt": "Command: $TOOL_INPUT.command. If contains 'rm', 'delete', 'drop', or destructive operations, return 'ask'. Otherwise 'approve'."
+      "prompt": "Command: $ARGUMENTS.command. If contains 'rm', 'delete', 'drop', or destructive operations, return 'ask'. Otherwise 'approve'."
     }]
   }]
 }

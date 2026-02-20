@@ -19,11 +19,12 @@
 - secrets/환경변수 하드코딩 절대 금지
 
 ### 새 기능 추가 시 필수 순서
-1. `api/` 패키지에 Swagger 인터페이스 정의
-2. `controller/` 구현 (인터페이스 implements)
-3. `service/` + command/query DTO 작성
-4. `repository/` 쿼리 추가
-5. 테스트 작성 (RestAssured + Fixture Monkey)
+1. (DB 변경 시) `resources/db/migration/`에 Flyway 마이그레이션 파일 추가
+2. `api/` 패키지에 Swagger 인터페이스 정의
+3. `controller/` 구현 (인터페이스 implements)
+4. `service/` + command/query DTO 작성
+5. `repository/` 쿼리 추가
+6. 테스트 작성 (RestAssured + Fixture Monkey)
 
 ### 테스트
 - 코드 작성 후 `./gradlew test`로 검증한다

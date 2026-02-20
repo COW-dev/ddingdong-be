@@ -35,6 +35,7 @@ and category rules before writing any file.
    - `features/` — 기능 추가·수정
    - `decisions/` — 아키텍처 결정(ADR)
    - `debugging/` — 버그 수정·디버깅
+   - `claude/` — 에이전트·훅·스킬·CLAUDE.md 변경
 
 3. **파일명 결정**: `{YYYY-MM-DD}-{kebab-case-topic}.md`
    - 예: `2026-02-19-aws-infra-agent-setup.md`
