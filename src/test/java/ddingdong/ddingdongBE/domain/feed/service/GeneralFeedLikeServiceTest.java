@@ -69,6 +69,23 @@ class GeneralFeedLikeServiceTest extends TestContainerSupport {
                 .isInstanceOf(DuplicatedFeedLikeException.class);
     }
 
+    @DisplayName("피드 좋아요 취소 - 성공: 좋아요가 삭제된다.")
+    @Test
+    void delete_success() {
+        // given
+        User user = userRepository.save(UserFixture.createGeneralUser());
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
+        feedLikeService.create(feed.getId(), user.getId());
+
+        // when
+        feedLikeService.delete(feed.getId(), user.getId());
+
+        // then
+        long count = feedLikeRepository.countByFeedId(feed.getId());
+        assertThat(count).isEqualTo(0L);
+    }
+
     @DisplayName("피드 좋아요 여부 조회 - 성공: 좋아요한 피드는 true를 반환한다.")
     @Test
     void existsByFeedIdAndUserId_true() {

@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,4 +27,13 @@ public interface FeedLikeApi {
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 
+    @Operation(summary = "피드 좋아요 취소 API")
+    @ApiResponse(responseCode = "204", description = "피드 좋아요 취소 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/{feedId}/likes")
+    void deleteLike(
+            @PathVariable("feedId") Long feedId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
 }

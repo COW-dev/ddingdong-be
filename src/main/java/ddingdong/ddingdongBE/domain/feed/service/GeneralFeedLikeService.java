@@ -32,6 +32,12 @@ public class GeneralFeedLikeService implements FeedLikeService {
     }
 
     @Override
+    @Transactional
+    public void delete(Long feedId, Long userId) {
+        feedLikeRepository.deleteByFeedIdAndUserId(feedId, userId);
+    }
+
+    @Override
     public long countByFeedId(Long feedId) {
         return feedLikeRepository.countByFeedId(feedId);
     }

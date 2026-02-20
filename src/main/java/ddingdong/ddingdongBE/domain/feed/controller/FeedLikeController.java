@@ -17,5 +17,8 @@ public class FeedLikeController implements FeedLikeApi {
         feedLikeService.create(feedId, principalDetails.getUser().getId());
     }
 
-
+    @Override
+    public void deleteLike(Long feedId, PrincipalDetails principalDetails) {
+        feedLikeService.delete(feedId, principalDetails.getUser().getId());
+    }
 }

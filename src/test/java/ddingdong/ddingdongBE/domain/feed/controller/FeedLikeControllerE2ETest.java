@@ -116,4 +116,39 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .statusCode(404);
     }
 
+    @DisplayName("인증된 사용자가 피드 좋아요를 취소한다.")
+    @Test
+    void deleteLike_success() {
+        // given: 좋아요 생성
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + userToken)
+                .when()
+                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .then()
+                .statusCode(201);
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + userToken)
+                .when()
+                .delete("/server/feeds/{feedId}/likes", feed.getId())
+                .then()
+                .statusCode(204);
+
+        long count = feedLikeRepository.countByFeedId(feed.getId());
+        assertThat(count).isEqualTo(0L);
+    }
+
+    @DisplayName("인증되지 않은 사용자의 좋아요 취소 요청은 401을 반환한다.")
+    @Test
+    void deleteLike_fail_unauthorized() {
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .delete("/server/feeds/{feedId}/likes", feed.getId())
+                .then()
+                .statusCode(401);
+    }
 }
