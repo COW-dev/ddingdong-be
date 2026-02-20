@@ -1,6 +1,6 @@
 # CLAUDE.md — ddingdong-be
 
-프로젝트 개요, 구조, 명령어는 @AGENTS.md 참조.
+프로젝트 개요, 구조, 명령어, 핵심 패턴은 @AGENTS.md 참조.
 
 ---
 
@@ -26,21 +26,9 @@
 5. 테스트 작성 (RestAssured + Fixture Monkey)
 
 ### 테스트
-- 코드 제공 전 `./gradlew test` 실행 확인
+- 코드 작성 후 `./gradlew test`로 검증한다
 - 버그 수정/기능 추가 시 반드시 테스트 추가
 - TestContainers 사용 — Docker 실행 상태 필요
-
----
-
-## 핵심 패턴 레퍼런스
-
-| 패턴 | 위치 예시 |
-|------|-----------|
-| Soft Delete | `domain/club/entity/Club.java` |
-| Facade 패턴 | `domain/*/service/Facade*Service.java` |
-| Swagger Contract | `domain/*/api/*Api.java` |
-| Command/Query DTO | `domain/*/service/dto/command/`, `query/` |
-| QueryDSL 쿼리 | `domain/*/repository/*RepositoryImpl.java` |
 
 ---
 

@@ -81,11 +81,12 @@ src/main/java/ddingdong/ddingdongBE/
 
 ---
 
-## 에이전트 행동 규칙
+## 핵심 패턴 레퍼런스
 
-- 새 도메인은 반드시 위 패키지 구조를 따른다
-- `api/` 인터페이스 없이 Controller 구현 금지
-- 환경변수/시크릿 하드코딩 금지 — `@Value` 또는 `application.yml` 사용
-- Flyway 마이그레이션 파일은 기존 파일 수정 금지, 새 파일로만 추가
-- 엔티티 직접 삭제 금지 — Soft Delete 패턴 사용
-- 코드 변경 후 반드시 `./gradlew test` 실행 확인
+| 패턴 | 위치 예시 |
+|------|-----------|
+| Soft Delete | `domain/club/entity/Club.java` |
+| Facade 패턴 | `domain/*/service/Facade*Service.java` |
+| Swagger Contract | `domain/*/api/*Api.java` |
+| Command/Query DTO | `domain/*/service/dto/command/`, `query/` |
+| QueryDSL 쿼리 | `domain/*/repository/*RepositoryImpl.java` |
