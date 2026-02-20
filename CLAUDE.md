@@ -39,6 +39,27 @@
 - 커밋 메시지: 한국어, `[DDING-000] 작업 내용` 형식
 - PR 템플릿: 🚀 작업 내용 / 🤔 고민했던 내용 / 💬 리뷰 중점사항
 
+### API 단위 브랜치 전략 (PR 크기 관리)
+
+여러 API를 한 기능에서 개발할 때 PR이 커지는 것을 방지하기 위해 **API 1개 = 브랜치 1개 = PR 1개** 원칙을 따른다.
+
+**규칙**
+- 각 브랜치는 plan 파일 1개에 대응 (구현 + 테스트 포함)
+- 브랜치는 `develop`에서 분기, `develop`으로 PR
+- 의존 관계가 있는 경우 앞 브랜치 merge 후 다음 브랜치 분기
+- 브랜치명: `feat/{DDING-이슈번호}-{도메인}-{api-설명}` (예: `feat/DDING-000-feed-comment-api`)
+
+**작업 순서 (피드 추가 기능 예시)**
+```
+develop
+  └─ feat/DDING-000-feed-comment-api          # 01 댓글 작성/삭제
+  └─ feat/DDING-000-feed-admin-monthly-rank   # 02 총동연 월별 랭킹
+  └─ feat/DDING-000-feed-admin-rank-winners   # 03 총동연 지난 1위
+  └─ feat/DDING-000-feed-club-ranking         # 04 동아리 개별 랭킹
+  └─ feat/DDING-000-feed-club-monthly-best    # 05 동아리 이달의 현황
+  └─ feat/DDING-000-feed-modify-existing      # 06 기존 API 수정
+```
+
 ---
 
 ## 절대 금지
