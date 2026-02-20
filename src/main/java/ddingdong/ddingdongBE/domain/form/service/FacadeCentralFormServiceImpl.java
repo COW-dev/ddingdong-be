@@ -205,7 +205,6 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         return new SingleFieldStatisticsQuery(type, textStatisticsQueries);
     }
 
-    // TODO: command.target 상태를 가진 formApplications이 0개일 때 이메일 전송을 막기
     @Transactional
     @Override
     public Long sendApplicationResultEmail(EmailSendApplicationResultCommand command) {
