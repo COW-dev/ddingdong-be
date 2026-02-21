@@ -45,3 +45,7 @@ src/main/generated/**
 .gemini/
 CLAUDE.local.md
 .claude/settings.local.json
+
+### Local Docs ###
+docs/local/
+.claude/plans/
