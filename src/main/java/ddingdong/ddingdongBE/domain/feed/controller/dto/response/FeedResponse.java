@@ -15,6 +15,8 @@ public record FeedResponse(
         String activityContent,
         @Schema(description = "피드 유형", example = "IMAGE")
         String feedType,
+        @Schema(description = "조회수", example = "42")
+        long viewCount,
         @Schema(description = "생성 날짜", example = "2024-08-31")
         LocalDate createdDate,
         @Schema(description = "URL 정보", implementation = FileUrlResponse.class)
@@ -78,6 +80,7 @@ public record FeedResponse(
                 .activityContent(query.activityContent())
                 .fileUrls(FileUrlResponse.from(query.feedFileInfoQuery()))
                 .feedType(query.feedType())
+                .viewCount(query.viewCount())
                 .createdDate(query.createdDate())
                 .build();
     }
