@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.api;
 
+import static ddingdong.ddingdongBE.common.constant.ValidationConstants.UUID_V4_REGEXP;
+
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -16,8 +18,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Tag(name = "Feed Like", description = "피드 좋아요 API")
 @RequestMapping("/server/feeds")
 public interface FeedLikeApi {
-
-    String UUID_V4_REGEXP = "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
     @Operation(summary = "피드 좋아요 API")
     @ApiResponses({
