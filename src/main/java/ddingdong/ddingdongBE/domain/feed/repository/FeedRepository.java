@@ -68,19 +68,10 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             SELECT
                 c.name                                 AS clubName,
                 COUNT(DISTINCT f.id)                   AS feedCount,
-                (SELECT COALESCE(SUM(f2.view_count), 0)
-                 FROM feed f2
-                 WHERE f2.club_id = c.id AND f2.deleted_at IS NULL
-                   AND YEAR(f2.created_at) = YEAR(f.created_at)
-                   AND MONTH(f2.created_at) = MONTH(f.created_at)) AS viewCount,
+                COALESCE(fv.total_views, 0)            AS viewCount,
                 COUNT(DISTINCT fl.id)                  AS likeCount,
                 COUNT(DISTINCT fc.id)                  AS commentCount,
-                (COUNT(DISTINCT f.id) * 10
-                    + (SELECT COALESCE(SUM(f2.view_count), 0)
-                       FROM feed f2
-                       WHERE f2.club_id = c.id AND f2.deleted_at IS NULL
-                         AND YEAR(f2.created_at) = YEAR(f.created_at)
-                         AND MONTH(f2.created_at) = MONTH(f.created_at)) * 1
+                (COUNT(DISTINCT f.id) * 10 + COALESCE(fv.total_views, 0) * 1
                     + COUNT(DISTINCT fl.id) * 3 + COUNT(DISTINCT fc.id) * 5) AS score,
                 YEAR(f.created_at)                     AS targetYear,
                 MONTH(f.created_at)                    AS targetMonth
@@ -88,16 +79,23 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             JOIN club c ON f.club_id = c.id
             LEFT JOIN feed_like fl ON fl.feed_id = f.id
             LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
+            LEFT JOIN (
+                SELECT club_id, YEAR(created_at) AS yr, MONTH(created_at) AS mon,
+                       SUM(view_count) AS total_views
+                FROM feed
+                WHERE deleted_at IS NULL
+                GROUP BY club_id, YEAR(created_at), MONTH(created_at)
+            ) fv ON fv.club_id = c.id AND fv.yr = YEAR(f.created_at) AND fv.mon = MONTH(f.created_at)
             WHERE f.deleted_at IS NULL
               AND YEAR(f.created_at) = :year
               AND NOT (YEAR(f.created_at) = YEAR(CURRENT_DATE()) AND MONTH(f.created_at) = MONTH(CURRENT_DATE()))
-            GROUP BY c.id, c.name, YEAR(f.created_at), MONTH(f.created_at)
+            GROUP BY c.id, c.name, YEAR(f.created_at), MONTH(f.created_at), fv.total_views
             ORDER BY score DESC, c.id ASC
             LIMIT 1
             """, nativeQuery = true)
     Optional<FeedRankingWinnerDto> findYearlyWinner(@Param("year") int year);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query("UPDATE Feed f SET f.viewCount = f.viewCount + 1 WHERE f.id = :feedId")
     void incrementViewCount(@Param("feedId") Long feedId);
 

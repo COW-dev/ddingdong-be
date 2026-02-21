@@ -53,10 +53,11 @@ public class FacadeFeedService {
     @Transactional
     public FeedQuery getById(Long feedId) {
         Feed feed = feedService.getById(feedId);
-        feedService.incrementViewCount(feedId);
         ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
         FeedFileInfoQuery feedFileInfoQuery = feedFileService.extractFeedFileInfo(feed);
-        return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery);
+        FeedQuery feedQuery = FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery);
+        feedService.incrementViewCount(feedId);
+        return feedQuery;
     }
 
 }
