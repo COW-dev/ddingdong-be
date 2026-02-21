@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedLike;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,7 +33,11 @@ public class GeneralFeedLikeService implements FeedLikeService {
                 .feed(feed)
                 .uuid(uuid)
                 .build();
-        feedLikeRepository.save(feedLike);
+        try {
+            feedLikeRepository.save(feedLike);
+        } catch (DataIntegrityViolationException e) {
+            throw new DuplicatedFeedLikeException();
+        }
         feedLikeCacheService.addLike(uuid, feedId);
     }
 

@@ -11,6 +11,7 @@ import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
+import ddingdong.ddingdongBE.domain.feed.service.FeedLikeCacheService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,12 +42,16 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
     @Autowired
     private FeedLikeRepository feedLikeRepository;
 
+    @Autowired
+    private FeedLikeCacheService feedLikeCacheService;
+
     private Feed feed;
 
     @BeforeEach
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     void setUp() {
         RestAssured.port = port;
+        feedLikeCacheService.clearAll();
 
         Club club = clubRepository.save(ClubFixture.createClub());
         feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
@@ -62,7 +67,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .when()
                 .post("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
-                .statusCode(204);
+                .statusCode(201);
 
         long count = feedLikeRepository.countByFeedId(feed.getId());
         assertThat(count).isEqualTo(1L);
@@ -102,7 +107,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .when()
                 .post("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
-                .statusCode(204);
+                .statusCode(201);
 
         // when & then: 두 번째 좋아요
         given()
@@ -124,7 +129,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .when()
                 .post("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
-                .statusCode(204);
+                .statusCode(201);
 
         // when & then
         given()

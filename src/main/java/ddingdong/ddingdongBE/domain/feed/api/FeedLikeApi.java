@@ -21,12 +21,12 @@ public interface FeedLikeApi {
 
     @Operation(summary = "피드 좋아요 API")
     @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "피드 좋아요 성공"),
+            @ApiResponse(responseCode = "201", description = "피드 좋아요 성공"),
             @ApiResponse(responseCode = "400", description = "유효하지 않은 UUID 형식"),
             @ApiResponse(responseCode = "404", description = "피드 없음"),
             @ApiResponse(responseCode = "409", description = "이미 좋아요한 피드")
     })
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/{feedId}/likes")
     void createLike(
             @PathVariable("feedId") Long feedId,
