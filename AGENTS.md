@@ -90,3 +90,41 @@ src/main/java/ddingdong/ddingdongBE/
 | Swagger Contract | `domain/*/api/*Api.java` |
 | Command/Query DTO | `domain/*/service/dto/command/`, `query/` |
 | QueryDSL 쿼리 | `domain/*/repository/*RepositoryImpl.java` |
+
+---
+
+## 코드 컨벤션
+
+> 상세 내용은 @CONVENTIONS.md 참조
+
+### 핵심 요약
+
+**클래스 네이밍**
+- API Interface: `{Role}{Domain}Api` (예: `ClubFeedApi`, `AdminNoticeApi`)
+- Controller: `{Role}{Domain}Controller`
+- Facade Service: `Facade{Role}{Domain}Service` / `...ServiceImpl`
+- Domain Service: `{Domain}Service` 인터페이스 + `General{Domain}Service` 구현체
+- Request/Response DTO: `{Action}{Entity}Request`, `{Context}{Entity}Response`
+- Command/Query DTO: `{Action}{Entity}Command`, `{Entity}{Context}Query`
+- Exception: `{Domain}Exception` (부모) + static final inner class (구체 예외)
+
+**메서드 네이밍**
+- 생성: `create(Command)` → `Long` id 또는 `void`
+- 단건 조회 (예외): `getById(Long id)`, 단건 조회 (Optional): `findById(Long id)`
+- 삭제: `delete(Long id)`, 수정: `update(Command)`
+- DTO 변환: Request→`toCommand()`, Command→`toEntity()`, Query→`Response.from()`
+
+**어노테이션 규칙**
+- `@Builder`는 생성자에, 생성자 접근자는 `private`
+- 모든 연관관계는 `FetchType.LAZY`
+- Service 클래스: `@Transactional(readOnly = true)`, 쓰기 메서드만 `@Transactional` 오버라이드
+- HTTP 상태: POST→201, GET→200, PUT/PATCH/DELETE→204
+
+**DTO 규칙**
+- 모든 DTO는 Java `record` 사용
+- Request DTO에 `@NotNull`, `@Min` 등 검증 어노테이션 + 한국어 메시지
+- Command/Query/Response DTO에 `@Builder` 추가
+
+**예외 규칙**
+- `throw new {Domain}Exception.{Description}Exception()` 형태 사용
+- 에러 메시지는 `private static final String MESSAGE` 상수로 선언
