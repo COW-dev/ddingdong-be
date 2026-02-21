@@ -45,4 +45,13 @@ public class FeedException extends CustomException {
             super(MESSAGE, FORBIDDEN.value());
         }
     }
+
+    public static final class FeedRankingNotFoundException extends FeedException {
+
+        private static final String MESSAGE = "해당 연도에 피드가 존재하지 않습니다.";
+
+        public FeedRankingNotFoundException() {
+            super(MESSAGE, NOT_FOUND.value());
+        }
+    }
 }

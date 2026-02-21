@@ -40,6 +40,9 @@ public class Feed extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Club club;
 
+    @Column(nullable = false)
+    private long viewCount;
+
     @Column(name = "deleted_at")
     private LocalDateTime deletedAt;
 
@@ -49,6 +52,10 @@ public class Feed extends BaseEntity {
         this.activityContent = activityContent;
         this.club = club;
         this.feedType = feedType;
+    }
+
+    public void incrementViewCount() {
+        this.viewCount++;
     }
 
     public boolean isImage() {

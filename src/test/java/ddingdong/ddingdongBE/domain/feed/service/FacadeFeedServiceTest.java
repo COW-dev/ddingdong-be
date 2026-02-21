@@ -127,4 +127,128 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
         assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
     }
+
+    @DisplayName("피드 상세 조회 시 조회수가 1 증가한다.")
+    @Test
+    void getById_increments_viewCount() {
+        // given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .setNull("id")
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        Club savedClub = clubRepository.save(club);
+
+        DomainType clubDomainType = DomainType.CLUB_PROFILE;
+        UUID id1 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", clubDomainType)
+                        .set("entityId", savedClub.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        Feed feed = fixture.giveMeBuilder(Feed.class)
+                .setNull("id")
+                .set("club", savedClub)
+                .set("activityContent", "활동 내용")
+                .set("feedType", FeedType.IMAGE)
+                .set("viewCount", 0L)
+                .set("createdAt", LocalDateTime.now())
+                .sample();
+        Feed savedFeed = feedRepository.save(feed);
+
+        DomainType domainType = DomainType.FEED_IMAGE;
+        UUID id2 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", domainType)
+                        .set("entityId", savedFeed.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
+                .willReturn(new UploadedFileUrlQuery(null, null, null));
+        BDDMockito.given(s3FileService.getUploadedFileUrlAndName(any(), any()))
+                .willReturn(new UploadedFileUrlAndNameQuery(null, null, null, null));
+        BDDMockito.given(s3FileService.getUploadedVideoUrl(any()))
+                .willReturn(new UploadedVideoUrlQuery(null, null, null, null));
+
+        // when
+        facadeFeedService.getById(savedFeed.getId());
+
+        // then
+        Feed updatedFeed = feedRepository.findById(savedFeed.getId()).orElseThrow();
+        assertThat(updatedFeed.getViewCount()).isEqualTo(1L);
+    }
+
+    @DisplayName("피드 상세 조회를 여러 번 하면 조회수가 누적된다.")
+    @Test
+    void getById_increments_viewCount_multiple_times() {
+        // given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .setNull("id")
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        Club savedClub = clubRepository.save(club);
+
+        DomainType clubDomainType = DomainType.CLUB_PROFILE;
+        UUID id1 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id1)
+                        .set("domainType", clubDomainType)
+                        .set("entityId", savedClub.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        Feed feed = fixture.giveMeBuilder(Feed.class)
+                .setNull("id")
+                .set("club", savedClub)
+                .set("activityContent", "활동 내용")
+                .set("feedType", FeedType.IMAGE)
+                .set("viewCount", 0L)
+                .set("createdAt", LocalDateTime.now())
+                .sample();
+        Feed savedFeed = feedRepository.save(feed);
+
+        DomainType domainType = DomainType.FEED_IMAGE;
+        UUID id2 = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", id2)
+                        .set("domainType", domainType)
+                        .set("entityId", savedFeed.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
+                .willReturn(new UploadedFileUrlQuery(null, null, null));
+        BDDMockito.given(s3FileService.getUploadedFileUrlAndName(any(), any()))
+                .willReturn(new UploadedFileUrlAndNameQuery(null, null, null, null));
+        BDDMockito.given(s3FileService.getUploadedVideoUrl(any()))
+                .willReturn(new UploadedVideoUrlQuery(null, null, null, null));
+
+        // when
+        facadeFeedService.getById(savedFeed.getId());
+        facadeFeedService.getById(savedFeed.getId());
+        facadeFeedService.getById(savedFeed.getId());
+
+        // then
+        Feed updatedFeed = feedRepository.findById(savedFeed.getId()).orElseThrow();
+        assertThat(updatedFeed.getViewCount()).isEqualTo(3L);
+    }
 }

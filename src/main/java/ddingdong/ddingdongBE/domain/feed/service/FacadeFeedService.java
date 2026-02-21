@@ -50,8 +50,10 @@ public class FacadeFeedService {
         return FeedPageQuery.of(feedListQueries, pagingQuery);
     }
 
+    @Transactional
     public FeedQuery getById(Long feedId) {
         Feed feed = feedService.getById(feedId);
+        feed.incrementViewCount();
         ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
         FeedFileInfoQuery feedFileInfoQuery = feedFileService.extractFeedFileInfo(feed);
         return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery);
