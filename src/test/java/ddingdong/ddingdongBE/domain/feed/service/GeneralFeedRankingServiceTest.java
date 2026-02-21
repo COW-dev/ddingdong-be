@@ -1,7 +1,9 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import ddingdong.ddingdongBE.common.exception.FeedException.FeedRankingNotFoundException;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -20,7 +22,6 @@ import jakarta.persistence.PersistenceContext;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,11 +72,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         entityManager.clear();
 
         // when
-        Optional<FeedRankingWinnerQuery> result = feedRankingService.getYearlyWinner(2025);
+        FeedRankingWinnerQuery winner = feedRankingService.getYearlyWinner(2025);
 
         // then
-        assertThat(result).isPresent();
-        FeedRankingWinnerQuery winner = result.get();
         assertThat(winner.clubName()).isEqualTo("컴퓨터공학과 동아리");
         assertThat(winner.feedCount()).isEqualTo(1L);
         assertThat(winner.viewCount()).isEqualTo(0L);
@@ -102,14 +101,13 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         entityManager.clear();
 
         // when
-        Optional<FeedRankingWinnerQuery> result = feedRankingService.getYearlyWinner(2025);
+        FeedRankingWinnerQuery result = feedRankingService.getYearlyWinner(2025);
 
         // then
-        assertThat(result).isPresent();
-        assertThat(result.get().clubName()).isEqualTo("컴퓨터공학과 동아리");
+        assertThat(result.clubName()).isEqualTo("컴퓨터공학과 동아리");
     }
 
-    @DisplayName("역대 1위 조회 - 성공: 현재 달 피드는 제외된다.")
+    @DisplayName("역대 1위 조회 - 실패: 현재 달 피드만 존재하면 예외가 발생한다.")
     @Test
     void getYearlyWinner_excludes_current_month() {
         // given - 현재 달에만 피드 존재
@@ -119,22 +117,18 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         entityManager.flush();
         entityManager.clear();
 
-        // when - 현재 연도 조회 시 현재 달 피드 제외
+        // when & then - 현재 연도 조회 시 현재 달 피드 제외 → 예외
         int currentYear = LocalDateTime.now().getYear();
-        Optional<FeedRankingWinnerQuery> result = feedRankingService.getYearlyWinner(currentYear);
-
-        // then
-        assertThat(result).isEmpty();
+        assertThatThrownBy(() -> feedRankingService.getYearlyWinner(currentYear))
+                .isInstanceOf(FeedRankingNotFoundException.class);
     }
 
-    @DisplayName("역대 1위 조회 - 성공: 피드가 없으면 빈 결과를 반환한다.")
+    @DisplayName("역대 1위 조회 - 실패: 피드가 없으면 예외가 발생한다.")
     @Test
     void getYearlyWinner_returns_empty_when_no_feeds() {
-        // when
-        Optional<FeedRankingWinnerQuery> result = feedRankingService.getYearlyWinner(2025);
-
-        // then
-        assertThat(result).isEmpty();
+        // when & then
+        assertThatThrownBy(() -> feedRankingService.getYearlyWinner(2025))
+                .isInstanceOf(FeedRankingNotFoundException.class);
     }
 
     private void updateFeedCreatedAt(Long feedId, LocalDateTime createdAt) {

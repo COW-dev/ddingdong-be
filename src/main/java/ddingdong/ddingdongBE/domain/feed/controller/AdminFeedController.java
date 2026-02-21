@@ -1,6 +1,5 @@
 package ddingdong.ddingdongBE.domain.feed.controller;
 
-import ddingdong.ddingdongBE.common.exception.FeedException.FeedRankingNotFoundException;
 import ddingdong.ddingdongBE.domain.feed.api.AdminFeedApi;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FeedRankingService;
@@ -15,8 +14,6 @@ public class AdminFeedController implements AdminFeedApi {
 
     @Override
     public AdminFeedRankingWinnerResponse getYearlyWinner(int year) {
-        return feedRankingService.getYearlyWinner(year)
-                .map(AdminFeedRankingWinnerResponse::from)
-                .orElseThrow(FeedRankingNotFoundException::new);
+        return AdminFeedRankingWinnerResponse.from(feedRankingService.getYearlyWinner(year));
     }
 }
