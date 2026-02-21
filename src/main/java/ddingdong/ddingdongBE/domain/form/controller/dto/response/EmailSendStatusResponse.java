@@ -41,7 +41,7 @@ public record EmailSendStatusResponse(
                     emailSendStatusInfoQuery.name(),
                     emailSendStatusInfoQuery.studentNumber(),
                     emailSendStatusInfoQuery.sendAt(),
-                    Objects.requireNonNull(emailSendStatusInfoQuery.emailSendStatus().toUiStatus()),
+                    Objects.requireNonNull(emailSendStatusInfoQuery.emailSendStatus()).toUiStatus(),
                     emailSendStatusInfoQuery.formApplicationStatus()
             );
         }
