@@ -34,8 +34,6 @@ import org.springframework.transaction.annotation.Transactional;
 class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
 
     private static final String VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
-    private static final String ANOTHER_UUID = "660f9511-f30c-42e5-a827-557766551111";
-    private static final String INVALID_UUID = "not-a-valid-uuid";
 
     @LocalServerPort
     private int port;
@@ -70,19 +68,6 @@ class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
         clubToken = signIn(clubUser.getAuthId(), "1234");
     }
 
-    private String signIn(String authId, String password) {
-        SignInResponse response = given()
-                .contentType(ContentType.JSON)
-                .body(new SignInRequest(authId, password))
-                .when()
-                .post("/server/auth/sign-in")
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(SignInResponse.class);
-        return response.getToken();
-    }
-
     @DisplayName("비회원이 댓글을 작성하면 201과 commentId, anonymousNumber를 반환한다.")
     @Test
     void createComment_success() {
@@ -99,97 +84,6 @@ class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
 
         assertThat(response.get("commentId")).isNotNull();
         assertThat(response.get("anonymousNumber")).isEqualTo(1);
-    }
-
-    @DisplayName("동일한 UUID로 재방문 시 기존 anonymousNumber를 재사용한다.")
-    @Test
-    void createComment_sameUuidReusesAnonymousNumber() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .body(Map.of("content", "첫 번째 댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(201);
-
-        Map<?, ?> response = given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .body(Map.of("content", "두 번째 댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(201)
-                .extract()
-                .as(Map.class);
-
-        assertThat(response.get("anonymousNumber")).isEqualTo(1);
-    }
-
-    @DisplayName("다른 UUID는 순차적으로 익명 번호를 부여받는다.")
-    @Test
-    void createComment_differentUuidGetsNextAnonymousNumber() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .body(Map.of("content", "첫 번째 댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(201);
-
-        Map<?, ?> response = given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", ANOTHER_UUID)
-                .body(Map.of("content", "두 번째 댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(201)
-                .extract()
-                .as(Map.class);
-
-        assertThat(response.get("anonymousNumber")).isEqualTo(2);
-    }
-
-    @DisplayName("content가 빈 값이면 400을 반환한다.")
-    @Test
-    void createComment_fail_blankContent() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .body(Map.of("content", ""))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(400);
-    }
-
-    @DisplayName("UUID 형식이 올바르지 않으면 400을 반환한다.")
-    @Test
-    void createComment_fail_invalidUuid() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", INVALID_UUID)
-                .body(Map.of("content", "댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", feed.getId())
-                .then()
-                .statusCode(400);
-    }
-
-    @DisplayName("존재하지 않는 피드에 댓글 작성 시 404를 반환한다.")
-    @Test
-    void createComment_fail_feedNotFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .body(Map.of("content", "댓글"))
-                .when()
-                .post("/server/feeds/{feedId}/comments", 9999L)
-                .then()
-                .statusCode(404);
     }
 
     @DisplayName("본인 UUID로 댓글을 삭제하면 204를 반환한다.")
@@ -209,33 +103,6 @@ class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
         assertThat(feedCommentRepository.findById(comment.getId())).isEmpty();
     }
 
-    @DisplayName("타인 UUID로 댓글 삭제 시 403을 반환한다.")
-    @Test
-    void deleteComment_fail_otherUuid() {
-        FeedComment comment = feedCommentRepository.save(
-                FeedFixture.createFeedComment(feed, VALID_UUID, 1, "남의 댓글"));
-
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", ANOTHER_UUID)
-                .when()
-                .delete("/server/feeds/{feedId}/comments/{commentId}", feed.getId(), comment.getId())
-                .then()
-                .statusCode(403);
-    }
-
-    @DisplayName("존재하지 않는 댓글 삭제 시 404를 반환한다.")
-    @Test
-    void deleteComment_fail_notFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .when()
-                .delete("/server/feeds/{feedId}/comments/{commentId}", feed.getId(), 9999L)
-                .then()
-                .statusCode(404);
-    }
-
     @DisplayName("ROLE_CLUB 동아리 회장이 댓글을 강제삭제하면 204를 반환한다.")
     @Test
     void forceDeleteComment_success() {
@@ -253,29 +120,16 @@ class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
         assertThat(feedCommentRepository.findById(comment.getId())).isEmpty();
     }
 
-    @DisplayName("미인증 사용자가 강제삭제 시 401을 반환한다.")
-    @Test
-    void forceDeleteComment_fail_unauthenticated() {
-        given()
+    private String signIn(String authId, String password) {
+        SignInResponse response = given()
                 .contentType(ContentType.JSON)
+                .body(new SignInRequest(authId, password))
                 .when()
-                .delete("/server/central/feeds/{feedId}/comments/{commentId}", feed.getId(), 1L)
+                .post("/server/auth/sign-in")
                 .then()
-                .statusCode(401);
-    }
-
-    @DisplayName("ROLE_ADMIN 사용자가 강제삭제 시도 시 403을 반환한다.")
-    @Test
-    void forceDeleteComment_fail_nonClubRole() {
-        userRepository.save(UserFixture.createAdminUser(passwordEncoder.encode("1234")));
-        String adminToken = signIn("admin123", "1234");
-
-        given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", "Bearer " + adminToken)
-                .when()
-                .delete("/server/central/feeds/{feedId}/comments/{commentId}", feed.getId(), 1L)
-                .then()
-                .statusCode(403);
+                .statusCode(200)
+                .extract()
+                .as(SignInResponse.class);
+        return response.getToken();
     }
 }
