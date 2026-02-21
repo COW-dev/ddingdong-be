@@ -10,6 +10,7 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommentCo
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.CreateFeedCommentQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
 import java.util.List;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,7 +39,7 @@ public class GeneralFeedCommentService implements FeedCommentService {
     public void delete(Long commentId, String uuid) {
         FeedComment comment = feedCommentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
-        if (!comment.getUuid().equals(uuid)) {
+        if (!Objects.equals(comment.getUuid(), uuid)) {
             throw new CommentAccessDeniedException();
         }
         feedCommentRepository.delete(comment);

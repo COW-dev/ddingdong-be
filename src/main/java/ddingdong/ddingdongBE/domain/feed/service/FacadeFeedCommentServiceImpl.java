@@ -25,6 +25,7 @@ public class FacadeFeedCommentServiceImpl implements FacadeFeedCommentService {
     @Override
     @Transactional
     public void delete(Long feedId, Long commentId, String uuid) {
+        feedService.getById(feedId);
         feedCommentService.delete(commentId, uuid);
     }
 }
