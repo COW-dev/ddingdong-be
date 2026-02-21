@@ -7,6 +7,7 @@ import ddingdong.ddingdongBE.email.entity.EmailSendUiStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public record EmailSendStatusResponse(
         List<EmailSendStatusInfoResponse> emailSendStatusInfoResponses
@@ -40,7 +41,7 @@ public record EmailSendStatusResponse(
                     emailSendStatusInfoQuery.name(),
                     emailSendStatusInfoQuery.studentNumber(),
                     emailSendStatusInfoQuery.sendAt(),
-                    emailSendStatusInfoQuery.emailSendStatus().toUiStatus(),
+                    Objects.requireNonNull(emailSendStatusInfoQuery.emailSendStatus().toUiStatus()),
                     emailSendStatusInfoQuery.formApplicationStatus()
             );
         }
