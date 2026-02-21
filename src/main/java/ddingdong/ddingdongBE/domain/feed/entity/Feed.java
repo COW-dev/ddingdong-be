@@ -47,11 +47,12 @@ public class Feed extends BaseEntity {
     private LocalDateTime deletedAt;
 
     @Builder
-    private Feed(Long id, String activityContent, Club club, FeedType feedType) {
+    private Feed(Long id, String activityContent, Club club, FeedType feedType, long viewCount) {
         this.id = id;
         this.activityContent = activityContent;
         this.club = club;
         this.feedType = feedType;
+        this.viewCount = viewCount;
     }
 
     public boolean isImage() {
