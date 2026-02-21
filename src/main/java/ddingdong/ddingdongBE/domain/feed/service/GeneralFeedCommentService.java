@@ -9,7 +9,7 @@ import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommentCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.result.CreateFeedCommentResult;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.CreateFeedCommentQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class GeneralFeedCommentService implements FeedCommentService {
 
     @Override
     @Transactional
-    public CreateFeedCommentResult create(CreateFeedCommentCommand command) {
+    public CreateFeedCommentQuery create(CreateFeedCommentCommand command) {
         Feed feed = feedService.getById(command.feedId());
 
         int anonymousNumber = feedCommentRepository
@@ -36,7 +36,7 @@ public class GeneralFeedCommentService implements FeedCommentService {
 
         FeedComment comment = command.toEntity(feed, anonymousNumber);
         FeedComment saved = feedCommentRepository.save(comment);
-        return new CreateFeedCommentResult(saved.getId(), anonymousNumber);
+        return new CreateFeedCommentQuery(saved.getId(), anonymousNumber);
     }
 
     @Override

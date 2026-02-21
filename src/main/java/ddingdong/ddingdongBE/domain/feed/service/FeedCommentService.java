@@ -2,13 +2,13 @@ package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommentCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
-import ddingdong.ddingdongBE.domain.feed.service.dto.result.CreateFeedCommentResult;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.CreateFeedCommentQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 
 public interface FeedCommentService {
 
-    CreateFeedCommentResult create(CreateFeedCommentCommand command);
+    CreateFeedCommentQuery create(CreateFeedCommentCommand command);
 
     void delete(Long feedId, Long commentId, String uuid);
 
