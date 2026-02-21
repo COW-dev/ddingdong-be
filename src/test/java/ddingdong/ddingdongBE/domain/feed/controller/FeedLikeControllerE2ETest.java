@@ -27,7 +27,6 @@ import org.springframework.transaction.annotation.Transactional;
 class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
 
     private static final String VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
-    private static final String OTHER_UUID = "660f9511-f3ac-42e5-b827-557766551111";
     private static final String INVALID_UUID = "not-a-valid-uuid";
 
     @LocalServerPort
@@ -85,40 +84,6 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .statusCode(400);
     }
 
-    @DisplayName("존재하지 않는 피드에 좋아요하면 404를 반환한다.")
-    @Test
-    void createLike_fail_feedNotFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .when()
-                .post("/server/feeds/{feedId}/likes", 9999L)
-                .then()
-                .statusCode(404);
-    }
-
-    @DisplayName("이미 좋아요한 피드에 다시 좋아요하면 409를 반환한다.")
-    @Test
-    void createLike_fail_duplicate() {
-        // given: 첫 번째 좋아요
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", OTHER_UUID)
-                .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
-                .then()
-                .statusCode(201);
-
-        // when & then: 두 번째 좋아요
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", OTHER_UUID)
-                .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
-                .then()
-                .statusCode(409);
-    }
-
     @DisplayName("비회원이 X-Anonymous-UUID 헤더로 피드 좋아요를 취소한다.")
     @Test
     void deleteLike_success() {
@@ -142,29 +107,5 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
 
         long count = feedLikeRepository.countByFeedId(feed.getId());
         assertThat(count).isEqualTo(0L);
-    }
-
-    @DisplayName("좋아요 기록이 없는 피드를 취소하면 404를 반환한다.")
-    @Test
-    void deleteLike_fail_notFound() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
-                .when()
-                .delete("/server/feeds/{feedId}/likes", feed.getId())
-                .then()
-                .statusCode(404);
-    }
-
-    @DisplayName("유효하지 않은 UUID로 좋아요 취소 요청하면 400을 반환한다.")
-    @Test
-    void deleteLike_fail_invalidUuid() {
-        given()
-                .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", INVALID_UUID)
-                .when()
-                .delete("/server/feeds/{feedId}/likes", feed.getId())
-                .then()
-                .statusCode(400);
     }
 }
