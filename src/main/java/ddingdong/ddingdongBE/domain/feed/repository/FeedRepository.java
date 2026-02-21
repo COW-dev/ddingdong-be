@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedRankingWinnerDto;
 import java.util.Optional;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -95,5 +96,9 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             LIMIT 1
             """, nativeQuery = true)
     Optional<FeedRankingWinnerDto> findYearlyWinner(@Param("year") int year);
+
+    @Modifying
+    @Query("UPDATE Feed f SET f.viewCount = f.viewCount + 1 WHERE f.id = :feedId")
+    void incrementViewCount(@Param("feedId") Long feedId);
 
 }

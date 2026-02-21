@@ -54,10 +54,6 @@ public class Feed extends BaseEntity {
         this.feedType = feedType;
     }
 
-    public void incrementViewCount() {
-        this.viewCount++;
-    }
-
     public boolean isImage() {
         return feedType == FeedType.IMAGE;
     }
