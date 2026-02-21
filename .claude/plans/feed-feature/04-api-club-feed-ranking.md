@@ -1,40 +1,42 @@
-# API 04: 동아리 회장 피드 개별 랭킹 조회
+# API 04: 동아리 피드 랭킹 조회 (API 6)
 
 ## API 명세
 
 | Method | URL | Auth | 상태코드 |
 |--------|-----|------|---------|
-| GET | `/server/central/my/feed-rankings?year=` | CLUB | 200 |
+| GET | `/server/central/feeds/ranking?year=&month=` | ROLE_CLUB | 200 |
 
 ### Query Parameters
 | 파라미터 | 타입 | 필수 | 설명 |
 |---------|------|------|------|
 | year | int | Y | 조회 연도 |
+| month | int | Y | 조회 월 (1~12) |
 
 ### Response Body
 ```json
-{
-  "rankings": [
-    {
-      "month": 3,
-      "rank": 2,
-      "feedId": 10,
-      "activityContent": "피드 내용",
-      "feedType": "IMAGE",
-      "totalScore": 120,
-      "viewCount": 80,
-      "likeCount": 25,
-      "commentCount": 15
-    }
-  ]
-}
+[
+  {
+    "rank": 1,
+    "feedId": 10,
+    "thumbnailUrl": "https://...",
+    "clubName": "동아리명",
+    "score": 150,
+    "viewCount": 80,
+    "likeCount": 20,
+    "commentCount": 10
+  }
+]
 ```
 
 ### 비즈니스 규칙
-- 로그인한 동아리 회장의 Club 소속 피드만 대상
-- 해당 연도 각 월별로 내 피드의 랭킹(전체 피드 중 순위) 반환
-- 월별로 그룹핑하여 반환 (피드가 없는 달은 제외)
-- 같은 달에 내 피드가 여러 개면 모두 반환 (각각의 순위 포함)
+- **전체 동아리** 피드를 포함한 랭킹 (내 동아리만 필터하지 않음)
+- 해당 연도/월 pieds에 대해 랭킹 계산
+- 랭킹 공식: `score = viewCount×1 + likeCount×3 + commentCount×5`
+- 정렬: score DESC, feedId ASC (동점 시)
+
+> **기존 plan과의 차이점**: 기존 URL `/server/central/my/feed-rankings?year=` 에서
+> `/server/central/feeds/ranking?year=&month=` 으로 변경.
+> month 파라미터 추가. 내 클럽만 필터하는 로직 제거 (전체 랭킹 표시).
 
 ---
 
@@ -43,15 +45,13 @@
 ### 1. `repository/dto/ClubFeedRankingDto.java` (native query projection)
 ```java
 public interface ClubFeedRankingDto {
-    Integer getMonth();
     Long getFeedId();
-    String getActivityContent();
-    String getFeedType();
+    String getThumbnailUrl();
+    String getClubName();
+    Long getScore();
     Long getViewCount();
     Long getLikeCount();
     Long getCommentCount();
-    Long getTotalScore();
-    Long getRankInMonth(); // 해당 월 전체 중 순위
 }
 ```
 
@@ -60,51 +60,48 @@ public interface ClubFeedRankingDto {
 @Query(value = """
     WITH global_ranked AS (
         SELECT
-            MONTH(f.created_at)  AS month,
-            f.id                 AS feedId,
-            f.club_id            AS clubId,
-            f.activity_content   AS activityContent,
-            f.feed_type          AS feedType,
-            f.view_count         AS viewCount,
+            f.id              AS feedId,
+            f.thumbnail_url   AS thumbnailUrl,
+            c.name            AS clubName,
+            f.view_count      AS viewCount,
             COUNT(DISTINCT fl.id) AS likeCount,
             COUNT(DISTINCT fc.id) AS commentCount,
-            f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore,
+            (f.view_count * 1 + COUNT(DISTINCT fl.id) * 3 + COUNT(DISTINCT fc.id) * 5) AS score,
             RANK() OVER (
-                PARTITION BY MONTH(f.created_at)
-                ORDER BY (f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id)) DESC, f.id ASC
-            ) AS rankInMonth
+                ORDER BY (f.view_count * 1 + COUNT(DISTINCT fl.id) * 3 + COUNT(DISTINCT fc.id) * 5) DESC, f.id ASC
+            ) AS rankPos
         FROM feed f
+        JOIN club c ON f.club_id = c.id
         LEFT JOIN feed_like fl ON fl.feed_id = f.id
         LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
         WHERE f.deleted_at IS NULL
           AND YEAR(f.created_at) = :year
-        GROUP BY MONTH(f.created_at), f.id, f.club_id, f.activity_content, f.feed_type, f.view_count, f.created_at
+          AND MONTH(f.created_at) = :month
+        GROUP BY f.id, f.thumbnail_url, c.name, f.view_count
     )
-    SELECT month, feedId, activityContent, feedType, viewCount, likeCount, commentCount, totalScore, rankInMonth
+    SELECT feedId, thumbnailUrl, clubName, score, viewCount, likeCount, commentCount, rankPos
     FROM global_ranked
-    WHERE clubId = (SELECT club_id FROM users WHERE id = :userId)
-    ORDER BY month ASC, totalScore DESC
+    ORDER BY rankPos ASC
     """, nativeQuery = true)
 List<ClubFeedRankingDto> findClubFeedRanking(
-        @Param("userId") Long userId,
-        @Param("year") int year
+        @Param("year") int year,
+        @Param("month") int month
 );
 ```
 
-> **Note**: CTE로 전체 피드 랭킹을 먼저 계산한 후 club 필터 적용.
-> WHERE 절에 club 필터를 먼저 적용하면 RANK() OVER가 해당 클럽 피드만 대상으로 순위를 매겨
-> "전체 피드 중 순위" 비즈니스 규칙에 위배되므로 반드시 CTE 방식 사용.
+> **Note**: CTE로 전체 피드 랭킹을 계산. 전체 동아리 포함.
+> 기존 plan의 `userId` 파라미터 제거 (내 클럽 필터 없음).
 
 ### 3. `service/FeedRankingService.java` — 메서드 추가
 ```java
-List<ClubFeedRankingQuery> getClubFeedRanking(Long userId, int year);
+List<ClubFeedRankingQuery> getClubFeedRanking(int year, int month);
 ```
 
 ### 4. `service/GeneralFeedRankingService.java` — 메서드 추가
 ```java
 @Override
-public List<ClubFeedRankingQuery> getClubFeedRanking(Long userId, int year) {
-    return feedRepository.findClubFeedRanking(userId, year)
+public List<ClubFeedRankingQuery> getClubFeedRanking(int year, int month) {
+    return feedRepository.findClubFeedRanking(year, month)
             .stream()
             .map(ClubFeedRankingQuery::from)
             .toList();
@@ -115,74 +112,96 @@ public List<ClubFeedRankingQuery> getClubFeedRanking(Long userId, int year) {
 ```java
 @Builder
 public record ClubFeedRankingQuery(
-    int month,
+    long rank,
     Long feedId,
-    String activityContent,
-    String feedType,
+    String thumbnailUrl,
+    String clubName,
+    Long score,
     Long viewCount,
     Long likeCount,
-    Long commentCount,
-    Long totalScore,
-    long rankInMonth
+    Long commentCount
 ) {
-    public static ClubFeedRankingQuery from(ClubFeedRankingDto dto) { ... }
+    public static ClubFeedRankingQuery from(ClubFeedRankingDto dto) {
+        return ClubFeedRankingQuery.builder()
+                .rank(dto.getRankPos())
+                .feedId(dto.getFeedId())
+                .thumbnailUrl(dto.getThumbnailUrl())
+                .clubName(dto.getClubName())
+                .score(dto.getScore())
+                .viewCount(dto.getViewCount())
+                .likeCount(dto.getLikeCount())
+                .commentCount(dto.getCommentCount())
+                .build();
+    }
 }
 ```
 
 ### 6. `controller/dto/response/ClubFeedRankingResponse.java`
 ```java
 @Builder
-public record ClubFeedRankingResponse(List<RankingItem> rankings) {
-
-    public static ClubFeedRankingResponse from(List<ClubFeedRankingQuery> queries) { ... }
-
-    @Builder
-    public record RankingItem(
-        int month,
-        long rank,
-        Long feedId,
-        String activityContent,
-        String feedType,
-        Long totalScore,
-        Long viewCount,
-        Long likeCount,
-        Long commentCount
-    ) { }
+public record ClubFeedRankingResponse(
+    long rank,
+    Long feedId,
+    String thumbnailUrl,
+    String clubName,
+    Long score,
+    Long viewCount,
+    Long likeCount,
+    Long commentCount
+) {
+    public static List<ClubFeedRankingResponse> from(List<ClubFeedRankingQuery> queries) {
+        return queries.stream()
+                .map(q -> ClubFeedRankingResponse.builder()
+                        .rank(q.rank())
+                        .feedId(q.feedId())
+                        .thumbnailUrl(q.thumbnailUrl())
+                        .clubName(q.clubName())
+                        .score(q.score())
+                        .viewCount(q.viewCount())
+                        .likeCount(q.likeCount())
+                        .commentCount(q.commentCount())
+                        .build())
+                .toList();
+    }
 }
 ```
 
 ### 7. `api/ClubFeedApi.java` — 메서드 추가
 ```java
-@Operation(summary = "동아리 회장 피드 개별 랭킹 조회 API")
-@ApiResponse(responseCode = "200", ...)
+@Operation(summary = "피드 랭킹 조회 API")
+@ApiResponse(responseCode = "200", description = "피드 랭킹 조회 성공",
+    content = @Content(array = @ArraySchema(
+        schema = @Schema(implementation = ClubFeedRankingResponse.class))))
 @ResponseStatus(HttpStatus.OK)
 @SecurityRequirement(name = "AccessToken")
-@GetMapping("/my/feed-rankings")
-ClubFeedRankingResponse getMyFeedRanking(
-    @AuthenticationPrincipal PrincipalDetails principalDetails,
-    @RequestParam("year") int year
+@GetMapping("/ranking")
+List<ClubFeedRankingResponse> getFeedRanking(
+    @RequestParam("year") @Min(2000) @Max(2100) int year,
+    @RequestParam("month") @Min(1) @Max(12) int month
 );
 ```
+
+> **Note**: `ClubFeedApi`의 `@RequestMapping`이 `/server/central/feeds`로 변경되어야 함.
+> 기존이 `/server/central/my/feeds`였다면 URL 조정 필요.
 
 ### 8. `controller/ClubFeedController.java` — 메서드 추가
 ```java
 @Override
-public ClubFeedRankingResponse getMyFeedRanking(PrincipalDetails principalDetails, int year) {
+public List<ClubFeedRankingResponse> getFeedRanking(int year, int month) {
     return ClubFeedRankingResponse.from(
-            feedRankingService.getClubFeedRanking(principalDetails.getId(), year));
+            feedRankingService.getClubFeedRanking(year, month));
 }
 ```
-
-> **Note**: ClubFeedController에 FeedRankingService 의존성 추가 필요
 
 ---
 
 ## 완료 기준
-- [ ] GET `/server/central/my/feed-rankings?year=2025` 200 응답
-- [ ] 로그인한 동아리 클럽 피드만 반환
-- [ ] 각 피드의 해당 월 전체 랭킹 정확히 계산
+- [ ] GET `/server/central/feeds/ranking?year=2025&month=3` 200 응답
+- [ ] 전체 동아리 피드 랭킹 반환 (내 동아리만 필터 아님)
+- [ ] score = viewCount×1 + likeCount×3 + commentCount×5 정확히 계산
+- [ ] score DESC 정렬, 동점 시 feedId ASC
+- [ ] 피드 없으면 빈 배열 반환
 - [ ] CLUB 이외 접근 시 403 응답
-- [ ] 피드 없는 달은 결과에서 제외
 - [ ] Swagger UI 노출
 
 ---
@@ -193,9 +212,10 @@ public ClubFeedRankingResponse getMyFeedRanking(PrincipalDetails principalDetail
 
 | 테스트 | 조건 | 기대 결과 |
 |--------|------|---------|
-| 개별 랭킹 조회 성공 | CLUB 인증, year=2025, 본인 피드 존재 | 200 + rankings 배열 |
-| 본인 club 피드만 반환 | 동아리A·B 피드 혼재 | 동아리A 회장은 동아리A 피드만 포함 |
-| 랭킹 정확성 | 전체 3개 피드, 내 피드가 2위 | rankInMonth=2 |
-| 피드 없는 달 제외 | 특정 달 내 피드 없음 | 해당 달 미포함 |
+| 랭킹 조회 성공 | CLUB 인증, year=2025, month=3 | 200 + 배열 |
+| 전체 동아리 포함 | 동아리A·B 피드 혼재 | 모든 동아리 피드 포함 |
+| score 계산 검증 | viewCount=10, likeCount=5, commentCount=3 | score=40 |
+| score DESC 정렬 | 여러 피드 존재 | 첫 번째가 최고 score |
+| 피드 없음 | 빈 달 조회 | 200 + `[]` |
 | CLUB 아닌 접근 | 일반 USER 토큰 | 403 |
 | 미인증 접근 | Authorization 없음 | 401 |

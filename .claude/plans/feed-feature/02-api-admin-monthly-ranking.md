@@ -1,10 +1,10 @@
-# API 02: 총동연 월별 피드 랭킹 조회
+# API 02: 총동연 월별 피드 랭킹 조회 (API 8)
 
 ## API 명세
 
 | Method | URL | Auth | 상태코드 |
 |--------|-----|------|---------|
-| GET | `/server/admin/feed-rankings/monthly?year=&month=` | ADMIN | 200 |
+| GET | `/server/admin/feeds/ranking?year=&month=` | ROLE_ADMIN | 200 |
 
 ### Query Parameters
 | 파라미터 | 타입 | 필수 | 설명 |
@@ -14,28 +14,25 @@
 
 ### Response Body
 ```json
-{
-  "rankings": [
-    {
-      "rank": 1,
-      "clubName": "동아리명",
-      "feedId": 10,
-      "activityContent": "피드 내용",
-      "feedType": "IMAGE",
-      "totalScore": 150,
-      "viewCount": 100,
-      "likeCount": 30,
-      "commentCount": 20,
-      "createdAt": "2025-03-15T10:00:00"
-    }
-  ]
-}
+[
+  {
+    "rank": 1,
+    "feedId": 10,
+    "thumbnailUrl": "https://...",
+    "clubName": "동아리명",
+    "score": 150,
+    "viewCount": 100,
+    "likeCount": 10,
+    "commentCount": 8
+  }
+]
 ```
 
 ### 랭킹 점수 계산
-`totalScore = viewCount + likeCount + commentCount`
-
-정렬: totalScore DESC, feedId ASC (동점 시)
+```
+score = viewCount × 1 + likeCount × 3 + commentCount × 5
+```
+정렬: score DESC, feedId ASC (동점 시)
 대상: 해당 연월에 createdAt이 속하는 피드
 
 ---
@@ -46,32 +43,29 @@
 ```java
 public interface MonthlyFeedRankingDto {
     Long getFeedId();
-    Long getClubId();      // 05 plan의 myBestFeed 필터링에 필요
+    String getThumbnailUrl();
     String getClubName();
-    String getActivityContent();
-    String getFeedType();
     Long getViewCount();
     Long getLikeCount();
     Long getCommentCount();
-    Long getTotalScore();
-    LocalDateTime getCreatedAt();
+    Long getScore();
 }
 ```
+
+> **Note**: 기존 plan의 activityContent, feedType, createdAt, clubId 필드 제거.
+> thumbnailUrl 추가 (피드 대표 이미지 URL).
 
 ### 2. `repository/FeedRepository.java` — 쿼리 추가
 ```java
 @Query(value = """
     SELECT
         f.id              AS feedId,
-        c.id              AS clubId,
+        f.thumbnail_url   AS thumbnailUrl,
         c.name            AS clubName,
-        f.activity_content AS activityContent,
-        f.feed_type       AS feedType,
         f.view_count      AS viewCount,
         COUNT(DISTINCT fl.id) AS likeCount,
         COUNT(DISTINCT fc.id) AS commentCount,
-        f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore,
-        f.created_at      AS createdAt
+        (f.view_count * 1 + COUNT(DISTINCT fl.id) * 3 + COUNT(DISTINCT fc.id) * 5) AS score
     FROM feed f
     JOIN club c ON f.club_id = c.id
     LEFT JOIN feed_like fl ON fl.feed_id = f.id
@@ -79,14 +73,16 @@ public interface MonthlyFeedRankingDto {
     WHERE f.deleted_at IS NULL
       AND YEAR(f.created_at) = :year
       AND MONTH(f.created_at) = :month
-    GROUP BY f.id, c.id, c.name, f.activity_content, f.feed_type, f.view_count, f.created_at
-    ORDER BY totalScore DESC, f.id ASC
+    GROUP BY f.id, f.thumbnail_url, c.name, f.view_count
+    ORDER BY score DESC, f.id ASC
     """, nativeQuery = true)
 List<MonthlyFeedRankingDto> findMonthlyRanking(
         @Param("year") int year,
         @Param("month") int month
 );
 ```
+
+> **랭킹 공식**: `score = viewCount×1 + likeCount×3 + commentCount×5`
 
 ### 3. `service/FeedRankingService.java` (인터페이스)
 ```java
@@ -119,28 +115,22 @@ public class GeneralFeedRankingService implements FeedRankingService {
 @Builder
 public record MonthlyFeedRankingQuery(
     Long feedId,
-    Long clubId,       // 05 plan의 myBestFeed 필터링에 필요
+    String thumbnailUrl,
     String clubName,
-    String activityContent,
-    String feedType,
     Long viewCount,
     Long likeCount,
     Long commentCount,
-    Long totalScore,
-    LocalDateTime createdAt
+    Long score
 ) {
     public static MonthlyFeedRankingQuery from(MonthlyFeedRankingDto dto) {
         return MonthlyFeedRankingQuery.builder()
                 .feedId(dto.getFeedId())
-                .clubId(dto.getClubId())
+                .thumbnailUrl(dto.getThumbnailUrl())
                 .clubName(dto.getClubName())
-                .activityContent(dto.getActivityContent())
-                .feedType(dto.getFeedType())
                 .viewCount(dto.getViewCount())
                 .likeCount(dto.getLikeCount())
                 .commentCount(dto.getCommentCount())
-                .totalScore(dto.getTotalScore())
-                .createdAt(dto.getCreatedAt())
+                .score(dto.getScore())
                 .build();
     }
 }
@@ -149,67 +139,71 @@ public record MonthlyFeedRankingQuery(
 ### 6. `controller/dto/response/AdminMonthlyFeedRankingResponse.java`
 ```java
 @Builder
-public record AdminMonthlyFeedRankingResponse(List<RankingItem> rankings) {
-
-    public static AdminMonthlyFeedRankingResponse from(List<MonthlyFeedRankingQuery> queries) {
-        List<RankingItem> items = new ArrayList<>();
+public record AdminMonthlyFeedRankingResponse(
+    int rank,
+    Long feedId,
+    String thumbnailUrl,
+    String clubName,
+    Long score,
+    Long viewCount,
+    Long likeCount,
+    Long commentCount
+) {
+    public static List<AdminMonthlyFeedRankingResponse> from(
+            List<MonthlyFeedRankingQuery> queries) {
+        List<AdminMonthlyFeedRankingResponse> result = new ArrayList<>();
         int rank = 1;
         for (int i = 0; i < queries.size(); i++) {
-            // 동점 시 같은 순위 부여 (SQL RANK() 방식)
-            if (i > 0 && !queries.get(i).totalScore().equals(queries.get(i - 1).totalScore())) {
+            if (i > 0 && !queries.get(i).score().equals(queries.get(i - 1).score())) {
                 rank = i + 1;
             }
-            items.add(RankingItem.of(rank, queries.get(i)));
+            MonthlyFeedRankingQuery q = queries.get(i);
+            result.add(AdminMonthlyFeedRankingResponse.builder()
+                    .rank(rank)
+                    .feedId(q.feedId())
+                    .thumbnailUrl(q.thumbnailUrl())
+                    .clubName(q.clubName())
+                    .score(q.score())
+                    .viewCount(q.viewCount())
+                    .likeCount(q.likeCount())
+                    .commentCount(q.commentCount())
+                    .build());
         }
-        return new AdminMonthlyFeedRankingResponse(items);
-    }
-
-    @Builder
-    public record RankingItem(
-        int rank,
-        Long feedId,
-        String clubName,
-        String activityContent,
-        String feedType,
-        Long totalScore,
-        Long viewCount,
-        Long likeCount,
-        Long commentCount,
-        LocalDateTime createdAt
-    ) {
-        public static RankingItem of(int rank, MonthlyFeedRankingQuery query) { ... }
+        return result;
     }
 }
 ```
 
-### 7. `api/AdminFeedRankingApi.java`
+### 7. `api/AdminFeedApi.java` (또는 기존 Admin API에 추가)
 ```java
-@Tag(name = "Feed Ranking - Admin", description = "총동연 피드 랭킹 API")
-@RequestMapping("/server/admin/feed-rankings")
-public interface AdminFeedRankingApi {
+@Tag(name = "Feed - Admin", description = "총동연 피드 API")
+@RequestMapping("/server/admin/feeds")
+public interface AdminFeedApi {
 
     @Operation(summary = "월별 피드 랭킹 조회 API")
-    @ApiResponse(responseCode = "200", ...)
+    @ApiResponse(responseCode = "200", description = "월별 랭킹 조회 성공",
+        content = @Content(array = @ArraySchema(
+            schema = @Schema(implementation = AdminMonthlyFeedRankingResponse.class))))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/monthly")
-    AdminMonthlyFeedRankingResponse getMonthlyRanking(
+    @GetMapping("/ranking")
+    List<AdminMonthlyFeedRankingResponse> getMonthlyRanking(
         @RequestParam("year") @Min(2000) @Max(2100) int year,
         @RequestParam("month") @Min(1) @Max(12) int month
     );
 }
 ```
 
-### 8. `controller/AdminFeedRankingController.java`
+### 8. `controller/AdminFeedController.java`
 ```java
 @RestController
 @RequiredArgsConstructor
-public class AdminFeedRankingController implements AdminFeedRankingApi {
+public class AdminFeedController implements AdminFeedApi {
 
     private final FeedRankingService feedRankingService;
 
     @Override
-    public AdminMonthlyFeedRankingResponse getMonthlyRanking(int year, int month) {
+    public List<AdminMonthlyFeedRankingResponse> getMonthlyRanking(int year, int month) {
         return AdminMonthlyFeedRankingResponse.from(
                 feedRankingService.getMonthlyRanking(year, month));
     }
@@ -219,9 +213,9 @@ public class AdminFeedRankingController implements AdminFeedRankingApi {
 ---
 
 ## 완료 기준
-- [ ] GET `/server/admin/feed-rankings/monthly?year=2025&month=3` 200 응답
-- [ ] totalScore = viewCount + likeCount + commentCount 정확히 계산
-- [ ] totalScore DESC 정렬, 동점 시 feedId ASC
+- [ ] GET `/server/admin/feeds/ranking?year=2025&month=3` 200 응답
+- [ ] score = viewCount×1 + likeCount×3 + commentCount×5 정확히 계산
+- [ ] score DESC 정렬, 동점 시 feedId ASC
 - [ ] 해당 월 피드가 없으면 빈 배열 반환
 - [ ] ADMIN 이외 접근 시 403 응답
 - [ ] Swagger UI 노출
@@ -234,10 +228,10 @@ public class AdminFeedRankingController implements AdminFeedRankingApi {
 
 | 테스트 | 조건 | 기대 결과 |
 |--------|------|---------|
-| 월별 랭킹 조회 성공 | ADMIN 인증, year=2025, month=3 | 200 + rankings 배열 |
-| totalScore 계산 검증 | viewCount=10, likeCount=5, commentCount=3 | totalScore=18 |
-| totalScore DESC 정렬 | 여러 피드 존재 | 첫 번째 아이템이 최고 점수 |
-| 해당 월 피드 없음 | 빈 달 조회 | 200 + `rankings: []` |
+| 월별 랭킹 조회 성공 | ADMIN 인증, year=2025, month=3 | 200 + 배열 |
+| score 계산 검증 | viewCount=10, likeCount=5, commentCount=3 | score=10+15+15=40 |
+| score DESC 정렬 | 여러 피드 존재 | 첫 번째 아이템이 최고 점수 |
+| 해당 월 피드 없음 | 빈 달 조회 | 200 + `[]` |
 | ADMIN 아닌 접근 | ROLE_CLUB 토큰 | 403 |
 | 미인증 접근 | Authorization 없음 | 401 |
 
