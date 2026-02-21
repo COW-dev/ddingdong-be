@@ -2,12 +2,15 @@ package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.common.exception.FeedException.CommentAccessDeniedException;
 import ddingdong.ddingdongBE.common.exception.FeedException.CommentNotFoundException;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommentCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.result.CreateFeedCommentResult;
+import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class GeneralFeedCommentService implements FeedCommentService {
 
     private final FeedCommentRepository feedCommentRepository;
     private final FeedService feedService;
+    private final ClubService clubService;
 
     @Override
     @Transactional
@@ -37,9 +41,12 @@ public class GeneralFeedCommentService implements FeedCommentService {
 
     @Override
     @Transactional
-    public void delete(Long commentId, String uuid) {
+    public void delete(Long feedId, Long commentId, String uuid) {
         FeedComment comment = feedCommentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
+        if (!comment.getFeed().getId().equals(feedId)) {
+            throw new CommentNotFoundException();
+        }
         if (!comment.getUuid().equals(uuid)) {
             throw new CommentAccessDeniedException();
         }
@@ -48,10 +55,12 @@ public class GeneralFeedCommentService implements FeedCommentService {
 
     @Override
     @Transactional
-    public void forceDelete(Long feedId, Long commentId) {
+    public void forceDelete(User user, Long feedId, Long commentId) {
+        Club club = clubService.getByUserId(user.getId());
         FeedComment comment = feedCommentRepository.findById(commentId)
                 .orElseThrow(CommentNotFoundException::new);
-        if (!comment.getFeed().getId().equals(feedId)) {
+        Feed feed = comment.getFeed();
+        if (!feed.getId().equals(feedId) || !feed.getClub().getId().equals(club.getId())) {
             throw new CommentAccessDeniedException();
         }
         feedCommentRepository.delete(comment);

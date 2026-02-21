@@ -24,6 +24,6 @@ public class FeedCommentController implements FeedCommentApi {
 
     @Override
     public void deleteComment(Long feedId, Long commentId, String uuid) {
-        feedCommentService.delete(commentId, uuid);
+        feedCommentService.delete(feedId, commentId, uuid);
     }
 }

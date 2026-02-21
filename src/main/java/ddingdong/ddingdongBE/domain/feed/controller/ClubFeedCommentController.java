@@ -15,6 +15,6 @@ public class ClubFeedCommentController implements ClubFeedCommentApi {
     @Override
     public void forceDeleteComment(Long feedId, Long commentId,
             PrincipalDetails principalDetails) {
-        feedCommentService.forceDelete(feedId, commentId);
+        feedCommentService.forceDelete(principalDetails.getUser(), feedId, commentId);
     }
 }

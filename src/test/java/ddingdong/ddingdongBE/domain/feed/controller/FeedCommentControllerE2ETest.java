@@ -263,4 +263,19 @@ class FeedCommentControllerE2ETest extends NonTxTestContainerSupport {
                 .then()
                 .statusCode(401);
     }
+
+    @DisplayName("ROLE_ADMIN 사용자가 강제삭제 시도 시 403을 반환한다.")
+    @Test
+    void forceDeleteComment_fail_nonClubRole() {
+        userRepository.save(UserFixture.createAdminUser(passwordEncoder.encode("1234")));
+        String adminToken = signIn("admin123", "1234");
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .when()
+                .delete("/server/central/feeds/{feedId}/comments/{commentId}", feed.getId(), 1L)
+                .then()
+                .statusCode(403);
+    }
 }
