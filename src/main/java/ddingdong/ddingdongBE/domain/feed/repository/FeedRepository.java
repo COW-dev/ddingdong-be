@@ -67,10 +67,19 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             SELECT
                 c.name                                 AS clubName,
                 COUNT(DISTINCT f.id)                   AS feedCount,
-                COALESCE(SUM(f.view_count), 0)         AS viewCount,
+                (SELECT COALESCE(SUM(f2.view_count), 0)
+                 FROM feed f2
+                 WHERE f2.club_id = c.id AND f2.deleted_at IS NULL
+                   AND YEAR(f2.created_at) = YEAR(f.created_at)
+                   AND MONTH(f2.created_at) = MONTH(f.created_at)) AS viewCount,
                 COUNT(DISTINCT fl.id)                  AS likeCount,
                 COUNT(DISTINCT fc.id)                  AS commentCount,
-                (COUNT(DISTINCT f.id) * 10 + COALESCE(SUM(f.view_count), 0) * 1
+                (COUNT(DISTINCT f.id) * 10
+                    + (SELECT COALESCE(SUM(f2.view_count), 0)
+                       FROM feed f2
+                       WHERE f2.club_id = c.id AND f2.deleted_at IS NULL
+                         AND YEAR(f2.created_at) = YEAR(f.created_at)
+                         AND MONTH(f2.created_at) = MONTH(f.created_at)) * 1
                     + COUNT(DISTINCT fl.id) * 3 + COUNT(DISTINCT fc.id) * 5) AS score,
                 YEAR(f.created_at)                     AS targetYear,
                 MONTH(f.created_at)                    AS targetMonth
