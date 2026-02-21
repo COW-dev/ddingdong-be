@@ -59,11 +59,13 @@ public class SecurityConfig {
                         .requestMatchers(POST,
                                 API_PREFIX + "/forms/{formId}/applications",
                                 API_PREFIX + "/pair-game/appliers",
-                                API_PREFIX + "/feeds/*/likes"
+                                API_PREFIX + "/feeds/*/likes",
+                                API_PREFIX + "/feeds/*/comments"
                                 )
                         .permitAll()
                         .requestMatchers(DELETE,
-                                API_PREFIX + "/feeds/*/likes"
+                                API_PREFIX + "/feeds/*/likes",
+                                API_PREFIX + "/feeds/*/comments/*"
                                 )
                         .permitAll()
                         .requestMatchers(API_PREFIX + "/internal/**")
