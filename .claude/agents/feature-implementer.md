@@ -74,7 +74,7 @@ You implement clean, production-ready Java code following all project convention
 
 **Quality Standards:**
 - Every entity must use `@SQLDelete` + `@SQLRestriction` + `deleted_at` (soft delete)
-- Every service write method must be `@Transactional`, read method must be `@Transactional(readOnly = true)`
+- Service class must have `@Transactional(readOnly = true)` at class level; write methods override with `@Transactional`
 - Flyway version number must be exactly one higher than the current latest — verify before writing
 - All controller parameters must be mapped via the API interface, never bypass the interface
 - No hardcoded values — use constants or configuration where values may change
@@ -141,14 +141,16 @@ public record XxxDetailQuery(Long id, String content, int count) {}
 // Domain service — pure logic, single responsibility
 @Service
 @RequiredArgsConstructor
-public class GeneralXxxService {
+@Transactional(readOnly = true)          // 클래스 레벨: 읽기 전용 기본
+public class GeneralXxxService implements XxxService {
     private final XxxRepository xxxRepository;
 
-    @Transactional
+    @Override
+    @Transactional                        // 쓰기 메서드만 오버라이드
     public void create(CreateXxxCommand command) { ... }
 
-    @Transactional(readOnly = true)
-    public XxxDetailQuery getById(Long id) { ... }
+    @Override
+    public XxxDetailQuery getById(Long id) { ... }  // readOnly 상속
 }
 
 // Facade interface

@@ -34,13 +34,24 @@
 }
 ```
 
+> **⚠️ 페이지네이션 고려**: `comments[]`는 현재 전체 댓글을 반환하는 구조입니다.
+> 인기 피드에 댓글이 수백 개 이상인 경우 응답 크기가 커질 수 있습니다.
+> MVP 단계에서는 전체 반환으로 구현하되, 이후 `commentCount`만 반환하고
+> 댓글은 별도 페이지네이션 API (`GET /server/feeds/{feedId}/comments?page=`) 분리를 권장합니다.
+
 ---
 
 ## 구현할 파일 목록
 
 ### 1. `repository/FeedCommentRepository.java` — 쿼리 추가
 ```java
-List<FeedComment> findAllByFeedId(Long feedId);
+// @SQLRestriction("deleted_at IS NULL") 이 FeedComment 엔티티에 선언되어 있으므로
+// Spring Data JPA 메서드가 자동으로 soft delete 필터 적용
+// N+1 방지: FeedCommentQuery.from() 내 comment.getUser().getName() 호출 시 LAZY 로딩 발생
+// → JOIN FETCH로 User를 미리 로딩
+@Query("SELECT fc FROM FeedComment fc JOIN FETCH fc.user WHERE fc.feed.id = :feedId ORDER BY fc.createdAt ASC")
+List<FeedComment> findAllByFeedIdWithUser(@Param("feedId") Long feedId);
+
 long countByFeedId(Long feedId);
 ```
 
@@ -54,7 +65,8 @@ long countByFeedId(Long feedId);
 ```java
 @Override
 public List<FeedCommentQuery> getAllByFeedId(Long feedId) {
-    return feedCommentRepository.findAllByFeedId(feedId)
+    // findAllByFeedIdWithUser: JOIN FETCH로 N+1 방지 + soft delete 자동 필터
+    return feedCommentRepository.findAllByFeedIdWithUser(feedId)
             .stream()
             .map(FeedCommentQuery::from)
             .toList();

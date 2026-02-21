@@ -46,6 +46,7 @@
 ```java
 public interface MonthlyFeedRankingDto {
     Long getFeedId();
+    Long getClubId();      // 05 plan의 myBestFeed 필터링에 필요
     String getClubName();
     String getActivityContent();
     String getFeedType();
@@ -62,6 +63,7 @@ public interface MonthlyFeedRankingDto {
 @Query(value = """
     SELECT
         f.id              AS feedId,
+        c.id              AS clubId,
         c.name            AS clubName,
         f.activity_content AS activityContent,
         f.feed_type       AS feedType,
@@ -77,7 +79,7 @@ public interface MonthlyFeedRankingDto {
     WHERE f.deleted_at IS NULL
       AND YEAR(f.created_at) = :year
       AND MONTH(f.created_at) = :month
-    GROUP BY f.id, c.name, f.activity_content, f.feed_type, f.view_count, f.created_at
+    GROUP BY f.id, c.id, c.name, f.activity_content, f.feed_type, f.view_count, f.created_at
     ORDER BY totalScore DESC, f.id ASC
     """, nativeQuery = true)
 List<MonthlyFeedRankingDto> findMonthlyRanking(
@@ -117,6 +119,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
 @Builder
 public record MonthlyFeedRankingQuery(
     Long feedId,
+    Long clubId,       // 05 plan의 myBestFeed 필터링에 필요
     String clubName,
     String activityContent,
     String feedType,
@@ -129,6 +132,7 @@ public record MonthlyFeedRankingQuery(
     public static MonthlyFeedRankingQuery from(MonthlyFeedRankingDto dto) {
         return MonthlyFeedRankingQuery.builder()
                 .feedId(dto.getFeedId())
+                .clubId(dto.getClubId())
                 .clubName(dto.getClubName())
                 .activityContent(dto.getActivityContent())
                 .feedType(dto.getFeedType())
@@ -149,8 +153,13 @@ public record AdminMonthlyFeedRankingResponse(List<RankingItem> rankings) {
 
     public static AdminMonthlyFeedRankingResponse from(List<MonthlyFeedRankingQuery> queries) {
         List<RankingItem> items = new ArrayList<>();
+        int rank = 1;
         for (int i = 0; i < queries.size(); i++) {
-            items.add(RankingItem.of(i + 1, queries.get(i)));
+            // 동점 시 같은 순위 부여 (SQL RANK() 방식)
+            if (i > 0 && !queries.get(i).totalScore().equals(queries.get(i - 1).totalScore())) {
+                rank = i + 1;
+            }
+            items.add(RankingItem.of(rank, queries.get(i)));
         }
         return new AdminMonthlyFeedRankingResponse(items);
     }
@@ -185,8 +194,8 @@ public interface AdminFeedRankingApi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/monthly")
     AdminMonthlyFeedRankingResponse getMonthlyRanking(
-        @RequestParam("year") int year,
-        @RequestParam("month") int month
+        @RequestParam("year") @Min(2000) @Max(2100) int year,
+        @RequestParam("month") @Min(1) @Max(12) int month
     );
 }
 ```

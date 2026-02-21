@@ -21,6 +21,42 @@
 
 ## 구현할 파일 목록
 
+### 0. `entity/FeedComment.java`
+```java
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "update feed_comment set deleted_at = CURRENT_TIMESTAMP where id=?")
+@SQLRestriction("deleted_at IS NULL")
+public class FeedComment extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "feed_id", nullable = false)
+    private Feed feed;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Column(nullable = false, length = 500)
+    private String content;
+
+    @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
+
+    @Builder
+    private FeedComment(Feed feed, User user, String content) {
+        this.feed = feed;
+        this.user = user;
+        this.content = content;
+    }
+}
+```
+
 ### 1. `service/FeedCommentService.java` (인터페이스)
 ```java
 public interface FeedCommentService {

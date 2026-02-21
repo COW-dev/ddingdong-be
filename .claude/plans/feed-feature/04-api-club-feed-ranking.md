@@ -58,28 +58,32 @@ public interface ClubFeedRankingDto {
 ### 2. `repository/FeedRepository.java` — 쿼리 추가
 ```java
 @Query(value = """
-    SELECT
-        MONTH(f.created_at) AS month,
-        f.id                AS feedId,
-        f.activity_content  AS activityContent,
-        f.feed_type         AS feedType,
-        f.view_count        AS viewCount,
-        COUNT(DISTINCT fl.id) AS likeCount,
-        COUNT(DISTINCT fc.id) AS commentCount,
-        f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore,
-        RANK() OVER (
-            PARTITION BY MONTH(f.created_at)
-            ORDER BY (f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id)) DESC, f.id ASC
-        ) AS rankInMonth
-    FROM feed f
-    JOIN club c ON f.club_id = c.id
-    LEFT JOIN feed_like fl ON fl.feed_id = f.id
-    LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
-    WHERE f.deleted_at IS NULL
-      AND YEAR(f.created_at) = :year
-      AND f.club_id = (SELECT club_id FROM users WHERE id = :userId)
-    GROUP BY MONTH(f.created_at), f.id, f.activity_content, f.feed_type, f.view_count, f.created_at
-    ORDER BY MONTH(f.created_at) ASC, totalScore DESC
+    WITH global_ranked AS (
+        SELECT
+            MONTH(f.created_at)  AS month,
+            f.id                 AS feedId,
+            f.club_id            AS clubId,
+            f.activity_content   AS activityContent,
+            f.feed_type          AS feedType,
+            f.view_count         AS viewCount,
+            COUNT(DISTINCT fl.id) AS likeCount,
+            COUNT(DISTINCT fc.id) AS commentCount,
+            f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore,
+            RANK() OVER (
+                PARTITION BY MONTH(f.created_at)
+                ORDER BY (f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id)) DESC, f.id ASC
+            ) AS rankInMonth
+        FROM feed f
+        LEFT JOIN feed_like fl ON fl.feed_id = f.id
+        LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
+        WHERE f.deleted_at IS NULL
+          AND YEAR(f.created_at) = :year
+        GROUP BY MONTH(f.created_at), f.id, f.club_id, f.activity_content, f.feed_type, f.view_count, f.created_at
+    )
+    SELECT month, feedId, activityContent, feedType, viewCount, likeCount, commentCount, totalScore, rankInMonth
+    FROM global_ranked
+    WHERE clubId = (SELECT club_id FROM users WHERE id = :userId)
+    ORDER BY month ASC, totalScore DESC
     """, nativeQuery = true)
 List<ClubFeedRankingDto> findClubFeedRanking(
         @Param("userId") Long userId,
@@ -87,8 +91,9 @@ List<ClubFeedRankingDto> findClubFeedRanking(
 );
 ```
 
-> **Note**: Window function `RANK() OVER` 대신 서브쿼리로 랭킹 계산도 가능.
-> 또는 애플리케이션 레벨에서 전체 월별 랭킹 조회 후 club 필터링하는 방법.
+> **Note**: CTE로 전체 피드 랭킹을 먼저 계산한 후 club 필터 적용.
+> WHERE 절에 club 필터를 먼저 적용하면 RANK() OVER가 해당 클럽 피드만 대상으로 순위를 매겨
+> "전체 피드 중 순위" 비즈니스 규칙에 위배되므로 반드시 CTE 방식 사용.
 
 ### 3. `service/FeedRankingService.java` — 메서드 추가
 ```java

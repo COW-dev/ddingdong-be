@@ -65,16 +65,25 @@ public MonthlyBestFeedQuery getMonthlyBestFeed(Long userId) {
     MonthlyFeedRankingDto topDto = allRankings.isEmpty() ? null : allRankings.get(0);
 
     // myBestFeed: 내 club_id 소속 피드 중 최고 점수 + 해당 rankInMonth
-    Long clubId = userRepository.findById(userId) // 또는 club을 통해 조회
-            .map(u -> u.getClub().getId()).orElseThrow(...);
+    // null-safe: 클럽 미소속 사용자 방어
+    Long clubId = userRepository.findById(userId)
+            .map(User::getClub)
+            .map(Club::getId)
+            .orElseThrow(() -> new UserException.ClubNotFoundException());
+
     MonthlyFeedRankingDto myBestDto = null;
     long myRank = 0;
+    long currentRank = 1;
     for (int i = 0; i < allRankings.size(); i++) {
+        // 동점 처리: totalScore가 바뀔 때만 순위 증가 (SQL RANK() 방식과 동일)
+        if (i > 0 && !allRankings.get(i).getTotalScore().equals(allRankings.get(i - 1).getTotalScore())) {
+            currentRank = i + 1;
+        }
         MonthlyFeedRankingDto dto = allRankings.get(i);
-        // club_id 비교 필요 → projection에 clubId 추가 필요
-        if (dto.getClubId().equals(clubId)) {
+        if (dto.getClubId().equals(clubId) && myBestDto == null) {
+            // 이미 totalScore DESC 정렬이므로 첫 번째 매칭이 최고 점수
             myBestDto = dto;
-            myRank = i + 1;
+            myRank = currentRank;
             break;
         }
     }

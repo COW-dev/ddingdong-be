@@ -7,9 +7,11 @@
 | GET | `/server/admin/feed-rankings/winners?year=` | ADMIN | 200 |
 
 ### Query Parameters
+
 | 파라미터 | 타입 | 필수 | 설명 |
 |---------|------|------|------|
 | year | int | Y | 조회 연도 (예: 2025) |
+
 
 ### Response Body
 ```json
@@ -57,43 +59,44 @@ public interface FeedRankingWinnerDto {
 ### 2. `repository/FeedRepository.java` — 쿼리 추가
 ```java
 @Query(value = """
-    SELECT
-        MONTH(f.created_at) AS month,
-        f.id                AS feedId,
-        c.name              AS clubName,
-        f.activity_content  AS activityContent,
-        f.feed_type         AS feedType,
-        f.view_count        AS viewCount,
-        COUNT(DISTINCT fl.id) AS likeCount,
-        COUNT(DISTINCT fc.id) AS commentCount,
-        f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore
-    FROM feed f
-    JOIN club c ON f.club_id = c.id
-    LEFT JOIN feed_like fl ON fl.feed_id = f.id
-    LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
-    WHERE f.deleted_at IS NULL
-      AND YEAR(f.created_at) = :year
-    GROUP BY MONTH(f.created_at), f.id, c.name, f.activity_content, f.feed_type, f.view_count
-    HAVING totalScore = (
-        SELECT MAX(sub.total)
-        FROM (
-            SELECT f2.view_count + COUNT(DISTINCT fl2.id) + COUNT(DISTINCT fc2.id) AS total
-            FROM feed f2
-            LEFT JOIN feed_like fl2 ON fl2.feed_id = f2.id
-            LEFT JOIN feed_comment fc2 ON fc2.feed_id = f2.id AND fc2.deleted_at IS NULL
-            WHERE f2.deleted_at IS NULL
-              AND YEAR(f2.created_at) = :year
-              AND MONTH(f2.created_at) = MONTH(f.created_at)
-            GROUP BY f2.id
-        ) sub
+    WITH ranked AS (
+        SELECT
+            MONTH(f.created_at) AS month,
+            f.id                AS feedId,
+            c.name              AS clubName,
+            f.activity_content  AS activityContent,
+            f.feed_type         AS feedType,
+            f.view_count        AS viewCount,
+            COUNT(DISTINCT fl.id) AS likeCount,
+            COUNT(DISTINCT fc.id) AS commentCount,
+            f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id) AS totalScore,
+            RANK() OVER (
+                PARTITION BY MONTH(f.created_at)
+                ORDER BY (f.view_count + COUNT(DISTINCT fl.id) + COUNT(DISTINCT fc.id)) DESC, f.id ASC
+            ) AS rk
+        FROM feed f
+        JOIN club c ON f.club_id = c.id
+        LEFT JOIN feed_like fl ON fl.feed_id = f.id
+        LEFT JOIN feed_comment fc ON fc.feed_id = f.id AND fc.deleted_at IS NULL
+        WHERE f.deleted_at IS NULL
+          AND YEAR(f.created_at) = :year
+          AND (
+              YEAR(f.created_at) < YEAR(CURRENT_DATE())
+              OR MONTH(f.created_at) < MONTH(CURRENT_DATE())
+          )
+        GROUP BY MONTH(f.created_at), f.id, c.name, f.activity_content, f.feed_type, f.view_count
     )
-    ORDER BY MONTH(f.created_at) ASC, f.id ASC
+    SELECT month, feedId, clubName, activityContent, feedType,
+           viewCount, likeCount, commentCount, totalScore
+    FROM ranked
+    WHERE rk = 1
+    ORDER BY month ASC
     """, nativeQuery = true)
 List<FeedRankingWinnerDto> findYearlyWinners(@Param("year") int year);
 ```
 
-> **Note**: HAVING 절 서브쿼리 대신 애플리케이션 레벨에서 월별 grouping 후 최고점 필터링하는 방법도 고려.
-> 단순 구현: `findMonthlyRanking`을 1~12월 반복 호출 후 각 월 첫 번째만 추출.
+> **Note**: CTE + `RANK() OVER` 방식 사용. HAVING 서브쿼리 대비 O(n) 성능.
+> 현재 달 미포함 조건: `YEAR < 현재연도 OR MONTH < 현재월` — 과거 연도 조회 시에도 안전하게 동작.
 
 ### 3. `service/FeedRankingService.java` — 메서드 추가
 ```java
@@ -158,7 +161,7 @@ public record AdminFeedRankingWinnersResponse(List<WinnerItem> winners) {
 @ResponseStatus(HttpStatus.OK)
 @SecurityRequirement(name = "AccessToken")
 @GetMapping("/winners")
-AdminFeedRankingWinnersResponse getRankingWinners(@RequestParam("year") int year);
+AdminFeedRankingWinnersResponse getRankingWinners(@RequestParam("year") @Min(2000) @Max(2100) int year);
 ```
 
 ### 8. `controller/AdminFeedRankingController.java` — 메서드 추가
@@ -191,4 +194,6 @@ public AdminFeedRankingWinnersResponse getRankingWinners(int year) {
 | 월별 1위만 포함 | 3월에 피드 3개, 각 점수 다름 | 3월 winner는 최고 점수 피드 1개 |
 | 피드 없는 달 제외 | 1월만 데이터, 2~12월 없음 | winners.size()=1 |
 | month 오름차순 정렬 | 3월, 1월 데이터 존재 | winners[0].month=1, winners[1].month=3 |
+| **동점 시 feedId ASC 기준 1위** | 동월에 totalScore 동일한 피드 2개 (feedId=3, feedId=7) | winner.feedId=3 |
+| 현재 달 미포함 | 현재 달에 피드 존재, 이전 달에도 피드 존재 | 현재 달 피드 결과에 미포함 |
 | ADMIN 아닌 접근 | ROLE_CLUB 토큰 | 403 |

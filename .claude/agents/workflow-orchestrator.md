@@ -5,7 +5,7 @@ description: |
   ddingdong-be project, orchestrating the full workflow:
   계획 → 설계 → 구현 → 테스트 → 리뷰.
   This agent coordinates feature-designer, feature-implementer, feature-tester,
-  and code-reviewer agents in sequence, enforcing quality gates between phases.
+  and pr-reviewer agents in sequence, enforcing quality gates between phases.
 
   <example>
   Context: User wants to implement a new domain feature end-to-end
@@ -122,7 +122,7 @@ API 진행 현황
 2. **공유 기반 작업**: DB 마이그레이션, 엔티티 등 여러 API가 공유하는 파일은
    첫 번째 API 사이클에서 한 번만 구현 (이후 재사용)
 3. **API 사이클 반복**: 각 API에 대해 Step 1~5 순서로 실행
-4. **최종 리뷰**: 전체 API 완료 후 `oh-my-claudecode:code-reviewer` 실행
+4. **최종 리뷰**: 전체 API 완료 후 `pr-reviewer` 에이전트 실행
 5. **최종 보고**: 전체 요약 출력
 
 ---

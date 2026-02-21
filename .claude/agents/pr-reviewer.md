@@ -27,11 +27,10 @@ description: |
   <example>
   Context: User just finished implementing a feature and is about to create a PR
   user: "구현 완료했어. PR 올리기 전에 한번 봐줘"
-  assistant: "PR 생성 전에 코드를 리뷰하겠습니다."
+  assistant: "I'll use the pr-reviewer agent to review the current branch changes before the PR is created."
   <commentary>
   PR 생성 전 사전 리뷰 요청. 현재 브랜치 diff를 기준으로 능동적으로 리뷰.
   </commentary>
-  assistant: "I'll use the pr-reviewer agent to review the current branch changes before the PR is created."
   </example>
 
 model: inherit
@@ -89,6 +88,7 @@ gh pr diff
 ### 3. Soft Delete Pattern
 - Does entity use `@SQLDelete` + `@SQLRestriction`?
 - No direct physical delete (`deleteById`, raw DELETE query) in Repository or Service?
+  - ⚠️ 예외: `FeedLike`는 unique constraint 충돌로 인해 hard delete 허용 (CONVENTIONS.md 참조)
 
 ### 4. DTO Validation
 - Does Request DTO have `@Valid`, `@NotNull`, `@NotBlank` where appropriate?
@@ -161,7 +161,7 @@ gh api "repos/{owner}/{repo}/contents/{file_path}?ref={branch}" \
 
 ### 📋 전체 요약 코멘트
 
-```
+```text
 ## PR 리뷰: #{번호} {제목}
 
 **브랜치**: {head} → {base}
@@ -184,7 +184,7 @@ gh api "repos/{owner}/{repo}/contents/{file_path}?ref={branch}" \
 
 각 코멘트 body는 아래 형식을 따른다:
 
-```
+```text
 **[{등급}] {제목}**
 
 {문제 설명}
