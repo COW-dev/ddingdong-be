@@ -1,10 +1,10 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.common.exception.FeedException.DuplicatedFeedLikeException;
+import ddingdong.ddingdongBE.common.exception.FeedException.FeedLikeNotFoundException;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedLike;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
-import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,25 +16,35 @@ public class GeneralFeedLikeService implements FeedLikeService {
 
     private final FeedLikeRepository feedLikeRepository;
     private final FeedService feedService;
+    private final FeedLikeCacheService feedLikeCacheService;
 
     @Override
     @Transactional
-    public void create(Long feedId, Long userId) {
-        if (feedLikeRepository.existsByFeedIdAndUserId(feedId, userId)) {
+    public void create(Long feedId, String uuid) {
+        if (feedLikeCacheService.isLiked(uuid, feedId)) {
+            throw new DuplicatedFeedLikeException();
+        }
+        if (feedLikeRepository.existsByFeedIdAndUuid(feedId, uuid)) {
             throw new DuplicatedFeedLikeException();
         }
         Feed feed = feedService.getById(feedId);
         FeedLike feedLike = FeedLike.builder()
                 .feed(feed)
-                .user(User.builder().id(userId).build())
+                .uuid(uuid)
                 .build();
         feedLikeRepository.save(feedLike);
+        feedLikeCacheService.addLike(uuid, feedId);
     }
 
     @Override
     @Transactional
-    public void delete(Long feedId, Long userId) {
-        feedLikeRepository.deleteByFeedIdAndUserId(feedId, userId);
+    public void delete(Long feedId, String uuid) {
+        if (!feedLikeCacheService.isLiked(uuid, feedId)
+                && !feedLikeRepository.existsByFeedIdAndUuid(feedId, uuid)) {
+            throw new FeedLikeNotFoundException();
+        }
+        feedLikeRepository.deleteByFeedIdAndUuid(feedId, uuid);
+        feedLikeCacheService.removeLike(uuid, feedId);
     }
 
     @Override
@@ -43,7 +53,8 @@ public class GeneralFeedLikeService implements FeedLikeService {
     }
 
     @Override
-    public boolean existsByFeedIdAndUserId(Long feedId, Long userId) {
-        return feedLikeRepository.existsByFeedIdAndUserId(feedId, userId);
+    public boolean existsByFeedIdAndUuid(Long feedId, String uuid) {
+        return feedLikeCacheService.isLiked(uuid, feedId)
+                || feedLikeRepository.existsByFeedIdAndUuid(feedId, uuid);
     }
 }

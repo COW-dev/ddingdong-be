@@ -1,7 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.entity;
 
 import ddingdong.ddingdongBE.common.BaseEntity;
-import ddingdong.ddingdongBE.domain.user.entity.User;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -27,14 +27,13 @@ public class FeedLike extends BaseEntity {
     @JoinColumn(name = "feed_id", nullable = false)
     private Feed feed;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+    @Column(nullable = false, length = 36)
+    private String uuid;
 
     @Builder
-    private FeedLike(Long id, Feed feed, User user) {
+    private FeedLike(Long id, Feed feed, String uuid) {
         this.id = id;
         this.feed = feed;
-        this.user = user;
+        this.uuid = uuid;
     }
 }

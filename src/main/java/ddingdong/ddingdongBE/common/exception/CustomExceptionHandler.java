@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import jakarta.validation.ConstraintViolationException;
 import java.util.NoSuchElementException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
@@ -120,6 +121,24 @@ public class CustomExceptionHandler {
 
         return new ErrorResponse(BAD_REQUEST.value(), message, LocalDateTime.now()
         );
+    }
+
+    @ResponseStatus(BAD_REQUEST)
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ErrorResponse handleConstraintViolationException(ConstraintViolationException exception,
+                                                            HttpServletRequest request) {
+        String connectionInfo = createLogConnectionInfo(request);
+
+        String message = exception.getConstraintViolations().stream()
+                .findFirst()
+                .map(v -> v.getMessage())
+                .orElse("입력된 값이 올바르지 않습니다.");
+
+        loggingApplicationWarn(connectionInfo
+                + "\n"
+                + exception.getClass().getSimpleName() + " : " + message, exception);
+
+        return new ErrorResponse(BAD_REQUEST.value(), message, LocalDateTime.now());
     }
 
     // TODO : NoSuchElementException 대신 PersistenceException.ResourceNotFound()로 전환 필요

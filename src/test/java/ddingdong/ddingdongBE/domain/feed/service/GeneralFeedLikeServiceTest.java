@@ -4,18 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ddingdong.ddingdongBE.common.exception.FeedException.DuplicatedFeedLikeException;
+import ddingdong.ddingdongBE.common.exception.FeedException.FeedLikeNotFoundException;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
-import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import ddingdong.ddingdongBE.domain.user.entity.User;
-import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.util.UUID;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,19 +34,16 @@ class GeneralFeedLikeServiceTest extends TestContainerSupport {
     @Autowired
     private ClubRepository clubRepository;
 
-    @Autowired
-    private UserRepository userRepository;
-
     @DisplayName("피드 좋아요 생성 - 성공: 좋아요가 저장된다.")
     @Test
     void create_success() {
         // given
-        User user = userRepository.save(UserFixture.createGeneralUser());
+        String uuid = UUID.randomUUID().toString();
         Club club = clubRepository.save(ClubFixture.createClub());
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
 
         // when
-        feedLikeService.create(feed.getId(), user.getId());
+        feedLikeService.create(feed.getId(), uuid);
 
         // then
         long count = feedLikeRepository.countByFeedId(feed.getId());
@@ -59,13 +54,13 @@ class GeneralFeedLikeServiceTest extends TestContainerSupport {
     @Test
     void create_fail_duplicate() {
         // given
-        User user = userRepository.save(UserFixture.createGeneralUser());
+        String uuid = UUID.randomUUID().toString();
         Club club = clubRepository.save(ClubFixture.createClub());
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
-        feedLikeService.create(feed.getId(), user.getId());
+        feedLikeService.create(feed.getId(), uuid);
 
         // when & then
-        assertThatThrownBy(() -> feedLikeService.create(feed.getId(), user.getId()))
+        assertThatThrownBy(() -> feedLikeService.create(feed.getId(), uuid))
                 .isInstanceOf(DuplicatedFeedLikeException.class);
     }
 
@@ -73,30 +68,43 @@ class GeneralFeedLikeServiceTest extends TestContainerSupport {
     @Test
     void delete_success() {
         // given
-        User user = userRepository.save(UserFixture.createGeneralUser());
+        String uuid = UUID.randomUUID().toString();
         Club club = clubRepository.save(ClubFixture.createClub());
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
-        feedLikeService.create(feed.getId(), user.getId());
+        feedLikeService.create(feed.getId(), uuid);
 
         // when
-        feedLikeService.delete(feed.getId(), user.getId());
+        feedLikeService.delete(feed.getId(), uuid);
 
         // then
         long count = feedLikeRepository.countByFeedId(feed.getId());
         assertThat(count).isEqualTo(0L);
     }
 
-    @DisplayName("피드 좋아요 여부 조회 - 성공: 좋아요한 피드는 true를 반환한다.")
+    @DisplayName("피드 좋아요 취소 - 실패: 좋아요 기록이 없으면 예외가 발생한다.")
     @Test
-    void existsByFeedIdAndUserId_true() {
+    void delete_fail_notFound() {
         // given
-        User user = userRepository.save(UserFixture.createGeneralUser());
+        String uuid = UUID.randomUUID().toString();
         Club club = clubRepository.save(ClubFixture.createClub());
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
-        feedLikeService.create(feed.getId(), user.getId());
+
+        // when & then
+        assertThatThrownBy(() -> feedLikeService.delete(feed.getId(), uuid))
+                .isInstanceOf(FeedLikeNotFoundException.class);
+    }
+
+    @DisplayName("피드 좋아요 여부 조회 - 성공: 좋아요한 피드는 true를 반환한다.")
+    @Test
+    void existsByFeedIdAndUuid_true() {
+        // given
+        String uuid = UUID.randomUUID().toString();
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
+        feedLikeService.create(feed.getId(), uuid);
 
         // when
-        boolean exists = feedLikeService.existsByFeedIdAndUserId(feed.getId(), user.getId());
+        boolean exists = feedLikeService.existsByFeedIdAndUuid(feed.getId(), uuid);
 
         // then
         assertThat(exists).isTrue();
@@ -104,14 +112,14 @@ class GeneralFeedLikeServiceTest extends TestContainerSupport {
 
     @DisplayName("피드 좋아요 여부 조회 - 성공: 좋아요하지 않은 피드는 false를 반환한다.")
     @Test
-    void existsByFeedIdAndUserId_false() {
+    void existsByFeedIdAndUuid_false() {
         // given
-        User user = userRepository.save(UserFixture.createGeneralUser());
+        String uuid = UUID.randomUUID().toString();
         Club club = clubRepository.save(ClubFixture.createClub());
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
 
         // when
-        boolean exists = feedLikeService.existsByFeedIdAndUserId(feed.getId(), user.getId());
+        boolean exists = feedLikeService.existsByFeedIdAndUuid(feed.getId(), uuid);
 
         // then
         assertThat(exists).isFalse();

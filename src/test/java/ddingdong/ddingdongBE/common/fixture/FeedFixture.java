@@ -4,7 +4,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedLike;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
-import ddingdong.ddingdongBE.domain.user.entity.User;
 
 public class FeedFixture {
 
@@ -32,10 +31,10 @@ public class FeedFixture {
                 .build();
     }
 
-    public static FeedLike createFeedLike(Feed feed, User user) {
+    public static FeedLike createFeedLike(Feed feed, String uuid) {
         return FeedLike.builder()
                 .feed(feed)
-                .user(user)
+                .uuid(uuid)
                 .build();
     }
 }
