@@ -59,9 +59,8 @@ and produce a structured report with an overall summary comment and inline code-
 2. **Read Changed Files**: Use Read tool to examine full file content where diff context is insufficient
 3. **Category Scan**: Go through all 7 checklist categories in order
 4. **Collect Findings**: Record each issue with file path, line number, severity, and fix suggestion
-5. **Write Inline Comments**: Format each finding as a code-level comment with the exact location
-6. **Write Overall Summary**: Synthesize all findings into one summary comment
-7. **Determine Merge Verdict**: Based on CRITICAL count, issue final merge recommendation
+5. **Submit Inline Comments via GitHub API**: Use `gh api` to post line-level review comments directly on the PR diff (see "Submitting Review" section below)
+6. **Determine Merge Verdict**: Based on CRITICAL count, issue final merge recommendation
 
 **Fetching PR:**
 ```bash
@@ -125,6 +124,37 @@ gh pr diff
 | 🟡 WARNING | Should fix — tech debt risk | Missing test, missing `api/` interface, missing `@Valid` |
 | 🔵 INFO | Optional improvement | Variable naming, minor comment suggestion |
 
+**Submitting Review:**
+
+모든 발견 사항을 GitHub API로 직접 코드 라인에 제출한다. 텍스트 출력으로 끝내지 말고 반드시 아래 명령으로 실제 제출한다.
+
+```bash
+# 라인 코멘트 포함 리뷰 제출 (findings당 --field "comments[]..." 블록 반복)
+gh api repos/{owner}/{repo}/pulls/{pr_number}/reviews \
+  --method POST \
+  --field body="## 🤖 PR Review 요약\n\n{전체 요약 내용}" \
+  --field event="COMMENT" \
+  --field "comments[][path]=파일/경로.java" \
+  --field "comments[][line]=라인번호" \
+  --field "comments[][side]=RIGHT" \
+  --field "comments[][body]=**[W1] 제목**\n\n설명...\n\`\`\`java\n// 수정 예시\n\`\`\`"
+```
+
+- `path`: PR diff에 포함된 파일 경로 (repo root 기준 상대 경로)
+- `line`: 실제 파일의 라인 번호 (`cat -n` 또는 Read 도구로 확인)
+- `side`: 항상 `"RIGHT"` (새 코드 기준)
+- 여러 코멘트는 `--field "comments[]..."` 블록을 반복 추가
+- owner/repo는 `gh repo view --json nameWithOwner`로 확인
+
+**라인 번호 확인 방법:**
+```bash
+gh api "repos/{owner}/{repo}/contents/{file_path}?ref={branch}" \
+  | python3 -c "import json,sys,base64; print(base64.b64decode(json.load(sys.stdin)['content']).decode())" \
+  | cat -n
+```
+
+---
+
 **Output Format:**
 
 ---
@@ -150,26 +180,25 @@ gh pr diff
 
 ### 🔍 인라인 코드 코멘트
 
-각 발견 사항을 아래 형식으로 나열:
+텍스트로 출력하지 않고, 위 "Submitting Review" 섹션의 `gh api` 명령으로 GitHub PR 라인에 직접 제출한다.
+
+각 코멘트 body는 아래 형식을 따른다:
 
 ```
-📌 {파일경로}:{라인번호}
-심각도: 🔴 CRITICAL / 🟡 WARNING / 🔵 INFO
-카테고리: {DDD구조 / Flyway / SoftDelete / DTO검증 / 보안 / 테스트 / 코드품질}
+**[{등급}] {제목}**
 
-현재 코드:
+{문제 설명}
+
 ```java
-{문제가 되는 코드 스니펫}
-```
+// 현재 코드 (문제)
+{스니펫}
 
-문제: {무엇이 문제인지}
-수정 방법:
-```java
-{수정된 코드 예시}
+// 권장
+{수정 예시}
 ```
 ```
 
-[발견 사항마다 반복]
+[발견 사항마다 comments[] 블록으로 반복]
 
 ---
 
