@@ -1,5 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.api;
 
+import static ddingdong.ddingdongBE.common.constant.ValidationConstants.UUID_V4_REGEXP;
+
 import ddingdong.ddingdongBE.domain.feed.controller.dto.request.CreateFeedCommentRequest;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.CreateFeedCommentResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -22,8 +24,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Tag(name = "Feed Comment", description = "피드 댓글 API (비회원)")
 @RequestMapping("/server/feeds")
 public interface FeedCommentApi {
-
-    String UUID_V4_REGEXP = "^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$";
 
     @Operation(summary = "피드 댓글 작성 API")
     @ApiResponses({
