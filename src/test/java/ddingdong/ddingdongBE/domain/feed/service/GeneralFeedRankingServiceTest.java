@@ -48,7 +48,7 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("월별 1위 동아리 목록 조회 - 성공: 동점으로 같은 월에 ranking=1이 여러 개면 첫 번째만 반환된다")
+    @DisplayName("월별 1위 동아리 목록 조회 - 성공: 동점으로 같은 월에 ranking=1이 여러 개면 모두 반환된다")
     @Test
     void getMonthlyWinners_tieBreak() {
         // given
@@ -62,8 +62,13 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         List<FeedRankingWinnerQuery> result = feedRankingService.getMonthlyWinners(year);
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).targetMonth()).isEqualTo(1);
+        assertThat(result).hasSize(2);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).targetMonth()).isEqualTo(1);
+            softly.assertThat(result.get(0).clubName()).isEqualTo("동아리A");
+            softly.assertThat(result.get(1).targetMonth()).isEqualTo(1);
+            softly.assertThat(result.get(1).clubName()).isEqualTo("동아리B");
+        });
     }
 
     @DisplayName("월별 1위 동아리 목록 조회 - 성공: 해당 연도 데이터가 없으면 빈 리스트를 반환한다")

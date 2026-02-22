@@ -3,9 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedRankingWinnerQuery;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,12 +22,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
         List<FeedMonthlyRanking> rankings =
                 feedMonthlyRankingRepository.findByTargetYearAndRankingOrderByTargetMonthAsc(year, WINNER_RANKING);
 
-        Map<Integer, FeedMonthlyRanking> winnerByMonth = new LinkedHashMap<>();
-        for (FeedMonthlyRanking ranking : rankings) {
-            winnerByMonth.putIfAbsent(ranking.getTargetMonth(), ranking);
-        }
-
-        return winnerByMonth.values().stream()
+        return rankings.stream()
                 .map(FeedRankingWinnerQuery::from)
                 .toList();
     }
