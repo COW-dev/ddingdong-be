@@ -46,14 +46,15 @@ public class GeneralFeedRankingService implements FeedRankingService {
                 .toList();
 
         List<ClubFeedRankingQuery> result = new ArrayList<>();
+        long previousScore = Long.MAX_VALUE;
         int rank = 1;
         for (int i = 0; i < sorted.size(); i++) {
-            MonthlyFeedRankingDto dto = sorted.get(i);
-            long score = calculateScore(dto);
-            if (i > 0 && score < calculateScore(sorted.get(i - 1))) {
+            long score = calculateScore(sorted.get(i));
+            if (i > 0 && score < previousScore) {
                 rank = i + 1;
             }
-            result.add(ClubFeedRankingQuery.of(rank, dto, score));
+            result.add(ClubFeedRankingQuery.of(rank, sorted.get(i), score));
+            previousScore = score;
         }
 
         return result;
