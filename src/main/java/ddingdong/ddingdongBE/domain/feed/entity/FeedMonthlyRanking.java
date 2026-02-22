@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"clubId", "targetYear", "targetMonth"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"club_id", "target_year", "target_month"}))
 public class FeedMonthlyRanking extends BaseEntity {
 
     @Id
