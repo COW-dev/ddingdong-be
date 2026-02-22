@@ -235,9 +235,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 피드가 없는 동아리는 결과에 포함되지 않는다")
+    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 피드가 없는 동아리도 score=0으로 포함된다")
     @Test
-    void getClubFeedRanking_excludesClubsWithNoFeeds() {
+    void getClubFeedRanking_includesClubsWithNoFeeds() {
         // given
         Club clubA = clubRepository.save(ClubFixture.createClub("피드있는동아리"));
         clubRepository.save(ClubFixture.createClub("피드없는동아리"));
@@ -251,19 +251,39 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRanking(year, month);
 
         // then
-        assertThat(result).hasSize(1);
-        assertThat(result.get(0).clubName()).isEqualTo("피드있는동아리");
+        assertThat(result).hasSize(2);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).clubName()).isEqualTo("피드있는동아리");
+            softly.assertThat(result.get(0).score()).isEqualTo(10L);
+            softly.assertThat(result.get(1).clubName()).isEqualTo("피드없는동아리");
+            softly.assertThat(result.get(1).score()).isEqualTo(0L);
+        });
     }
 
-    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 해당 월 데이터가 없으면 빈 리스트를 반환한다")
+    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 해당 월에 피드가 없어도 동아리는 score=0으로 포함된다")
     @Test
-    void getClubFeedRanking_emptyForDifferentMonth() {
+    void getClubFeedRanking_noFeedsInMonth() {
         // given
         Club club = clubRepository.save(ClubFixture.createClub("동아리"));
         feedRepository.save(FeedFixture.createImageFeed(club, "피드"));
 
-        // when — 존재하지 않는 연/월 조회
+        // when — 피드가 없는 연/월 조회 (동아리는 존재)
         List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRanking(2000, 1);
+
+        // then — 동아리는 포함되지만 score=0
+        assertThat(result).hasSize(1);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).clubName()).isEqualTo("동아리");
+            softly.assertThat(result.get(0).feedCount()).isEqualTo(0);
+            softly.assertThat(result.get(0).score()).isEqualTo(0L);
+        });
+    }
+
+    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 동아리가 없으면 빈 리스트를 반환한다")
+    @Test
+    void getClubFeedRanking_noClubs() {
+        // when — 동아리 자체가 없는 상태
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRanking(2025, 1);
 
         // then
         assertThat(result).isEmpty();

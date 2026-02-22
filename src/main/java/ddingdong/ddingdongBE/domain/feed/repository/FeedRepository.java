@@ -99,34 +99,4 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             @Param("month") int month
     );
 
-    @Query(value = """
-            SELECT c.id AS clubId,
-                   c.name AS clubName,
-                   COUNT(f.id) AS feedCount,
-                   COALESCE(SUM(f.view_count), 0) AS viewCount,
-                   COALESCE(SUM(sub_like.like_cnt), 0) AS likeCount,
-                   COALESCE(SUM(sub_comment.comment_cnt), 0) AS commentCount
-              FROM feed f
-              INNER JOIN club c ON c.id = f.club_id AND c.deleted_at IS NULL
-              LEFT JOIN (
-                  SELECT fl.feed_id, COUNT(*) AS like_cnt
-                    FROM feed_like fl
-                   GROUP BY fl.feed_id
-              ) sub_like ON sub_like.feed_id = f.id
-              LEFT JOIN (
-                  SELECT fc.feed_id, COUNT(*) AS comment_cnt
-                    FROM feed_comment fc
-                   WHERE fc.deleted_at IS NULL
-                   GROUP BY fc.feed_id
-              ) sub_comment ON sub_comment.feed_id = f.id
-             WHERE f.deleted_at IS NULL
-               AND YEAR(f.created_at) = :year
-               AND MONTH(f.created_at) = :month
-             GROUP BY c.id, c.name
-            """, nativeQuery = true)
-    List<MonthlyFeedRankingDto> findClubFeedRankingRaw(
-            @Param("year") int year,
-            @Param("month") int month
-    );
-
 }

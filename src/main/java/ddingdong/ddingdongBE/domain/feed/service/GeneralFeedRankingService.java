@@ -39,7 +39,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
 
     @Override
     public List<ClubFeedRankingQuery> getClubFeedRanking(int year, int month) {
-        List<MonthlyFeedRankingDto> rawRankings = feedRepository.findClubFeedRankingRaw(year, month);
+        List<MonthlyFeedRankingDto> rawRankings = feedRepository.findMonthlyRankingByClub(year, month);
 
         List<MonthlyFeedRankingDto> sorted = rawRankings.stream()
                 .sorted(Comparator.comparingLong(this::calculateScore).reversed())
