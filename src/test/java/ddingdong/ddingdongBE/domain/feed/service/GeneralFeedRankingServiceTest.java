@@ -201,7 +201,7 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 동점자는 같은 순위를 부여받는다 (1-1-3)")
+    @DisplayName("동아리별 피드 랭킹 조회 - 성공: 동점자는 같은 순위를 부여받는다 (1-2-2)")
     @Test
     void getClubFeedRanking_tieRanking() {
         // given
