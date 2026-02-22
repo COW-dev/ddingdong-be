@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.api;
 
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
@@ -29,5 +30,16 @@ public interface AdminFeedApi {
     @GetMapping("/ranking/last")
     List<AdminFeedRankingWinnerResponse> getMonthlyWinners(
             @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year
+    );
+
+    @Operation(summary = "총동연 피드 랭킹 조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리별 피드 랭킹 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AdminClubFeedRankingResponse.class))))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/ranking")
+    List<AdminClubFeedRankingResponse> getClubFeedRanking(
+            @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year,
+            @RequestParam("month") @Min(value = 1, message = "month는 1 이상이어야 합니다.") @Max(value = 12, message = "month는 12 이하여야 합니다.") int month
     );
 }
