@@ -32,6 +32,15 @@ public class UserFixture {
                 .build();
     }
 
+    public static User createClubUser(String authId, String encode) {
+        return User.builder()
+                .authId(authId)
+                .password(encode)
+                .name("동아리 사용자")
+                .role(Role.CLUB)
+                .build();
+    }
+
     public static User createClubUser() {
         return User.builder()
                 .authId("club123")

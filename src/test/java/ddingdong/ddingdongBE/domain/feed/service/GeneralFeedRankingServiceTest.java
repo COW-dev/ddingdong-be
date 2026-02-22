@@ -6,6 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
@@ -15,7 +16,11 @@ import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedRankingWinnerQuery;
+import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -42,6 +47,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     @DisplayName("월별 1위 동아리 목록 조회 - 성공: 각 월의 1위 동아리가 반환된다")
     @Test
@@ -318,6 +326,82 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
             softly.assertThat(result.get(0).likeCount()).isEqualTo(2);
             softly.assertThat(result.get(0).commentCount()).isEqualTo(1);
             softly.assertThat(result.get(0).score()).isEqualTo(21L);
+        });
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 있으면 내 동아리 통계와 rank가 반환된다")
+    @Test
+    void getClubMonthlyStatus_withFeeds() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        Club club = clubRepository.save(ClubFixture.createClub(user));
+        feedRepository.save(FeedFixture.createImageFeed(club, "피드1"));
+        feedRepository.save(FeedFixture.createImageFeed(club, "피드2"));
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        // when
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
+
+        // then
+        // score = feedCount(2)*10 = 20
+        assertSoftly(softly -> {
+            softly.assertThat(result.year()).isEqualTo(year);
+            softly.assertThat(result.month()).isEqualTo(month);
+            softly.assertThat(result.rank()).isEqualTo(1);
+            softly.assertThat(result.feedCount()).isEqualTo(2L);
+            softly.assertThat(result.score()).isEqualTo(20L);
+        });
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 없으면 모든 값 0, rank=0으로 반환된다")
+    @Test
+    void getClubMonthlyStatus_noFeeds() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        clubRepository.save(ClubFixture.createClub(user));
+
+        // when — 피드가 없는 연/월
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), 2000, 1);
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(result.year()).isEqualTo(2000);
+            softly.assertThat(result.month()).isEqualTo(1);
+            softly.assertThat(result.rank()).isEqualTo(0);
+            softly.assertThat(result.feedCount()).isEqualTo(0L);
+            softly.assertThat(result.viewCount()).isEqualTo(0L);
+            softly.assertThat(result.likeCount()).isEqualTo(0L);
+            softly.assertThat(result.commentCount()).isEqualTo(0L);
+            softly.assertThat(result.score()).isEqualTo(0L);
+        });
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 2개 동아리 중 내 동아리의 정확한 순위가 반환된다")
+    @Test
+    void getClubMonthlyStatus_rankAccuracy() {
+        // given
+        User userA = userRepository.save(UserFixture.createClubUser("clubA", "1234"));
+        Club clubA = clubRepository.save(ClubFixture.createClub(userA));
+        feedRepository.save(FeedFixture.createImageFeed(clubA, "피드A-1"));
+        feedRepository.save(FeedFixture.createImageFeed(clubA, "피드A-2"));
+
+        User userB = userRepository.save(UserFixture.createClubUser("clubB", "1234"));
+        Club clubB = clubRepository.save(ClubFixture.createClub(userB));
+        feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B"));
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        // when — 동아리B 회장이 조회
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(userB.getId(), year, month);
+
+        // then — 동아리A(score=20) > 동아리B(score=10), 동아리B는 rank=2
+        assertSoftly(softly -> {
+            softly.assertThat(result.rank()).isEqualTo(2);
+            softly.assertThat(result.feedCount()).isEqualTo(1L);
+            softly.assertThat(result.score()).isEqualTo(10L);
         });
     }
 }
