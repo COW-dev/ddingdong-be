@@ -76,10 +76,10 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
                    COALESCE(SUM(sub_like.like_cnt), 0) AS likeCount,
                    COALESCE(SUM(sub_comment.comment_cnt), 0) AS commentCount
               FROM club c
-              JOIN feed f ON f.club_id = c.id
-                         AND f.deleted_at IS NULL
-                         AND YEAR(f.created_at) = :year
-                         AND MONTH(f.created_at) = :month
+              LEFT JOIN feed f ON f.club_id = c.id
+                              AND f.deleted_at IS NULL
+                              AND YEAR(f.created_at) = :year
+                              AND MONTH(f.created_at) = :month
               LEFT JOIN (
                   SELECT fl.feed_id, COUNT(*) AS like_cnt
                     FROM feed_like fl
