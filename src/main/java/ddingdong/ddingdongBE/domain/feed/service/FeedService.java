@@ -17,4 +17,6 @@ public interface FeedService {
     Long create(Feed feed);
 
     void delete(Feed feed);
+
+    void incrementViewCount(Long feedId);
 }

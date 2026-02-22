@@ -237,6 +237,7 @@ TestContainerSupport          ← MySQL Testcontainer + @Transactional
 - **위치**: `src/test/java/ddingdong/ddingdongBE/common/fixture/{Domain}Fixture.java`
 - **형태**: `public class` + `public static` 메서드만
 - **기존 파일 확인 필수**: 새 파일 생성 전 Glob으로 확인 후 기존 파일에 메서드 추가
+- **FixtureMonkey 사용 금지**: 테스트 데이터는 반드시 Fixture static 메서드 + Builder 패턴으로 생성한다
 
 ```java
 public class XxxFixture {

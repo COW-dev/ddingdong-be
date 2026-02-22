@@ -56,6 +56,12 @@ public class GeneralFeedService implements FeedService {
         feedRepository.delete(feed);
     }
 
+    @Override
+    @Transactional
+    public void incrementViewCount(Long feedId) {
+        feedRepository.incrementViewCount(feedId);
+    }
+
     private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
         List<Feed> content = new ArrayList<>(originalSlice.getContent());
         if (content.isEmpty()) {
