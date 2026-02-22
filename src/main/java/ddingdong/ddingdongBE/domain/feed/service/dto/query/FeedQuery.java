@@ -9,6 +9,7 @@ public record FeedQuery(
     Long id,
     String activityContent,
     String feedType,
+    long viewCount,
     LocalDate createdDate,
     FeedFileInfoQuery feedFileInfoQuery,
     ClubProfileQuery clubProfileQuery
@@ -21,6 +22,7 @@ public record FeedQuery(
         .activityContent(feed.getActivityContent())
         .feedFileInfoQuery(feedFileInfoQuery)
         .feedType(feed.getFeedType().toString())
+        .viewCount(feed.getViewCount())
         .createdDate(LocalDate.from(feed.getCreatedAt()))
         .build();
   }

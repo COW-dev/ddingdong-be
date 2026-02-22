@@ -24,12 +24,13 @@
 3. `controller/` 구현 (인터페이스 implements)
 4. `service/` + command/query DTO 작성
 5. `repository/` 쿼리 추가
-6. 테스트 작성 (RestAssured + Fixture Monkey)
+6. 테스트 작성 (RestAssured + Fixture)
 
 ### 테스트
 - 코드 작성 후 `./gradlew test`로 검증한다
 - 버그 수정/기능 추가 시 반드시 테스트 추가
 - TestContainers 사용 — Docker 실행 상태 필요
+- **FixtureMonkey 사용 금지** — 테스트 데이터는 `common/fixture/` 의 static 메서드로만 생성한다
 
 ---
 

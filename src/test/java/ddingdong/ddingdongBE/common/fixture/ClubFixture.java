@@ -44,4 +44,21 @@ public class ClubFixture {
                 .score(Score.from(BigDecimal.valueOf(85.5)))
                 .build();
     }
+
+    public static Club createClub(String name) {
+        return Club.builder()
+                .clubMembers(new ArrayList<>())
+                .name(name)
+                .category("학술")
+                .tag("프로그래밍, 개발, IT")
+                .leader("김동아")
+                .phoneNumber(PhoneNumber.from("010-1234-5678"))
+                .location(Location.from("S3014"))
+                .regularMeeting("매주 수요일 18:00")
+                .introduction("동아리 소개입니다.")
+                .activity("동아리 활동입니다.")
+                .ideal("동아리 이상입니다.")
+                .score(Score.from(BigDecimal.valueOf(85.5)))
+                .build();
+    }
 }
