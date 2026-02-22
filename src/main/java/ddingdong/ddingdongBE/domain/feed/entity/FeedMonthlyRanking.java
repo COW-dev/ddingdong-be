@@ -13,6 +13,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+// 스냅샷 이력 테이블이므로 soft delete를 적용하지 않는다
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
