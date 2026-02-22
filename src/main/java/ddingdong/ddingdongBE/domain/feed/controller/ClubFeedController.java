@@ -12,10 +12,12 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuer
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.MyFeedPageQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class ClubFeedController implements ClubFeedApi {
 
     private final FacadeClubFeedService facadeClubFeedService;
