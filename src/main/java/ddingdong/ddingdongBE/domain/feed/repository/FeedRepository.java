@@ -64,7 +64,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             @Param("currentCursorId") Long currentCursorId
     );
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Query(value = "UPDATE feed SET view_count = view_count + 1 WHERE id = :feedId", nativeQuery = true)
     void incrementViewCount(@Param("feedId") Long feedId);
 
