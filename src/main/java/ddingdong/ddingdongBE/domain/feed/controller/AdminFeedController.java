@@ -5,10 +5,12 @@ import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankin
 import ddingdong.ddingdongBE.domain.feed.service.FeedRankingService;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class AdminFeedController implements AdminFeedApi {
 
     private final FeedRankingService feedRankingService;

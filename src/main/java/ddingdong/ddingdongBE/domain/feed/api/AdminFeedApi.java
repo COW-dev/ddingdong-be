@@ -28,6 +28,6 @@ public interface AdminFeedApi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/ranking/last")
     List<AdminFeedRankingWinnerResponse> getMonthlyWinners(
-            @RequestParam("year") @Min(2000) @Max(2100) int year
+            @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year
     );
 }
