@@ -4,7 +4,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import ddingdong.ddingdongBE.common.config.JpaAuditingConfig;
-import ddingdong.ddingdongBE.common.config.JpaAuditingConfig;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.fixture.VodProcessingJobFixture;
