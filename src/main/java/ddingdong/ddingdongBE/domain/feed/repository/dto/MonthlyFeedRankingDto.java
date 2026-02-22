@@ -13,6 +13,4 @@ public interface MonthlyFeedRankingDto {
     Long getLikeCount();
 
     Long getCommentCount();
-
-    Long getScore();
 }

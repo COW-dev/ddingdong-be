@@ -316,17 +316,16 @@ class FeedRepositoryTest extends DataJpaTestSupport {
 
         assertSoftly(softly -> {
             // Club A: feedCount=2, viewCount=0, likeCount=1, commentCount=1
-            // score = 2*10 + 0*1 + 1*3 + 1*5 = 28
             softly.assertThat(rankingA.getFeedCount()).isEqualTo(2);
             softly.assertThat(rankingA.getViewCount()).isEqualTo(0);
             softly.assertThat(rankingA.getLikeCount()).isEqualTo(1);
             softly.assertThat(rankingA.getCommentCount()).isEqualTo(1);
-            softly.assertThat(rankingA.getScore()).isEqualTo(28);
 
             // Club B: feedCount=1, viewCount=0, likeCount=0, commentCount=0
-            // score = 1*10 + 0*1 + 0*3 + 0*5 = 10
             softly.assertThat(rankingB.getFeedCount()).isEqualTo(1);
-            softly.assertThat(rankingB.getScore()).isEqualTo(10);
+            softly.assertThat(rankingB.getViewCount()).isEqualTo(0);
+            softly.assertThat(rankingB.getLikeCount()).isEqualTo(0);
+            softly.assertThat(rankingB.getCommentCount()).isEqualTo(0);
         });
     }
 

@@ -74,11 +74,7 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
                    COUNT(f.id) AS feedCount,
                    COALESCE(SUM(f.view_count), 0) AS viewCount,
                    COALESCE(SUM(sub_like.like_cnt), 0) AS likeCount,
-                   COALESCE(SUM(sub_comment.comment_cnt), 0) AS commentCount,
-                   (COUNT(f.id) * 10
-                    + COALESCE(SUM(f.view_count), 0) * 1
-                    + COALESCE(SUM(sub_like.like_cnt), 0) * 3
-                    + COALESCE(SUM(sub_comment.comment_cnt), 0) * 5) AS score
+                   COALESCE(SUM(sub_comment.comment_cnt), 0) AS commentCount
               FROM club c
               JOIN feed f ON f.club_id = c.id
                          AND f.deleted_at IS NULL

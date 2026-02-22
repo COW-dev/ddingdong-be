@@ -42,7 +42,6 @@ public class FeedRankingScheduler {
                         .viewCount(dto.getViewCount())
                         .likeCount(dto.getLikeCount())
                         .commentCount(dto.getCommentCount())
-                        .score(dto.getScore())
                         .targetYear(targetYear)
                         .targetMonth(targetMonth)
                         .build())

@@ -19,6 +19,11 @@ import lombok.NoArgsConstructor;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"club_id", "target_year", "target_month"}))
 public class FeedMonthlyRanking extends BaseEntity {
 
+    private static final int FEED_WEIGHT = 10;
+    private static final int VIEW_WEIGHT = 1;
+    private static final int LIKE_WEIGHT = 3;
+    private static final int COMMENT_WEIGHT = 5;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,7 +57,7 @@ public class FeedMonthlyRanking extends BaseEntity {
 
     @Builder
     private FeedMonthlyRanking(Long id, Long clubId, String clubName, long feedCount,
-            long viewCount, long likeCount, long commentCount, long score,
+            long viewCount, long likeCount, long commentCount,
             int targetYear, int targetMonth) {
         this.id = id;
         this.clubId = clubId;
@@ -61,8 +66,15 @@ public class FeedMonthlyRanking extends BaseEntity {
         this.viewCount = viewCount;
         this.likeCount = likeCount;
         this.commentCount = commentCount;
-        this.score = score;
         this.targetYear = targetYear;
         this.targetMonth = targetMonth;
+        this.score = calculateScore();
+    }
+
+    public long calculateScore() {
+        return feedCount * FEED_WEIGHT
+                + viewCount * VIEW_WEIGHT
+                + likeCount * LIKE_WEIGHT
+                + commentCount * COMMENT_WEIGHT;
     }
 }

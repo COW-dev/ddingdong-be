@@ -86,7 +86,6 @@ class FeedRankingSchedulerTest extends TestContainerSupport {
                 .viewCount(50)
                 .likeCount(10)
                 .commentCount(5)
-                .score(100)
                 .targetYear(lastMonth.getYear())
                 .targetMonth(lastMonth.getMonthValue())
                 .build());

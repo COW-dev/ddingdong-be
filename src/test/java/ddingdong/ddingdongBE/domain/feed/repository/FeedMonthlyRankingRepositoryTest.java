@@ -24,7 +24,6 @@ class FeedMonthlyRankingRepositoryTest extends DataJpaTestSupport {
                 .viewCount(100)
                 .likeCount(20)
                 .commentCount(10)
-                .score(200)
                 .targetYear(2026)
                 .targetMonth(1)
                 .build();
