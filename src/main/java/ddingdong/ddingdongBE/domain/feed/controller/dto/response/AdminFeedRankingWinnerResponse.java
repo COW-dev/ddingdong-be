@@ -5,6 +5,7 @@ import lombok.Builder;
 
 @Builder
 public record AdminFeedRankingWinnerResponse(
+        Long clubId,
         String clubName,
         long feedCount,
         long viewCount,
@@ -17,6 +18,7 @@ public record AdminFeedRankingWinnerResponse(
 
     public static AdminFeedRankingWinnerResponse from(FeedRankingWinnerQuery query) {
         return AdminFeedRankingWinnerResponse.builder()
+                .clubId(query.clubId())
                 .clubName(query.clubName())
                 .feedCount(query.feedCount())
                 .viewCount(query.viewCount())
