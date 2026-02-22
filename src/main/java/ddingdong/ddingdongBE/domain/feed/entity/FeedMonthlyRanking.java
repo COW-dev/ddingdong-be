@@ -51,6 +51,9 @@ public class FeedMonthlyRanking extends BaseEntity {
     private long score;
 
     @Column(nullable = false)
+    private int ranking;
+
+    @Column(nullable = false)
     private int targetYear;
 
     @Column(nullable = false)
@@ -77,5 +80,9 @@ public class FeedMonthlyRanking extends BaseEntity {
                 + viewCount * VIEW_WEIGHT
                 + likeCount * LIKE_WEIGHT
                 + commentCount * COMMENT_WEIGHT;
+    }
+
+    public void assignRanking(int ranking) {
+        this.ranking = ranking;
     }
 }
