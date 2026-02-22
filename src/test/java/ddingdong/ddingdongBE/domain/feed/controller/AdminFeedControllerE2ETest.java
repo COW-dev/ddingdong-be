@@ -5,11 +5,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.auth.controller.dto.response.SignInResponse;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
+import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import io.restassured.RestAssured;
@@ -36,6 +44,15 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
 
     @Autowired
     private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
+
+    @Autowired
+    private ClubRepository clubRepository;
+
+    @Autowired
+    private FeedRepository feedRepository;
+
+    @Autowired
+    private FeedLikeRepository feedLikeRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -79,6 +96,78 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         assertThat(response.get(0).targetMonth()).isEqualTo(1);
         assertThat(response.get(2).clubName()).isEqualTo("3월 우승 동아리");
         assertThat(response.get(2).targetMonth()).isEqualTo(3);
+    }
+
+    @DisplayName("총동연 피드 랭킹 조회 API - 성공: 점수 순으로 랭킹이 반환된다")
+    @Test
+    void getClubFeedRanking_success() {
+        // given
+        Club clubA = clubRepository.save(ClubFixture.createClub("동아리A"));
+        Club clubB = clubRepository.save(ClubFixture.createClub("동아리B"));
+
+        // 동아리A: 피드 1개 → score = 10
+        feedRepository.save(FeedFixture.createImageFeed(clubA, "피드A"));
+
+        // 동아리B: 피드 2개 + 좋아요 1개 → score = 2*10 + 1*3 = 23
+        Feed feedB = feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B1"));
+        feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B2"));
+        feedLikeRepository.save(FeedFixture.createFeedLike(feedB, "uuid-1"));
+
+        int year = java.time.LocalDate.now().getYear();
+        int month = java.time.LocalDate.now().getMonthValue();
+
+        // when & then
+        List<AdminClubFeedRankingResponse> response = given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("year", year)
+                .queryParam("month", month)
+                .when()
+                .get("/server/admin/feeds/ranking")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", AdminClubFeedRankingResponse.class);
+
+        assertThat(response).hasSize(2);
+        assertThat(response.get(0).clubName()).isEqualTo("동아리B");
+        assertThat(response.get(0).rank()).isEqualTo(1);
+        assertThat(response.get(1).clubName()).isEqualTo("동아리A");
+        assertThat(response.get(1).rank()).isEqualTo(2);
+    }
+
+    @DisplayName("총동연 피드 랭킹 조회 API - 성공: 데이터 없으면 빈 리스트 반환")
+    @Test
+    void getClubFeedRanking_empty() {
+        List<AdminClubFeedRankingResponse> response = given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("year", 2000)
+                .queryParam("month", 1)
+                .when()
+                .get("/server/admin/feeds/ranking")
+                .then()
+                .statusCode(200)
+                .extract()
+                .jsonPath()
+                .getList(".", AdminClubFeedRankingResponse.class);
+
+        assertThat(response).isEmpty();
+    }
+
+    @DisplayName("총동연 피드 랭킹 조회 API - 실패: month 파라미터 유효성 검증 (0 이하)")
+    @Test
+    void getClubFeedRanking_invalidMonth() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("year", 2025)
+                .queryParam("month", 0)
+                .when()
+                .get("/server/admin/feeds/ranking")
+                .then()
+                .statusCode(400);
     }
 
     private String getAuthToken(String authId, String password) {
