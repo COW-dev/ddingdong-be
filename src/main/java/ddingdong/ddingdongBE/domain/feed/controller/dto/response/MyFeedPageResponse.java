@@ -7,7 +7,12 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 import lombok.Builder;
 
+@Builder
 public record MyFeedPageResponse(
+        @Schema(description = "총 피드 수", example = "15")
+        long feedCount,
+        @Schema(description = "총 조회수", example = "1200")
+        long totalViewCount,
         @ArraySchema(schema = @Schema(name = "동아리 피드 정보", implementation = MyFeedListResponse.class))
         List<MyFeedListResponse> clubFeeds,
         @Schema(name = "피드 페이지 정보", implementation = PagingResponse.class)
@@ -18,8 +23,12 @@ public record MyFeedPageResponse(
         List<MyFeedListResponse> clubFeeds = myFeedPageQuery.feedListQueries().stream()
                 .map(MyFeedListResponse::from)
                 .toList();
-        return new MyFeedPageResponse(clubFeeds,
-                PagingResponse.from(myFeedPageQuery.pagingQuery()));
+        return MyFeedPageResponse.builder()
+                .feedCount(myFeedPageQuery.feedCount())
+                .totalViewCount(myFeedPageQuery.totalViewCount())
+                .clubFeeds(clubFeeds)
+                .pagingInfo(PagingResponse.from(myFeedPageQuery.pagingQuery()))
+                .build();
     }
 
     @Builder

@@ -3,6 +3,8 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
@@ -17,6 +19,7 @@ import ddingdong.ddingdongBE.sse.service.SseConnectionService;
 import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
 import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,6 +39,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     private final VodProcessingJobService vodProcessingJobService;
     private final SseConnectionService sseConnectionService;
     private final FeedFileService feedFileService;
+    private final FeedRepository feedRepository;
 
     @Override
     @Transactional
@@ -74,9 +78,10 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     @Override
     public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
+        MyFeedStatDto stat = feedRepository.findMyFeedStat(club.getId());
         Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
         if (feedPage == null) {
-            return MyFeedPageQuery.createEmpty();
+            return MyFeedPageQuery.of(stat, Collections.emptyList(), PagingQuery.createEmpty());
         }
         List<Feed> completeFeeds = feedPage.getContent();
         List<FeedListQuery> feedListQueries = completeFeeds.stream()
@@ -84,7 +89,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
                 .toList();
         PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
-        return MyFeedPageQuery.of(feedListQueries, pagingQuery);
+        return MyFeedPageQuery.of(stat, feedListQueries, pagingQuery);
     }
 
     private void checkVodProcessingJobAndNotify(Feed feed) {
