@@ -29,12 +29,30 @@ public class FeedFileService {
         FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
         if (feed.isImage()) {
             UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
-            return new FeedListQuery(feed.getId(), urlQuery.cdnUrl(), urlQuery.originUrl(), feed.getFeedType().name(), fileMetaData.getFileName());
+            return FeedListQuery.builder()
+                    .id(feed.getId())
+                    .thumbnailCdnUrl(urlQuery.cdnUrl())
+                    .thumbnailOriginUrl(urlQuery.originUrl())
+                    .feedType(feed.getFeedType().name())
+                    .thumbnailFileName(fileMetaData.getFileName())
+                    .viewCount(feed.getViewCount())
+                    .likeCount(0)
+                    .commentCount(0)
+                    .build();
         }
 
         if (feed.isVideo()) {
             UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
-            return new FeedListQuery(feed.getId(), urlQuery.thumbnailCdnUrl(), urlQuery.thumbnailOriginUrl(), feed.getFeedType().name(), fileMetaData.getFileName());
+            return FeedListQuery.builder()
+                    .id(feed.getId())
+                    .thumbnailCdnUrl(urlQuery.thumbnailCdnUrl())
+                    .thumbnailOriginUrl(urlQuery.thumbnailOriginUrl())
+                    .feedType(feed.getFeedType().name())
+                    .thumbnailFileName(fileMetaData.getFileName())
+                    .viewCount(feed.getViewCount())
+                    .likeCount(0)
+                    .commentCount(0)
+                    .build();
         }
 
         throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");
