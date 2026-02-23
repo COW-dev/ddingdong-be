@@ -3,9 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.controller;
 import ddingdong.ddingdongBE.domain.feed.api.AdminFeedApi;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
-import ddingdong.ddingdongBE.domain.feed.controller.dto.response.ClubMonthlyStatusResponse;
 import ddingdong.ddingdongBE.domain.feed.service.FeedRankingService;
-import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
@@ -30,11 +28,5 @@ public class AdminFeedController implements AdminFeedApi {
         return AdminClubFeedRankingResponse.from(
                 feedRankingService.getClubFeedRanking(year, month)
         );
-    }
-
-    @Override
-    public ClubMonthlyStatusResponse getClubMonthlyStatus(Long clubId, int year, int month) {
-        ClubMonthlyStatusQuery query = feedRankingService.getClubMonthlyStatusByClubId(clubId, year, month);
-        return ClubMonthlyStatusResponse.from(query);
     }
 }

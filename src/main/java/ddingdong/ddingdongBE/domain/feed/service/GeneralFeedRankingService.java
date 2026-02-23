@@ -67,15 +67,10 @@ public class GeneralFeedRankingService implements FeedRankingService {
     @Override
     public ClubMonthlyStatusQuery getClubMonthlyStatus(Long userId, int year, int month) {
         Club club = clubService.getByUserId(userId);
-        return getClubMonthlyStatusByClubId(club.getId(), year, month);
-    }
-
-    @Override
-    public ClubMonthlyStatusQuery getClubMonthlyStatusByClubId(Long clubId, int year, int month) {
         List<ClubFeedRankingQuery> rankings = getClubFeedRanking(year, month);
 
         return rankings.stream()
-                .filter(rankingQuery -> rankingQuery.clubId().equals(clubId))
+                .filter(rankingQuery -> rankingQuery.clubId().equals(club.getId()))
                 .findFirst()
                 .filter(rankingQuery -> rankingQuery.score() > 0)
                 .map(rankingQuery -> ClubMonthlyStatusQuery.from(year, month, rankingQuery))

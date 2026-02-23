@@ -15,7 +15,6 @@ import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
@@ -23,9 +22,7 @@ import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -56,9 +53,6 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
 
     @Autowired
     private FeedLikeRepository feedLikeRepository;
-
-    @Autowired
-    private FeedCommentRepository feedCommentRepository;
 
     @Autowired
     private PasswordEncoder passwordEncoder;
@@ -174,61 +168,6 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
                 .get("/server/admin/feeds/ranking")
                 .then()
                 .statusCode(400);
-    }
-
-    @DisplayName("총동연 동아리 이달의 현황 조회 API - 성공: clubId로 특정 동아리 현황 조회")
-    @Test
-    void getClubMonthlyStatus_success() {
-        // given
-        Club club = clubRepository.save(ClubFixture.createClub("현황조회동아리"));
-        Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "피드1"));
-        feedRepository.save(FeedFixture.createImageFeed(club, "피드2"));
-        feedLikeRepository.save(FeedFixture.createFeedLike(feed, "uuid-1"));
-        feedCommentRepository.save(FeedFixture.createFeedComment(feed, "uuid-2", 1, "댓글"));
-
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-
-        // when & then
-        // score = feedCount(2)*10 + viewCount(0)*1 + likeCount(1)*3 + commentCount(1)*5 = 28
-        Map<?, ?> response = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", "Bearer " + adminToken)
-                .queryParam("year", year)
-                .queryParam("month", month)
-                .when()
-                .get("/server/admin/clubs/{clubId}/feeds/ranking/status", club.getId())
-                .then()
-                .statusCode(200)
-                .extract()
-                .as(Map.class);
-
-        assertThat(((Number) response.get("score")).longValue()).isEqualTo(28L);
-        assertThat(((Number) response.get("feedCount")).longValue()).isEqualTo(2L);
-        assertThat(((Number) response.get("rank")).intValue()).isGreaterThan(0);
-    }
-
-    @DisplayName("총동연 동아리 이달의 현황 조회 API - 실패: CLUB 권한으로 접근 시 403")
-    @Test
-    void getClubMonthlyStatus_forbidden() {
-        // given
-        User clubUser = userRepository.save(UserFixture.createClubUser(passwordEncoder.encode("1234")));
-        Club club = clubRepository.save(ClubFixture.createClub(clubUser));
-        String clubToken = getAuthToken("club123", "1234");
-
-        int year = LocalDate.now().getYear();
-        int month = LocalDate.now().getMonthValue();
-
-        // when & then
-        given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", "Bearer " + clubToken)
-                .queryParam("year", year)
-                .queryParam("month", month)
-                .when()
-                .get("/server/admin/clubs/{clubId}/feeds/ranking/status", club.getId())
-                .then()
-                .statusCode(403);
     }
 
     private String getAuthToken(String authId, String password) {

@@ -12,6 +12,4 @@ public interface FeedRankingService {
     List<ClubFeedRankingQuery> getClubFeedRanking(int year, int month);
 
     ClubMonthlyStatusQuery getClubMonthlyStatus(Long userId, int year, int month);
-
-    ClubMonthlyStatusQuery getClubMonthlyStatusByClubId(Long clubId, int year, int month);
 }
