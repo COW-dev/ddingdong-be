@@ -32,7 +32,13 @@ public record ClubFeedPageResponse(
         @Schema(description = "피드 썸네일 파일 이름", example = "filename.jpg")
         String thumbnailFilename,
         @Schema(description = "피드 타입", example = "IMAGE")
-        String feedType
+        String feedType,
+        @Schema(description = "조회수", example = "150")
+        long viewCount,
+        @Schema(description = "좋아요 수", example = "10")
+        long likeCount,
+        @Schema(description = "댓글 수", example = "5")
+        long commentCount
     ) {
 
         public static ClubFeedListResponse from(FeedListQuery feedListQuery) {
@@ -40,7 +46,11 @@ public record ClubFeedPageResponse(
                 .id(feedListQuery.id())
                 .thumbnailCdnUrl(feedListQuery.thumbnailCdnUrl())
                 .thumbnailOriginUrl(feedListQuery.thumbnailOriginUrl())
+                .thumbnailFilename(feedListQuery.thumbnailFileName())
                 .feedType(feedListQuery.feedType())
+                .viewCount(feedListQuery.viewCount())
+                .likeCount(feedListQuery.likeCount())
+                .commentCount(feedListQuery.commentCount())
                 .build();
         }
     }
