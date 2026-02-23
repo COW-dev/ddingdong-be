@@ -15,22 +15,12 @@ public record ClubMonthlyStatusQuery(
         long totalScore
 ) {
 
-    private static final int FEED_WEIGHT = 10;
-    private static final int VIEW_WEIGHT = 1;
-    private static final int LIKE_WEIGHT = 3;
-    private static final int COMMENT_WEIGHT = 5;
-
-    public static ClubMonthlyStatusQuery from(int year, int month, ClubFeedRankingQuery ranking,
-            int lastMonthRank) {
-        long feedScore = ranking.feedCount() * FEED_WEIGHT;
-        long viewScore = ranking.viewCount() * VIEW_WEIGHT;
-        long likeScore = ranking.likeCount() * LIKE_WEIGHT;
-        long commentScore = ranking.commentCount() * COMMENT_WEIGHT;
-
+    public static ClubMonthlyStatusQuery of(int year, int month, int rank, int lastMonthRank,
+            long feedScore, long viewScore, long likeScore, long commentScore) {
         return ClubMonthlyStatusQuery.builder()
                 .year(year)
                 .month(month)
-                .rank(ranking.rank())
+                .rank(rank)
                 .lastMonthRank(lastMonthRank)
                 .feedScore(feedScore)
                 .viewScore(viewScore)
