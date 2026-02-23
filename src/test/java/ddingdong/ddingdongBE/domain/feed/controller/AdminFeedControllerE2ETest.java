@@ -75,6 +75,7 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B2"));
         given()
                 .contentType(ContentType.JSON)
+                .body(java.util.Map.of("count", 1))
                 .when()
                 .post("/server/feeds/{feedId}/likes", feedB.getId())
                 .then()

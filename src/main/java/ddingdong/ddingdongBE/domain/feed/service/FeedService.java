@@ -20,5 +20,5 @@ public interface FeedService {
 
     void incrementViewCount(Long feedId);
 
-    void incrementLikeCount(Long feedId);
+    void addLikeCount(Long feedId, int count);
 }

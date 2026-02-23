@@ -70,6 +70,7 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
         Feed feed2 = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용 2"));
         given()
                 .contentType(ContentType.JSON)
+                .body(java.util.Map.of("count", 1))
                 .when()
                 .post("/server/feeds/{feedId}/likes", feed1.getId())
                 .then()

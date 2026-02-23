@@ -175,8 +175,8 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "피드"));
 
         // 좋아요 2개
-        feedRepository.incrementLikeCount(feed.getId());
-        feedRepository.incrementLikeCount(feed.getId());
+        feedRepository.addLikeCount(feed.getId(), 1);
+        feedRepository.addLikeCount(feed.getId(), 1);
 
         // 댓글 1개
         feedCommentRepository.save(FeedFixture.createFeedComment(feed, "uuid-3", 1, "댓글"));

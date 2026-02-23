@@ -181,8 +181,8 @@ class FacadeFeedServiceTest extends TestContainerSupport {
                         .sample()
         );
 
-        feedRepository.incrementLikeCount(savedFeed.getId());
-        feedRepository.incrementLikeCount(savedFeed.getId());
+        feedRepository.addLikeCount(savedFeed.getId(), 1);
+        feedRepository.addLikeCount(savedFeed.getId(), 1);
         feedCommentRepository.save(FeedComment.builder().feed(savedFeed).uuid("uuid-3").anonymousNumber(1).content("댓글 1").build());
 
         BDDMockito.given(s3FileService.getUploadedFileUrl(any()))

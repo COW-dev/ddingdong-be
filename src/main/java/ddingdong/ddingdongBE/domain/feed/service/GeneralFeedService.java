@@ -64,8 +64,8 @@ public class GeneralFeedService implements FeedService {
 
     @Override
     @Transactional
-    public void incrementLikeCount(Long feedId) {
-        feedRepository.incrementLikeCount(feedId);
+    public void addLikeCount(Long feedId, int count) {
+        feedRepository.addLikeCount(feedId, count);
     }
 
     private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {

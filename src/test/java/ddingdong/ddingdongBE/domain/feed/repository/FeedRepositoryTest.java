@@ -286,7 +286,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Feed feedA2 = feedRepository.save(FeedFixture.createImageFeed(clubA, "A 피드 2"));
         Feed feedB1 = feedRepository.save(FeedFixture.createImageFeed(clubB, "B 피드 1"));
 
-        feedRepository.incrementLikeCount(feedA1.getId());
+        feedRepository.addLikeCount(feedA1.getId(), 1);
         feedCommentRepository.save(FeedFixture.createFeedComment(feedA1, "uuid-2", 1, "댓글"));
 
         entityManager.flush();
