@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.common.config;
 
 import static org.springframework.http.HttpMethod.DELETE;
 import static org.springframework.http.HttpMethod.GET;
+import static org.springframework.http.HttpMethod.PATCH;
 import static org.springframework.http.HttpMethod.POST;
 
 import ddingdong.ddingdongBE.auth.service.JwtAuthService;
@@ -59,12 +60,14 @@ public class SecurityConfig {
                         .requestMatchers(POST,
                                 API_PREFIX + "/forms/{formId}/applications",
                                 API_PREFIX + "/pair-game/appliers",
-                                API_PREFIX + "/feeds/*/likes",
                                 API_PREFIX + "/feeds/*/comments"
                                 )
                         .permitAll()
+                        .requestMatchers(PATCH,
+                                API_PREFIX + "/feeds/*/likes"
+                                )
+                        .permitAll()
                         .requestMatchers(DELETE,
-                                API_PREFIX + "/feeds/*/likes",
                                 API_PREFIX + "/feeds/*/comments/*"
                                 )
                         .permitAll()

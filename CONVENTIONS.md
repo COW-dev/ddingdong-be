@@ -16,13 +16,13 @@
 | Facade Service 구현체 | `Facade{Role}{Domain}ServiceImpl` | `FacadeClubFeedServiceImpl` |
 | Domain Service 인터페이스 | `{Domain}Service` | `FeedService`, `ClubService` |
 | Domain Service 구현체 | `General{Domain}Service` | `GeneralFeedService`, `GeneralClubService` |
-| Repository | `{Entity}Repository` | `FeedRepository`, `FeedLikeRepository` |
+| Repository | `{Entity}Repository` | `FeedRepository`, `FeedCommentRepository` |
 | Request DTO | `{Action}{Entity}Request` | `CreateFeedRequest`, `UpdateFixZoneRequest` |
 | Response DTO | `{Context}{Entity}Response` | `MyFeedPageResponse`, `CentralMyFixZoneListResponse` |
 | Command DTO | `{Action}{Entity}Command` | `CreateFeedCommand`, `UpdateFormCommand` |
 | Query DTO | `{Entity}{Context}Query` | `FeedPageQuery`, `ClubFeedPageQuery` |
 | Exception (부모) | `{Domain}Exception` | `FeedException`, `FormException` |
-| Exception (구체) | `{Description}Exception` (static inner) | `DuplicatedFeedLikeException`, `FormPeriodException` |
+| Exception (구체) | `{Description}Exception` (static inner) | `FeedNotFoundException`, `FormPeriodException` |
 | Repository Projection | `{QueryPurpose}Dto` (interface) | `MonthlyFeedRankingDto`, `ClubFeedRankingDto` |
 
 ---
@@ -243,16 +243,16 @@ public class FeedException extends CustomException {
     }
 
     // 구체적 예외 — static final inner class
-    public static final class DuplicatedFeedLikeException extends FeedException {
-        private static final String MESSAGE = "이미 좋아요한 피드입니다.";
-        public DuplicatedFeedLikeException() {
-            super(MESSAGE, BAD_REQUEST.value());
+    public static final class FeedNotFoundException extends FeedException {
+        private static final String MESSAGE = "존재하지 않는 피드입니다.";
+        public FeedNotFoundException() {
+            super(MESSAGE, NOT_FOUND.value());
         }
     }
 }
 
 // 사용
-throw new FeedException.DuplicatedFeedLikeException();
+throw new FeedException.FeedNotFoundException();
 ```
 
 | 예외 유형 | 패턴 | HTTP 코드 |
@@ -302,4 +302,4 @@ public void createFeed(CreateFeedRequest request, PrincipalDetails principalDeta
 | Service Impl 네이밍 | Impl 유무 혼재 | **항상 Impl suffix 붙이기** |
 | Exception 메시지 | 상수 vs 인라인 혼재 | **`private static final String MESSAGE`로 상수화** |
 | Boolean 필드 네이밍 | `is` / `has` 혼재 | **엔티티 상태 → `is`, 보유 여부 → `has`** |
-| FeedLike soft delete | unique constraint 충돌 | **FeedLike만 예외적으로 hard delete** |
+| FeedComment hard delete | 댓글 삭제 시 물리 삭제 | **FeedComment만 예외적으로 hard delete** |

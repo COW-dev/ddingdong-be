@@ -9,25 +9,19 @@ import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
-import ddingdong.ddingdongBE.domain.feed.service.FeedLikeCacheService;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
-
-    private static final String VALID_UUID = "550e8400-e29b-41d4-a716-446655440000";
-    private static final String INVALID_UUID = "not-a-valid-uuid";
 
     @LocalServerPort
     private int port;
@@ -38,74 +32,84 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
     @Autowired
     private FeedRepository feedRepository;
 
-    @Autowired
-    private FeedLikeRepository feedLikeRepository;
-
-    @Autowired
-    private FeedLikeCacheService feedLikeCacheService;
-
     private Feed feed;
 
     @BeforeEach
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     void setUp() {
         RestAssured.port = port;
-        feedLikeCacheService.clearAll();
 
         Club club = clubRepository.save(ClubFixture.createClub());
         feed = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용"));
     }
 
-    @DisplayName("비회원이 X-Anonymous-UUID 헤더로 피드 좋아요를 생성한다.")
+    @DisplayName("좋아요 5회를 한 번에 보내면 카운터가 5 증가한다")
     @Test
     void createLike_success() {
         // when & then
         given()
                 .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
+                .body(Map.of("count", 5))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
-                .statusCode(201);
+                .statusCode(204);
 
-        long count = feedLikeRepository.countByFeedId(feed.getId());
-        assertThat(count).isEqualTo(1L);
+        Feed found = feedRepository.findById(feed.getId()).orElseThrow();
+        assertThat(found.getLikeCount()).isEqualTo(5L);
     }
 
-    @DisplayName("유효하지 않은 UUID로 좋아요 요청하면 400을 반환한다.")
+    @DisplayName("같은 피드에 여러 번 요청하면 좋아요가 누적된다")
     @Test
-    void createLike_fail_invalidUuid() {
+    void createLike_accumulates() {
+        // when
+        for (int i = 0; i < 3; i++) {
+            given()
+                    .contentType(ContentType.JSON)
+                    .body(Map.of("count", 10))
+                    .when()
+                    .patch("/server/feeds/{feedId}/likes", feed.getId())
+                    .then()
+                    .statusCode(204);
+        }
+
+        // then
+        Feed found = feedRepository.findById(feed.getId()).orElseThrow();
+        assertThat(found.getLikeCount()).isEqualTo(30L);
+    }
+
+    @DisplayName("좋아요 횟수가 100을 초과하면 400을 반환한다")
+    @Test
+    void createLike_exceedsMaxCount() {
         given()
                 .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", INVALID_UUID)
+                .body(Map.of("count", 101))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
                 .statusCode(400);
     }
 
-    @DisplayName("비회원이 X-Anonymous-UUID 헤더로 피드 좋아요를 취소한다.")
+    @DisplayName("좋아요 횟수가 0 이하이면 400을 반환한다")
     @Test
-    void deleteLike_success() {
-        // given: 좋아요 생성
+    void createLike_zeroCount() {
         given()
                 .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
+                .body(Map.of("count", 0))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
-                .statusCode(201);
+                .statusCode(400);
+    }
 
-        // when & then
+    @DisplayName("존재하지 않는 피드에 좋아요하면 404를 반환한다")
+    @Test
+    void createLike_nonExistentFeed() {
         given()
                 .contentType(ContentType.JSON)
-                .header("X-Anonymous-UUID", VALID_UUID)
+                .body(Map.of("count", 1))
                 .when()
-                .delete("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", 999999L)
                 .then()
-                .statusCode(204);
-
-        long count = feedLikeRepository.countByFeedId(feed.getId());
-        assertThat(count).isEqualTo(0L);
+                .statusCode(404);
     }
 }
