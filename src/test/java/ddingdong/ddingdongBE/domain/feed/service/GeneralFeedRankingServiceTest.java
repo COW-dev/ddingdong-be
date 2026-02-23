@@ -17,12 +17,15 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 @SpringBootTest
 class GeneralFeedRankingServiceTest extends TestContainerSupport {
@@ -44,6 +47,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
 
     @DisplayName("동아리별 피드 랭킹 조회 - 성공: 점수 높은 순서로 정렬된다")
     @Test
@@ -197,7 +203,7 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 있으면 내 동아리 통계와 rank가 반환된다")
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 있으면 가중치 점수와 rank가 반환된다")
     @Test
     void getClubMonthlyStatus_withFeeds() {
         // given
@@ -213,17 +219,21 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
 
         // then
-        // score = feedCount(2)*10 = 20
+        // feedScore = feedCount(2)*10 = 20, viewScore = 0, likeScore = 0, commentScore = 0
         assertSoftly(softly -> {
             softly.assertThat(result.year()).isEqualTo(year);
             softly.assertThat(result.month()).isEqualTo(month);
             softly.assertThat(result.rank()).isEqualTo(1);
-            softly.assertThat(result.feedCount()).isEqualTo(2L);
-            softly.assertThat(result.score()).isEqualTo(20L);
+            softly.assertThat(result.feedScore()).isEqualTo(20L);
+            softly.assertThat(result.viewScore()).isEqualTo(0L);
+            softly.assertThat(result.likeScore()).isEqualTo(0L);
+            softly.assertThat(result.commentScore()).isEqualTo(0L);
+            softly.assertThat(result.totalScore()).isEqualTo(20L);
+            softly.assertThat(result.lastMonthRank()).isEqualTo(0);
         });
     }
 
-    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 없으면 모든 값 0, rank=0으로 반환된다")
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 피드가 없으면 모든 값 0으로 반환된다")
     @Test
     void getClubMonthlyStatus_noFeeds() {
         // given
@@ -238,11 +248,12 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
             softly.assertThat(result.year()).isEqualTo(2000);
             softly.assertThat(result.month()).isEqualTo(1);
             softly.assertThat(result.rank()).isEqualTo(0);
-            softly.assertThat(result.feedCount()).isEqualTo(0L);
-            softly.assertThat(result.viewCount()).isEqualTo(0L);
-            softly.assertThat(result.likeCount()).isEqualTo(0L);
-            softly.assertThat(result.commentCount()).isEqualTo(0L);
-            softly.assertThat(result.score()).isEqualTo(0L);
+            softly.assertThat(result.lastMonthRank()).isEqualTo(0);
+            softly.assertThat(result.feedScore()).isEqualTo(0L);
+            softly.assertThat(result.viewScore()).isEqualTo(0L);
+            softly.assertThat(result.likeScore()).isEqualTo(0L);
+            softly.assertThat(result.commentScore()).isEqualTo(0L);
+            softly.assertThat(result.totalScore()).isEqualTo(0L);
         });
     }
 
@@ -265,11 +276,90 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         // when — 동아리B 회장이 조회
         ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(userB.getId(), year, month);
 
-        // then — 동아리A(score=20) > 동아리B(score=10), 동아리B는 rank=2
+        // then — 동아리A(totalScore=20) > 동아리B(totalScore=10), 동아리B는 rank=2
         assertSoftly(softly -> {
             softly.assertThat(result.rank()).isEqualTo(2);
-            softly.assertThat(result.feedCount()).isEqualTo(1L);
-            softly.assertThat(result.score()).isEqualTo(10L);
+            softly.assertThat(result.feedScore()).isEqualTo(10L);
+            softly.assertThat(result.totalScore()).isEqualTo(10L);
+        });
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달에 피드가 있으면 lastMonthRank가 반환된다")
+    @Test
+    void getClubMonthlyStatus_withLastMonthRank() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        Club club = clubRepository.save(ClubFixture.createClub(user));
+
+        // 저번 달 피드 생성
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
+        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
+                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+
+        // 이번 달 피드 생성
+        feedRepository.save(FeedFixture.createImageFeed(club, "이번달 피드"));
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        // when
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
+
+        // then — 저번 달에도 피드가 있으므로 lastMonthRank > 0
+        assertSoftly(softly -> {
+            softly.assertThat(result.rank()).isEqualTo(1);
+            softly.assertThat(result.lastMonthRank()).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달에 피드가 없으면 lastMonthRank는 0이다")
+    @Test
+    void getClubMonthlyStatus_noLastMonthFeeds() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        clubRepository.save(ClubFixture.createClub(user));
+
+        // 이번 달 피드만 생성 (저번 달 피드 없음)
+        feedRepository.save(FeedFixture.createImageFeed(
+                clubRepository.findAll().get(0), "이번달 피드"));
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        // when
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
+
+        // then — 저번 달 피드가 없으므로 lastMonthRank = 0
+        assertThat(result.lastMonthRank()).isEqualTo(0);
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 1월 조회 시 전년도 12월 순위가 반환된다")
+    @Test
+    void getClubMonthlyStatus_januaryLooksAtDecember() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        Club club = clubRepository.save(ClubFixture.createClub(user));
+
+        // 전년도 12월 피드 생성
+        int currentYear = LocalDate.now().getYear();
+        Feed decemberFeed = feedRepository.save(FeedFixture.createImageFeed(club, "12월 피드"));
+        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
+                Timestamp.valueOf(LocalDateTime.of(currentYear - 1, 12, 15, 10, 0)), decemberFeed.getId());
+
+        // 1월 피드 생성
+        Feed januaryFeed = feedRepository.save(FeedFixture.createImageFeed(club, "1월 피드"));
+        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
+                Timestamp.valueOf(LocalDateTime.of(currentYear, 1, 15, 10, 0)), januaryFeed.getId());
+
+        // when — 1월 조회
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(
+                user.getId(), currentYear, 1);
+
+        // then — 전년도 12월 순위가 lastMonthRank로 반환된다
+        assertSoftly(softly -> {
+            softly.assertThat(result.rank()).isEqualTo(1);
+            softly.assertThat(result.lastMonthRank()).isEqualTo(1);
         });
     }
 }
