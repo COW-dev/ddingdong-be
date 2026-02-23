@@ -11,10 +11,8 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
-import ddingdong.ddingdongBE.domain.feed.entity.FeedLike;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -52,9 +50,6 @@ class FacadeFeedServiceTest extends TestContainerSupport {
 
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
-
-    @Autowired
-    private FeedLikeRepository feedLikeRepository;
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
@@ -103,6 +98,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .set("activityContent", "카우 활동내역")
                 .set("feedType", FeedType.IMAGE)
+                .set("likeCount", 0L)
                 .set("createdAt", now)
                 .sample();
         Feed savedFeed = feedRepository.save(feed);
@@ -170,6 +166,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .set("activityContent", "활동 내역")
                 .set("feedType", FeedType.IMAGE)
+                .set("likeCount", 0L)
                 .set("createdAt", LocalDateTime.now())
                 .sample();
         Feed savedFeed = feedRepository.save(feed);
@@ -184,8 +181,8 @@ class FacadeFeedServiceTest extends TestContainerSupport {
                         .sample()
         );
 
-        feedLikeRepository.save(FeedLike.builder().feed(savedFeed).uuid("uuid-1").build());
-        feedLikeRepository.save(FeedLike.builder().feed(savedFeed).uuid("uuid-2").build());
+        feedRepository.incrementLikeCount(savedFeed.getId());
+        feedRepository.incrementLikeCount(savedFeed.getId());
         feedCommentRepository.save(FeedComment.builder().feed(savedFeed).uuid("uuid-3").anonymousNumber(1).content("댓글 1").build());
 
         BDDMockito.given(s3FileService.getUploadedFileUrl(any()))

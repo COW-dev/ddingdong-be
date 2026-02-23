@@ -13,7 +13,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -46,9 +45,6 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
     private FeedRepository feedRepository;
 
     @Autowired
-    private FeedLikeRepository feedLikeRepository;
-
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     private String adminToken;
@@ -77,7 +73,12 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         // 동아리B: 피드 2개 + 좋아요 1개 → score = 2*10 + 1*3 = 23
         Feed feedB = feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B1"));
         feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B2"));
-        feedLikeRepository.save(FeedFixture.createFeedLike(feedB, "uuid-1"));
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/server/feeds/{feedId}/likes", feedB.getId())
+                .then()
+                .statusCode(204);
 
         int year = java.time.LocalDate.now().getYear();
         int month = java.time.LocalDate.now().getMonthValue();

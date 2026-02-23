@@ -69,23 +69,22 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     @Query(value = "UPDATE feed SET view_count = view_count + 1 WHERE id = :feedId", nativeQuery = true)
     void incrementViewCount(@Param("feedId") Long feedId);
 
+    @Modifying(clearAutomatically = true)
+    @Query(value = "UPDATE feed SET like_count = like_count + 1 WHERE id = :feedId", nativeQuery = true)
+    void incrementLikeCount(@Param("feedId") Long feedId);
+
     @Query(value = """
             SELECT c.id AS clubId,
                    c.name AS clubName,
                    COUNT(f.id) AS feedCount,
                    COALESCE(SUM(f.view_count), 0) AS viewCount,
-                   COALESCE(SUM(sub_like.like_cnt), 0) AS likeCount,
+                   COALESCE(SUM(f.like_count), 0) AS likeCount,
                    COALESCE(SUM(sub_comment.comment_cnt), 0) AS commentCount
               FROM club c
               LEFT JOIN feed f ON f.club_id = c.id
                               AND f.deleted_at IS NULL
                               AND YEAR(f.created_at) = :year
                               AND MONTH(f.created_at) = :month
-              LEFT JOIN (
-                  SELECT fl.feed_id, COUNT(*) AS like_cnt
-                    FROM feed_like fl
-                   GROUP BY fl.feed_id
-              ) sub_like ON sub_like.feed_id = f.id
               LEFT JOIN (
                   SELECT fc.feed_id, COUNT(*) AS comment_cnt
                     FROM feed_comment fc

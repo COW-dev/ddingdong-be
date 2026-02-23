@@ -64,7 +64,6 @@ public class SecurityConfig {
                                 )
                         .permitAll()
                         .requestMatchers(DELETE,
-                                API_PREFIX + "/feeds/*/likes",
                                 API_PREFIX + "/feeds/*/comments/*"
                                 )
                         .permitAll()

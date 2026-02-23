@@ -13,7 +13,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -45,9 +44,6 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
     private FeedRepository feedRepository;
 
     @Autowired
-    private FeedLikeRepository feedLikeRepository;
-
-    @Autowired
     private FeedCommentRepository feedCommentRepository;
 
     @Autowired
@@ -72,7 +68,12 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
 
         Feed feed1 = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용 1"));
         Feed feed2 = feedRepository.save(FeedFixture.createImageFeed(club, "활동 내용 2"));
-        feedLikeRepository.save(FeedFixture.createFeedLike(feed1, "uuid-1"));
+        given()
+                .contentType(ContentType.JSON)
+                .when()
+                .post("/server/feeds/{feedId}/likes", feed1.getId())
+                .then()
+                .statusCode(204);
         feedCommentRepository.save(FeedFixture.createFeedComment(feed2, "uuid-2", 1, "댓글"));
 
         String token = signIn("club123", "1234");

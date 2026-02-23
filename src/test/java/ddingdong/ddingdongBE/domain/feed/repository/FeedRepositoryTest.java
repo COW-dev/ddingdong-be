@@ -39,9 +39,6 @@ class FeedRepositoryTest extends DataJpaTestSupport {
     private VodProcessingJobRepository vodProcessingJobRepository;
 
     @Autowired
-    private FeedLikeRepository feedLikeRepository;
-
-    @Autowired
     private FeedCommentRepository feedCommentRepository;
 
     @PersistenceContext
@@ -289,7 +286,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         Feed feedA2 = feedRepository.save(FeedFixture.createImageFeed(clubA, "A 피드 2"));
         Feed feedB1 = feedRepository.save(FeedFixture.createImageFeed(clubB, "B 피드 1"));
 
-        feedLikeRepository.save(FeedFixture.createFeedLike(feedA1, "uuid-1"));
+        feedRepository.incrementLikeCount(feedA1.getId());
         feedCommentRepository.save(FeedFixture.createFeedComment(feedA1, "uuid-2", 1, "댓글"));
 
         entityManager.flush();

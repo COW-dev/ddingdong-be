@@ -11,7 +11,6 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
@@ -38,9 +37,6 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private FeedRepository feedRepository;
-
-    @Autowired
-    private FeedLikeRepository feedLikeRepository;
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
@@ -179,8 +175,8 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         Feed feed = feedRepository.save(FeedFixture.createImageFeed(club, "피드"));
 
         // 좋아요 2개
-        feedLikeRepository.save(FeedFixture.createFeedLike(feed, "uuid-1"));
-        feedLikeRepository.save(FeedFixture.createFeedLike(feed, "uuid-2"));
+        feedRepository.incrementLikeCount(feed.getId());
+        feedRepository.incrementLikeCount(feed.getId());
 
         // 댓글 1개
         feedCommentRepository.save(FeedFixture.createFeedComment(feed, "uuid-3", 1, "댓글"));
