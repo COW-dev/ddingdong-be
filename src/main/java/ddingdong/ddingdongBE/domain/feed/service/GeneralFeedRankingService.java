@@ -82,20 +82,20 @@ public class GeneralFeedRankingService implements FeedRankingService {
                 .orElse(0);
     }
 
-    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, MonthlyFeedRankingDto dto) {
-        long feedScore = dto.getFeedCount() * FEED_WEIGHT;
-        long viewScore = dto.getViewCount() * VIEW_WEIGHT;
-        long likeScore = dto.getLikeCount() * LIKE_WEIGHT;
-        long commentScore = dto.getCommentCount() * COMMENT_WEIGHT;
+    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, MonthlyFeedRankingDto rawRanking) {
+        long feedScore = rawRanking.getFeedCount() * FEED_WEIGHT;
+        long viewScore = rawRanking.getViewCount() * VIEW_WEIGHT;
+        long likeScore = rawRanking.getLikeCount() * LIKE_WEIGHT;
+        long commentScore = rawRanking.getCommentCount() * COMMENT_WEIGHT;
         long totalScore = feedScore + viewScore + likeScore + commentScore;
-        return ClubFeedRankingQuery.of(rank, dto.getClubId(), dto.getClubName(),
+        return ClubFeedRankingQuery.of(rank, rawRanking.getClubId(), rawRanking.getClubName(),
                 feedScore, viewScore, likeScore, commentScore, totalScore);
     }
 
-    private long calculateScore(MonthlyFeedRankingDto dto) {
-        return dto.getFeedCount() * FEED_WEIGHT
-                + dto.getViewCount() * VIEW_WEIGHT
-                + dto.getLikeCount() * LIKE_WEIGHT
-                + dto.getCommentCount() * COMMENT_WEIGHT;
+    private long calculateScore(MonthlyFeedRankingDto rawRanking) {
+        return rawRanking.getFeedCount() * FEED_WEIGHT
+                + rawRanking.getViewCount() * VIEW_WEIGHT
+                + rawRanking.getLikeCount() * LIKE_WEIGHT
+                + rawRanking.getCommentCount() * COMMENT_WEIGHT;
     }
 }

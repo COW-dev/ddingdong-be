@@ -17,6 +17,7 @@
 - 완전히 실행 가능한 코드만 제공한다 (의사코드 금지)
 - `@Valid`, `@NotNull` 등 DTO 검증 어노테이션 적용
 - secrets/환경변수 하드코딩 절대 금지
+- **변수명은 의미를 알 수 있도록 작성한다** — `dto`, `r`, `p` 같은 축약 금지, 역할이 드러나는 이름 사용 (예: `dto` → `rawRanking`, `r` → `ranking`)
 
 ### 새 기능 추가 시 필수 순서
 1. (DB 변경 시) `resources/db/migration/`에 Flyway 마이그레이션 파일 추가
