@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.feed.repository;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
-import ddingdong.ddingdongBE.common.config.JpaAuditingConfig;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.fixture.VodProcessingJobFixture;
@@ -23,10 +22,8 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Slice;
 
-@Import(JpaAuditingConfig.class)
 class FeedRepositoryTest extends DataJpaTestSupport {
 
     @Autowired
