@@ -1,10 +1,13 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
+import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedRankingWinnerQuery;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -26,6 +29,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
 
     private final FeedMonthlyRankingRepository feedMonthlyRankingRepository;
     private final FeedRepository feedRepository;
+    private final ClubService clubService;
 
     @Override
     public List<FeedRankingWinnerQuery> getMonthlyWinners(int year) {
@@ -58,6 +62,19 @@ public class GeneralFeedRankingService implements FeedRankingService {
         }
 
         return result;
+    }
+
+    @Override
+    public ClubMonthlyStatusQuery getClubMonthlyStatus(Long userId, int year, int month) {
+        Club club = clubService.getByUserId(userId);
+        List<ClubFeedRankingQuery> rankings = getClubFeedRanking(year, month);
+
+        return rankings.stream()
+                .filter(rankingQuery -> rankingQuery.clubId().equals(club.getId()))
+                .findFirst()
+                .filter(rankingQuery -> rankingQuery.score() > 0)
+                .map(rankingQuery -> ClubMonthlyStatusQuery.from(year, month, rankingQuery))
+                .orElse(ClubMonthlyStatusQuery.createEmpty(year, month));
     }
 
     private long calculateScore(MonthlyFeedRankingDto dto) {
