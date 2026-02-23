@@ -77,7 +77,7 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
                 .contentType(ContentType.JSON)
                 .body(java.util.Map.of("count", 1))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feedB.getId())
+                .patch("/server/feeds/{feedId}/likes", feedB.getId())
                 .then()
                 .statusCode(204);
 

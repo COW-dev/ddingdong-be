@@ -72,7 +72,7 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
                 .contentType(ContentType.JSON)
                 .body(java.util.Map.of("count", 1))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed1.getId())
+                .patch("/server/feeds/{feedId}/likes", feed1.getId())
                 .then()
                 .statusCode(204);
         feedCommentRepository.save(FeedFixture.createFeedComment(feed2, "uuid-2", 1, "댓글"));

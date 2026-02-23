@@ -14,6 +14,7 @@ public class FeedLikeController implements FeedLikeApi {
 
     @Override
     public void createLike(Long feedId, CreateFeedLikeRequest request) {
+        feedService.getById(feedId);
         feedService.addLikeCount(feedId, request.count());
     }
 }

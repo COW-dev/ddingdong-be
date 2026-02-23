@@ -50,7 +50,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .contentType(ContentType.JSON)
                 .body(Map.of("count", 5))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
                 .statusCode(204);
 
@@ -67,7 +67,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                     .contentType(ContentType.JSON)
                     .body(Map.of("count", 10))
                     .when()
-                    .post("/server/feeds/{feedId}/likes", feed.getId())
+                    .patch("/server/feeds/{feedId}/likes", feed.getId())
                     .then()
                     .statusCode(204);
         }
@@ -84,7 +84,7 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .contentType(ContentType.JSON)
                 .body(Map.of("count", 101))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
                 .statusCode(400);
     }
@@ -96,20 +96,20 @@ class FeedLikeControllerE2ETest extends NonTxTestContainerSupport {
                 .contentType(ContentType.JSON)
                 .body(Map.of("count", 0))
                 .when()
-                .post("/server/feeds/{feedId}/likes", feed.getId())
+                .patch("/server/feeds/{feedId}/likes", feed.getId())
                 .then()
                 .statusCode(400);
     }
 
-    @DisplayName("존재하지 않는 피드에 좋아요하면 좋아요가 생성되지 않는다")
+    @DisplayName("존재하지 않는 피드에 좋아요하면 404를 반환한다")
     @Test
     void createLike_nonExistentFeed() {
         given()
                 .contentType(ContentType.JSON)
                 .body(Map.of("count", 1))
                 .when()
-                .post("/server/feeds/{feedId}/likes", 999999L)
+                .patch("/server/feeds/{feedId}/likes", 999999L)
                 .then()
-                .statusCode(204);
+                .statusCode(404);
     }
 }
