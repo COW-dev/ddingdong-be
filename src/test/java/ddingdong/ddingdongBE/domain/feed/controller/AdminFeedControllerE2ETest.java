@@ -7,16 +7,13 @@ import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.auth.controller.dto.response.SignInResponse;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
-import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
-import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -43,9 +40,6 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
     private UserRepository userRepository;
 
     @Autowired
-    private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
-
-    @Autowired
     private ClubRepository clubRepository;
 
     @Autowired
@@ -67,35 +61,7 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         User admin = userRepository.save(
                 UserFixture.createAdminUser(passwordEncoder.encode("1234")));
 
-        feedMonthlyRankingRepository.saveAll(List.of(
-                FeedMonthlyRankingFixture.createWinner(1L, "1월 우승 동아리", 2025, 1),
-                FeedMonthlyRankingFixture.createWinner(2L, "2월 우승 동아리", 2025, 2),
-                FeedMonthlyRankingFixture.createWinner(3L, "3월 우승 동아리", 2025, 3)
-        ));
-
         adminToken = getAuthToken(admin.getAuthId(), "1234");
-    }
-
-    @DisplayName("총동연 월별 1위 동아리 목록 조회 API - 성공")
-    @Test
-    void getMonthlyWinners_success() {
-        List<AdminFeedRankingWinnerResponse> response = given()
-                .contentType(ContentType.JSON)
-                .header("Authorization", "Bearer " + adminToken)
-                .queryParam("year", 2025)
-                .when()
-                .get("/server/admin/feeds/ranking/last")
-                .then()
-                .statusCode(200)
-                .extract()
-                .jsonPath()
-                .getList(".", AdminFeedRankingWinnerResponse.class);
-
-        assertThat(response).hasSize(3);
-        assertThat(response.get(0).clubName()).isEqualTo("1월 우승 동아리");
-        assertThat(response.get(0).targetMonth()).isEqualTo(1);
-        assertThat(response.get(2).clubName()).isEqualTo("3월 우승 동아리");
-        assertThat(response.get(2).targetMonth()).isEqualTo(3);
     }
 
     @DisplayName("총동연 피드 랭킹 조회 API - 성공: 점수 순으로 랭킹이 반환된다")
