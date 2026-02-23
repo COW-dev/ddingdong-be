@@ -12,6 +12,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.vodprocessing.repository.VodProcessingJobRepository;
@@ -351,6 +352,70 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getFeedCount()).isEqualTo(1);
+    }
+
+    @DisplayName("findMyFeedStat으로 클럽의 피드 집계를 조회한다")
+    @Test
+    void findMyFeedStat_ReturnsCorrectStats() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        Feed imageFeed1 = feedRepository.save(FeedFixture.createImageFeed(club, "이미지 1"));
+        Feed imageFeed2 = feedRepository.save(FeedFixture.createImageFeed(club, "이미지 2"));
+        Feed videoFeed = feedRepository.save(FeedFixture.createVideoFeed(club, "비디오 1"));
+
+        feedRepository.incrementViewCount(imageFeed1.getId());
+        feedRepository.incrementViewCount(imageFeed1.getId());
+        feedRepository.incrementViewCount(videoFeed.getId());
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        MyFeedStatDto stat = feedRepository.findMyFeedStat(club.getId());
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(stat.getFeedCount()).isEqualTo(3);
+            softly.assertThat(stat.getTotalViewCount()).isEqualTo(3);
+            softly.assertThat(stat.getImageCount()).isEqualTo(2);
+            softly.assertThat(stat.getVideoCount()).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("findMyFeedStat에서 삭제된 피드는 제외된다")
+    @Test
+    void findMyFeedStat_ExcludesDeletedFeeds() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+        feedRepository.save(FeedFixture.createImageFeed(club, "활성 피드"));
+        Feed deletedFeed = feedRepository.save(FeedFixture.createImageFeed(club, "삭제 피드"));
+
+        feedRepository.delete(deletedFeed);
+        entityManager.flush();
+        entityManager.clear();
+
+        // when
+        MyFeedStatDto stat = feedRepository.findMyFeedStat(club.getId());
+
+        // then
+        assertThat(stat.getFeedCount()).isEqualTo(1);
+    }
+
+    @DisplayName("findMyFeedStat에서 피드가 없으면 모든 집계가 0이다")
+    @Test
+    void findMyFeedStat_ReturnsZerosWhenNoFeeds() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub());
+
+        // when
+        MyFeedStatDto stat = feedRepository.findMyFeedStat(club.getId());
+
+        // then
+        assertSoftly(softly -> {
+            softly.assertThat(stat.getFeedCount()).isEqualTo(0);
+            softly.assertThat(stat.getTotalViewCount()).isEqualTo(0);
+            softly.assertThat(stat.getImageCount()).isEqualTo(0);
+            softly.assertThat(stat.getVideoCount()).isEqualTo(0);
+        });
     }
 
     @DisplayName("findMonthlyRankingByClub에서 다른 월 피드는 제외된다")

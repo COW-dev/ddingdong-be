@@ -103,8 +103,8 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
     @Query(value = """
             SELECT COUNT(f.id) AS feedCount,
                    COALESCE(SUM(f.view_count), 0) AS totalViewCount,
-                   SUM(CASE WHEN f.feed_type = 'IMAGE' THEN 1 ELSE 0 END) AS imageCount,
-                   SUM(CASE WHEN f.feed_type = 'VIDEO' THEN 1 ELSE 0 END) AS videoCount
+                   COALESCE(SUM(CASE WHEN f.feed_type = 'IMAGE' THEN 1 ELSE 0 END), 0) AS imageCount,
+                   COALESCE(SUM(CASE WHEN f.feed_type = 'VIDEO' THEN 1 ELSE 0 END), 0) AS videoCount
             FROM feed f
             WHERE f.deleted_at IS NULL
               AND f.club_id = :clubId
