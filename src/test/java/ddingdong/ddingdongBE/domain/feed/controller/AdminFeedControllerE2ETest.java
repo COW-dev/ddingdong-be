@@ -97,10 +97,21 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
                 .getList(".", AdminClubFeedRankingResponse.class);
 
         assertThat(response).hasSize(2);
-        assertThat(response.get(0).clubName()).isEqualTo("동아리B");
-        assertThat(response.get(0).rank()).isEqualTo(1);
-        assertThat(response.get(1).clubName()).isEqualTo("동아리A");
-        assertThat(response.get(1).rank()).isEqualTo(2);
+
+        AdminClubFeedRankingResponse first = response.get(0);
+        assertThat(first.clubName()).isEqualTo("동아리B");
+        assertThat(first.rank()).isEqualTo(1);
+        assertThat(first.feedScore()).isEqualTo(2 * 10);
+        assertThat(first.viewScore()).isEqualTo(0);
+        assertThat(first.likeScore()).isEqualTo(1 * 3);
+        assertThat(first.commentScore()).isEqualTo(0);
+        assertThat(first.totalScore()).isEqualTo(23);
+
+        AdminClubFeedRankingResponse second = response.get(1);
+        assertThat(second.clubName()).isEqualTo("동아리A");
+        assertThat(second.rank()).isEqualTo(2);
+        assertThat(second.feedScore()).isEqualTo(1 * 10);
+        assertThat(second.totalScore()).isEqualTo(10);
     }
 
     @DisplayName("총동연 피드 랭킹 조회 API - 성공: 데이터 없으면 빈 리스트 반환")
