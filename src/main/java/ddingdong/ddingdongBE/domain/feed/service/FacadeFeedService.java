@@ -2,7 +2,6 @@ package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
-import ddingdong.ddingdongBE.domain.feed.repository.FeedLikeRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedCountDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
@@ -12,7 +11,6 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -28,9 +26,7 @@ public class FacadeFeedService {
 
     private final FeedService feedService;
     private final FeedFileService feedFileService;
-    private final FeedLikeService feedLikeService;
     private final FeedCommentService feedCommentService;
-    private final FeedLikeRepository feedLikeRepository;
     private final FeedCommentRepository feedCommentRepository;
 
     public ClubFeedPageQuery getFeedPageByClub(Long clubId, int size, Long currentCursorId) {
@@ -63,7 +59,7 @@ public class FacadeFeedService {
         Feed feed = feedService.getById(feedId);
         ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
         FeedFileInfoQuery feedFileInfoQuery = feedFileService.extractFeedFileInfo(feed);
-        long likeCount = feedLikeService.countByFeedId(feedId);
+        long likeCount = feed.getLikeCount();
         long commentCount = feedCommentService.countByFeedId(feedId);
         List<FeedCommentQuery> comments = feedCommentService.getAllByFeedId(feedId);
         return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery, likeCount, commentCount, comments);
@@ -79,8 +75,8 @@ public class FacadeFeedService {
             return feedListQueries;
         }
 
-        Map<Long, Long> likeCountMap = feedLikeRepository.countsByFeedIds(feedIds).stream()
-                .collect(Collectors.toMap(FeedCountDto::getFeedId, FeedCountDto::getCnt));
+        Map<Long, Long> likeCountMap = feeds.stream()
+                .collect(Collectors.toMap(Feed::getId, Feed::getLikeCount));
         Map<Long, Long> commentCountMap = feedCommentRepository.countsByFeedIds(feedIds).stream()
                 .collect(Collectors.toMap(FeedCountDto::getFeedId, FeedCountDto::getCnt));
 

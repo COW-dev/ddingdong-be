@@ -62,6 +62,12 @@ public class GeneralFeedService implements FeedService {
         feedRepository.incrementViewCount(feedId);
     }
 
+    @Override
+    @Transactional
+    public void addLikeCount(Long feedId, int count) {
+        feedRepository.addLikeCount(feedId, count);
+    }
+
     private Slice<Feed> buildSlice(Slice<Feed> originalSlice, int size) {
         List<Feed> content = new ArrayList<>(originalSlice.getContent());
         if (content.isEmpty()) {

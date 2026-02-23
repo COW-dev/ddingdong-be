@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.common.fixture;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
-import ddingdong.ddingdongBE.domain.feed.entity.FeedLike;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
 
 public class FeedFixture {
@@ -29,13 +28,6 @@ public class FeedFixture {
                 .club(club)
                 .feedType(feedType)
                 .activityContent(content)
-                .build();
-    }
-
-    public static FeedLike createFeedLike(Feed feed, String uuid) {
-        return FeedLike.builder()
-                .feed(feed)
-                .uuid(uuid)
                 .build();
     }
 
