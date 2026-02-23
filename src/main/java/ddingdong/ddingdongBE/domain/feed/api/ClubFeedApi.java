@@ -72,7 +72,7 @@ public interface ClubFeedApi {
     );
 
     @Operation(summary = "동아리 이달의 현황 조회 API")
-    @ApiResponse(responseCode = "200", description = "동아리 이달의 현황 조회 성공",
+    @ApiResponse(responseCode = "200", description = "동아리 이달의 현황 조회 성공 - 가중치 점수(feedScore/viewScore/likeScore/commentScore/totalScore)와 저번 달 순위(lastMonthRank) 반환",
         content = @Content(schema = @Schema(implementation = ClubMonthlyStatusResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")

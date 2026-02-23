@@ -53,13 +53,27 @@ public class GeneralFeedRankingService implements FeedRankingService {
     public ClubMonthlyStatusQuery getClubMonthlyStatus(Long userId, int year, int month) {
         Club club = clubService.getByUserId(userId);
         List<ClubFeedRankingQuery> rankings = getClubFeedRanking(year, month);
+        int lastMonthRank = getLastMonthRank(club.getId(), year, month);
 
         return rankings.stream()
                 .filter(rankingQuery -> rankingQuery.clubId().equals(club.getId()))
                 .findFirst()
                 .filter(rankingQuery -> rankingQuery.score() > 0)
-                .map(rankingQuery -> ClubMonthlyStatusQuery.from(year, month, rankingQuery))
+                .map(rankingQuery -> ClubMonthlyStatusQuery.from(year, month, rankingQuery, lastMonthRank))
                 .orElse(ClubMonthlyStatusQuery.createEmpty(year, month));
+    }
+
+    private int getLastMonthRank(Long clubId, int year, int month) {
+        int lastYear = month == 1 ? year - 1 : year;
+        int lastMonth = month == 1 ? 12 : month - 1;
+
+        List<ClubFeedRankingQuery> lastMonthRankings = getClubFeedRanking(lastYear, lastMonth);
+        return lastMonthRankings.stream()
+                .filter(ranking -> ranking.clubId().equals(clubId))
+                .filter(ranking -> ranking.score() > 0)
+                .findFirst()
+                .map(ClubFeedRankingQuery::rank)
+                .orElse(0);
     }
 
     private long calculateScore(MonthlyFeedRankingDto dto) {

@@ -7,23 +7,36 @@ public record ClubMonthlyStatusQuery(
         int year,
         int month,
         int rank,
-        long feedCount,
-        long viewCount,
-        long likeCount,
-        long commentCount,
-        long score
+        int lastMonthRank,
+        long feedScore,
+        long viewScore,
+        long likeScore,
+        long commentScore,
+        long totalScore
 ) {
 
-    public static ClubMonthlyStatusQuery from(int year, int month, ClubFeedRankingQuery ranking) {
+    private static final int FEED_WEIGHT = 10;
+    private static final int VIEW_WEIGHT = 1;
+    private static final int LIKE_WEIGHT = 3;
+    private static final int COMMENT_WEIGHT = 5;
+
+    public static ClubMonthlyStatusQuery from(int year, int month, ClubFeedRankingQuery ranking,
+            int lastMonthRank) {
+        long feedScore = ranking.feedCount() * FEED_WEIGHT;
+        long viewScore = ranking.viewCount() * VIEW_WEIGHT;
+        long likeScore = ranking.likeCount() * LIKE_WEIGHT;
+        long commentScore = ranking.commentCount() * COMMENT_WEIGHT;
+
         return ClubMonthlyStatusQuery.builder()
                 .year(year)
                 .month(month)
                 .rank(ranking.rank())
-                .feedCount(ranking.feedCount())
-                .viewCount(ranking.viewCount())
-                .likeCount(ranking.likeCount())
-                .commentCount(ranking.commentCount())
-                .score(ranking.score())
+                .lastMonthRank(lastMonthRank)
+                .feedScore(feedScore)
+                .viewScore(viewScore)
+                .likeScore(likeScore)
+                .commentScore(commentScore)
+                .totalScore(feedScore + viewScore + likeScore + commentScore)
                 .build();
     }
 
@@ -32,11 +45,12 @@ public record ClubMonthlyStatusQuery(
                 .year(year)
                 .month(month)
                 .rank(0)
-                .feedCount(0)
-                .viewCount(0)
-                .likeCount(0)
-                .commentCount(0)
-                .score(0)
+                .lastMonthRank(0)
+                .feedScore(0)
+                .viewScore(0)
+                .likeScore(0)
+                .commentScore(0)
+                .totalScore(0)
                 .build();
     }
 }
