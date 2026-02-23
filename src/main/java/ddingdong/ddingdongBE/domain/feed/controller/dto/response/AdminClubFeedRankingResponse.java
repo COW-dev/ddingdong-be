@@ -7,26 +7,24 @@ import lombok.Builder;
 @Builder
 public record AdminClubFeedRankingResponse(
         int rank,
-        Long clubId,
         String clubName,
-        long feedCount,
-        long viewCount,
-        long likeCount,
-        long commentCount,
-        long score
+        long feedScore,
+        long viewScore,
+        long likeScore,
+        long commentScore,
+        long totalScore
 ) {
 
     public static List<AdminClubFeedRankingResponse> from(List<ClubFeedRankingQuery> queries) {
         return queries.stream()
                 .map(query -> AdminClubFeedRankingResponse.builder()
                         .rank(query.rank())
-                        .clubId(query.clubId())
                         .clubName(query.clubName())
-                        .feedCount(query.feedCount())
-                        .viewCount(query.viewCount())
-                        .likeCount(query.likeCount())
-                        .commentCount(query.commentCount())
-                        .score(query.score())
+                        .feedScore(query.feedScore())
+                        .viewScore(query.viewScore())
+                        .likeScore(query.likeScore())
+                        .commentScore(query.commentScore())
+                        .totalScore(query.totalScore())
                         .build())
                 .toList();
     }

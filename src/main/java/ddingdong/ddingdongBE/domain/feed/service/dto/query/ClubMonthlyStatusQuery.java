@@ -7,36 +7,40 @@ public record ClubMonthlyStatusQuery(
         int year,
         int month,
         int rank,
-        long feedCount,
-        long viewCount,
-        long likeCount,
-        long commentCount,
-        long score
+        int lastMonthRank,
+        long feedScore,
+        long viewScore,
+        long likeScore,
+        long commentScore,
+        long totalScore
 ) {
 
-    public static ClubMonthlyStatusQuery from(int year, int month, ClubFeedRankingQuery ranking) {
+    public static ClubMonthlyStatusQuery of(int year, int month, int rank, int lastMonthRank,
+            long feedScore, long viewScore, long likeScore, long commentScore) {
         return ClubMonthlyStatusQuery.builder()
                 .year(year)
                 .month(month)
-                .rank(ranking.rank())
-                .feedCount(ranking.feedCount())
-                .viewCount(ranking.viewCount())
-                .likeCount(ranking.likeCount())
-                .commentCount(ranking.commentCount())
-                .score(ranking.score())
+                .rank(rank)
+                .lastMonthRank(lastMonthRank)
+                .feedScore(feedScore)
+                .viewScore(viewScore)
+                .likeScore(likeScore)
+                .commentScore(commentScore)
+                .totalScore(feedScore + viewScore + likeScore + commentScore)
                 .build();
     }
 
-    public static ClubMonthlyStatusQuery createEmpty(int year, int month) {
+    public static ClubMonthlyStatusQuery createEmpty(int year, int month, int lastMonthRank) {
         return ClubMonthlyStatusQuery.builder()
                 .year(year)
                 .month(month)
                 .rank(0)
-                .feedCount(0)
-                .viewCount(0)
-                .likeCount(0)
-                .commentCount(0)
-                .score(0)
+                .lastMonthRank(lastMonthRank)
+                .feedScore(0)
+                .viewScore(0)
+                .likeScore(0)
+                .commentScore(0)
+                .totalScore(0)
                 .build();
     }
 }

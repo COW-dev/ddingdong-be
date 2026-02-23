@@ -91,14 +91,16 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
                 .extract()
                 .as(Map.class);
 
+        // feedScore = 2*10=20, viewScore = 0, likeScore = 1*3=3, commentScore = 1*5=5, totalScore = 28
         assertSoftly(softly -> {
             softly.assertThat(response.get("year")).isEqualTo(year);
             softly.assertThat(response.get("month")).isEqualTo(month);
-            softly.assertThat(((Number) response.get("feedCount")).longValue()).isEqualTo(2L);
-            softly.assertThat(((Number) response.get("likeCount")).longValue()).isEqualTo(1L);
-            softly.assertThat(((Number) response.get("commentCount")).longValue()).isEqualTo(1L);
-            softly.assertThat(((Number) response.get("score")).longValue()).isEqualTo(28L);
+            softly.assertThat(((Number) response.get("feedScore")).longValue()).isEqualTo(20L);
+            softly.assertThat(((Number) response.get("likeScore")).longValue()).isEqualTo(3L);
+            softly.assertThat(((Number) response.get("commentScore")).longValue()).isEqualTo(5L);
+            softly.assertThat(((Number) response.get("totalScore")).longValue()).isEqualTo(28L);
             softly.assertThat(((Number) response.get("rank")).intValue()).isEqualTo(1);
+            softly.assertThat(((Number) response.get("lastMonthRank")).intValue()).isEqualTo(0);
         });
     }
 

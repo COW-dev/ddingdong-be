@@ -8,11 +8,12 @@ public record ClubMonthlyStatusResponse(
         int year,
         int month,
         int rank,
-        long feedCount,
-        long viewCount,
-        long likeCount,
-        long commentCount,
-        long score
+        int lastMonthRank,
+        long feedScore,
+        long viewScore,
+        long likeScore,
+        long commentScore,
+        long totalScore
 ) {
 
     public static ClubMonthlyStatusResponse from(ClubMonthlyStatusQuery query) {
@@ -20,11 +21,12 @@ public record ClubMonthlyStatusResponse(
                 .year(query.year())
                 .month(query.month())
                 .rank(query.rank())
-                .feedCount(query.feedCount())
-                .viewCount(query.viewCount())
-                .likeCount(query.likeCount())
-                .commentCount(query.commentCount())
-                .score(query.score())
+                .lastMonthRank(query.lastMonthRank())
+                .feedScore(query.feedScore())
+                .viewScore(query.viewScore())
+                .likeScore(query.likeScore())
+                .commentScore(query.commentScore())
+                .totalScore(query.totalScore())
                 .build();
     }
 }
