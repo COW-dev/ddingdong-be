@@ -1,7 +1,6 @@
 package ddingdong.ddingdongBE.domain.feed.api;
 
 import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminClubFeedRankingResponse;
-import ddingdong.ddingdongBE.domain.feed.controller.dto.response.AdminFeedRankingWinnerResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -21,16 +20,6 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @Tag(name = "Feed - Admin", description = "Feed Admin API")
 @RequestMapping("/server/admin/feeds")
 public interface AdminFeedApi {
-
-    @Operation(summary = "총동연 월별 1위 동아리 목록 조회 API")
-    @ApiResponse(responseCode = "200", description = "월별 1위 동아리 목록 조회 성공",
-            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AdminFeedRankingWinnerResponse.class))))
-    @ResponseStatus(HttpStatus.OK)
-    @SecurityRequirement(name = "AccessToken")
-    @GetMapping("/ranking/last")
-    List<AdminFeedRankingWinnerResponse> getMonthlyWinners(
-            @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year
-    );
 
     @Operation(summary = "총동연 피드 랭킹 조회 API")
     @ApiResponse(responseCode = "200", description = "동아리별 피드 랭킹 조회 성공",
