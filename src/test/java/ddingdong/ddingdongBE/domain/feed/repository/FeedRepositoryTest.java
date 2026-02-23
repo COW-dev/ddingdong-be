@@ -354,7 +354,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         assertThat(result.get(0).getFeedCount()).isEqualTo(1);
     }
 
-    @DisplayName("findMyFeedStat으로 클럽의 피드 집계를 조회한다")
+    @DisplayName("동아리의 피드 수, 조회수, 이미지/비디오 수를 집계한다")
     @Test
     void findMyFeedStat_ReturnsCorrectStats() {
         // given
@@ -381,7 +381,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         });
     }
 
-    @DisplayName("findMyFeedStat에서 삭제된 피드는 제외된다")
+    @DisplayName("삭제된 피드는 집계에서 제외된다")
     @Test
     void findMyFeedStat_ExcludesDeletedFeeds() {
         // given
@@ -400,7 +400,7 @@ class FeedRepositoryTest extends DataJpaTestSupport {
         assertThat(stat.getFeedCount()).isEqualTo(1);
     }
 
-    @DisplayName("findMyFeedStat에서 피드가 없으면 모든 집계가 0이다")
+    @DisplayName("피드가 없으면 모든 집계 값이 0이다")
     @Test
     void findMyFeedStat_ReturnsZerosWhenNoFeeds() {
         // given

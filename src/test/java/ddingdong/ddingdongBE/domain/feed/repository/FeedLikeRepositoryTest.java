@@ -31,7 +31,7 @@ class FeedLikeRepositoryTest extends DataJpaTestSupport {
     @Autowired
     private ClubRepository clubRepository;
 
-    @DisplayName("countsByFeedIds로 피드별 좋아요 수를 벌크 조회한다")
+    @DisplayName("여러 피드의 좋아요 수를 한 번에 조회한다")
     @Test
     void countsByFeedIds_ReturnsCorrectCounts() {
         // given
@@ -61,7 +61,7 @@ class FeedLikeRepositoryTest extends DataJpaTestSupport {
         });
     }
 
-    @DisplayName("countsByFeedIds에 좋아요 없는 피드만 있으면 빈 리스트를 반환한다")
+    @DisplayName("좋아요가 없는 피드는 집계 결과에 포함되지 않는다")
     @Test
     void countsByFeedIds_ReturnsEmptyWhenNoLikes() {
         // given

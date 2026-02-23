@@ -37,7 +37,7 @@ class FeedCommentRepositoryTest extends DataJpaTestSupport {
     @PersistenceContext
     private EntityManager entityManager;
 
-    @DisplayName("countsByFeedIds로 피드별 댓글 수를 벌크 조회한다")
+    @DisplayName("여러 피드의 댓글 수를 한 번에 조회한다")
     @Test
     void countsByFeedIds_ReturnsCorrectCounts() {
         // given
@@ -64,7 +64,7 @@ class FeedCommentRepositoryTest extends DataJpaTestSupport {
         });
     }
 
-    @DisplayName("countsByFeedIds에서 soft delete된 댓글은 제외된다")
+    @DisplayName("삭제된 댓글은 댓글 수 집계에서 제외된다")
     @Test
     void countsByFeedIds_ExcludesSoftDeletedComments() {
         // given
@@ -87,7 +87,7 @@ class FeedCommentRepositoryTest extends DataJpaTestSupport {
         assertThat(result.get(0).getCnt()).isEqualTo(1);
     }
 
-    @DisplayName("countsByFeedIds에 댓글 없는 피드만 있으면 빈 리스트를 반환한다")
+    @DisplayName("댓글이 없는 피드는 집계 결과에 포함되지 않는다")
     @Test
     void countsByFeedIds_ReturnsEmptyWhenNoComments() {
         // given
