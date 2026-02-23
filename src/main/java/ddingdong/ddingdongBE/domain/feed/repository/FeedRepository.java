@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.feed.repository;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import java.util.List;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -98,5 +99,16 @@ public interface FeedRepository extends JpaRepository<Feed, Long> {
             @Param("year") int year,
             @Param("month") int month
     );
+
+    @Query(value = """
+            SELECT COUNT(f.id) AS feedCount,
+                   COALESCE(SUM(f.view_count), 0) AS totalViewCount,
+                   SUM(CASE WHEN f.feed_type = 'IMAGE' THEN 1 ELSE 0 END) AS imageCount,
+                   SUM(CASE WHEN f.feed_type = 'VIDEO' THEN 1 ELSE 0 END) AS videoCount
+            FROM feed f
+            WHERE f.deleted_at IS NULL
+              AND f.club_id = :clubId
+            """, nativeQuery = true)
+    MyFeedStatDto findMyFeedStat(@Param("clubId") Long clubId);
 
 }

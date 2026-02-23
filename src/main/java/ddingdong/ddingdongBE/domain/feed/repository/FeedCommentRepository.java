@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.repository;
 
 import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedCountDto;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -25,4 +26,13 @@ public interface FeedCommentRepository extends JpaRepository<FeedComment, Long> 
     List<FeedComment> findAllByFeedIdOrderByCreatedAtAsc(Long feedId);
 
     long countByFeedId(Long feedId);
+
+    @Query(value = """
+            SELECT fc.feed_id AS feedId, COUNT(*) AS cnt
+            FROM feed_comment fc
+            WHERE fc.feed_id IN (:feedIds)
+              AND fc.deleted_at IS NULL
+            GROUP BY fc.feed_id
+            """, nativeQuery = true)
+    List<FeedCountDto> countsByFeedIds(@Param("feedIds") List<Long> feedIds);
 }
