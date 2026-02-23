@@ -38,12 +38,12 @@ public class GeneralFeedRankingService implements FeedRankingService {
         long previousScore = Long.MAX_VALUE;
         int rank = 1;
         for (int i = 0; i < sorted.size(); i++) {
-            long score = calculateScore(sorted.get(i));
-            if (i > 0 && score < previousScore) {
+            long totalScore = calculateScore(sorted.get(i));
+            if (i > 0 && totalScore < previousScore) {
                 rank = i + 1;
             }
-            result.add(ClubFeedRankingQuery.of(rank, sorted.get(i), score));
-            previousScore = score;
+            result.add(toClubFeedRankingQuery(rank, sorted.get(i)));
+            previousScore = totalScore;
         }
 
         return result;
@@ -58,20 +58,15 @@ public class GeneralFeedRankingService implements FeedRankingService {
         return rankings.stream()
                 .filter(rankingQuery -> rankingQuery.clubId().equals(club.getId()))
                 .findFirst()
-                .filter(rankingQuery -> rankingQuery.score() > 0)
+                .filter(rankingQuery -> rankingQuery.totalScore() > 0)
                 .map(rankingQuery -> toMonthlyStatus(year, month, rankingQuery, lastMonthRank))
                 .orElse(ClubMonthlyStatusQuery.createEmpty(year, month, lastMonthRank));
     }
 
     private ClubMonthlyStatusQuery toMonthlyStatus(int year, int month,
             ClubFeedRankingQuery ranking, int lastMonthRank) {
-        long feedScore = ranking.feedCount() * FEED_WEIGHT;
-        long viewScore = ranking.viewCount() * VIEW_WEIGHT;
-        long likeScore = ranking.likeCount() * LIKE_WEIGHT;
-        long commentScore = ranking.commentCount() * COMMENT_WEIGHT;
-
         return ClubMonthlyStatusQuery.of(year, month, ranking.rank(), lastMonthRank,
-                feedScore, viewScore, likeScore, commentScore);
+                ranking.feedScore(), ranking.viewScore(), ranking.likeScore(), ranking.commentScore());
     }
 
     private int getLastMonthRank(Long clubId, int year, int month) {
@@ -81,10 +76,20 @@ public class GeneralFeedRankingService implements FeedRankingService {
         List<ClubFeedRankingQuery> lastMonthRankings = getClubFeedRanking(lastYear, lastMonth);
         return lastMonthRankings.stream()
                 .filter(ranking -> ranking.clubId().equals(clubId))
-                .filter(ranking -> ranking.score() > 0)
+                .filter(ranking -> ranking.totalScore() > 0)
                 .findFirst()
                 .map(ClubFeedRankingQuery::rank)
                 .orElse(0);
+    }
+
+    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, MonthlyFeedRankingDto dto) {
+        long feedScore = dto.getFeedCount() * FEED_WEIGHT;
+        long viewScore = dto.getViewCount() * VIEW_WEIGHT;
+        long likeScore = dto.getLikeCount() * LIKE_WEIGHT;
+        long commentScore = dto.getCommentCount() * COMMENT_WEIGHT;
+        long totalScore = feedScore + viewScore + likeScore + commentScore;
+        return ClubFeedRankingQuery.of(rank, dto.getClubId(), dto.getClubName(),
+                feedScore, viewScore, likeScore, commentScore, totalScore);
     }
 
     private long calculateScore(MonthlyFeedRankingDto dto) {

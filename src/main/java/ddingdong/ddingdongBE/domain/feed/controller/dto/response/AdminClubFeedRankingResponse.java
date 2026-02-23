@@ -15,21 +15,16 @@ public record AdminClubFeedRankingResponse(
         long totalScore
 ) {
 
-    private static final int FEED_WEIGHT = 10;
-    private static final int VIEW_WEIGHT = 1;
-    private static final int LIKE_WEIGHT = 3;
-    private static final int COMMENT_WEIGHT = 5;
-
     public static List<AdminClubFeedRankingResponse> from(List<ClubFeedRankingQuery> queries) {
         return queries.stream()
                 .map(query -> AdminClubFeedRankingResponse.builder()
                         .rank(query.rank())
                         .clubName(query.clubName())
-                        .feedScore(query.feedCount() * FEED_WEIGHT)
-                        .viewScore(query.viewCount() * VIEW_WEIGHT)
-                        .likeScore(query.likeCount() * LIKE_WEIGHT)
-                        .commentScore(query.commentCount() * COMMENT_WEIGHT)
-                        .totalScore(query.score())
+                        .feedScore(query.feedScore())
+                        .viewScore(query.viewScore())
+                        .likeScore(query.likeScore())
+                        .commentScore(query.commentScore())
+                        .totalScore(query.totalScore())
                         .build())
                 .toList();
     }

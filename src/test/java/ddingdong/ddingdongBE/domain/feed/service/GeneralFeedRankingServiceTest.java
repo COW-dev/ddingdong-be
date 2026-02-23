@@ -76,10 +76,10 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("동아리B");
             softly.assertThat(result.get(0).rank()).isEqualTo(1);
-            softly.assertThat(result.get(0).score()).isEqualTo(20L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(20L);
             softly.assertThat(result.get(1).clubName()).isEqualTo("동아리A");
             softly.assertThat(result.get(1).rank()).isEqualTo(2);
-            softly.assertThat(result.get(1).score()).isEqualTo(10L);
+            softly.assertThat(result.get(1).totalScore()).isEqualTo(10L);
         });
     }
 
@@ -108,12 +108,12 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertThat(result).hasSize(3);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).rank()).isEqualTo(1);
-            softly.assertThat(result.get(0).score()).isEqualTo(20L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(20L);
             // 동점자 2명 → 둘 다 2위
             softly.assertThat(result.get(1).rank()).isEqualTo(2);
-            softly.assertThat(result.get(1).score()).isEqualTo(10L);
+            softly.assertThat(result.get(1).totalScore()).isEqualTo(10L);
             softly.assertThat(result.get(2).rank()).isEqualTo(2);
-            softly.assertThat(result.get(2).score()).isEqualTo(10L);
+            softly.assertThat(result.get(2).totalScore()).isEqualTo(10L);
         });
     }
 
@@ -136,9 +136,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertThat(result).hasSize(2);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("피드있는동아리");
-            softly.assertThat(result.get(0).score()).isEqualTo(10L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(10L);
             softly.assertThat(result.get(1).clubName()).isEqualTo("피드없는동아리");
-            softly.assertThat(result.get(1).score()).isEqualTo(0L);
+            softly.assertThat(result.get(1).totalScore()).isEqualTo(0L);
         });
     }
 
@@ -156,8 +156,8 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertThat(result).hasSize(1);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("동아리");
-            softly.assertThat(result.get(0).feedCount()).isEqualTo(0);
-            softly.assertThat(result.get(0).score()).isEqualTo(0L);
+            softly.assertThat(result.get(0).feedScore()).isEqualTo(0);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(0L);
         });
     }
 
@@ -196,10 +196,10 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertThat(result).hasSize(1);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("활발한동아리");
-            softly.assertThat(result.get(0).feedCount()).isEqualTo(1);
-            softly.assertThat(result.get(0).likeCount()).isEqualTo(2);
-            softly.assertThat(result.get(0).commentCount()).isEqualTo(1);
-            softly.assertThat(result.get(0).score()).isEqualTo(21L);
+            softly.assertThat(result.get(0).feedScore()).isEqualTo(10L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(6L);
+            softly.assertThat(result.get(0).commentScore()).isEqualTo(5L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(21L);
         });
     }
 
