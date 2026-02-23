@@ -318,11 +318,10 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
     void getClubMonthlyStatus_noLastMonthFeeds() {
         // given
         User user = userRepository.save(UserFixture.createClubUser());
-        clubRepository.save(ClubFixture.createClub(user));
+        Club club = clubRepository.save(ClubFixture.createClub(user));
 
         // 이번 달 피드만 생성 (저번 달 피드 없음)
-        feedRepository.save(FeedFixture.createImageFeed(
-                clubRepository.findAll().get(0), "이번달 피드"));
+        feedRepository.save(FeedFixture.createImageFeed(club, "이번달 피드"));
 
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
@@ -332,6 +331,33 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
         // then — 저번 달 피드가 없으므로 lastMonthRank = 0
         assertThat(result.lastMonthRank()).isEqualTo(0);
+    }
+
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 이번 달 피드가 없어도 저번 달 순위가 반환된다")
+    @Test
+    void getClubMonthlyStatus_noCurrentMonthFeed_butHasLastMonthRank() {
+        // given
+        User user = userRepository.save(UserFixture.createClubUser());
+        Club club = clubRepository.save(ClubFixture.createClub(user));
+
+        // 저번 달 피드만 생성 (이번 달 피드 없음)
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
+        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
+                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+
+        int year = LocalDate.now().getYear();
+        int month = LocalDate.now().getMonthValue();
+
+        // when
+        ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
+
+        // then — 이번 달 score=0이어도 저번 달 순위가 정상 반환되어야 한다
+        assertSoftly(softly -> {
+            softly.assertThat(result.rank()).isEqualTo(0);
+            softly.assertThat(result.lastMonthRank()).isEqualTo(1);
+            softly.assertThat(result.totalScore()).isEqualTo(0L);
+        });
     }
 
     @DisplayName("동아리 이달의 현황 조회 - 성공: 1월 조회 시 전년도 12월 순위가 반환된다")

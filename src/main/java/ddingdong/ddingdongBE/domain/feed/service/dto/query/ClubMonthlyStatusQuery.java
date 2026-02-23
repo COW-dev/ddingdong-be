@@ -30,12 +30,12 @@ public record ClubMonthlyStatusQuery(
                 .build();
     }
 
-    public static ClubMonthlyStatusQuery createEmpty(int year, int month) {
+    public static ClubMonthlyStatusQuery createEmpty(int year, int month, int lastMonthRank) {
         return ClubMonthlyStatusQuery.builder()
                 .year(year)
                 .month(month)
                 .rank(0)
-                .lastMonthRank(0)
+                .lastMonthRank(lastMonthRank)
                 .feedScore(0)
                 .viewScore(0)
                 .likeScore(0)

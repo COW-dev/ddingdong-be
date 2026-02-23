@@ -60,7 +60,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
                 .findFirst()
                 .filter(rankingQuery -> rankingQuery.score() > 0)
                 .map(rankingQuery -> toMonthlyStatus(year, month, rankingQuery, lastMonthRank))
-                .orElse(ClubMonthlyStatusQuery.createEmpty(year, month));
+                .orElse(ClubMonthlyStatusQuery.createEmpty(year, month, lastMonthRank));
     }
 
     private ClubMonthlyStatusQuery toMonthlyStatus(int year, int month,
