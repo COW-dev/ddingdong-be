@@ -51,13 +51,11 @@ import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.jspecify.annotations.NonNull;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Caching;
 import org.springframework.context.ApplicationEventPublisher;
@@ -329,54 +327,34 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     public EmailSendStatusOverviewQuery getEmailSendStatusOverviewByFormId(Long formId) {
-        Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus =
-                formEmailSendHistoryService.getLatestIdsByFormIdAndApplicationStatuses(
+        List<EmailSendHistory> latestHistoriesPerApplication =
+                emailSendHistoryService.getLatestPerApplicationByFormIdAndStatuses(
                         formId, FormApplicationStatus.APPLICATION_RESULT_STATUSES);
 
-        List<EmailSendHistory> fetchedHistories = emailSendHistoryService.getAllFetchedByFormEmailSendHistoryIds(
-                List.copyOf(latestFormEmailSendHistoryIdByStatus.values()));
+        Map<FormApplicationStatus, EmailSendHistories> historiesByStatus =
+                latestHistoriesPerApplication.stream()
+                        .collect(Collectors.groupingBy(
+                                history -> history.getFormEmailSendHistory().getFormApplicationStatus(),
+                                Collectors.collectingAndThen(Collectors.toList(), EmailSendHistories::new)
+                        ));
 
-        Map<Long, EmailSendHistories> emailSendHistoriesByFormEmailSendHistoryId = fetchedHistories.stream()
-                .collect(Collectors.groupingBy(
-                        history -> history.getFormEmailSendHistory().getId(),
-                        Collectors.collectingAndThen(Collectors.toList(), EmailSendHistories::new)
-                ));
-
-        List<EmailSendStatusOverviewInfoQuery> infos = getEmailSendStatusOverviewInfoQueries(
-                FormApplicationStatus.APPLICATION_RESULT_STATUSES,
-                latestFormEmailSendHistoryIdByStatus,
-                emailSendHistoriesByFormEmailSendHistoryId);
-
-        return EmailSendStatusOverviewQuery.of(infos);
-    }
-
-    private List<EmailSendStatusOverviewInfoQuery> getEmailSendStatusOverviewInfoQueries(
-            List<FormApplicationStatus> statuses,
-            Map<FormApplicationStatus, Long> latestFormEmailSendHistoryIdByStatus,
-            Map<Long, EmailSendHistories> emailSendHistoriesByFormEmailSendHistoryId) {
-
-        return statuses.stream()
+        List<EmailSendStatusOverviewInfoQuery> infos = FormApplicationStatus.APPLICATION_RESULT_STATUSES.stream()
                 .map(status -> {
-                    Long formEmailSendHistoryId = latestFormEmailSendHistoryIdByStatus.get(status);
+                    EmailSendHistories histories = historiesByStatus.getOrDefault(
+                            status, new EmailSendHistories(List.of()));
 
-                    if (formEmailSendHistoryId == null) {
+                    if (histories.getAll().isEmpty()) {
                         return EmailSendStatusOverviewInfoQuery.empty(status);
                     }
 
-                    EmailSendHistories histories = emailSendHistoriesByFormEmailSendHistoryId.getOrDefault(
-                            formEmailSendHistoryId,
-                            new EmailSendHistories(List.of())
-                    );
-
-                    EmailSendHistories latestHistoriesByFormApplication = histories.getLatestByFormApplication();
-                    LocalDateTime lastSentAt = latestHistoriesByFormApplication.getLastSentAt();
-
                     return EmailSendStatusOverviewInfoQuery.of(
                             status,
-                            lastSentAt,
-                            latestHistoriesByFormApplication.getSuccessCount(),
-                            latestHistoriesByFormApplication.getFailCount());
+                            histories.getLastSentAt(),
+                            histories.getSuccessCount(),
+                            histories.getFailCount());
                 }).toList();
+
+        return EmailSendStatusOverviewQuery.of(infos);
     }
 
     private List<FormResultSendingEmailInfo> createPendingEmailInfos(
