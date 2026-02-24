@@ -163,7 +163,8 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         savedForm.getId(),
-                        List.of(FormApplicationStatus.FIRST_PASS)
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then
@@ -215,7 +216,8 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         savedForm.getId(),
-                        List.of(FormApplicationStatus.FINAL_PASS)
+                        List.of(FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then: 재전송 배치(resendBatch)만이 아닌 4명 전원의 최신 이력이 반환된다
@@ -256,7 +258,8 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         savedForm.getId(),
-                        List.of(FormApplicationStatus.FIRST_PASS)
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then
@@ -292,12 +295,55 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         targetForm.getId(),
-                        List.of(FormApplicationStatus.FIRST_PASS)
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getId()).isEqualTo(targetHistory.getId());
+    }
+
+    @DisplayName("재전송으로 생성된 PENDING 레코드는 무시하고, 이전 터미널 상태를 최신으로 반환한다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_ignoresPendingAndReturnsPreviousTerminalStatus() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory initialBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+        FormEmailSendHistory resendBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        FormApplication successApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication failApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        // successApplication: 초기 발송 성공 → 재전송 대상 아님
+        EmailSendHistory successHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(successApplication, initialBatch));
+
+        // failApplication: 초기 발송 실패 → 재전송 배치에서 PENDING 생성 (전송 중)
+        EmailSendHistory failHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.temporaryFailureWithFormEmailSendHistory(failApplication, initialBatch));
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.pendingWithFormEmailSendHistory(failApplication, resendBatch));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then: PENDING 레코드가 무시되어 failApplication의 최신 터미널 상태(TEMPORARY_FAILURE)가 반환된다
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(EmailSendHistory::getId)
+                .containsExactlyInAnyOrder(successHistory.getId(), failHistory.getId());
     }
 
     @DisplayName("전송 이력이 없으면 빈 리스트를 반환한다")
@@ -312,7 +358,8 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         savedForm.getId(),
-                        FormApplicationStatus.APPLICATION_RESULT_STATUSES
+                        FormApplicationStatus.APPLICATION_RESULT_STATUSES,
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then
@@ -346,7 +393,8 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
                         savedForm.getId(),
-                        List.of(FormApplicationStatus.FIRST_PASS, FormApplicationStatus.FINAL_PASS)
+                        List.of(FormApplicationStatus.FIRST_PASS, FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
                 );
 
         // then

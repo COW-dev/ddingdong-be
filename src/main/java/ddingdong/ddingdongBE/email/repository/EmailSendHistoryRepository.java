@@ -50,12 +50,14 @@ public interface EmailSendHistoryRepository extends JpaRepository<EmailSendHisto
                     join esh2.formEmailSendHistory fesh2
                     where fesh2.form.id = :formId
                       and fesh2.formApplicationStatus in :statuses
+                      and esh2.status not in :inFlightStatuses
                     group by esh2.formApplication.id, fesh2.formApplicationStatus
                 )
             """)
     List<EmailSendHistory> findLatestPerApplicationByFormIdAndApplicationStatuses(
             @Param("formId") Long formId,
-            @Param("statuses") List<FormApplicationStatus> statuses
+            @Param("statuses") List<FormApplicationStatus> statuses,
+            @Param("inFlightStatuses") List<EmailSendStatus> inFlightStatuses
     );
 
 }

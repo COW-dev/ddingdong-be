@@ -787,6 +787,56 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(finalPassOverview.failCount()).isZero();
     }
 
+    @DisplayName("재전송 이메일이 아직 전송 중(PENDING)일 때 overview는 재전송 이전의 실패 횟수를 유지한다")
+    @Test
+    void overviewKeepsFailCountWhileResendIsInFlight() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory initialBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        // 초기 발송: 3명 성공, 2명 실패
+        FormApplication successApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication successApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication successApplication3 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication failApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication failApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.deliverySuccess(successApplication1, initialBatch));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.deliverySuccess(successApplication2, initialBatch));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.deliverySuccess(successApplication3, initialBatch));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(failApplication1, initialBatch));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(failApplication2, initialBatch));
+
+        // 재전송 트리거: 실패한 2명에 대해 PENDING 레코드만 생성된 상태 (SES 응답 대기 중)
+        FormEmailSendHistory resendBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.pendingWithFormEmailSendHistory(failApplication1, resendBatch));
+        emailSendHistoryRepository.save(EmailSendHistoryFixture.pendingWithFormEmailSendHistory(failApplication2, resendBatch));
+
+        // when: 재전송 중에 overview API 호출
+        EmailSendStatusOverviewQuery result =
+                facadeCentralFormService.getEmailSendStatusOverviewByFormId(savedForm.getId());
+
+        // then: PENDING은 무시되고 초기 발송 결과(성공 3, 실패 2)가 그대로 유지된다
+        EmailSendStatusOverviewInfoQuery finalPassOverview =
+                result.emailSendStatusOverviewInfoQueries().stream()
+                        .filter(info -> info.formApplicationStatus() == FormApplicationStatus.FINAL_PASS)
+                        .findFirst()
+                        .orElseThrow();
+
+        assertThat(finalPassOverview.successCount()).isEqualTo(3);
+        assertThat(finalPassOverview.failCount()).isEqualTo(2);
+    }
+
     @DisplayName("같은 지원자에게 여러 번 이메일을 보낸 경우 지원자별 최신 전송 결과만 집계한다")
     @Test
     void countsLatestEmailSendHistoryPerFormApplication() {

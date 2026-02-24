@@ -32,6 +32,10 @@ public enum EmailSendStatus {
         return List.of(TEMPORARY_FAILURE, BOUNCE_REJECT);
     }
 
+    public static List<EmailSendStatus> inFlightStatuses() {
+        return List.of(PENDING, SENDING);
+    }
+
     public boolean isSuccess() {
         return this == DELIVERY_SUCCESS;
     }
