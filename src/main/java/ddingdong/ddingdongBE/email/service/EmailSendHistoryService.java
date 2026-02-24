@@ -92,4 +92,10 @@ public class EmailSendHistoryService {
         return emailSendHistoryRepository.findAllFetchedByFormEmailSendHistoryIdIn(ids);
     }
 
+    public List<EmailSendHistory> getLatestPerApplicationByFormIdAndStatuses(
+            Long formId, List<FormApplicationStatus> statuses) {
+        return emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                formId, statuses);
+    }
+
 }
