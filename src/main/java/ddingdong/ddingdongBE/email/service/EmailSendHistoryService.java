@@ -95,7 +95,7 @@ public class EmailSendHistoryService {
     public List<EmailSendHistory> getLatestPerApplicationByFormIdAndStatuses(
             Long formId, List<FormApplicationStatus> statuses) {
         return emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
-                formId, statuses);
+                formId, statuses, EmailSendStatus.inFlightStatuses());
     }
 
 }
