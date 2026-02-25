@@ -47,9 +47,9 @@ public record FeedPageResponse(
         public static FeedListResponse from(FeedListQuery query) {
             return FeedListResponse.builder()
                     .id(query.id())
-                    .thumbnailOriginUrl(query.thumbnailOriginUrl())
-                    .thumbnailCdnUrl(query.thumbnailCdnUrl())
-                    .thumbnailFilename(query.thumbnailFileName())
+                    .thumbnailOriginUrl(query.thumbnailInfo().originUrl())
+                    .thumbnailCdnUrl(query.thumbnailInfo().cdnUrl())
+                    .thumbnailFilename(query.thumbnailInfo().fileName())
                     .feedType(query.feedType())
                     .viewCount(query.viewCount())
                     .likeCount(query.likeCount())

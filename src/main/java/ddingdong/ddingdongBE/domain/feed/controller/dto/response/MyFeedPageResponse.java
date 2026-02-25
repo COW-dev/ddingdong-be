@@ -54,9 +54,9 @@ public record MyFeedPageResponse(
         public static MyFeedListResponse from(FeedListQuery feedListQuery) {
             return MyFeedListResponse.builder()
                     .id(feedListQuery.id())
-                    .thumbnailCdnUrl(feedListQuery.thumbnailCdnUrl())
-                    .thumbnailOriginUrl(feedListQuery.thumbnailOriginUrl())
-                    .thumbnailFileName(feedListQuery.thumbnailFileName())
+                    .thumbnailCdnUrl(feedListQuery.thumbnailInfo().cdnUrl())
+                    .thumbnailOriginUrl(feedListQuery.thumbnailInfo().originUrl())
+                    .thumbnailFileName(feedListQuery.thumbnailInfo().fileName())
                     .feedType(feedListQuery.feedType())
                     .viewCount(feedListQuery.viewCount())
                     .likeCount(feedListQuery.likeCount())

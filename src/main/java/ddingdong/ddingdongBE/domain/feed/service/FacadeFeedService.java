@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedCountDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubProfileQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
@@ -10,6 +11,8 @@ import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedPageQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.PagingQuery;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Slice;
 import org.springframework.stereotype.Service;
@@ -30,7 +33,7 @@ public class FacadeFeedService {
             return ClubFeedPageQuery.createEmpty();
         }
         List<Feed> completeFeeds = feedPage.getContent();
-        List<FeedListQuery> feedListQueries = feedFileService.buildFeedListQueriesWithCounts(completeFeeds);
+        List<FeedListQuery> feedListQueries = buildFeedListQueries(completeFeeds);
         PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
         return ClubFeedPageQuery.of(feedListQueries, pagingQuery);
@@ -42,10 +45,26 @@ public class FacadeFeedService {
             return FeedPageQuery.createEmpty();
         }
         List<Feed> completeFeeds = feedPage.getContent();
-        List<FeedListQuery> feedListQueries = feedFileService.buildFeedListQueriesWithCounts(completeFeeds);
+        List<FeedListQuery> feedListQueries = buildFeedListQueries(completeFeeds);
         PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
         return FeedPageQuery.of(feedListQueries, pagingQuery);
+    }
+
+    private List<FeedListQuery> buildFeedListQueries(List<Feed> feeds) {
+        if (feeds.isEmpty()) {
+            return List.of();
+        }
+        List<Long> feedIds = feeds.stream().map(Feed::getId).toList();
+        Map<Long, Long> commentCountMap = feedCommentService.countsByFeedIds(feedIds).stream()
+                .collect(Collectors.toMap(FeedCountDto::getFeedId, FeedCountDto::getCnt));
+
+        return feeds.stream()
+                .map(feed -> FeedListQuery.of(
+                        feed,
+                        feedFileService.extractFeedFileInfo(feed),
+                        commentCountMap.getOrDefault(feed.getId(), 0L)))
+                .toList();
     }
 
     @Transactional
@@ -54,10 +73,9 @@ public class FacadeFeedService {
         Feed feed = feedService.getById(feedId);
         ClubProfileQuery clubProfileQuery = feedFileService.extractClubInfo(feed.getClub());
         FeedFileInfoQuery feedFileInfoQuery = feedFileService.extractFeedFileInfo(feed);
-        long likeCount = feed.getLikeCount();
         long commentCount = feedCommentService.countByFeedId(feedId);
         List<FeedCommentQuery> comments = feedCommentService.getAllByFeedId(feedId);
-        return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery, likeCount, commentCount, comments);
+        return FeedQuery.of(feed, clubProfileQuery, feedFileInfoQuery, commentCount, comments);
     }
 
 }
