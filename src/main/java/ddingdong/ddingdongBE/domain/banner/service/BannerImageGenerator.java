@@ -9,6 +9,7 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -23,14 +24,16 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class BannerImageGenerator {
 
-    private static final int WEB_WIDTH = 1032;
+    private static final int WEB_WIDTH = 1080;
     private static final int WEB_HEIGHT = 200;
     private static final int MOBILE_WIDTH = 342;
     private static final int MOBILE_HEIGHT = 225;
     private static final int SCALE = 2;
+    private static final int BORDER_RADIUS = 12;
 
-    private static final int WEB_LOGO_SIZE = 160;
-    private static final int WEB_LOGO_MARGIN = 40;
+    private static final int LOGO_SIZE = 160;
+    private static final int CONTENT_GAP = 24;
+    private static final int TEXT_BLOCK_WIDTH = 472;
     private static final int MOBILE_LOGO_SIZE = 80;
 
     private static final String BOLD_FONT_PATH = "fonts/Pretendard-Bold.otf";
@@ -46,11 +49,22 @@ public class BannerImageGenerator {
         try {
             setupRenderingHints(graphics);
             graphics.scale(SCALE, SCALE);
+
+            // 라운드 코너 배경
+            RoundRectangle2D roundedRect = new RoundRectangle2D.Double(
+                    0, 0, WEB_WIDTH, WEB_HEIGHT, BORDER_RADIUS * 2, BORDER_RADIUS * 2);
+            graphics.setClip(roundedRect);
             drawBackground(graphics, category, WEB_WIDTH, WEB_HEIGHT);
 
-            int logoY = (WEB_HEIGHT - WEB_LOGO_SIZE) / 2;
-            drawClubLogo(graphics, clubLogo, WEB_LOGO_MARGIN, logoY, WEB_LOGO_SIZE);
-            drawWebTexts(graphics, clubName, month);
+            // 콘텐츠 중앙 배치: [로고160] [gap24] [텍스트472]
+            int contentWidth = LOGO_SIZE + CONTENT_GAP + TEXT_BLOCK_WIDTH;
+            int contentStartX = (WEB_WIDTH - contentWidth) / 2;
+
+            int logoY = (WEB_HEIGHT - LOGO_SIZE) / 2;
+            drawClubLogo(graphics, clubLogo, contentStartX, logoY, LOGO_SIZE);
+
+            int textX = contentStartX + LOGO_SIZE + CONTENT_GAP;
+            drawWebTexts(graphics, clubName, month, textX);
         } finally {
             graphics.dispose();
         }
@@ -67,10 +81,16 @@ public class BannerImageGenerator {
             graphics.scale(SCALE, SCALE);
             drawBackground(graphics, category, MOBILE_WIDTH, MOBILE_HEIGHT);
 
+            // 전체 콘텐츠 높이 계산: 로고 + 간격 + 메인텍스트 + 서브텍스트
+            int contentGap = 12;
+            int mainLineHeight = 22;
+            int subLineHeight = 18;
+            int totalContentHeight = MOBILE_LOGO_SIZE + contentGap + mainLineHeight + subLineHeight;
+            int contentStartY = (MOBILE_HEIGHT - totalContentHeight) / 2;
+
             int logoX = (MOBILE_WIDTH - MOBILE_LOGO_SIZE) / 2;
-            int logoY = 20;
-            drawClubLogo(graphics, clubLogo, logoX, logoY, MOBILE_LOGO_SIZE);
-            drawMobileTexts(graphics, clubName, month, logoY + MOBILE_LOGO_SIZE);
+            drawClubLogo(graphics, clubLogo, logoX, contentStartY, MOBILE_LOGO_SIZE);
+            drawMobileTexts(graphics, clubName, month, contentStartY + MOBILE_LOGO_SIZE + contentGap);
         } finally {
             graphics.dispose();
         }
@@ -104,27 +124,31 @@ public class BannerImageGenerator {
         logoGraphics.dispose();
     }
 
-    private void drawWebTexts(Graphics2D graphics, String clubName, int month) {
-        int textStartX = WEB_LOGO_MARGIN + WEB_LOGO_SIZE + 30;
+    private void drawWebTexts(Graphics2D graphics, String clubName, int month, int textX) {
+        // 텍스트 블록 높이: main(40) + gap(4) + sub(24) = 68
+        int textBlockHeight = 68;
+        int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
-        // PC/Title/Bold1: Pretendard Bold 36px, letter-spacing -1%
+        // PC/Title/Bold1: Pretendard Bold 36px, line-height 40px, letter-spacing -1%
         Font mainFont = createStyledFont(getBoldFont(), Font.BOLD, 36f, -0.01f);
         graphics.setFont(mainFont);
-        graphics.setColor(new Color(33, 33, 33));
+        graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
         String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
-        int mainTextY = (WEB_HEIGHT / 2) + (mainMetrics.getAscent() - mainMetrics.getDescent()) / 2 - 12;
-        graphics.drawString(mainText, textStartX, mainTextY);
+        int mainY = textStartY + mainMetrics.getAscent();
+        graphics.drawString(mainText, textX, mainY);
 
-        // PC/Body/Medium2: Pretendard Medium 16px, letter-spacing 1%
+        // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px, letter-spacing 1%
         Font subFont = createStyledFont(getMediumFont(), Font.PLAIN, 16f, 0.01f);
         graphics.setFont(subFont);
-        graphics.setColor(new Color(100, 100, 100));
-        graphics.drawString(month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.",
-                textStartX, mainTextY + 30);
+        graphics.setColor(Color.decode("#6B7280"));
+        FontMetrics subMetrics = graphics.getFontMetrics();
+        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+        int subY = textStartY + 40 + 4 + subMetrics.getAscent();
+        graphics.drawString(subText, textX, subY);
     }
 
-    private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int logoBottom) {
+    private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
         // Mobile/Title: Pretendard Bold 18px, centered
         Font mainFont = createStyledFont(getBoldFont(), Font.BOLD, 18f, -0.01f);
         graphics.setFont(mainFont);
@@ -132,7 +156,7 @@ public class BannerImageGenerator {
         FontMetrics mainMetrics = graphics.getFontMetrics();
         String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
         int mainX = (MOBILE_WIDTH - mainMetrics.stringWidth(mainText)) / 2;
-        int mainY = logoBottom + 35;
+        int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, mainX, mainY);
 
         // Mobile/Sub: Pretendard Medium 12px, centered
@@ -142,7 +166,7 @@ public class BannerImageGenerator {
         FontMetrics subMetrics = graphics.getFontMetrics();
         String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
         int subX = (MOBILE_WIDTH - subMetrics.stringWidth(subText)) / 2;
-        graphics.drawString(subText, subX, mainY + 22);
+        graphics.drawString(subText, subX, mainY + 20);
     }
 
     private Font createStyledFont(Font baseFont, int style, float size, float tracking) {
