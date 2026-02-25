@@ -197,6 +197,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(info.likeCount()).isEqualTo(2);
         assertThat(info.commentCount()).isEqualTo(1);
         assertThat(info.comments()).hasSize(1);
+        assertThat(info.comments().get(0).uuid()).isEqualTo("uuid-3");
         assertThat(info.comments().get(0).content()).isEqualTo("댓글 1");
         assertThat(info.comments().get(0).anonymousName()).isEqualTo("익명1");
     }
