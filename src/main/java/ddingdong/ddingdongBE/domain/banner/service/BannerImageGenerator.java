@@ -112,15 +112,36 @@ public class BannerImageGenerator {
         graphics.fillRect(0, 0, width, height);
     }
 
+    private static final double LOGO_PADDING_RATIO = 0.15;
+
     private void drawClubLogo(Graphics2D graphics, BufferedImage clubLogo, int logoX, int logoY, int logoSize) {
         if (clubLogo == null) {
             return;
         }
 
+        // 흰색 원형 배경
+        graphics.setColor(Color.WHITE);
+        graphics.fill(new Ellipse2D.Double(logoX, logoY, logoSize, logoSize));
+
+        // 로고를 원 안에 패딩 적용하여 축소 배치 (짤림 방지)
+        int padding = (int) (logoSize * LOGO_PADDING_RATIO);
+        int innerSize = logoSize - padding * 2;
+
+        // 원본 비율 유지하면서 innerSize 안에 맞추기
+        int originalWidth = clubLogo.getWidth();
+        int originalHeight = clubLogo.getHeight();
+        double scale = Math.min((double) innerSize / originalWidth, (double) innerSize / originalHeight);
+        int drawWidth = (int) (originalWidth * scale);
+        int drawHeight = (int) (originalHeight * scale);
+
+        int drawX = logoX + (logoSize - drawWidth) / 2;
+        int drawY = logoY + (logoSize - drawHeight) / 2;
+
+        // 원형 클리핑 후 로고 그리기
         Graphics2D logoGraphics = (Graphics2D) graphics.create();
         logoGraphics.setClip(new Ellipse2D.Double(logoX, logoY, logoSize, logoSize));
         logoGraphics.setComposite(AlphaComposite.SrcOver);
-        logoGraphics.drawImage(clubLogo, logoX, logoY, logoSize, logoSize, null);
+        logoGraphics.drawImage(clubLogo, drawX, drawY, drawWidth, drawHeight, null);
         logoGraphics.dispose();
     }
 
