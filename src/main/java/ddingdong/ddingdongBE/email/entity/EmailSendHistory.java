@@ -1,0 +1,110 @@
+package ddingdong.ddingdongBE.email.entity;
+
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.PERMANENT_FAILURE;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.SENDING;
+import static ddingdong.ddingdongBE.email.entity.EmailSendStatus.TEMPORARY_FAILURE;
+
+import ddingdong.ddingdongBE.common.BaseEntity;
+import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplication;
+import jakarta.annotation.Nullable;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import java.time.LocalDateTime;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
+public class EmailSendHistory extends BaseEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    // 현재 FormApplication과 강한 결합 중, 이후 다른 도메인이 이메일 전송 사용이 필요할 때 리팩토링 필요.
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_application_id")
+    private FormApplication formApplication;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "form_email_send_history_id")
+    private FormEmailSendHistory formEmailSendHistory;
+
+    @Enumerated(EnumType.STRING)
+    private EmailSendStatus status;
+
+    private int retryCount;
+
+    @Nullable
+    @Column(name = "message_tracking_id")
+    private String messageTrackingId;
+
+    @Nullable
+    private LocalDateTime sentAt;
+
+    @Builder
+    public EmailSendHistory(FormApplication formApplication, FormEmailSendHistory formEmailSendHistory,
+            EmailSendStatus status, int retryCount, LocalDateTime sentAt) {
+        this.formApplication = formApplication;
+        this.formEmailSendHistory = formEmailSendHistory;
+        this.status = status;
+        this.retryCount = retryCount;
+        this.sentAt = sentAt;
+    }
+
+    public EmailSendHistory(FormApplication formApplication, FormEmailSendHistory formEmailSendHistory,
+            EmailSendStatus status) {
+        this(formApplication, formEmailSendHistory, status, 0, null);
+    }
+
+    public static EmailSendHistory createPending(FormApplication formApplication,
+            FormEmailSendHistory formEmailSendHistory) {
+        return new EmailSendHistory(formApplication, formEmailSendHistory, PENDING);
+    }
+
+    public void trySend() {
+        this.sentAt = LocalDateTime.now();
+        if (this.status == SENDING) {
+            retryCount++;
+            return;
+        }
+        this.status = SENDING;
+    }
+
+    public void markRetryFail() {
+        this.status = TEMPORARY_FAILURE;
+    }
+
+    public void markNonRetryFail() {
+        this.status = PERMANENT_FAILURE;
+    }
+
+    public void updateStatusTo(String eventType) {
+        this.status = EmailSendStatus.findByValue(eventType);
+    }
+
+    public void updateMessageTrackingId(String messageId) {
+        this.messageTrackingId = messageId;
+    }
+
+    public boolean isSuccess() {
+        return this.status.isSuccess();
+    }
+
+    public boolean isFail() {
+        return this.status.isFail();
+    }
+}

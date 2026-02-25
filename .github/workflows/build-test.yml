@@ -9,6 +9,8 @@ on:
 jobs:
   build_and_push:
     runs-on: ubuntu-latest
+    env:
+      TZ: Asia/Seoul
     steps:
       - name: Check Out Repository
         uses: actions/checkout@v4
@@ -33,4 +35,4 @@ jobs:
         run: chmod +x gradlew
 
       - name: CI Test
-        run: ./gradlew clean build
+        run: ./gradlew clean test -Duser.timezone=Asia/Seoul

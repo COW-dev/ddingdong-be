@@ -47,13 +47,18 @@ public class GeneralClubService implements ClubService {
     }
 
     @Override
-    public List<UserClubListInfo> findAllClubListInfo() {
+    public List<UserClubListInfo> getAllClubListInfo() {
         return clubRepository.findAllClubListInfo(LocalDate.now());
     }
 
     @Override
-    public List<Club> findAll() {
+    public List<Club> getAll() {
         return clubRepository.findAll();
+    }
+
+    @Override
+    public List<Club> getAllByIds(List<Long> clubIds) {
+        return clubRepository.findAllById(clubIds);
     }
 
     @Override

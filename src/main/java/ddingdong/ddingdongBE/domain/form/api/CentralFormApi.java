@@ -1,10 +1,15 @@
 package ddingdong.ddingdongBE.domain.form.api;
 
 import ddingdong.ddingdongBE.auth.PrincipalDetails;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailResendApplicationResultRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusOverviewResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendStatusResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.CreateFormRequest;
-import ddingdong.ddingdongBE.domain.form.controller.dto.request.SendApplicationResultEmailRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.request.EmailSendApplicationResultRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormEndDateRequest;
 import ddingdong.ddingdongBE.domain.form.controller.dto.request.UpdateFormRequest;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendCountResponse;
+import ddingdong.ddingdongBE.domain.form.controller.dto.response.EmailSendRequestAcceptedResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormListResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
@@ -123,13 +128,14 @@ public interface CentralFormApi {
     );
 
     @Operation(summary = "동아리 지원 결과 이메일 전송 API")
-    @ApiResponse(responseCode = "201", description = "동아리 지원 결과 이메일 전송 성공")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 이메일 전송 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendRequestAcceptedResponse.class)))
+    @ResponseStatus(HttpStatus.ACCEPTED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/results/email")
-    void sendApplicationResultEmail(@PathVariable("formId") Long formId,
-                                    @AuthenticationPrincipal PrincipalDetails principalDetails,
-                                    @RequestBody SendApplicationResultEmailRequest request);
+    EmailSendRequestAcceptedResponse sendApplicationResultEmail(@PathVariable("formId") Long formId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails,
+            @Valid @RequestBody EmailSendApplicationResultRequest request);
 
     @Operation(summary = "동아리 폼지 종료일자 수정 API")
     @ApiResponse(responseCode = "204", description = "동아리 폼지 지원기간 마감일자 수정 성공")
@@ -139,6 +145,49 @@ public interface CentralFormApi {
     void updateFormEndDate(
             @Valid @RequestBody UpdateFormEndDateRequest updateFormEndDateRequest,
             @PathVariable("formId") Long formId,
+            @AuthenticationPrincipal PrincipalDetails principalDetails
+    );
+
+    @Operation(summary = "동아리 폼지 이메일 전송현황 카운트 조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리 폼지 이메일 전송현황 카운트 조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendCountResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/emails/{formEmailSendHistoryId}/counts")
+    EmailSendCountResponse getEmailSendCount(
+            @PathVariable("formEmailSendHistoryId") Long formEmailSendHistoryId
+    );
+
+    @Operation(summary = "이메일 전송 현황 전체조회 API")
+    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 전체조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendStatusOverviewResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/emails/status/overview")
+    EmailSendStatusOverviewResponse getEmailSendStatusOverview(
+            @PathVariable("formId") Long formId
+    );
+
+    @Operation(summary = "이메일 전송 현황 상세조회 API")
+    @ApiResponse(responseCode = "200", description = "이메일 전송 현황 상세조회 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendStatusResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/my/forms/{formId}/emails/status")
+    EmailSendStatusResponse getEmailSendStatus(
+            @PathVariable("formId") Long formId,
+            @RequestParam("status") String status
+    );
+
+    @Operation(summary = "동아리 지원 결과 상태별 이메일 재전송 API")
+    @ApiResponse(responseCode = "202", description = "동아리 지원 결과 상태별 이메일 재전송 성공",
+            content = @Content(schema = @Schema(implementation = EmailSendRequestAcceptedResponse.class)))
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @SecurityRequirement(name = "AccessToken")
+    @PostMapping("/my/forms/{formId}/results/email/resends")
+    EmailSendRequestAcceptedResponse resendApplicationResultEmail(
+            @PathVariable("formId") Long formId,
+            @Valid @RequestBody EmailResendApplicationResultRequest request,
             @AuthenticationPrincipal PrincipalDetails principalDetails
     );
 }

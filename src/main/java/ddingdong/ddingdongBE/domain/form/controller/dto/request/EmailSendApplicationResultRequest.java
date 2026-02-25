@@ -1,10 +1,11 @@
 package ddingdong.ddingdongBE.domain.form.controller.dto.request;
 
-import ddingdong.ddingdongBE.domain.form.service.dto.command.SendApplicationResultEmailCommand;
+import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicationResultCommand;
+import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 
-public record SendApplicationResultEmailRequest(
+public record EmailSendApplicationResultRequest(
 
         @Schema(description = "메일 제목", example = "제목")
         @NotNull(message = "메일 제목은 필수입니다.")
@@ -15,15 +16,15 @@ public record SendApplicationResultEmailRequest(
                 allowableValues = {"FIRST_PASS", "FIRST_FAIL", "FINAL_PASS", "FINAL_FAIL"}
         )
         @NotNull(message = "전송 대상은 필수입니다.")
-        String target,
+        FormApplicationStatus target,
 
         @Schema(description = "내용", example = "내용")
         @NotNull(message = "메일 내용은 필수입니다.")
         String message
 ) {
 
-    public SendApplicationResultEmailCommand toCommand(Long userId, Long formId) {
-        return new SendApplicationResultEmailCommand(userId, formId, title, target, message);
+    public EmailSendApplicationResultCommand toCommand(Long userId, Long formId) {
+        return new EmailSendApplicationResultCommand(userId, formId, title, target, message);
     }
 
 
