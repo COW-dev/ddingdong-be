@@ -103,7 +103,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
         return feeds.stream()
                 .map(feed -> FeedListQuery.of(
                         feed,
-                        feedFileService.extractFeedFileInfo(feed),
+                        feedFileService.extractFeedThumbnailInfo(feed),
                         commentCountMap.getOrDefault(feed.getId(), 0L)))
                 .toList();
     }
