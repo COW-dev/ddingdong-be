@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedCountDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommentCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.CreateFeedCommentQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedCommentQuery;
@@ -67,5 +68,10 @@ public class GeneralFeedCommentService implements FeedCommentService {
     @Override
     public long countByFeedId(Long feedId) {
         return feedCommentRepository.countByFeedId(feedId);
+    }
+
+    @Override
+    public List<FeedCountDto> countsByFeedIds(List<Long> feedIds) {
+        return feedCommentRepository.countsByFeedIds(feedIds);
     }
 }

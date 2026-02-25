@@ -1,10 +1,13 @@
 package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import java.util.Optional;
 import org.springframework.data.domain.Slice;
 
 public interface FeedService {
+
+    MyFeedStatDto getMyFeedStat(Long clubId);
 
     Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId);
 

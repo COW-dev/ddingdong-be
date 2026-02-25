@@ -42,8 +42,8 @@ public record ClubFeedPageResponse(
         public static ClubFeedListResponse from(FeedListQuery feedListQuery) {
             return ClubFeedListResponse.builder()
                 .id(feedListQuery.id())
-                .thumbnailCdnUrl(feedListQuery.thumbnailCdnUrl())
-                .thumbnailOriginUrl(feedListQuery.thumbnailOriginUrl())
+                .thumbnailCdnUrl(feedListQuery.thumbnailInfo().cdnUrl())
+                .thumbnailOriginUrl(feedListQuery.thumbnailInfo().originUrl())
                 .feedType(feedListQuery.feedType())
                 .viewCount(feedListQuery.viewCount())
                 .likeCount(feedListQuery.likeCount())
