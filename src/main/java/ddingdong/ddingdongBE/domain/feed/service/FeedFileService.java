@@ -24,6 +24,21 @@ public class FeedFileService {
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
 
+    public FeedFileInfoQuery extractFeedThumbnailInfo(Feed feed) {
+        FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
+        if (feed.isImage()) {
+            UploadedFileUrlQuery urlQuery = s3FileService.getUploadedFileUrl(fileMetaData.getFileKey());
+            return FeedFileInfoQuery.of(urlQuery.id(), urlQuery.originUrl(), urlQuery.cdnUrl(), fileMetaData.getFileName());
+        }
+
+        if (feed.isVideo()) {
+            UploadedVideoUrlQuery urlQuery = s3FileService.getUploadedVideoUrl(fileMetaData.getFileKey());
+            return FeedFileInfoQuery.of(fileMetaData.getId().toString(), urlQuery.thumbnailOriginUrl(), urlQuery.thumbnailCdnUrl(), fileMetaData.getFileName());
+        }
+
+        throw new IllegalArgumentException("FeedType은 Image 혹은 Video여야 합니다.");
+    }
+
     public FeedFileInfoQuery extractFeedFileInfo(Feed feed) {
         FileMetaData fileMetaData = getFileMetaData(feed.getFeedType().getDomainType(), feed.getId());
         if (feed.isImage()) {
