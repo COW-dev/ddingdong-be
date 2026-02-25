@@ -87,6 +87,8 @@ public record FeedResponse(
     public record CommentResponse(
             @Schema(description = "댓글 ID", example = "1")
             Long id,
+            @Schema(description = "작성자 UUID", example = "550e8400-e29b-41d4-a716-446655440000")
+            String uuid,
             @Schema(description = "댓글 내용", example = "좋은 활동이네요!")
             String content,
             @Schema(description = "익명 이름", example = "익명1")
@@ -98,6 +100,7 @@ public record FeedResponse(
         public static CommentResponse from(FeedCommentQuery query) {
             return CommentResponse.builder()
                     .id(query.id())
+                    .uuid(query.uuid())
                     .content(query.content())
                     .anonymousName(query.anonymousName())
                     .createdAt(query.createdAt())

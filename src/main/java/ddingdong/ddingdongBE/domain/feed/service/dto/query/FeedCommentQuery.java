@@ -7,6 +7,7 @@ import lombok.Builder;
 @Builder
 public record FeedCommentQuery(
         Long id,
+        String uuid,
         String content,
         String anonymousName,
         LocalDateTime createdAt
@@ -15,6 +16,7 @@ public record FeedCommentQuery(
     public static FeedCommentQuery from(FeedComment comment) {
         return FeedCommentQuery.builder()
                 .id(comment.getId())
+                .uuid(comment.getUuid())
                 .content(comment.getContent())
                 .anonymousName("익명" + comment.getAnonymousNumber())
                 .createdAt(comment.getCreatedAt())
