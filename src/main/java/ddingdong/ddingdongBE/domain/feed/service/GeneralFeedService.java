@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +20,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class GeneralFeedService implements FeedService {
 
     private final FeedRepository feedRepository;
+
+    @Override
+    public MyFeedStatDto getMyFeedStat(Long clubId) {
+        return feedRepository.findMyFeedStat(clubId);
+    }
 
     @Override
     public Slice<Feed> getFeedPageByClubId(Long clubId, int size, Long currentCursorId) {

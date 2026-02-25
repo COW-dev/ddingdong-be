@@ -20,7 +20,7 @@ public record FeedQuery(
     ) {
 
   public static FeedQuery of(Feed feed, ClubProfileQuery clubProfileQuery,
-          FeedFileInfoQuery feedFileInfoQuery, long likeCount, long commentCount,
+          FeedFileInfoQuery feedFileInfoQuery, long commentCount,
           List<FeedCommentQuery> comments) {
     return FeedQuery.builder()
         .id(feed.getId())
@@ -30,7 +30,7 @@ public record FeedQuery(
         .feedType(feed.getFeedType().toString())
         .viewCount(feed.getViewCount())
         .createdDate(LocalDate.from(feed.getCreatedAt()))
-        .likeCount(likeCount)
+        .likeCount(feed.getLikeCount())
         .commentCount(commentCount)
         .comments(comments)
         .build();
