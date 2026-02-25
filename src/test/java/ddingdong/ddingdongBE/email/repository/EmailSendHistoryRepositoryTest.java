@@ -99,6 +99,7 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
 
         List<EmailSendStatus> statuses = EmailSendStatus.resendTargets();
 
+
         // when
         List<EmailSendHistory> result =
                 emailSendHistoryRepository.findLatestByFormIdAndStatusesAndApplicationStatus(
@@ -128,5 +129,277 @@ class EmailSendHistoryRepositoryTest extends DataJpaTestSupport {
                 () -> assertThat(latestResendTargetEmailSendHistory.getId())
                         .isNotEqualTo(formApplication3Latest.getId())
         );
+    }
+
+    @DisplayName("여러 배치에 걸쳐 지원자별 가장 최신 전송 이력 1건씩 반환한다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_returnsOnePerApplication() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory batch1 = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(savedForm));
+        FormEmailSendHistory batch2 = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(savedForm));
+
+        FormApplication formApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS));
+        FormApplication formApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS));
+
+        // formApplication1: batch1 실패 → batch2 성공. 최신(batch2)이 반환돼야 한다
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(formApplication1, batch1));
+        EmailSendHistory formApplication1LatestSuccess = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(formApplication1, batch2));
+
+        // formApplication2: batch1 성공. 재전송 대상 아님
+        EmailSendHistory formApplication2BatchOneSuccess = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(formApplication2, batch1));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(EmailSendHistory::getId)
+                .containsExactlyInAnyOrder(
+                        formApplication1LatestSuccess.getId(),
+                        formApplication2BatchOneSuccess.getId()
+                );
+    }
+
+    @DisplayName("이전 배치에서 성공한 지원자는 재전송 배치와 무관하게 최신 이력이 반환된다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_includesApplicantsFromAllBatches() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory initialBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+        FormEmailSendHistory resendBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        // 초기 발송 성공한 지원자 3명
+        FormApplication successApplication1 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication successApplication2 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication successApplication3 = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        // 실패 후 재전송으로 성공한 지원자 1명
+        FormApplication resendSuccessApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        EmailSendHistory success1 = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(successApplication1, initialBatch));
+        EmailSendHistory success2 = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(successApplication2, initialBatch));
+        EmailSendHistory success3 = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(successApplication3, initialBatch));
+
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(resendSuccessApplication, initialBatch));
+        EmailSendHistory resendSuccess = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(resendSuccessApplication, resendBatch));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then: 재전송 배치(resendBatch)만이 아닌 4명 전원의 최신 이력이 반환된다
+        assertThat(result).hasSize(4);
+        assertThat(result).extracting(EmailSendHistory::getId)
+                .containsExactlyInAnyOrder(
+                        success1.getId(),
+                        success2.getId(),
+                        success3.getId(),
+                        resendSuccess.getId()
+                );
+    }
+
+    @DisplayName("조회 대상 status에 포함되지 않은 status의 이력은 반환하지 않는다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_excludesUnrequestedStatuses() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory firstPassBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(savedForm));
+        FormEmailSendHistory finalPassBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        FormApplication firstPassApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS));
+        FormApplication finalPassApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        EmailSendHistory firstPassHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(firstPassApplication, firstPassBatch));
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(finalPassApplication, finalPassBatch));
+
+        // when: FIRST_PASS만 조회
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(firstPassHistory.getId());
+    }
+
+    @DisplayName("다른 폼의 이력은 조회되지 않는다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_excludesOtherFormHistories() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form targetForm = formRepository.save(FormFixture.createForm(savedClub));
+        Form otherForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory targetBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(targetForm));
+        FormEmailSendHistory otherBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(otherForm));
+
+        FormApplication targetApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(targetForm, FormApplicationStatus.FIRST_PASS));
+        FormApplication otherApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(otherForm, FormApplicationStatus.FIRST_PASS));
+
+        EmailSendHistory targetHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(targetApplication, targetBatch));
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(otherApplication, otherBatch));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        targetForm.getId(),
+                        List.of(FormApplicationStatus.FIRST_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getId()).isEqualTo(targetHistory.getId());
+    }
+
+    @DisplayName("재전송으로 생성된 PENDING 레코드는 무시하고, 이전 터미널 상태를 최신으로 반환한다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_ignoresPendingAndReturnsPreviousTerminalStatus() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory initialBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+        FormEmailSendHistory resendBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        FormApplication successApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+        FormApplication failApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        // successApplication: 초기 발송 성공 → 재전송 대상 아님
+        EmailSendHistory successHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(successApplication, initialBatch));
+
+        // failApplication: 초기 발송 실패 → 재전송 배치에서 PENDING 생성 (전송 중)
+        EmailSendHistory failHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.temporaryFailureWithFormEmailSendHistory(failApplication, initialBatch));
+        emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.pendingWithFormEmailSendHistory(failApplication, resendBatch));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then: PENDING 레코드가 무시되어 failApplication의 최신 터미널 상태(TEMPORARY_FAILURE)가 반환된다
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(EmailSendHistory::getId)
+                .containsExactlyInAnyOrder(successHistory.getId(), failHistory.getId());
+    }
+
+    @DisplayName("전송 이력이 없으면 빈 리스트를 반환한다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_returnsEmptyWhenNoHistories() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        FormApplicationStatus.APPLICATION_RESULT_STATUSES,
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("여러 status를 동시에 조회할 때 각 status의 최신 이력이 모두 반환된다")
+    @Test
+    void findLatestPerApplicationByFormIdAndApplicationStatuses_returnsAllRequestedStatuses() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+
+        FormEmailSendHistory firstPassBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFirstPass(savedForm));
+        FormEmailSendHistory finalPassBatch = formEmailSendHistoryRepository.save(
+                FormEmailSendHistoryFixture.createFinalPass(savedForm));
+
+        FormApplication firstPassApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FIRST_PASS));
+        FormApplication finalPassApplication = formApplicationRepository.save(
+                FormApplicationFixture.create(savedForm, FormApplicationStatus.FINAL_PASS));
+
+        EmailSendHistory firstPassHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.deliverySuccess(firstPassApplication, firstPassBatch));
+        EmailSendHistory finalPassHistory = emailSendHistoryRepository.save(
+                EmailSendHistoryFixture.permanentFailureWithFormEmailSendHistory(finalPassApplication, finalPassBatch));
+
+        // when
+        List<EmailSendHistory> result =
+                emailSendHistoryRepository.findLatestPerApplicationByFormIdAndApplicationStatuses(
+                        savedForm.getId(),
+                        List.of(FormApplicationStatus.FIRST_PASS, FormApplicationStatus.FINAL_PASS),
+                        EmailSendStatus.inFlightStatuses()
+                );
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(EmailSendHistory::getId)
+                .containsExactlyInAnyOrder(firstPassHistory.getId(), finalPassHistory.getId());
     }
 }

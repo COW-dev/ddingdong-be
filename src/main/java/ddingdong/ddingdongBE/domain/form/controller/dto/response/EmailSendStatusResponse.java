@@ -3,10 +3,11 @@ package ddingdong.ddingdongBE.domain.form.controller.dto.response;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusQuery.EmailSendStatusInfoQuery;
 import ddingdong.ddingdongBE.domain.formapplication.entity.FormApplicationStatus;
-import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
+import ddingdong.ddingdongBE.email.entity.EmailSendUiStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 public record EmailSendStatusResponse(
         List<EmailSendStatusInfoResponse> emailSendStatusInfoResponses
@@ -28,8 +29,8 @@ public record EmailSendStatusResponse(
             String studentNumber,
             @Schema(description = "이메일 전송 일시", example = "2025.12.13 13:00")
             LocalDateTime sendAt,
-            @Schema(description = "이메일 전송 상태", example = "Sending")
-            EmailSendStatus emailSendStatus,
+            @Schema(description = "이메일 전송 상태", example = "SUCCESS")
+            EmailSendUiStatus emailSendStatus,
             @Schema(description = "지원자 서류/면접 합불 상태", example = "FIRST_PASS")
             FormApplicationStatus formApplicationStatus
     ) {
@@ -40,7 +41,7 @@ public record EmailSendStatusResponse(
                     emailSendStatusInfoQuery.name(),
                     emailSendStatusInfoQuery.studentNumber(),
                     emailSendStatusInfoQuery.sendAt(),
-                    emailSendStatusInfoQuery.emailSendStatus(),
+                    Objects.requireNonNull(emailSendStatusInfoQuery.emailSendStatus()).toUiStatus(),
                     emailSendStatusInfoQuery.formApplicationStatus()
             );
         }

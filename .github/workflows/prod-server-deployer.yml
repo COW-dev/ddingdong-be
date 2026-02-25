@@ -7,7 +7,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    env:
+      TZ: Asia/Seoul
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -36,7 +37,7 @@ jobs:
         shell: bash
 
       - name: Build with Gradle
-        run: ./gradlew clean build
+        run: ./gradlew clean build -Duser.timezone=Asia/Seoul
         shell: bash
 
       - name: Get current time
@@ -73,7 +74,7 @@ jobs:
           wait_for_environment_recovery: 300
 
       - name: Test with Gradle
-        run: ./gradlew test --no-daemon
+        run: ./gradlew test --no-daemon -Duser.timezone=Asia/Seoul
 
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
