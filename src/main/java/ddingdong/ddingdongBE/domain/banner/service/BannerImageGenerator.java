@@ -1,14 +1,12 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
 import ddingdong.ddingdongBE.domain.banner.entity.ClubCategoryColor;
-import java.awt.AlphaComposite;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
-import java.awt.geom.Ellipse2D;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
@@ -112,37 +110,22 @@ public class BannerImageGenerator {
         graphics.fillRect(0, 0, width, height);
     }
 
-    private static final double LOGO_PADDING_RATIO = 0.15;
-
     private void drawClubLogo(Graphics2D graphics, BufferedImage clubLogo, int logoX, int logoY, int logoSize) {
         if (clubLogo == null) {
             return;
         }
 
-        // 흰색 원형 배경
-        graphics.setColor(Color.WHITE);
-        graphics.fill(new Ellipse2D.Double(logoX, logoY, logoSize, logoSize));
-
-        // 로고를 원 안에 패딩 적용하여 축소 배치 (짤림 방지)
-        int padding = (int) (logoSize * LOGO_PADDING_RATIO);
-        int innerSize = logoSize - padding * 2;
-
-        // 원본 비율 유지하면서 innerSize 안에 맞추기
+        // 원본 비율 유지하면서 logoSize 안에 맞추기 (짤림 방지)
         int originalWidth = clubLogo.getWidth();
         int originalHeight = clubLogo.getHeight();
-        double scale = Math.min((double) innerSize / originalWidth, (double) innerSize / originalHeight);
+        double scale = Math.min((double) logoSize / originalWidth, (double) logoSize / originalHeight);
         int drawWidth = (int) (originalWidth * scale);
         int drawHeight = (int) (originalHeight * scale);
 
         int drawX = logoX + (logoSize - drawWidth) / 2;
         int drawY = logoY + (logoSize - drawHeight) / 2;
 
-        // 원형 클리핑 후 로고 그리기
-        Graphics2D logoGraphics = (Graphics2D) graphics.create();
-        logoGraphics.setClip(new Ellipse2D.Double(logoX, logoY, logoSize, logoSize));
-        logoGraphics.setComposite(AlphaComposite.SrcOver);
-        logoGraphics.drawImage(clubLogo, drawX, drawY, drawWidth, drawHeight, null);
-        logoGraphics.dispose();
+        graphics.drawImage(clubLogo, drawX, drawY, drawWidth, drawHeight, null);
     }
 
     private void drawWebTexts(Graphics2D graphics, String clubName, int month, int textX) {
