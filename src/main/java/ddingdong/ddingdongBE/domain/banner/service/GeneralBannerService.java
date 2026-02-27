@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.banner.service;
 
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
+import ddingdong.ddingdongBE.domain.banner.entity.BannerType;
 import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +26,11 @@ public class GeneralBannerService implements BannerService {
     @Override
     public List<Banner> findAll() {
         return bannerRepository.findAllByOrderByIdDesc();
+    }
+
+    @Override
+    public List<Banner> getAllByBannerType(BannerType bannerType) {
+        return bannerRepository.findAllByBannerType(bannerType);
     }
 
     @Override

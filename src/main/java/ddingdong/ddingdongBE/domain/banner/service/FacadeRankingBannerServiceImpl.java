@@ -3,7 +3,6 @@ package ddingdong.ddingdongBE.domain.banner.service;
 import com.github.f4b6a3.uuid.UuidCreator;
 import ddingdong.ddingdongBE.domain.banner.entity.Banner;
 import ddingdong.ddingdongBE.domain.banner.entity.BannerType;
-import ddingdong.ddingdongBE.domain.banner.repository.BannerRepository;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
@@ -33,7 +32,6 @@ public class FacadeRankingBannerServiceImpl implements FacadeRankingBannerServic
     private static final String IMAGE_CONTENT_TYPE = "image/png";
 
     private final BannerService bannerService;
-    private final BannerRepository bannerRepository;
     private final ClubService clubService;
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
@@ -45,21 +43,16 @@ public class FacadeRankingBannerServiceImpl implements FacadeRankingBannerServic
         deleteExistingRankingBanners();
 
         for (FeedMonthlyRanking ranking : firstPlaceRankings) {
-            try {
-                createBannerForRanking(ranking);
-            } catch (Exception e) {
-                log.error("랭킹 배너 생성 실패. clubId={}, clubName={}: {}",
-                        ranking.getClubId(), ranking.getClubName(), e.getMessage(), e);
-            }
+            createBannerForRanking(ranking);
         }
     }
 
     private void deleteExistingRankingBanners() {
-        List<Banner> existingBanners = bannerRepository.findAllByBannerType(BannerType.FEED_RANKING);
+        List<Banner> existingBanners = bannerService.getAllByBannerType(BannerType.FEED_RANKING);
         for (Banner banner : existingBanners) {
             fileMetaDataService.updateStatusToDelete(DomainType.BANNER_WEB_IMAGE, banner.getId());
             fileMetaDataService.updateStatusToDelete(DomainType.BANNER_MOBILE_IMAGE, banner.getId());
-            bannerRepository.delete(banner);
+            bannerService.delete(banner.getId());
         }
     }
 

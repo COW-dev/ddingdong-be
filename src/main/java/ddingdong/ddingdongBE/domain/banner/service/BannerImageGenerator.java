@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.banner.service;
 
+import ddingdong.ddingdongBE.common.exception.BannerException.BannerImageGenerationException;
 import ddingdong.ddingdongBE.domain.banner.entity.ClubCategoryColor;
 import java.awt.Color;
 import java.awt.Font;
@@ -14,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -39,6 +41,12 @@ public class BannerImageGenerator {
 
     private Font boldBaseFont;
     private Font mediumBaseFont;
+
+    @PostConstruct
+    void init() {
+        this.boldBaseFont = loadFont(BOLD_FONT_PATH);
+        this.mediumBaseFont = loadFont(MEDIUM_FONT_PATH);
+    }
 
     public byte[] generateWebBannerImage(String clubName, BufferedImage clubLogo, String category, int month) {
         BufferedImage banner = new BufferedImage(WEB_WIDTH * SCALE, WEB_HEIGHT * SCALE, BufferedImage.TYPE_INT_ARGB);
@@ -134,7 +142,7 @@ public class BannerImageGenerator {
         int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
         // PC/Title/Bold1: Pretendard Bold 36px, line-height 40px, letter-spacing -1%
-        Font mainFont = createStyledFont(getBoldFont(), Font.BOLD, 36f, -0.01f);
+        Font mainFont = createStyledFont(boldBaseFont, Font.BOLD, 36f, -0.01f);
         graphics.setFont(mainFont);
         graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
@@ -143,7 +151,7 @@ public class BannerImageGenerator {
         graphics.drawString(mainText, textX, mainY);
 
         // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px, letter-spacing 1%
-        Font subFont = createStyledFont(getMediumFont(), Font.PLAIN, 16f, 0.01f);
+        Font subFont = createStyledFont(mediumBaseFont, Font.PLAIN, 16f, 0.01f);
         graphics.setFont(subFont);
         graphics.setColor(Color.decode("#6B7280"));
         FontMetrics subMetrics = graphics.getFontMetrics();
@@ -154,7 +162,7 @@ public class BannerImageGenerator {
 
     private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
         // Mobile/Title: Pretendard Bold 18px, centered
-        Font mainFont = createStyledFont(getBoldFont(), Font.BOLD, 18f, -0.01f);
+        Font mainFont = createStyledFont(boldBaseFont, Font.BOLD, 18f, -0.01f);
         graphics.setFont(mainFont);
         graphics.setColor(new Color(33, 33, 33));
         FontMetrics mainMetrics = graphics.getFontMetrics();
@@ -164,7 +172,7 @@ public class BannerImageGenerator {
         graphics.drawString(mainText, mainX, mainY);
 
         // Mobile/Sub: Pretendard Medium 12px, centered
-        Font subFont = createStyledFont(getMediumFont(), Font.PLAIN, 12f, 0.01f);
+        Font subFont = createStyledFont(mediumBaseFont, Font.PLAIN, 12f, 0.01f);
         graphics.setFont(subFont);
         graphics.setColor(new Color(100, 100, 100));
         FontMetrics subMetrics = graphics.getFontMetrics();
@@ -178,22 +186,6 @@ public class BannerImageGenerator {
         Map<TextAttribute, Object> attributes = new HashMap<>();
         attributes.put(TextAttribute.TRACKING, tracking);
         return sized.deriveFont(attributes);
-    }
-
-    private Font getBoldFont() {
-        if (boldBaseFont != null) {
-            return boldBaseFont;
-        }
-        boldBaseFont = loadFont(BOLD_FONT_PATH);
-        return boldBaseFont;
-    }
-
-    private Font getMediumFont() {
-        if (mediumBaseFont != null) {
-            return mediumBaseFont;
-        }
-        mediumBaseFont = loadFont(MEDIUM_FONT_PATH);
-        return mediumBaseFont;
     }
 
     private Font loadFont(String path) {
@@ -212,7 +204,7 @@ public class BannerImageGenerator {
             ImageIO.write(image, "png", outputStream);
             return outputStream.toByteArray();
         } catch (IOException e) {
-            throw new RuntimeException("배너 이미지 변환 중 오류가 발생했습니다.", e);
+            throw new BannerImageGenerationException();
         }
     }
 }
