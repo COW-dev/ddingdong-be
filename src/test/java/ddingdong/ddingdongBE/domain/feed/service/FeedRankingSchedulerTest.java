@@ -6,6 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.banner.service.FacadeRankingBannerService;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest
 class FeedRankingSchedulerTest extends TestContainerSupport {
@@ -36,6 +38,9 @@ class FeedRankingSchedulerTest extends TestContainerSupport {
 
     @Autowired
     private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
+
+    @MockitoBean
+    private FacadeRankingBannerService facadeRankingBannerService;
 
     @PersistenceContext
     private EntityManager entityManager;
