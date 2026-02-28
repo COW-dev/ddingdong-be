@@ -38,3 +38,14 @@ out/
 
 ### QClass ###
 src/main/generated/**
+
+### AI Tools ###
+.env
+.omc/
+.gemini/
+CLAUDE.local.md
+.claude/settings.local.json
+
+### Local Docs ###
+docs/local/
+.claude/plans/

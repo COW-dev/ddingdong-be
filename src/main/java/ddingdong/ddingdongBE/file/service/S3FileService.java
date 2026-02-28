@@ -114,6 +114,27 @@ public class S3FileService {
         return new UploadedVideoUrlQuery(thumbnailOriginUrl, thumbnailCdnUrl, videoOriginUrl, videoCdnUrl);
     }
 
+    public String uploadBytes(byte[] data, String mimeType, String directory) {
+        UUID fileName = UuidCreator.getTimeOrderedEpoch();
+        String mediaType = ContentType.getMediaTypeFromMimeType(mimeType);
+        LocalDateTime now = LocalDateTime.now();
+
+        String key = String.format("%s/%s/%s/%s/%s",
+                serverProfile, mediaType, formatDate(now), directory, fileName.toString());
+        try {
+            PutObjectRequest putObjectRequest = PutObjectRequest.builder()
+                    .bucket(inputBucket)
+                    .key(key)
+                    .contentType(mimeType)
+                    .build();
+            s3Client.putObject(putObjectRequest, RequestBody.fromBytes(data));
+            return key;
+        } catch (SdkException e) {
+            log.error("AWS Service Error : {}", e.getMessage());
+            throw new AwsService();
+        }
+    }
+
     public String uploadMultipartFile(MultipartFile file, LocalDateTime dateTime, String directory) {
         UUID fileName = UuidCreator.getTimeOrderedEpoch();
         String extension = extractFileExtension(file.getOriginalFilename());

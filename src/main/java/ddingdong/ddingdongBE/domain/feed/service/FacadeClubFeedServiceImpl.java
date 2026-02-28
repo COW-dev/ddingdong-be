@@ -3,6 +3,8 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.FeedCountDto;
+import ddingdong.ddingdongBE.domain.feed.repository.dto.MyFeedStatDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.CreateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.command.UpdateFeedCommand;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedListQuery;
@@ -17,7 +19,10 @@ import ddingdong.ddingdongBE.sse.service.SseConnectionService;
 import ddingdong.ddingdongBE.sse.service.dto.SseEvent;
 import ddingdong.ddingdongBE.sse.service.dto.SseVodProcessingNotificationDto;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Slice;
@@ -33,6 +38,7 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     private final ClubService clubService;
     private final FileMetaDataService fileMetaDataService;
     private final FeedService feedService;
+    private final FeedCommentService feedCommentService;
     private final VodProcessingJobService vodProcessingJobService;
     private final SseConnectionService sseConnectionService;
     private final FeedFileService feedFileService;
@@ -74,17 +80,32 @@ public class FacadeClubFeedServiceImpl implements FacadeClubFeedService {
     @Override
     public MyFeedPageQuery getMyFeedPage(User user, int size, Long currentCursorId) {
         Club club = clubService.getByUserId(user.getId());
+        MyFeedStatDto stat = feedService.getMyFeedStat(club.getId());
         Slice<Feed> feedPage = feedService.getFeedPageByClubId(club.getId(), size, currentCursorId);
         if (feedPage == null) {
-            return MyFeedPageQuery.createEmpty();
+            return MyFeedPageQuery.of(stat, Collections.emptyList(), PagingQuery.createEmpty());
         }
         List<Feed> completeFeeds = feedPage.getContent();
-        List<FeedListQuery> feedListQueries = completeFeeds.stream()
-                .map(feedFileService::extractFeedThumbnailInfo)
-                .toList();
+        List<FeedListQuery> feedListQueries = buildFeedListQueries(completeFeeds);
         PagingQuery pagingQuery = PagingQuery.of(currentCursorId, completeFeeds, feedPage.hasNext());
 
-        return MyFeedPageQuery.of(feedListQueries, pagingQuery);
+        return MyFeedPageQuery.of(stat, feedListQueries, pagingQuery);
+    }
+
+    private List<FeedListQuery> buildFeedListQueries(List<Feed> feeds) {
+        if (feeds.isEmpty()) {
+            return List.of();
+        }
+        List<Long> feedIds = feeds.stream().map(Feed::getId).toList();
+        Map<Long, Long> commentCountMap = feedCommentService.countsByFeedIds(feedIds).stream()
+                .collect(Collectors.toMap(FeedCountDto::getFeedId, FeedCountDto::getCnt));
+
+        return feeds.stream()
+                .map(feed -> FeedListQuery.of(
+                        feed,
+                        feedFileService.extractFeedThumbnailInfo(feed),
+                        commentCountMap.getOrDefault(feed.getId(), 0L)))
+                .toList();
     }
 
     private void checkVodProcessingJobAndNotify(Feed feed) {

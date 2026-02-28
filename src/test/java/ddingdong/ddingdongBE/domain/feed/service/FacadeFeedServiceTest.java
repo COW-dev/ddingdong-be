@@ -10,7 +10,9 @@ import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedComment;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedType;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.FeedQuery;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
@@ -48,6 +50,9 @@ class FacadeFeedServiceTest extends TestContainerSupport {
 
     @Autowired
     private FileMetaDataRepository fileMetaDataRepository;
+
+    @Autowired
+    private FeedCommentRepository feedCommentRepository;
 
     @MockitoBean
     private S3FileService s3FileService;
@@ -93,6 +98,7 @@ class FacadeFeedServiceTest extends TestContainerSupport {
                 .set("club", savedClub)
                 .set("activityContent", "카우 활동내역")
                 .set("feedType", FeedType.IMAGE)
+                .set("likeCount", 0L)
                 .set("createdAt", now)
                 .sample();
         Feed savedFeed = feedRepository.save(feed);
@@ -126,5 +132,73 @@ class FacadeFeedServiceTest extends TestContainerSupport {
         assertThat(info.activityContent()).isEqualTo(savedFeed.getActivityContent());
         assertThat(info.feedType()).isEqualTo(savedFeed.getFeedType().toString());
         assertThat(info.createdDate()).isEqualTo(LocalDate.from(now));
+        assertThat(info.likeCount()).isZero();
+        assertThat(info.commentCount()).isZero();
+        assertThat(info.comments()).isEmpty();
+    }
+
+    @DisplayName("피드 상세 조회 시 좋아요, 댓글 수와 댓글 목록이 포함된다.")
+    @Test
+    void getFeedById_WithLikesAndComments() {
+        // given
+        Club club = fixture.giveMeBuilder(Club.class)
+                .setNull("id")
+                .set("name", "카우")
+                .set("user", null)
+                .set("score", Score.from(BigDecimal.ZERO))
+                .set("clubMembers", null)
+                .set("deletedAt", null)
+                .sample();
+        Club savedClub = clubRepository.save(club);
+
+        UUID clubFileId = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", clubFileId)
+                        .set("domainType", DomainType.CLUB_PROFILE)
+                        .set("entityId", savedClub.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        Feed feed = fixture.giveMeBuilder(Feed.class)
+                .setNull("id")
+                .set("club", savedClub)
+                .set("activityContent", "활동 내역")
+                .set("feedType", FeedType.IMAGE)
+                .set("likeCount", 0L)
+                .set("createdAt", LocalDateTime.now())
+                .sample();
+        Feed savedFeed = feedRepository.save(feed);
+
+        UUID feedFileId = UuidCreator.getTimeOrderedEpoch();
+        fileMetaDataRepository.save(
+                fixture.giveMeBuilder(FileMetaData.class)
+                        .set("id", feedFileId)
+                        .set("domainType", DomainType.FEED_IMAGE)
+                        .set("entityId", savedFeed.getId())
+                        .set("fileStatus", FileStatus.COUPLED)
+                        .sample()
+        );
+
+        feedRepository.addLikeCount(savedFeed.getId(), 1);
+        feedRepository.addLikeCount(savedFeed.getId(), 1);
+        feedCommentRepository.save(FeedComment.builder().feed(savedFeed).uuid("uuid-3").anonymousNumber(1).content("댓글 1").build());
+
+        BDDMockito.given(s3FileService.getUploadedFileUrl(any()))
+                .willReturn(new UploadedFileUrlQuery(null, null, null));
+        BDDMockito.given(s3FileService.getUploadedFileUrlAndName(any(), any()))
+                .willReturn(new UploadedFileUrlAndNameQuery(null, null, null, null));
+
+        // when
+        FeedQuery info = facadeFeedService.getById(savedFeed.getId());
+
+        // then
+        assertThat(info.likeCount()).isEqualTo(2);
+        assertThat(info.commentCount()).isEqualTo(1);
+        assertThat(info.comments()).hasSize(1);
+        assertThat(info.comments().get(0).uuid()).isEqualTo("uuid-3");
+        assertThat(info.comments().get(0).content()).isEqualTo("댓글 1");
+        assertThat(info.comments().get(0).anonymousName()).isEqualTo("익명1");
     }
 }
