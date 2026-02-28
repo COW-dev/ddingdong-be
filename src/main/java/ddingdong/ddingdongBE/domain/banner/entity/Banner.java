@@ -4,6 +4,8 @@ import ddingdong.ddingdongBE.common.BaseEntity;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -35,14 +37,19 @@ public class Banner extends BaseEntity {
 
     private String link;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "banner_type", nullable = false)
+    private BannerType bannerType;
+
     @Column(name = "deleted_at", columnDefinition = "TIMESTAMP")
     private LocalDateTime deletedAt;
 
     @Builder
-    private Banner(Long id, User user, String link) {
+    private Banner(Long id, User user, String link, BannerType bannerType) {
         this.id = id;
         this.user = user;
         this.link = link;
+        this.bannerType = bannerType == null ? BannerType.MANUAL : bannerType;
     }
 
 }
