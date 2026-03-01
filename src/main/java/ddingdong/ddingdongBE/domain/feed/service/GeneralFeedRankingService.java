@@ -2,6 +2,8 @@ package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
@@ -24,6 +26,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
     private static final int COMMENT_WEIGHT = 5;
 
     private final FeedRepository feedRepository;
+    private final FeedMonthlyRankingRepository feedMonthlyRankingRepository;
     private final ClubService clubService;
 
     @Override

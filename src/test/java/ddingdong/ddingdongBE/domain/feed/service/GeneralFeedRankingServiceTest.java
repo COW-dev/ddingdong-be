@@ -5,12 +5,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
+import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
@@ -40,6 +42,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
+
+    @Autowired
+    private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
 
     @Autowired
     private UserRepository userRepository;
