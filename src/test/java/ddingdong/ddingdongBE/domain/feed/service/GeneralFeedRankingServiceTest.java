@@ -280,18 +280,17 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달에 피드가 있으면 lastMonthRank가 반환된다")
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달 스냅샷이 있으면 lastMonthRank가 반환된다")
     @Test
     void getClubMonthlyStatus_withLastMonthRank() {
         // given
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 저번 달 피드 생성
+        // 저번 달 스냅샷 저장
         LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), lastMonth.getYear(), lastMonth.getMonthValue(), 1));
 
         // 이번 달 피드 생성
         feedRepository.save(FeedFixture.createImageFeed(club, "이번달 피드"));
@@ -302,7 +301,7 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         // when
         ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
 
-        // then — 저번 달에도 피드가 있으므로 lastMonthRank > 0
+        // then — 저번 달 스냅샷이 있으므로 lastMonthRank > 0
         assertSoftly(softly -> {
             softly.assertThat(result.rank()).isEqualTo(1);
             softly.assertThat(result.lastMonthRank()).isEqualTo(1);
@@ -336,11 +335,10 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 저번 달 피드만 생성 (이번 달 피드 없음)
+        // 저번 달 스냅샷만 저장 (이번 달 피드 없음)
         LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), lastMonth.getYear(), lastMonth.getMonthValue(), 1));
 
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
@@ -363,11 +361,11 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 전년도 12월 피드 생성
         int currentYear = LocalDate.now().getYear();
-        Feed decemberFeed = feedRepository.save(FeedFixture.createImageFeed(club, "12월 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(LocalDateTime.of(currentYear - 1, 12, 15, 10, 0)), decemberFeed.getId());
+
+        // 전년도 12월 스냅샷 저장
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), currentYear - 1, 12, 1));
 
         // 1월 피드 생성
         Feed januaryFeed = feedRepository.save(FeedFixture.createImageFeed(club, "1월 피드"));

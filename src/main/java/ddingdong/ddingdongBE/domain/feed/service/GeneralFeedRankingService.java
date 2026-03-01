@@ -73,12 +73,9 @@ public class GeneralFeedRankingService implements FeedRankingService {
         int lastYear = month == 1 ? year - 1 : year;
         int lastMonth = month == 1 ? 12 : month - 1;
 
-        List<ClubFeedRankingQuery> lastMonthRankings = getClubFeedRanking(lastYear, lastMonth);
-        return lastMonthRankings.stream()
-                .filter(ranking -> ranking.clubId().equals(clubId))
-                .filter(ranking -> ranking.totalScore() > 0)
-                .findFirst()
-                .map(ClubFeedRankingQuery::rank)
+        return feedMonthlyRankingRepository
+                .findByClubIdAndTargetYearAndTargetMonth(clubId, lastYear, lastMonth)
+                .map(FeedMonthlyRanking::getRanking)
                 .orElse(0);
     }
 
