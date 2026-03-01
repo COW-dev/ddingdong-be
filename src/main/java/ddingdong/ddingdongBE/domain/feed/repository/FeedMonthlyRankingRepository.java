@@ -10,4 +10,7 @@ public interface FeedMonthlyRankingRepository extends JpaRepository<FeedMonthlyR
 
     List<FeedMonthlyRanking> findAllByTargetYearAndTargetMonthAndRanking(
             int targetYear, int targetMonth, int ranking);
+
+    List<FeedMonthlyRanking> findAllByTargetYearAndTargetMonthOrderByRankingAsc(
+            int targetYear, int targetMonth);
 }

@@ -2,6 +2,8 @@ package ddingdong.ddingdongBE.domain.feed.service;
 
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
@@ -24,6 +26,7 @@ public class GeneralFeedRankingService implements FeedRankingService {
     private static final int COMMENT_WEIGHT = 5;
 
     private final FeedRepository feedRepository;
+    private final FeedMonthlyRankingRepository feedMonthlyRankingRepository;
     private final ClubService clubService;
 
     @Override
@@ -82,14 +85,37 @@ public class GeneralFeedRankingService implements FeedRankingService {
                 .orElse(0);
     }
 
-    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, MonthlyFeedRankingDto rawRanking) {
-        long feedScore = rawRanking.getFeedCount() * FEED_WEIGHT;
-        long viewScore = rawRanking.getViewCount() * VIEW_WEIGHT;
-        long likeScore = rawRanking.getLikeCount() * LIKE_WEIGHT;
-        long commentScore = rawRanking.getCommentCount() * COMMENT_WEIGHT;
+    @Override
+    public List<ClubFeedRankingQuery> getClubFeedRankingSnapshot(int year, int month) {
+        List<FeedMonthlyRanking> snapshots = feedMonthlyRankingRepository
+                .findAllByTargetYearAndTargetMonthOrderByRankingAsc(year, month);
+
+        return snapshots.stream()
+                .map(this::toClubFeedRankingQueryFromSnapshot)
+                .toList();
+    }
+
+    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, Long clubId, String clubName,
+            long feedCount, long viewCount, long likeCount, long commentCount) {
+        long feedScore = feedCount * FEED_WEIGHT;
+        long viewScore = viewCount * VIEW_WEIGHT;
+        long likeScore = likeCount * LIKE_WEIGHT;
+        long commentScore = commentCount * COMMENT_WEIGHT;
         long totalScore = feedScore + viewScore + likeScore + commentScore;
-        return ClubFeedRankingQuery.of(rank, rawRanking.getClubId(), rawRanking.getClubName(),
+        return ClubFeedRankingQuery.of(rank, clubId, clubName,
                 feedScore, viewScore, likeScore, commentScore, totalScore);
+    }
+
+    private ClubFeedRankingQuery toClubFeedRankingQueryFromSnapshot(FeedMonthlyRanking snapshot) {
+        return toClubFeedRankingQuery(snapshot.getRanking(), snapshot.getClubId(), snapshot.getClubName(),
+                snapshot.getFeedCount(), snapshot.getViewCount(),
+                snapshot.getLikeCount(), snapshot.getCommentCount());
+    }
+
+    private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, MonthlyFeedRankingDto rawRanking) {
+        return toClubFeedRankingQuery(rank, rawRanking.getClubId(), rawRanking.getClubName(),
+                rawRanking.getFeedCount(), rawRanking.getViewCount(),
+                rawRanking.getLikeCount(), rawRanking.getCommentCount());
     }
 
     private long calculateScore(MonthlyFeedRankingDto rawRanking) {

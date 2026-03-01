@@ -5,12 +5,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
+import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
@@ -40,6 +43,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
+
+    @Autowired
+    private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -382,6 +388,66 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertSoftly(softly -> {
             softly.assertThat(result.rank()).isEqualTo(1);
             softly.assertThat(result.lastMonthRank()).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 스냅샷이 있으면 ranking 순서대로 조회된다")
+    @Test
+    void getClubFeedRankingSnapshot_sortedByRanking() {
+        // given
+        FeedMonthlyRanking rank1 = FeedMonthlyRankingFixture.create(
+                1L, "동아리A", 10, 100, 50, 20, 2026, 2, 1);
+        FeedMonthlyRanking rank2 = FeedMonthlyRankingFixture.create(
+                2L, "동아리B", 5, 50, 25, 10, 2026, 2, 2);
+        FeedMonthlyRanking rank3 = FeedMonthlyRankingFixture.create(
+                3L, "동아리C", 3, 30, 15, 5, 2026, 2, 3);
+        feedMonthlyRankingRepository.saveAll(List.of(rank1, rank2, rank3));
+
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        assertThat(result).hasSize(3);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).rank()).isEqualTo(1);
+            softly.assertThat(result.get(0).clubName()).isEqualTo("동아리A");
+            softly.assertThat(result.get(1).rank()).isEqualTo(2);
+            softly.assertThat(result.get(1).clubName()).isEqualTo("동아리B");
+            softly.assertThat(result.get(2).rank()).isEqualTo(3);
+            softly.assertThat(result.get(2).clubName()).isEqualTo("동아리C");
+        });
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 스냅샷이 없으면 빈 리스트가 반환된다")
+    @Test
+    void getClubFeedRankingSnapshot_emptyWhenNoSnapshot() {
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 가중치 점수가 정확히 계산된다")
+    @Test
+    void getClubFeedRankingSnapshot_calculatesWeightedScores() {
+        // given — feedCount=10, viewCount=100, likeCount=50, commentCount=20
+        FeedMonthlyRanking snapshot = FeedMonthlyRankingFixture.create(
+                1L, "동아리A", 10, 100, 50, 20, 2026, 2, 1);
+        feedMonthlyRankingRepository.save(snapshot);
+
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        // feedScore=10*10=100, viewScore=100*1=100, likeScore=50*3=150, commentScore=20*5=100, total=450
+        assertThat(result).hasSize(1);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).feedScore()).isEqualTo(100L);
+            softly.assertThat(result.get(0).viewScore()).isEqualTo(100L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(150L);
+            softly.assertThat(result.get(0).commentScore()).isEqualTo(100L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(450L);
         });
     }
 }
