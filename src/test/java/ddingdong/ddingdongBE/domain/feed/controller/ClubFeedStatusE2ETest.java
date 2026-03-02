@@ -80,7 +80,7 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
         String token = signIn("club123", "1234");
 
         // when & then
-        // score = feedCount(2)*10 + viewCount(0)*1 + likeCount(1)*3 + commentCount(1)*5 = 28
+        // score = feedCount(2)*10 + viewCount(0)*3 + likeCount(1)*1 + commentCount(1)*5 = 26
         Map<?, ?> response = given()
                 .contentType(ContentType.JSON)
                 .header("Authorization", "Bearer " + token)
@@ -93,14 +93,14 @@ class ClubFeedStatusE2ETest extends NonTxTestContainerSupport {
                 .extract()
                 .as(Map.class);
 
-        // feedScore = 2*10=20, viewScore = 0, likeScore = 1*3=3, commentScore = 1*5=5, totalScore = 28
+        // feedScore = 2*10=20, viewScore = 0, likeScore = 1*1=1, commentScore = 1*5=5, totalScore = 26
         assertSoftly(softly -> {
             softly.assertThat(response.get("year")).isEqualTo(year);
             softly.assertThat(response.get("month")).isEqualTo(month);
             softly.assertThat(((Number) response.get("feedScore")).longValue()).isEqualTo(20L);
-            softly.assertThat(((Number) response.get("likeScore")).longValue()).isEqualTo(3L);
+            softly.assertThat(((Number) response.get("likeScore")).longValue()).isEqualTo(1L);
             softly.assertThat(((Number) response.get("commentScore")).longValue()).isEqualTo(5L);
-            softly.assertThat(((Number) response.get("totalScore")).longValue()).isEqualTo(28L);
+            softly.assertThat(((Number) response.get("totalScore")).longValue()).isEqualTo(26L);
             softly.assertThat(((Number) response.get("rank")).intValue()).isEqualTo(1);
             softly.assertThat(((Number) response.get("lastMonthRank")).intValue()).isEqualTo(0);
         });
