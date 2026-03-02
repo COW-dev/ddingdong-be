@@ -21,4 +21,11 @@ public class AdminFeedController implements AdminFeedApi {
                 feedRankingService.getClubFeedRanking(year, month)
         );
     }
+
+    @Override
+    public List<AdminClubFeedRankingResponse> getClubFeedRankingSnapshot(int year, int month) {
+        return AdminClubFeedRankingResponse.from(
+                feedRankingService.getClubFeedRankingSnapshot(year, month)
+        );
+    }
 }
