@@ -31,4 +31,15 @@ public interface AdminFeedApi {
             @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year,
             @RequestParam("month") @Min(value = 1, message = "month는 1 이상이어야 합니다.") @Max(value = 12, message = "month는 12 이하여야 합니다.") int month
     );
+
+    @Operation(summary = "총동연 피드 랭킹 스냅샷 조회 API")
+    @ApiResponse(responseCode = "200", description = "동아리별 피드 랭킹 스냅샷 조회 성공",
+            content = @Content(array = @ArraySchema(schema = @Schema(implementation = AdminClubFeedRankingResponse.class))))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/ranking/snapshot")
+    List<AdminClubFeedRankingResponse> getClubFeedRankingSnapshot(
+            @RequestParam("year") @Min(value = 2000, message = "year는 2000 이상이어야 합니다.") @Max(value = 2100, message = "year는 2100 이하여야 합니다.") int year,
+            @RequestParam("month") @Min(value = 1, message = "month는 1 이상이어야 합니다.") @Max(value = 12, message = "month는 12 이하여야 합니다.") int month
+    );
 }
