@@ -21,8 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class GeneralFeedRankingService implements FeedRankingService {
 
     private static final int FEED_WEIGHT = 10;
-    private static final int VIEW_WEIGHT = 1;
-    private static final int LIKE_WEIGHT = 3;
+    private static final int VIEW_WEIGHT = 3;
+    private static final int LIKE_WEIGHT = 1;
     private static final int COMMENT_WEIGHT = 5;
 
     private final FeedRepository feedRepository;
