@@ -194,14 +194,14 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRanking(year, month);
 
         // then
-        // score = feedCount(1)*10 + viewCount(0)*1 + likeCount(2)*3 + commentCount(1)*5 = 10+0+6+5 = 21
+        // score = feedCount(1)*10 + viewCount(0)*3 + likeCount(2)*1 + commentCount(1)*5 = 10+0+2+5 = 17
         assertThat(result).hasSize(1);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("활발한동아리");
             softly.assertThat(result.get(0).feedScore()).isEqualTo(10L);
-            softly.assertThat(result.get(0).likeScore()).isEqualTo(6L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(2L);
             softly.assertThat(result.get(0).commentScore()).isEqualTo(5L);
-            softly.assertThat(result.get(0).totalScore()).isEqualTo(21L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(17L);
         });
     }
 
@@ -438,14 +438,14 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
 
         // then
-        // feedScore=10*10=100, viewScore=100*1=100, likeScore=50*3=150, commentScore=20*5=100, total=450
+        // feedScore=10*10=100, viewScore=100*3=300, likeScore=50*1=50, commentScore=20*5=100, total=550
         assertThat(result).hasSize(1);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).feedScore()).isEqualTo(100L);
-            softly.assertThat(result.get(0).viewScore()).isEqualTo(100L);
-            softly.assertThat(result.get(0).likeScore()).isEqualTo(150L);
+            softly.assertThat(result.get(0).viewScore()).isEqualTo(300L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(50L);
             softly.assertThat(result.get(0).commentScore()).isEqualTo(100L);
-            softly.assertThat(result.get(0).totalScore()).isEqualTo(450L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(550L);
         });
     }
 }
