@@ -1,9 +1,9 @@
 ---
 name: review-fix-plan
 description: |
-  코드 리뷰 후 수정 계획 문서를 생성하는 스킬.
+  코드 리뷰 후 수정 계획 문서를 생성하는 스킬. Use PROACTIVELY after code review completion.
   코드 리뷰 결과를 구조화된 마크다운 문서로 docs/local/ 하위에 저장한다.
-  "리뷰 문서 만들어줘", "코드리뷰 정리해줘", "/review-fix-plan" 요청 시 사용.
+  "리뷰 문서 만들어줘", "코드리뷰 정리해줘", "/review-fix-plan" 또는 리뷰 완료 후 자동 트리거.
 ---
 
 # Review Fix Plan
