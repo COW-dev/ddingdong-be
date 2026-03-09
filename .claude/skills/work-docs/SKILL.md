@@ -1,9 +1,9 @@
 ---
 name: work-docs
 description: |
-  This skill should be used when the user asks to document their work,
-  requests a summary of the conversation as a doc, or uses commands like
-  "문서화해줘", "작업 내용 정리해줘", "/document", "/docs".
+  Use PROACTIVELY when the user asks to document work, summarize the session,
+  or says "문서화해줘", "작업 내용 정리해줘", "/document", "/docs".
+  Also trigger automatically after major feature completion to offer documentation.
   Creates structured Markdown files under docs/ reflecting completed work.
 ---
 
