@@ -70,7 +70,7 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         // 동아리A: 피드 1개 → score = 10
         feedRepository.save(FeedFixture.createImageFeed(clubA, "피드A"));
 
-        // 동아리B: 피드 2개 + 좋아요 1개 → score = 2*10 + 1*3 = 23
+        // 동아리B: 피드 2개 + 좋아요 1개 → score = 2*10 + 1*1 = 21
         Feed feedB = feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B1"));
         feedRepository.save(FeedFixture.createImageFeed(clubB, "피드B2"));
         given()
@@ -105,9 +105,9 @@ class AdminFeedControllerE2ETest extends NonTxTestContainerSupport {
         assertThat(first.rank()).isEqualTo(1);
         assertThat(first.feedScore()).isEqualTo(2 * 10);
         assertThat(first.viewScore()).isEqualTo(0);
-        assertThat(first.likeScore()).isEqualTo(1 * 3);
+        assertThat(first.likeScore()).isEqualTo(1);
         assertThat(first.commentScore()).isEqualTo(0);
-        assertThat(first.totalScore()).isEqualTo(23);
+        assertThat(first.totalScore()).isEqualTo(21);
 
         AdminClubFeedRankingResponse second = response.get(1);
         assertThat(second.clubName()).isEqualTo("동아리A");

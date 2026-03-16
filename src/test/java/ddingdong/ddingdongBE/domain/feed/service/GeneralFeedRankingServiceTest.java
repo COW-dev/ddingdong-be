@@ -5,12 +5,15 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.FeedFixture;
+import ddingdong.ddingdongBE.common.fixture.FeedMonthlyRankingFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
 import ddingdong.ddingdongBE.domain.feed.entity.Feed;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedCommentRepository;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubFeedRankingQuery;
 import ddingdong.ddingdongBE.domain.feed.service.dto.query.ClubMonthlyStatusQuery;
@@ -40,6 +43,9 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
 
     @Autowired
     private FeedCommentRepository feedCommentRepository;
+
+    @Autowired
+    private FeedMonthlyRankingRepository feedMonthlyRankingRepository;
 
     @Autowired
     private UserRepository userRepository;
@@ -188,14 +194,14 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRanking(year, month);
 
         // then
-        // score = feedCount(1)*10 + viewCount(0)*1 + likeCount(2)*3 + commentCount(1)*5 = 10+0+6+5 = 21
+        // score = feedCount(1)*10 + viewCount(0)*3 + likeCount(2)*1 + commentCount(1)*5 = 10+0+2+5 = 17
         assertThat(result).hasSize(1);
         assertSoftly(softly -> {
             softly.assertThat(result.get(0).clubName()).isEqualTo("활발한동아리");
             softly.assertThat(result.get(0).feedScore()).isEqualTo(10L);
-            softly.assertThat(result.get(0).likeScore()).isEqualTo(6L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(2L);
             softly.assertThat(result.get(0).commentScore()).isEqualTo(5L);
-            softly.assertThat(result.get(0).totalScore()).isEqualTo(21L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(17L);
         });
     }
 
@@ -280,18 +286,17 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         });
     }
 
-    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달에 피드가 있으면 lastMonthRank가 반환된다")
+    @DisplayName("동아리 이달의 현황 조회 - 성공: 저번 달 스냅샷이 있으면 lastMonthRank가 반환된다")
     @Test
     void getClubMonthlyStatus_withLastMonthRank() {
         // given
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 저번 달 피드 생성
+        // 저번 달 스냅샷 저장
         LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), lastMonth.getYear(), lastMonth.getMonthValue(), 1));
 
         // 이번 달 피드 생성
         feedRepository.save(FeedFixture.createImageFeed(club, "이번달 피드"));
@@ -302,7 +307,7 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         // when
         ClubMonthlyStatusQuery result = feedRankingService.getClubMonthlyStatus(user.getId(), year, month);
 
-        // then — 저번 달에도 피드가 있으므로 lastMonthRank > 0
+        // then — 저번 달 스냅샷이 있으므로 lastMonthRank > 0
         assertSoftly(softly -> {
             softly.assertThat(result.rank()).isEqualTo(1);
             softly.assertThat(result.lastMonthRank()).isEqualTo(1);
@@ -336,11 +341,10 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 저번 달 피드만 생성 (이번 달 피드 없음)
+        // 저번 달 스냅샷만 저장 (이번 달 피드 없음)
         LocalDate lastMonth = LocalDate.now().minusMonths(1);
-        Feed lastMonthFeed = feedRepository.save(FeedFixture.createImageFeed(club, "저번달 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(lastMonth.atStartOfDay()), lastMonthFeed.getId());
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), lastMonth.getYear(), lastMonth.getMonthValue(), 1));
 
         int year = LocalDate.now().getYear();
         int month = LocalDate.now().getMonthValue();
@@ -363,11 +367,11 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         User user = userRepository.save(UserFixture.createClubUser());
         Club club = clubRepository.save(ClubFixture.createClub(user));
 
-        // 전년도 12월 피드 생성
         int currentYear = LocalDate.now().getYear();
-        Feed decemberFeed = feedRepository.save(FeedFixture.createImageFeed(club, "12월 피드"));
-        jdbcTemplate.update("UPDATE feed SET created_at = ? WHERE id = ?",
-                Timestamp.valueOf(LocalDateTime.of(currentYear - 1, 12, 15, 10, 0)), decemberFeed.getId());
+
+        // 전년도 12월 스냅샷 저장
+        feedMonthlyRankingRepository.save(FeedMonthlyRankingFixture.createWithRanking(
+                club.getId(), club.getName(), currentYear - 1, 12, 1));
 
         // 1월 피드 생성
         Feed januaryFeed = feedRepository.save(FeedFixture.createImageFeed(club, "1월 피드"));
@@ -382,6 +386,66 @@ class GeneralFeedRankingServiceTest extends TestContainerSupport {
         assertSoftly(softly -> {
             softly.assertThat(result.rank()).isEqualTo(1);
             softly.assertThat(result.lastMonthRank()).isEqualTo(1);
+        });
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 스냅샷이 있으면 ranking 순서대로 조회된다")
+    @Test
+    void getClubFeedRankingSnapshot_sortedByRanking() {
+        // given
+        FeedMonthlyRanking rank1 = FeedMonthlyRankingFixture.create(
+                1L, "동아리A", 10, 100, 50, 20, 2026, 2, 1);
+        FeedMonthlyRanking rank2 = FeedMonthlyRankingFixture.create(
+                2L, "동아리B", 5, 50, 25, 10, 2026, 2, 2);
+        FeedMonthlyRanking rank3 = FeedMonthlyRankingFixture.create(
+                3L, "동아리C", 3, 30, 15, 5, 2026, 2, 3);
+        feedMonthlyRankingRepository.saveAll(List.of(rank1, rank2, rank3));
+
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        assertThat(result).hasSize(3);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).rank()).isEqualTo(1);
+            softly.assertThat(result.get(0).clubName()).isEqualTo("동아리A");
+            softly.assertThat(result.get(1).rank()).isEqualTo(2);
+            softly.assertThat(result.get(1).clubName()).isEqualTo("동아리B");
+            softly.assertThat(result.get(2).rank()).isEqualTo(3);
+            softly.assertThat(result.get(2).clubName()).isEqualTo("동아리C");
+        });
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 스냅샷이 없으면 빈 리스트가 반환된다")
+    @Test
+    void getClubFeedRankingSnapshot_emptyWhenNoSnapshot() {
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        assertThat(result).isEmpty();
+    }
+
+    @DisplayName("피드 랭킹 스냅샷 조회 - 성공: 가중치 점수가 정확히 계산된다")
+    @Test
+    void getClubFeedRankingSnapshot_calculatesWeightedScores() {
+        // given — feedCount=10, viewCount=100, likeCount=50, commentCount=20
+        FeedMonthlyRanking snapshot = FeedMonthlyRankingFixture.create(
+                1L, "동아리A", 10, 100, 50, 20, 2026, 2, 1);
+        feedMonthlyRankingRepository.save(snapshot);
+
+        // when
+        List<ClubFeedRankingQuery> result = feedRankingService.getClubFeedRankingSnapshot(2026, 2);
+
+        // then
+        // feedScore=10*10=100, viewScore=100*3=300, likeScore=50*1=50, commentScore=20*5=100, total=550
+        assertThat(result).hasSize(1);
+        assertSoftly(softly -> {
+            softly.assertThat(result.get(0).feedScore()).isEqualTo(100L);
+            softly.assertThat(result.get(0).viewScore()).isEqualTo(300L);
+            softly.assertThat(result.get(0).likeScore()).isEqualTo(50L);
+            softly.assertThat(result.get(0).commentScore()).isEqualTo(100L);
+            softly.assertThat(result.get(0).totalScore()).isEqualTo(550L);
         });
     }
 }

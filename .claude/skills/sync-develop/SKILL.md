@@ -1,8 +1,8 @@
 ---
 name: sync-develop
 description: |
-  develop 브랜치로 체크아웃하고 최신 코드를 pull 해오는 스킬.
-  "develop 동기화", "develop pull", "/sync-develop" 요청 시 사용.
+  develop 브랜치로 체크아웃하고 최신 코드를 pull 해오는 스킬. Use PROACTIVELY when
+  user mentions "develop 동기화", "develop pull", "최신 코드", 또는 새 브랜치 분기 전 자동 제안.
 ---
 
 # Sync Develop
