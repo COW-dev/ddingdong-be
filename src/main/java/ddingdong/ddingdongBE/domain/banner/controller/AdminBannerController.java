@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.banner.api.AdminBannerApi;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.request.CreateBannerRequest;
 import ddingdong.ddingdongBE.domain.banner.controller.dto.response.AdminBannerListResponse;
 import ddingdong.ddingdongBE.domain.banner.service.FacadeAdminBannerService;
+import ddingdong.ddingdongBE.domain.banner.service.FacadeRankingBannerService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AdminBannerController implements AdminBannerApi {
 
     private final FacadeAdminBannerService facadeAdminBannerService;
+    private final FacadeRankingBannerService facadeRankingBannerService;
 
     @Override
     public void createBanner(PrincipalDetails principalDetails, CreateBannerRequest request) {
@@ -34,4 +36,8 @@ public class AdminBannerController implements AdminBannerApi {
         facadeAdminBannerService.delete(bannerId);
     }
 
+    @Override
+    public void regenerateRankingBanners() {
+        facadeRankingBannerService.regenerateLatestRankingBanners();
+    }
 }
