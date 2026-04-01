@@ -6,4 +6,6 @@ import java.util.List;
 public interface FacadeRankingBannerService {
 
     void createRankingBanners(List<FeedMonthlyRanking> firstPlaceRankings);
+
+    void regenerateLatestRankingBanners();
 }
