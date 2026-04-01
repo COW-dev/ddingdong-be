@@ -51,4 +51,10 @@ public interface AdminBannerApi {
     @DeleteMapping("/{bannerId}")
     void deleteBanner(@PathVariable("bannerId") Long bannerId);
 
+    @Operation(summary = "랭킹 배너 재생성 API (임시)")
+    @ApiResponse(responseCode = "204", description = "랭킹 배너 재생성 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PostMapping("/ranking/regenerate")
+    void regenerateRankingBanners();
 }
