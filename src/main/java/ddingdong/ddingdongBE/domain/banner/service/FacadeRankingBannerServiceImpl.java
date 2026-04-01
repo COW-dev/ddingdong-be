@@ -6,6 +6,7 @@ import ddingdong.ddingdongBE.domain.banner.entity.BannerType;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
+import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileMetaData;
 import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
@@ -14,6 +15,7 @@ import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlQuery;
 import java.awt.image.BufferedImage;
 import java.net.URI;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 import javax.imageio.ImageIO;
@@ -36,6 +38,7 @@ public class FacadeRankingBannerServiceImpl implements FacadeRankingBannerServic
     private final FileMetaDataService fileMetaDataService;
     private final S3FileService s3FileService;
     private final BannerImageGenerator bannerImageGenerator;
+    private final FeedMonthlyRankingRepository feedMonthlyRankingRepository;
 
     @Override
     @Transactional
@@ -45,6 +48,25 @@ public class FacadeRankingBannerServiceImpl implements FacadeRankingBannerServic
         for (FeedMonthlyRanking ranking : firstPlaceRankings) {
             createBannerForRanking(ranking);
         }
+    }
+
+    @Override
+    @Transactional
+    public void regenerateLatestRankingBanners() {
+        LocalDate lastMonth = LocalDate.now().minusMonths(1);
+        List<FeedMonthlyRanking> firstPlaceRankings =
+                feedMonthlyRankingRepository.findAllByTargetYearAndTargetMonthAndRanking(
+                        lastMonth.getYear(), lastMonth.getMonthValue(), 1);
+
+        if (firstPlaceRankings.isEmpty()) {
+            log.info("재생성할 랭킹 1위 동아리가 없습니다. year={}, month={}",
+                    lastMonth.getYear(), lastMonth.getMonthValue());
+            return;
+        }
+
+        createRankingBanners(firstPlaceRankings);
+        log.info("랭킹 배너 재생성 완료. year={}, month={}, count={}",
+                lastMonth.getYear(), lastMonth.getMonthValue(), firstPlaceRankings.size());
     }
 
     private void deleteExistingRankingBanners() {

@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.banner.entity.ClubCategoryColor;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.font.TextAttribute;
@@ -190,13 +191,18 @@ public class BannerImageGenerator {
 
     private Font loadFont(String path) {
         try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (fontStream != null) {
-                return Font.createFont(Font.TRUETYPE_FONT, fontStream);
+            if (fontStream == null) {
+                throw new BannerImageGenerationException();
             }
+            Font font = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+            return font;
+        } catch (BannerImageGenerationException e) {
+            throw e;
         } catch (Exception e) {
-            log.warn("커스텀 폰트 로드 실패 ({}), 기본 폰트 사용: {}", path, e.getMessage());
+            log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
+            throw new BannerImageGenerationException();
         }
-        return new Font("SansSerif", Font.BOLD, 36);
     }
 
     private byte[] toPngBytes(BufferedImage image) {
