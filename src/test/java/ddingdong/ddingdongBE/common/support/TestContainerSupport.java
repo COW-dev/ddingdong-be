@@ -22,7 +22,7 @@ import org.testcontainers.containers.MySQLContainer;
 @Transactional
 public abstract class TestContainerSupport {
 
-  private static final String MYSQL_IMAGE = "mysql:8";
+  private static final String MYSQL_IMAGE = "mysql:8.4.6";
   private static final int MYSQL_PORT = 3306;
   private static final JdbcDatabaseContainer<?> MYSQL;
 
