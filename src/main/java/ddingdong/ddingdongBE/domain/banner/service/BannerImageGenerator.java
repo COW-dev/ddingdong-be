@@ -142,8 +142,8 @@ public class BannerImageGenerator {
         int textBlockHeight = 68;
         int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
-        // PC/Title/Bold1: Pretendard Bold 36px, line-height 40px, letter-spacing -1%
-        Font mainFont = createStyledFont(boldBaseFont, Font.BOLD, 36f, -0.01f);
+        // Use the Pretendard-Bold font face without applying Java synthetic bold style.
+        Font mainFont = createStyledFont(boldBaseFont, Font.PLAIN, 36f, -0.01f);
         graphics.setFont(mainFont);
         graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
@@ -162,8 +162,7 @@ public class BannerImageGenerator {
     }
 
     private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
-        // Mobile/Title: Pretendard Bold 18px, centered
-        Font mainFont = createStyledFont(boldBaseFont, Font.BOLD, 18f, -0.01f);
+        Font mainFont = createStyledFont(boldBaseFont, Font.PLAIN, 18f, -0.01f);
         graphics.setFont(mainFont);
         graphics.setColor(new Color(33, 33, 33));
         FontMetrics mainMetrics = graphics.getFontMetrics();
