@@ -20,10 +20,10 @@ import lombok.NoArgsConstructor;
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"club_id", "target_year", "target_month"}))
 public class FeedMonthlyRanking extends BaseEntity {
 
-    private static final int FEED_WEIGHT = 10;
-    private static final int VIEW_WEIGHT = 1;
-    private static final int LIKE_WEIGHT = 3;
-    private static final int COMMENT_WEIGHT = 5;
+    public static final int FEED_WEIGHT = 10;
+    public static final int VIEW_WEIGHT = 3;
+    public static final int LIKE_WEIGHT = 1;
+    public static final int COMMENT_WEIGHT = 5;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

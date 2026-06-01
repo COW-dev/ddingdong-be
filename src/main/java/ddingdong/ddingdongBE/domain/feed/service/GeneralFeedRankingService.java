@@ -20,11 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional(readOnly = true)
 public class GeneralFeedRankingService implements FeedRankingService {
 
-    private static final int FEED_WEIGHT = 10;
-    private static final int VIEW_WEIGHT = 3;
-    private static final int LIKE_WEIGHT = 1;
-    private static final int COMMENT_WEIGHT = 5;
-
     private final FeedRepository feedRepository;
     private final FeedMonthlyRankingRepository feedMonthlyRankingRepository;
     private final ClubService clubService;
@@ -94,10 +89,10 @@ public class GeneralFeedRankingService implements FeedRankingService {
 
     private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, Long clubId, String clubName,
             long feedCount, long viewCount, long likeCount, long commentCount) {
-        long feedScore = feedCount * FEED_WEIGHT;
-        long viewScore = viewCount * VIEW_WEIGHT;
-        long likeScore = likeCount * LIKE_WEIGHT;
-        long commentScore = commentCount * COMMENT_WEIGHT;
+        long feedScore = feedCount * FeedMonthlyRanking.FEED_WEIGHT;
+        long viewScore = viewCount * FeedMonthlyRanking.VIEW_WEIGHT;
+        long likeScore = likeCount * FeedMonthlyRanking.LIKE_WEIGHT;
+        long commentScore = commentCount * FeedMonthlyRanking.COMMENT_WEIGHT;
         long totalScore = feedScore + viewScore + likeScore + commentScore;
         return ClubFeedRankingQuery.of(rank, clubId, clubName,
                 feedScore, viewScore, likeScore, commentScore, totalScore);
@@ -116,9 +111,9 @@ public class GeneralFeedRankingService implements FeedRankingService {
     }
 
     private long calculateScore(MonthlyFeedRankingDto rawRanking) {
-        return rawRanking.getFeedCount() * FEED_WEIGHT
-                + rawRanking.getViewCount() * VIEW_WEIGHT
-                + rawRanking.getLikeCount() * LIKE_WEIGHT
-                + rawRanking.getCommentCount() * COMMENT_WEIGHT;
+        return rawRanking.getFeedCount() * FeedMonthlyRanking.FEED_WEIGHT
+                + rawRanking.getViewCount() * FeedMonthlyRanking.VIEW_WEIGHT
+                + rawRanking.getLikeCount() * FeedMonthlyRanking.LIKE_WEIGHT
+                + rawRanking.getCommentCount() * FeedMonthlyRanking.COMMENT_WEIGHT;
     }
 }
