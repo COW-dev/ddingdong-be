@@ -13,7 +13,7 @@ class FeedMonthlyRankingTest {
     void calculateScore_appliesWeightFormula() {
         // given
         // feedCount=10, viewCount=100, likeCount=50, commentCount=20
-        // score = 10*10 + 100*1 + 50*3 + 20*5 = 100 + 100 + 150 + 100 = 450
+        // score = 10*10 + 100*3 + 50*1 + 20*5 = 100 + 300 + 50 + 100 = 550
         FeedMonthlyRanking ranking = FeedMonthlyRankingFixture.create(
                 1L, "테스트 동아리", 10, 100, 50, 20, 2025, 1, 1);
 
@@ -21,7 +21,7 @@ class FeedMonthlyRankingTest {
         long score = ranking.calculateScore();
 
         // then
-        assertThat(score).isEqualTo(450L);
+        assertThat(score).isEqualTo(550L);
     }
 
     @DisplayName("calculateScore - 모든 카운트가 0이면 점수는 0이다")
@@ -54,8 +54,8 @@ class FeedMonthlyRankingTest {
                 .build();
 
         // then
-        // score = 5*10 + 50*1 + 10*3 + 3*5 = 50 + 50 + 30 + 15 = 145
-        assertThat(ranking.getScore()).isEqualTo(145L);
+        // score = 5*10 + 50*3 + 10*1 + 3*5 = 50 + 150 + 10 + 15 = 225
+        assertThat(ranking.getScore()).isEqualTo(225L);
     }
 
     @DisplayName("assignRanking - 순위를 할당한다")
