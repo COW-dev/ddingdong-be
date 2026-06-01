@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.feed.service;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.service.ClubService;
 import ddingdong.ddingdongBE.domain.feed.entity.FeedMonthlyRanking;
+import ddingdong.ddingdongBE.domain.feed.entity.FeedRankingWeight;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedMonthlyRankingRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.FeedRepository;
 import ddingdong.ddingdongBE.domain.feed.repository.dto.MonthlyFeedRankingDto;
@@ -89,10 +90,10 @@ public class GeneralFeedRankingService implements FeedRankingService {
 
     private ClubFeedRankingQuery toClubFeedRankingQuery(int rank, Long clubId, String clubName,
             long feedCount, long viewCount, long likeCount, long commentCount) {
-        long feedScore = feedCount * FeedMonthlyRanking.FEED_WEIGHT;
-        long viewScore = viewCount * FeedMonthlyRanking.VIEW_WEIGHT;
-        long likeScore = likeCount * FeedMonthlyRanking.LIKE_WEIGHT;
-        long commentScore = commentCount * FeedMonthlyRanking.COMMENT_WEIGHT;
+        long feedScore = feedCount * FeedRankingWeight.FEED;
+        long viewScore = viewCount * FeedRankingWeight.VIEW;
+        long likeScore = likeCount * FeedRankingWeight.LIKE;
+        long commentScore = commentCount * FeedRankingWeight.COMMENT;
         long totalScore = feedScore + viewScore + likeScore + commentScore;
         return ClubFeedRankingQuery.of(rank, clubId, clubName,
                 feedScore, viewScore, likeScore, commentScore, totalScore);
@@ -111,9 +112,9 @@ public class GeneralFeedRankingService implements FeedRankingService {
     }
 
     private long calculateScore(MonthlyFeedRankingDto rawRanking) {
-        return rawRanking.getFeedCount() * FeedMonthlyRanking.FEED_WEIGHT
-                + rawRanking.getViewCount() * FeedMonthlyRanking.VIEW_WEIGHT
-                + rawRanking.getLikeCount() * FeedMonthlyRanking.LIKE_WEIGHT
-                + rawRanking.getCommentCount() * FeedMonthlyRanking.COMMENT_WEIGHT;
+        return rawRanking.getFeedCount() * FeedRankingWeight.FEED
+                + rawRanking.getViewCount() * FeedRankingWeight.VIEW
+                + rawRanking.getLikeCount() * FeedRankingWeight.LIKE
+                + rawRanking.getCommentCount() * FeedRankingWeight.COMMENT;
     }
 }
