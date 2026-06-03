@@ -12,6 +12,12 @@ version = '0.0.1-SNAPSHOT'
 java {
 }
 
+// 빌드 환경(Docker 컨테이너 등)의 locale과 무관하게 소스의 한글 리터럴이
+// 깨지지 않도록 javac 소스 인코딩을 UTF-8로 고정한다.
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
 jar {
     enabled = false
 }
