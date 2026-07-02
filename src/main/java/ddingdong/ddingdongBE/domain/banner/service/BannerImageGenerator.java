@@ -8,14 +8,11 @@ import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.font.TextAttribute;
 import java.awt.geom.RoundRectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
@@ -143,7 +140,7 @@ public class BannerImageGenerator {
         int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
         // Use the Pretendard-Bold font face without applying Java synthetic bold style.
-        Font mainFont = createStyledFont(boldBaseFont, Font.PLAIN, 36f, -0.01f);
+        Font mainFont = createStyledFont(boldBaseFont, 36f);
         graphics.setFont(mainFont);
         graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
@@ -151,8 +148,8 @@ public class BannerImageGenerator {
         int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, textX, mainY);
 
-        // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px, letter-spacing 1%
-        Font subFont = createStyledFont(mediumBaseFont, Font.PLAIN, 16f, 0.01f);
+        // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px
+        Font subFont = createStyledFont(mediumBaseFont, 16f);
         graphics.setFont(subFont);
         graphics.setColor(Color.decode("#6B7280"));
         FontMetrics subMetrics = graphics.getFontMetrics();
@@ -162,7 +159,7 @@ public class BannerImageGenerator {
     }
 
     private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
-        Font mainFont = createStyledFont(boldBaseFont, Font.PLAIN, 18f, -0.01f);
+        Font mainFont = createStyledFont(boldBaseFont, 18f);
         graphics.setFont(mainFont);
         graphics.setColor(new Color(33, 33, 33));
         FontMetrics mainMetrics = graphics.getFontMetrics();
@@ -172,7 +169,7 @@ public class BannerImageGenerator {
         graphics.drawString(mainText, mainX, mainY);
 
         // Mobile/Sub: Pretendard Medium 12px, centered
-        Font subFont = createStyledFont(mediumBaseFont, Font.PLAIN, 12f, 0.01f);
+        Font subFont = createStyledFont(mediumBaseFont, 12f);
         graphics.setFont(subFont);
         graphics.setColor(new Color(100, 100, 100));
         FontMetrics subMetrics = graphics.getFontMetrics();
@@ -181,11 +178,12 @@ public class BannerImageGenerator {
         graphics.drawString(subText, subX, mainY + 20);
     }
 
-    private Font createStyledFont(Font baseFont, int style, float size, float tracking) {
-        Font sized = baseFont.deriveFont(style, size);
-        Map<TextAttribute, Object> attributes = new HashMap<>();
-        attributes.put(TextAttribute.TRACKING, tracking);
-        return sized.deriveFont(attributes);
+    // 로드한 폰트 인스턴스의 내부 스타일을 유지한 채 크기만 조정한다.
+    // style(PLAIN) 지정과 TextAttribute.TRACKING(속성 기반 레이아웃)은
+    // headless Linux AWT에서 폰트를 이름/스타일로 재탐색하게 만들어
+    // 한글 글리프가 없는 fallback 폰트로 치환(제목 tofu)되므로 사용하지 않는다.
+    private Font createStyledFont(Font baseFont, float size) {
+        return baseFont.deriveFont(size);
     }
 
     private Font loadFont(String path) {
