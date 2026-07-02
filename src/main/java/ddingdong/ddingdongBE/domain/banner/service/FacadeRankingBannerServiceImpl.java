@@ -43,10 +43,18 @@ public class FacadeRankingBannerServiceImpl implements FacadeRankingBannerServic
     @Override
     @Transactional
     public void createRankingBanners(List<FeedMonthlyRanking> firstPlaceRankings) {
+        List<FeedMonthlyRanking> winners = firstPlaceRankings.stream()
+                .filter(ranking -> ranking.getScore() > 0)
+                .toList();
+        if (winners.isEmpty()) {
+            log.info("피드가 있는 랭킹 1위 동아리가 없어 배너를 생성하지 않습니다.");
+            return;
+        }
+
         deleteExistingRankingBanners();
 
-        for (FeedMonthlyRanking ranking : firstPlaceRankings) {
-            createBannerForRanking(ranking);
+        for (FeedMonthlyRanking winner : winners) {
+            createBannerForRanking(winner);
         }
     }
 

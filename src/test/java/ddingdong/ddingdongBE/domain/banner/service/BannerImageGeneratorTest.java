@@ -3,23 +3,57 @@ package ddingdong.ddingdongBE.domain.banner.service;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import javax.imageio.ImageIO;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 class BannerImageGeneratorTest {
 
+    private static final String TITLE_TEXT = "이달의 피드 : 컴퓨터공학과 동아리 축하드립니다!";
+    private static final String SUBTITLE_TEXT = "6월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+
     private BannerImageGenerator bannerImageGenerator;
+
+    @BeforeAll
+    static void enableHeadless() {
+        // EB(Elastic Beanstalk) 운영 환경과 동일하게 headless AWT로 폰트 서브시스템을 초기화한다.
+        System.setProperty("java.awt.headless", "true");
+    }
 
     @BeforeEach
     void setUp() {
         bannerImageGenerator = new BannerImageGenerator();
         bannerImageGenerator.init();
+    }
+
+    @DisplayName("제목에 사용하는 굵은 폰트는 제목의 모든 한글 글리프를 가지고 있다")
+    @Test
+    void boldFontCanDisplayAllKoreanGlyphsInTitle() throws Exception {
+        Font boldFont = extractFont("boldBaseFont");
+
+        assertThat(boldFont.canDisplayUpTo(TITLE_TEXT)).isEqualTo(-1);
+    }
+
+    @DisplayName("부제목에 사용하는 중간 굵기 폰트는 부제목의 모든 한글 글리프를 가지고 있다")
+    @Test
+    void mediumFontCanDisplayAllKoreanGlyphsInSubtitle() throws Exception {
+        Font mediumFont = extractFont("mediumBaseFont");
+
+        assertThat(mediumFont.canDisplayUpTo(SUBTITLE_TEXT)).isEqualTo(-1);
+    }
+
+    private Font extractFont(String fieldName) throws Exception {
+        Field field = BannerImageGenerator.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return (Font) field.get(bannerImageGenerator);
     }
 
     @DisplayName("웹 배너 이미지가 정상적으로 생성된다")
