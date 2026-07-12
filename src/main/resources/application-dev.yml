@@ -32,6 +32,20 @@ jwt:
   secret: ${JWT_SECRET}
   expiration: 36000
 
+# dev도 로그 파일(logs/application.log)을 남겨 CloudWatch Agent가 tail 할 수 있게 한다.
+logging:
+  config: classpath:logback-dev.xml
+
+# 헬스체크용 엔드포인트만 노출 (JVM 지표는 CloudWatch로 push하지 않음)
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info
+  endpoint:
+    health:
+      show-details: never
+
 cloud:
   aws:
     ses:

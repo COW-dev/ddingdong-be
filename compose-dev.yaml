@@ -4,6 +4,7 @@ services:
     image: public.ecr.aws/${DEV_ECR_REGISTRY_ALIAS}/dev-ecr:${VERSION:-latest}
     volumes:
       - mysql-volume:/var/lib/mysql
+      - app-logs:/logs
     environment:
       - VERSION=${VERSION:-latest}
       - SPRING_PROFILES_ACTIVE=dev
@@ -26,6 +27,23 @@ services:
     volumes:
       - mysql-volume:/var/lib/mysql
 
+  # 자체호스팅 모니터링을 대체해 dev 로그(logs/application.log)를 CloudWatch Logs로 전송.
+  # app-logs 볼륨을 spring 컨테이너와 공유해 tail 한다.
+  # 필요 자격증명: dev EC2에 IAM 역할(로그 write 권한) 부착 권장. 역할이 없으면
+  #                .env 의 AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY 로 인증한다.
+  cloudwatch-agent:
+    image: amazon/cloudwatch-agent:latest
+    container_name: cloudwatch-agent
+    restart: unless-stopped
+    environment:
+      - AWS_REGION=ap-northeast-2
+    env_file:
+      - .env
+    volumes:
+      - app-logs:/logs:ro
+      - ./cloudwatch/dev-cloudwatch-agent.json:/etc/cwagentconfig/cwagentconfig.json:ro
+
 volumes:
   mysql-volume:
     external: true
+  app-logs:

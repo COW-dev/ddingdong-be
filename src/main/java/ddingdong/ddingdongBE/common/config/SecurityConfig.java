@@ -42,9 +42,7 @@ public class SecurityConfig {
                         .requestMatchers(API_PREFIX + "/admin/**").hasRole("ADMIN")
                         .requestMatchers(API_PREFIX + "/central/**").hasRole("CLUB")
                         .requestMatchers(GET,
-                                "/server/actuator/health",
-                                "/server/actuator/prometheus",
-                                "/server/actuator/metrics").permitAll()
+                                "/server/actuator/health").permitAll()
                         .requestMatchers(GET,
                                 API_PREFIX + "/clubs/**",
                                 API_PREFIX + "/notices/**",
