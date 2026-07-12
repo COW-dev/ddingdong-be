@@ -54,12 +54,17 @@ jobs:
             else
               echo "Docker already installed."
             fi
-            if ! command -v docker-compose >/dev/null 2>&1; then
-              echo "Installing Docker Compose..."
-              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            COMPOSE_VERSION=v2.29.7
+            NEED_INSTALL=1
+            if command -v docker-compose >/dev/null 2>&1; then
+              if docker-compose version 2>/dev/null | grep -q "v2\."; then NEED_INSTALL=0; fi
+            fi
+            if [ "$NEED_INSTALL" = "1" ]; then
+              echo "Installing Docker Compose $COMPOSE_VERSION..."
+              sudo curl -SL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             else
-              echo "Docker Compose already installed."
+              echo "Docker Compose v2 already installed."
             fi
 
       - name: Run Docker Compose up
