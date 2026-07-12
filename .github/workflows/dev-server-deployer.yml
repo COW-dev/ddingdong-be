@@ -60,8 +60,11 @@ jobs:
               if docker-compose version 2>/dev/null | grep -q "v2\."; then NEED_INSTALL=0; fi
             fi
             if [ "$NEED_INSTALL" = "1" ]; then
-              echo "Installing Docker Compose $COMPOSE_VERSION..."
-              sudo curl -SL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+              # 인스턴스 아키텍처(x86_64/aarch64)에 맞는 바이너리를 자동 선택한다.
+              # dev EC2가 Graviton(t4g/aarch64)으로 전환되어도 동작한다.
+              ARCH=$(uname -m)
+              echo "Installing Docker Compose $COMPOSE_VERSION for $ARCH..."
+              sudo curl -SL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-${ARCH}" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             else
               echo "Docker Compose v2 already installed."
