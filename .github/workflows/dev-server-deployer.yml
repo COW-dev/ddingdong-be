@@ -29,6 +29,18 @@ jobs:
               --port 22 \
               --cidr ${{ steps.publicip.outputs.ip }}/32
 
+      - name: Clean stale CloudWatch mount path
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_INSTANCE_HOST }}
+          username: ${{ secrets.DEV_INSTANCE_USERNAME }}
+          key: ${{ secrets.DEV_INSTANCE_KEY }}
+          script: |
+            # 과거 config 파일이 없던 시절, Docker가 bind-mount 대상 파일 자리에
+            # 빈 디렉토리(cloudwatch/dev-cloudwatch-agent.json/)를 만들어 두었다.
+            # 파일이 와야 할 자리에 디렉토리가 있으면 scp untar 가 실패하므로 먼저 제거한다.
+            sudo rm -rf ~/app/docker/cloudwatch
+
       - name: Copy Docker Compose file to server
         uses: appleboy/scp-action@master
         with:
