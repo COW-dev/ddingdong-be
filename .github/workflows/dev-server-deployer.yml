@@ -29,13 +29,28 @@ jobs:
               --port 22 \
               --cidr ${{ steps.publicip.outputs.ip }}/32
 
+      - name: Clean stale CloudWatch mount path
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.DEV_INSTANCE_HOST }}
+          username: ${{ secrets.DEV_INSTANCE_USERNAME }}
+          key: ${{ secrets.DEV_INSTANCE_KEY }}
+          script: |
+            # 과거 config 파일이 없던 시절, Docker가 bind-mount 대상 파일 자리에
+            # 빈 디렉토리(cloudwatch/dev-cloudwatch-agent.json/)를 만들어 두었다.
+            # 파일이 와야 할 자리에 디렉토리가 있으면 scp untar 가 실패하므로 먼저 제거한다.
+            sudo rm -rf ~/app/docker/cloudwatch
+
       - name: Copy Docker Compose file to server
         uses: appleboy/scp-action@master
         with:
           host: ${{ secrets.DEV_INSTANCE_HOST }}
           username: ${{ secrets.DEV_INSTANCE_USERNAME }}
           key: ${{ secrets.DEV_INSTANCE_KEY }}
-          source: "./compose-dev.yaml"
+          # compose 파일과 함께 CloudWatch Agent config 도 전송한다.
+          # compose-dev.yaml 의 cloudwatch-agent 사이드카가 ./cloudwatch/dev-cloudwatch-agent.json 을
+          # 바인드 마운트하므로, 이 파일이 없으면 Docker가 빈 디렉토리를 만들어 에이전트가 config 를 못 읽는다.
+          source: "./compose-dev.yaml,./cloudwatch/dev-cloudwatch-agent.json"
           target: "~/app/docker"
           timeout: 120s
           overwrite: true
@@ -54,12 +69,20 @@ jobs:
             else
               echo "Docker already installed."
             fi
-            if ! command -v docker-compose >/dev/null 2>&1; then
-              echo "Installing Docker Compose..."
-              sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+            COMPOSE_VERSION=v2.29.7
+            NEED_INSTALL=1
+            if command -v docker-compose >/dev/null 2>&1; then
+              if docker-compose version 2>/dev/null | grep -q "v2\."; then NEED_INSTALL=0; fi
+            fi
+            if [ "$NEED_INSTALL" = "1" ]; then
+              # 인스턴스 아키텍처(x86_64/aarch64)에 맞는 바이너리를 자동 선택한다.
+              # dev EC2가 Graviton(t4g/aarch64)으로 전환되어도 동작한다.
+              ARCH=$(uname -m)
+              echo "Installing Docker Compose $COMPOSE_VERSION for $ARCH..."
+              sudo curl -SL "https://github.com/docker/compose/releases/download/${COMPOSE_VERSION}/docker-compose-linux-${ARCH}" -o /usr/local/bin/docker-compose
               sudo chmod +x /usr/local/bin/docker-compose
             else
-              echo "Docker Compose already installed."
+              echo "Docker Compose v2 already installed."
             fi
 
       - name: Run Docker Compose up
