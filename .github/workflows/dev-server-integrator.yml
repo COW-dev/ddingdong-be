@@ -36,6 +36,12 @@ jobs:
       - name: CI Test
         run: ./gradlew clean test --no-build-cache -Duser.timezone=Asia/Seoul
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -57,8 +63,12 @@ jobs:
           IMAGE_TAG: latest
         run: |
           echo "REPOSITORY: $REPOSITORY"
-          docker build -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG .
-          docker push $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG
+          # 멀티아치(amd64+arm64) 매니페스트로 푸시한다.
+          # dev EC2가 x86이든 Graviton(t4g/arm64)이든 pull 시 아키텍처가 자동 매칭된다.
+          docker buildx build \
+            --platform linux/amd64,linux/arm64 \
+            -t $REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG \
+            --push .
           echo "::set-output name=image::$REGISTRY/$REGISTRY_ALIAS/$REPOSITORY:$IMAGE_TAG"
 
       - name: Logout of Amazon ECR
