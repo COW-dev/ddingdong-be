@@ -35,7 +35,10 @@ jobs:
           host: ${{ secrets.DEV_INSTANCE_HOST }}
           username: ${{ secrets.DEV_INSTANCE_USERNAME }}
           key: ${{ secrets.DEV_INSTANCE_KEY }}
-          source: "./compose-dev.yaml"
+          # compose 파일과 함께 CloudWatch Agent config 도 전송한다.
+          # compose-dev.yaml 의 cloudwatch-agent 사이드카가 ./cloudwatch/dev-cloudwatch-agent.json 을
+          # 바인드 마운트하므로, 이 파일이 없으면 Docker가 빈 디렉토리를 만들어 에이전트가 config 를 못 읽는다.
+          source: "./compose-dev.yaml,./cloudwatch/dev-cloudwatch-agent.json"
           target: "~/app/docker"
           timeout: 120s
           overwrite: true
