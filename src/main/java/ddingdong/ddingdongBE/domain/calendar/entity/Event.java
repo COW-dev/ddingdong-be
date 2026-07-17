@@ -36,7 +36,6 @@ public class Event {
     private RepeatType repeatType;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "category_id")
     private Category category;
 
     @Builder

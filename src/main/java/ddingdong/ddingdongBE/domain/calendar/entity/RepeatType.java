@@ -5,5 +5,5 @@ public enum RepeatType {
     DAILY,
     WEEKLY,
     MONTHLY,
-    YEARLY;
+    YEARLY
 }
