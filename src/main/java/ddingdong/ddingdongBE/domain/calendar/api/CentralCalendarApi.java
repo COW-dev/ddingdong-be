@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Tag(name = "Calendar - Club", description = "Club Calendar API")
-@RequestMapping("/server/central")
+@RequestMapping("/server/central/calendar")
 public interface CentralCalendarApi {
 
     @Operation(summary = "캘린더 조회 API")
