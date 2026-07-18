@@ -15,9 +15,7 @@ public class FacadeCentralCalendarService {
     private final EventService eventService;
 
     public List<EventQuery> getCalendar(int year, int month) {
-        return eventService.getAllByYearAndMonth(year, month).stream()
-                .map(EventQuery::from)
-                .toList();
+        return eventService.getAllByYearAndMonth(year, month);
     }
 
 }

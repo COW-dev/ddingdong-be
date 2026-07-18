@@ -111,6 +111,46 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
         );
     }
 
+    @DisplayName("어드민: 캘린더 조회 시 주간 반복 이벤트를 해당 월의 발생일별로 반환한다")
+    @Test
+    void getCalendarWithWeeklyRepeatEvent() {
+        // given
+        Category category = categoryRepository.save(CategoryFixture.createCategory());
+        Event weeklyEvent = eventRepository.save(Event.builder()
+                .title("weeklyEvent")
+                .startDate(LocalDate.of(2026, 7, 1))
+                .endDate(LocalDate.of(2026, 7, 31))
+                .repeatType(RepeatType.WEEKLY)
+                .category(category)
+                .build());
+
+        // when
+        List<EventQuery> result = facadeAdminCalendarService.getCalendar(2026, 7);
+
+        // then
+        assertAll(
+                () -> assertThat(result).hasSize(5),
+                () -> assertThat(result).extracting(EventQuery::id)
+                        .containsOnly(weeklyEvent.getId()),
+                () -> assertThat(result).extracting(EventQuery::startDate)
+                        .containsExactly(
+                                LocalDate.of(2026, 7, 1),
+                                LocalDate.of(2026, 7, 8),
+                                LocalDate.of(2026, 7, 15),
+                                LocalDate.of(2026, 7, 22),
+                                LocalDate.of(2026, 7, 29)
+                        ),
+                () -> assertThat(result).extracting(EventQuery::endDate)
+                        .containsExactly(
+                                LocalDate.of(2026, 7, 1),
+                                LocalDate.of(2026, 7, 8),
+                                LocalDate.of(2026, 7, 15),
+                                LocalDate.of(2026, 7, 22),
+                                LocalDate.of(2026, 7, 29)
+                        )
+        );
+    }
+
     @DisplayName("어드민: 이벤트 상세조회")
     @Test
     void getEvent() {

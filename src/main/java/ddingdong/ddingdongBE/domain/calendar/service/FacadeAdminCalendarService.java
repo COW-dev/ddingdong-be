@@ -20,9 +20,7 @@ public class FacadeAdminCalendarService {
     private final CategoryService categoryService;
 
     public List<EventQuery> getCalendar(int year, int month) {
-        return eventService.getAllByYearAndMonth(year, month).stream()
-                .map(EventQuery::from)
-                .toList();
+        return eventService.getAllByYearAndMonth(year, month);
     }
 
     public EventQuery getEvent(Long eventId) {
