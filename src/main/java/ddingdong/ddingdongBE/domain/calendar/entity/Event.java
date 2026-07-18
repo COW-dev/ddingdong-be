@@ -10,6 +10,7 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -37,6 +38,9 @@ public class Event {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Category category;
+
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
     @Builder
     private Event(

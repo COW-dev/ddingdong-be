@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
+import java.time.LocalDateTime;
+
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -24,6 +26,9 @@ public class Category {
 
     @Column(nullable = false)
     private String color;
+
+    @Column(columnDefinition = "TIMESTAMP")
+    private LocalDateTime deletedAt;
 
     @Builder
     private Category(String name, String color) {
