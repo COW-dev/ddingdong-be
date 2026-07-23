@@ -12,7 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("""
-            SELECT e FROM Event e
+            SELECT e FROM Event e LEFT JOIN FETCH e.category
             WHERE e.startDate <= :lastDateOfMonth
             AND e.endDate >= :firstDateOfMonth
             """)

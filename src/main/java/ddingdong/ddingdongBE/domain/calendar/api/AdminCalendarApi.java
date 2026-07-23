@@ -54,8 +54,8 @@ public interface AdminCalendarApi {
     void createEvent(@Valid @RequestBody CreateEventRequest request);
 
     @Operation(summary = "이벤트 수정 API")
-    @ApiResponse(responseCode = "200", description = "이벤트 수정 성공")
-    @ResponseStatus(HttpStatus.OK)
+    @ApiResponse(responseCode = "204", description = "이벤트 수정 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")
     @PutMapping("/events/{eventId}")
     void updateEvent(

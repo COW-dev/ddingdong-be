@@ -62,12 +62,14 @@ public class EventService {
         }
 
         List<EventQuery> eventQueries = new ArrayList<>();
-        LocalDate eventDate = event.getStartDate();
+        long occurrenceCount = 0;
+        LocalDate eventDate = getOccurrenceDate(event.getStartDate(), event.getRepeatType(), occurrenceCount);
         while (!eventDate.isAfter(event.getEndDate())) {
             if (!eventDate.isBefore(firstDateOfMonth) && !eventDate.isAfter(lastDateOfMonth)) {
                 eventQueries.add(toEventQuery(event, eventDate));
             }
-            eventDate = getNextEventDate(eventDate, event.getRepeatType());
+            occurrenceCount++;
+            eventDate = getOccurrenceDate(event.getStartDate(), event.getRepeatType(), occurrenceCount);
         }
         return eventQueries;
     }
@@ -84,13 +86,13 @@ public class EventService {
         );
     }
 
-    private LocalDate getNextEventDate(LocalDate eventDate, RepeatType repeatType) {
+    private LocalDate getOccurrenceDate(LocalDate startDate, RepeatType repeatType, long occurrenceCount) {
         return switch (repeatType) {
-            case DAILY -> eventDate.plusDays(1);
-            case WEEKLY -> eventDate.plusWeeks(1);
-            case MONTHLY -> eventDate.plusMonths(1);
-            case YEARLY -> eventDate.plusYears(1);
-            case NONE -> eventDate;
+            case DAILY -> startDate.plusDays(occurrenceCount);
+            case WEEKLY -> startDate.plusWeeks(occurrenceCount);
+            case MONTHLY -> startDate.plusMonths(occurrenceCount);
+            case YEARLY -> startDate.plusYears(occurrenceCount);
+            case NONE -> startDate;
         };
     }
 }
