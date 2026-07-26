@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.domain.calendar.entity.Category;
 import ddingdong.ddingdongBE.domain.calendar.entity.Event;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateEventCommand;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.EventQuery;
@@ -56,5 +57,16 @@ public class FacadeAdminCalendarService {
     public void createCategory(CreateCategoryCommand command) {
         Category category = command.toEntity();
         categoryService.save(category);
+    }
+
+    @Transactional
+    public void updateCategory(Long categoryId, UpdateCategoryCommand command) {
+        Category category = categoryService.getById(categoryId);
+        categoryService.update(category, command);
+    }
+
+    @Transactional
+    public void deleteCategory(Long categoryId) {
+        categoryService.delete(categoryId);
     }
 }

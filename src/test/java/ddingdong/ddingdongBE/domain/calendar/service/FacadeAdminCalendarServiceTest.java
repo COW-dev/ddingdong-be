@@ -15,6 +15,7 @@ import ddingdong.ddingdongBE.domain.calendar.repository.CategoryRepository;
 import ddingdong.ddingdongBE.domain.calendar.repository.EventRepository;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateEventCommand;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import java.time.LocalDate;
@@ -85,6 +86,51 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
         // then
         assertThat(result).extracting(CategoryQuery::name)
                 .containsExactly("a카테고리", "z카테고리");
+    }
+
+    @DisplayName("어드민: 카테고리를 수정한다")
+    @Test
+    void updateCategory() {
+        // given
+        Category category = categoryRepository.save(CategoryFixture.createCategory());
+        UpdateCategoryCommand command = new UpdateCategoryCommand("수정 카테고리", "#000000");
+
+        // when
+        facadeAdminCalendarService.updateCategory(category.getId(), command);
+
+        // then
+        Category updatedCategory = categoryRepository.findById(category.getId()).orElseThrow();
+        assertAll(
+                () -> assertThat(updatedCategory.getName()).isEqualTo(command.name()),
+                () -> assertThat(updatedCategory.getColor()).isEqualTo(command.color())
+        );
+    }
+
+    @DisplayName("어드민: 다른 카테고리와 동일한 이름으로 수정할 수 없다")
+    @Test
+    void cannotUpdateCategoryWithDuplicatedName() {
+        // given
+        categoryRepository.save(CategoryFixture.createCategory("기존 카테고리", "#FFFFFF"));
+        Category category = categoryRepository.save(
+                CategoryFixture.createCategory("수정할 카테고리", "#000000"));
+        UpdateCategoryCommand command = new UpdateCategoryCommand("기존 카테고리", "#123456");
+
+        // when // then
+        assertThatThrownBy(() -> facadeAdminCalendarService.updateCategory(category.getId(), command))
+                .isInstanceOf(CalendarException.DuplicatedCategoryNameException.class);
+    }
+
+    @DisplayName("어드민: 카테고리를 삭제한다")
+    @Test
+    void deleteCategory() {
+        // given
+        Category category = categoryRepository.save(CategoryFixture.createCategory());
+
+        // when
+        facadeAdminCalendarService.deleteCategory(category.getId());
+
+        // then
+        assertThat(categoryRepository.findById(category.getId())).isEmpty();
     }
 
     @DisplayName("어드민: 이벤트 생성")

@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.calendar.api;
 
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateEventRequest;
+import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateEventRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoriesResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CalendarResponse;
@@ -85,5 +86,22 @@ public interface AdminCalendarApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/category")
     void createCategory(@Valid @RequestBody CreateCategoryRequest request);
+
+    @Operation(summary = "카테고리 수정 API")
+    @ApiResponse(responseCode = "204", description = "카테고리 수정 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PutMapping("/category/{categoryId}")
+    void updateCategory(
+            @PathVariable("categoryId") Long categoryId,
+            @Valid @RequestBody UpdateCategoryRequest request
+    );
+
+    @Operation(summary = "카테고리 삭제 API")
+    @ApiResponse(responseCode = "204", description = "카테고리 삭제 성공")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/category/{categoryId}")
+    void deleteCategory(@PathVariable("categoryId") Long categoryId);
 
 }

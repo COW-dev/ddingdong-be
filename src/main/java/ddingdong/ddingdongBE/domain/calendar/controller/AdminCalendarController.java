@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.calendar.controller;
 import ddingdong.ddingdongBE.domain.calendar.api.AdminCalendarApi;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateEventRequest;
+import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateEventRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoriesResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoryResponse;
@@ -59,5 +60,15 @@ public class AdminCalendarController implements AdminCalendarApi {
     @Override
     public void createCategory(CreateCategoryRequest request) {
         facadeAdminCalendarService.createCategory(request.toCommand());
+    }
+
+    @Override
+    public void updateCategory(Long categoryId, UpdateCategoryRequest request) {
+        facadeAdminCalendarService.updateCategory(categoryId, request.toCommand());
+    }
+
+    @Override
+    public void deleteCategory(Long categoryId) {
+        facadeAdminCalendarService.deleteCategory(categoryId);
     }
 }

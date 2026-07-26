@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.calendar.entity;
 
+import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateCategoryCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -34,5 +35,10 @@ public class Category {
     private Category(String name, String color) {
         this.name = name;
         this.color = color;
+    }
+
+    public void update(UpdateCategoryCommand command) {
+        this.name = command.name();
+        this.color = command.color();
     }
 }

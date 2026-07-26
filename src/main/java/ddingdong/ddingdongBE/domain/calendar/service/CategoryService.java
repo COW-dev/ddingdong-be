@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.calendar.entity.Category;
 import ddingdong.ddingdongBE.domain.calendar.repository.CategoryRepository;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -35,5 +36,19 @@ public class CategoryService {
         return categoryRepository.findAllByOrderByNameAsc().stream()
                 .map(CategoryQuery::from)
                 .toList();
+    }
+
+    @Transactional
+    public void update(Category category, UpdateCategoryCommand command) {
+        if (categoryRepository.existsByNameAndIdNot(command.name(), category.getId())) {
+            throw new CalendarException.DuplicatedCategoryNameException();
+        }
+        category.update(command);
+    }
+
+    @Transactional
+    public void delete(Long categoryId) {
+        Category category = getById(categoryId);
+        categoryRepository.delete(category);
     }
 }
