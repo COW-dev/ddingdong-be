@@ -5,6 +5,7 @@ import ddingdong.ddingdongBE.domain.calendar.entity.Event;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateEventCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventCommand;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.EventQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,9 +29,13 @@ public class FacadeAdminCalendarService {
         return EventQuery.from(event);
     }
 
+    public List<CategoryQuery> getCategories() {
+        return categoryService.getAll();
+    }
+
     @Transactional
     public void createEvent(CreateEventCommand command) {
-        Category category = categoryService.getByName(command.categoryName());
+        Category category = categoryService.getById(command.categoryId());
         Event event = command.toEntity(category);
         eventService.save(event);
     }
@@ -38,7 +43,7 @@ public class FacadeAdminCalendarService {
     @Transactional
     public void updateEvent(Long eventId, UpdateEventCommand command) {
         Event event = eventService.getById(eventId);
-        Category category = categoryService.getByName(command.categoryName());
+        Category category = categoryService.getById(command.categoryId());
         eventService.update(event, command, category);
     }
 

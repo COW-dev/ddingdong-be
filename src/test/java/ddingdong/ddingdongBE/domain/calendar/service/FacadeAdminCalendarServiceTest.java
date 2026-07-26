@@ -16,6 +16,7 @@ import ddingdong.ddingdongBE.domain.calendar.repository.EventRepository;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateEventCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventCommand;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +72,21 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 .isInstanceOf(CalendarException.DuplicatedCategoryNameException.class);
     }
 
+    @DisplayName("어드민: 카테고리 목록을 이름순으로 조회한다")
+    @Test
+    void getCategories() {
+        // given
+        categoryRepository.save(CategoryFixture.createCategory("z카테고리", "#000000"));
+        categoryRepository.save(CategoryFixture.createCategory("a카테고리", "#FFFFFF"));
+
+        // when
+        List<CategoryQuery> result = facadeAdminCalendarService.getCategories();
+
+        // then
+        assertThat(result).extracting(CategoryQuery::name)
+                .containsExactly("a카테고리", "z카테고리");
+    }
+
     @DisplayName("어드민: 이벤트 생성")
     @Test
     void createEvent() {
@@ -82,7 +98,7 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 LocalDate.of(2026, 7, 2),
                 LocalDate.of(2026, 7, 2),
                 RepeatType.NONE,
-                category.getName()
+                category.getId()
         );
 
         // when
@@ -202,7 +218,7 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 LocalDate.of(2026, 7, 6),
                 LocalDate.of(2026, 7, 31),
                 RepeatType.WEEKLY,
-                newCategory.getName()
+                newCategory.getId()
         );
 
         // when

@@ -4,6 +4,8 @@ import ddingdong.ddingdongBE.domain.calendar.api.AdminCalendarApi;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateEventRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateEventRequest;
+import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoriesResponse;
+import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoryResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CalendarResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.EventResponse;
 import ddingdong.ddingdongBE.domain.calendar.service.FacadeAdminCalendarService;
@@ -28,6 +30,15 @@ public class AdminCalendarController implements AdminCalendarApi {
     @Override
     public EventResponse getEvent(Long eventId) {
         return EventResponse.from(facadeAdminCalendarService.getEvent(eventId));
+    }
+
+    @Override
+    public CategoriesResponse getCategories() {
+        return new CategoriesResponse(
+                facadeAdminCalendarService.getCategories().stream()
+                        .map(CategoryResponse::from)
+                        .toList()
+        );
     }
 
     @Override

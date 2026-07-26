@@ -4,6 +4,8 @@ import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.calendar.entity.Category;
 import ddingdong.ddingdongBE.domain.calendar.repository.CategoryRepository;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,8 +31,9 @@ public class CategoryService {
                 .orElseThrow(() -> new ResourceNotFound("Category(categoryId=" + categoryId + ")를 찾을 수 없습니다."));
     }
 
-    public Category getByName(String name) {
-        return categoryRepository.findByName(name)
-                .orElseThrow(() -> new ResourceNotFound("Category(name=" + name + ")를 찾을 수 없습니다."));
+    public List<CategoryQuery> getAll() {
+        return categoryRepository.findAllByOrderByNameAsc().stream()
+                .map(CategoryQuery::from)
+                .toList();
     }
 }

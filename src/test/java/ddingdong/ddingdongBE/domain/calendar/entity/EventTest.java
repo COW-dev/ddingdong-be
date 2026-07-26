@@ -43,7 +43,7 @@ class EventTest {
                 LocalDate.of(2026, 7, 1),
                 LocalDate.of(2026, 7, 1),
                 RepeatType.NONE,
-                "활동보고서"
+                1L
         );
 
         // when // then

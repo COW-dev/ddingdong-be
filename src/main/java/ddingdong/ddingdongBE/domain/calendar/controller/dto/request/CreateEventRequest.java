@@ -29,11 +29,11 @@ public record CreateEventRequest(
         @NotNull(message = "반복 유형은 필수입니다.")
         RepeatType repeatType,
 
-        @Schema(description = "카테고리명", example = "활동보고서")
-        @NotBlank(message = "카테고리는 필수입니다.")
-        String category
+        @Schema(description = "카테고리 아이디", example = "1")
+        @NotNull(message = "카테고리 아이디는 필수입니다.")
+        Long categoryId
 ) {
         public CreateEventCommand toCommand() {
-                return new CreateEventCommand(title, startDate, endDate, repeatEndDate, repeatType, category);
+                return new CreateEventCommand(title, startDate, endDate, repeatEndDate, repeatType, categoryId);
         }
 }

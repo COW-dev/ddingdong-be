@@ -3,6 +3,7 @@ package ddingdong.ddingdongBE.domain.calendar.api;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateCategoryRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.CreateEventRequest;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.request.UpdateEventRequest;
+import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CategoriesResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.CalendarResponse;
 import ddingdong.ddingdongBE.domain.calendar.controller.dto.response.EventResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -45,6 +46,14 @@ public interface AdminCalendarApi {
     @SecurityRequirement(name = "AccessToken")
     @GetMapping("/events/{eventId}")
     EventResponse getEvent(@PathVariable("eventId") Long eventId);
+
+    @Operation(summary = "카테고리 목록 조회 API")
+    @ApiResponse(responseCode = "200", description = "카테고리 목록 조회 성공",
+            content = @Content(schema = @Schema(implementation = CategoriesResponse.class)))
+    @ResponseStatus(HttpStatus.OK)
+    @SecurityRequirement(name = "AccessToken")
+    @GetMapping("/categories")
+    CategoriesResponse getCategories();
 
     @Operation(summary = "이벤트 생성 API")
     @ApiResponse(responseCode = "201", description = "이벤트 생성 성공")

@@ -12,7 +12,7 @@ public record CreateEventCommand(
         LocalDate endDate,
         LocalDate repeatEndDate,
         RepeatType repeatType,
-        String categoryName
+        Long categoryId
 ) {
 
     public Event toEntity(Category category) {

@@ -9,7 +9,7 @@ public record UpdateEventCommand(
         LocalDate endDate,
         LocalDate repeatEndDate,
         RepeatType repeatType,
-        String categoryName
+        Long categoryId
 ) {
 
 }
