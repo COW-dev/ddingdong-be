@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.calendar.entity;
 
+import static ddingdong.ddingdongBE.common.fixture.CategoryFixture.createCategory;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import ddingdong.ddingdongBE.common.exception.CalendarException;
@@ -64,12 +65,5 @@ class EventTest {
                 .category(createCategory())
                 .build())
                 .isInstanceOf(CalendarException.InvalidRepeatEndDateException.class);
-    }
-
-    private Category createCategory() {
-        return Category.builder()
-                .name("활동보고서")
-                .color("#FFFFFF")
-                .build();
     }
 }

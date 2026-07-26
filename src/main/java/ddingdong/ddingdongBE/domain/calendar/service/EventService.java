@@ -39,7 +39,7 @@ public class EventService {
         YearMonth yearMonth = YearMonth.of(year, month);
         LocalDate firstDateOfMonth = yearMonth.atDay(1);
         LocalDate lastDateOfMonth = yearMonth.atEndOfMonth();
-        return eventRepository.findAllByPeriod(firstDateOfMonth, lastDateOfMonth).stream()
+        return eventRepository.findAllByPeriod(firstDateOfMonth, lastDateOfMonth, RepeatType.NONE).stream()
                 .flatMap(event -> expandEvent(event, firstDateOfMonth, lastDateOfMonth).stream())
                 .sorted(Comparator.comparing(EventQuery::startDate)
                         .thenComparing(EventQuery::id))

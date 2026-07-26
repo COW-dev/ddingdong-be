@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.calendar.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 
 import ddingdong.ddingdongBE.domain.calendar.entity.Category;
@@ -37,7 +38,7 @@ class EventServiceTest {
                 LocalDate.of(2026, 5, 31),
                 RepeatType.MONTHLY
         );
-        given(eventRepository.findAllByPeriod(any(), any())).willReturn(List.of(event));
+        given(eventRepository.findAllByPeriod(any(), any(), eq(RepeatType.NONE))).willReturn(List.of(event));
 
         // when
         List<EventQuery> result = eventService.getAllByYearAndMonth(2026, 3);
@@ -57,7 +58,7 @@ class EventServiceTest {
                 LocalDate.of(2028, 2, 29),
                 RepeatType.YEARLY
         );
-        given(eventRepository.findAllByPeriod(any(), any())).willReturn(List.of(event));
+        given(eventRepository.findAllByPeriod(any(), any(), eq(RepeatType.NONE))).willReturn(List.of(event));
 
         // when
         List<EventQuery> result = eventService.getAllByYearAndMonth(2028, 2);
@@ -77,7 +78,7 @@ class EventServiceTest {
                 LocalDate.of(2026, 7, 31),
                 RepeatType.WEEKLY
         );
-        given(eventRepository.findAllByPeriod(any(), any())).willReturn(List.of(event));
+        given(eventRepository.findAllByPeriod(any(), any(), eq(RepeatType.NONE))).willReturn(List.of(event));
 
         // when
         List<EventQuery> result = eventService.getAllByYearAndMonth(2026, 7);

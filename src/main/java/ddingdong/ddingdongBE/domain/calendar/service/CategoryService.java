@@ -4,10 +4,12 @@ import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.calendar.entity.Category;
 import ddingdong.ddingdongBE.domain.calendar.repository.CategoryRepository;
+import ddingdong.ddingdongBE.domain.calendar.service.dto.command.CreateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateCategoryCommand;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.CategoryQuery;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,12 +21,17 @@ public class CategoryService {
     private final CategoryRepository categoryRepository;
 
     @Transactional
-    public Long save(Category category) {
-        if (categoryRepository.existsByName(category.getName())) {
+    public Long create(CreateCategoryCommand command) {
+        if (categoryRepository.existsByName(command.name())) {
             throw new CalendarException.DuplicatedCategoryNameException();
         }
-        Category savedCategory = categoryRepository.save(category);
-        return savedCategory.getId();
+        Category category = command.toEntity();
+        try {
+            Category savedCategory = categoryRepository.saveAndFlush(category);
+            return savedCategory.getId();
+        } catch (DataIntegrityViolationException exception) {
+            throw new CalendarException.DuplicatedCategoryNameException();
+        }
     }
 
     public Category getById(Long categoryId) {
@@ -44,6 +51,11 @@ public class CategoryService {
             throw new CalendarException.DuplicatedCategoryNameException();
         }
         category.update(command);
+        try {
+            categoryRepository.saveAndFlush(category);
+        } catch (DataIntegrityViolationException exception) {
+            throw new CalendarException.DuplicatedCategoryNameException();
+        }
     }
 
     @Transactional

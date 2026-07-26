@@ -55,8 +55,7 @@ public class FacadeAdminCalendarService {
 
     @Transactional
     public void createCategory(CreateCategoryCommand command) {
-        Category category = command.toEntity();
-        categoryService.save(category);
+        categoryService.create(command);
     }
 
     @Transactional
