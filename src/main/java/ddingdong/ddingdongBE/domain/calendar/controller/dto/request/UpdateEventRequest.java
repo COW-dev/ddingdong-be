@@ -21,19 +21,19 @@ public record UpdateEventRequest(
         @NotNull(message = "종료일은 필수입니다.")
         LocalDate endDate,
 
+        @Schema(description = "반복 종료일자", example = "2026-12-31")
+        @NotNull(message = "반복 종료일은 필수입니다.")
+        LocalDate repeatEndDate,
+
         @Schema(description = "반복 형식", example = "NONE")
         @NotNull(message = "반복 유형은 필수입니다.")
         RepeatType repeatType,
 
         @Schema(description = "카테고리명", example = "활동보고서")
         @NotBlank(message = "카테고리는 필수입니다.")
-        String category,
-
-        @Schema(description = "카테고리 색상", example = "#FFFFFF")
-        @NotBlank(message = "색상은 필수입니다.")
-        String color
+        String category
 ) {
         public UpdateEventCommand toCommand() {
-                return new UpdateEventCommand(title, startDate, endDate, repeatType, category, color);
+                return new UpdateEventCommand(title, startDate, endDate, repeatEndDate, repeatType, category);
         }
 }

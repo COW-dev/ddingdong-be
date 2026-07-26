@@ -33,6 +33,7 @@ class EventServiceTest {
         // given
         Event event = createEvent(
                 LocalDate.of(2026, 1, 31),
+                LocalDate.of(2026, 1, 31),
                 LocalDate.of(2026, 5, 31),
                 RepeatType.MONTHLY
         );
@@ -52,6 +53,7 @@ class EventServiceTest {
         // given
         Event event = createEvent(
                 LocalDate.of(2024, 2, 29),
+                LocalDate.of(2024, 2, 29),
                 LocalDate.of(2028, 2, 29),
                 RepeatType.YEARLY
         );
@@ -65,7 +67,46 @@ class EventServiceTest {
                 .containsExactly(LocalDate.of(2028, 2, 29));
     }
 
-    private Event createEvent(LocalDate startDate, LocalDate endDate, RepeatType repeatType) {
+    @DisplayName("반복 이벤트는 각 발생일에 원본 이벤트 기간을 적용한다")
+    @Test
+    void getAllByYearAndMonthAppliesOriginalEventPeriodToEachOccurrence() {
+        // given
+        Event event = createEvent(
+                LocalDate.of(2026, 7, 1),
+                LocalDate.of(2026, 7, 3),
+                LocalDate.of(2026, 7, 31),
+                RepeatType.WEEKLY
+        );
+        given(eventRepository.findAllByPeriod(any(), any())).willReturn(List.of(event));
+
+        // when
+        List<EventQuery> result = eventService.getAllByYearAndMonth(2026, 7);
+
+        // then
+        assertThat(result).extracting(EventQuery::startDate)
+                .containsExactly(
+                        LocalDate.of(2026, 7, 1),
+                        LocalDate.of(2026, 7, 8),
+                        LocalDate.of(2026, 7, 15),
+                        LocalDate.of(2026, 7, 22),
+                        LocalDate.of(2026, 7, 29)
+                );
+        assertThat(result).extracting(EventQuery::endDate)
+                .containsExactly(
+                        LocalDate.of(2026, 7, 3),
+                        LocalDate.of(2026, 7, 10),
+                        LocalDate.of(2026, 7, 17),
+                        LocalDate.of(2026, 7, 24),
+                        LocalDate.of(2026, 7, 31)
+                );
+    }
+
+    private Event createEvent(
+            LocalDate startDate,
+            LocalDate endDate,
+            LocalDate repeatEndDate,
+            RepeatType repeatType
+    ) {
         Category category = Category.builder()
                 .name("활동보고서")
                 .color("#FFFFFF")
@@ -74,6 +115,7 @@ class EventServiceTest {
                 .title("이벤트명")
                 .startDate(startDate)
                 .endDate(endDate)
+                .repeatEndDate(repeatEndDate)
                 .repeatType(repeatType)
                 .category(category)
                 .build();

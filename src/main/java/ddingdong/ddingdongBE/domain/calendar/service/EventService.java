@@ -9,6 +9,7 @@ import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventComm
 import ddingdong.ddingdongBE.domain.calendar.service.dto.query.EventQuery;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -64,9 +65,11 @@ public class EventService {
         List<EventQuery> eventQueries = new ArrayList<>();
         long occurrenceCount = 0;
         LocalDate eventDate = getOccurrenceDate(event.getStartDate(), event.getRepeatType(), occurrenceCount);
-        while (!eventDate.isAfter(event.getEndDate())) {
-            if (!eventDate.isBefore(firstDateOfMonth) && !eventDate.isAfter(lastDateOfMonth)) {
-                eventQueries.add(toEventQuery(event, eventDate));
+        while (!eventDate.isAfter(event.getRepeatEndDate())) {
+            LocalDate occurrenceEndDate = eventDate.plusDays(
+                    ChronoUnit.DAYS.between(event.getStartDate(), event.getEndDate()));
+            if (!occurrenceEndDate.isBefore(firstDateOfMonth) && !eventDate.isAfter(lastDateOfMonth)) {
+                eventQueries.add(toEventQuery(event, eventDate, occurrenceEndDate));
             }
             occurrenceCount++;
             eventDate = getOccurrenceDate(event.getStartDate(), event.getRepeatType(), occurrenceCount);
@@ -74,12 +77,13 @@ public class EventService {
         return eventQueries;
     }
 
-    private EventQuery toEventQuery(Event event, LocalDate eventDate) {
+    private EventQuery toEventQuery(Event event, LocalDate eventDate, LocalDate occurrenceEndDate) {
         return new EventQuery(
                 event.getId(),
                 event.getTitle(),
                 eventDate,
-                eventDate,
+                occurrenceEndDate,
+                event.getRepeatEndDate(),
                 event.getRepeatType(),
                 event.getCategory().getName(),
                 event.getCategory().getColor()

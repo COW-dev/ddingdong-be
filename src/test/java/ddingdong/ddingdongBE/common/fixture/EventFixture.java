@@ -16,6 +16,7 @@ public class EventFixture {
                 .title("testEvent")
                 .startDate(startDate)
                 .endDate(endDate)
+                .repeatEndDate(endDate)
                 .repeatType(RepeatType.NONE)
                 .category(category)
                 .build();

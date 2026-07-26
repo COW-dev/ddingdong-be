@@ -13,8 +13,12 @@ public interface EventRepository extends JpaRepository<Event, Long> {
 
     @Query("""
             SELECT e FROM Event e LEFT JOIN FETCH e.category
-            WHERE e.startDate <= :lastDateOfMonth
-            AND e.endDate >= :firstDateOfMonth
+            WHERE (e.repeatType = 'NONE'
+                    AND e.startDate <= :lastDateOfMonth
+                    AND e.endDate >= :firstDateOfMonth)
+               OR (e.repeatType <> 'NONE'
+                    AND e.startDate <= :lastDateOfMonth
+                    AND e.repeatEndDate >= :firstDateOfMonth)
             """)
     List<Event> findAllByPeriod(
             @Param("firstDateOfMonth") LocalDate firstDateOfMonth,

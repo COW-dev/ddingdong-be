@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.calendar.entity;
 
+import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.domain.calendar.service.dto.command.UpdateEventCommand;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -32,6 +33,9 @@ public class Event {
     @Column(nullable = false)
     private LocalDate endDate;
 
+    @Column(nullable = false)
+    private LocalDate repeatEndDate;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private RepeatType repeatType;
@@ -47,22 +51,41 @@ public class Event {
             String title,
             LocalDate startDate,
             LocalDate endDate,
+            LocalDate repeatEndDate,
             RepeatType repeatType,
             Category category
     ) {
+        validatePeriod(startDate, endDate);
+        validateRepeatEndDate(endDate, repeatEndDate);
         this.title = title;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.repeatEndDate = repeatEndDate;
         this.repeatType = repeatType;
         this.category = category;
     }
 
     public void update(UpdateEventCommand command, Category category) {
+        validatePeriod(command.startDate(), command.endDate());
+        validateRepeatEndDate(command.endDate(), command.repeatEndDate());
         this.title = command.title();
         this.startDate = command.startDate();
         this.endDate = command.endDate();
+        this.repeatEndDate = command.repeatEndDate();
         this.repeatType = command.repeatType();
         this.category = category;
+    }
+
+    private void validatePeriod(LocalDate startDate, LocalDate endDate) {
+        if (endDate.isBefore(startDate)) {
+            throw new CalendarException.InvalidEventPeriodException();
+        }
+    }
+
+    private void validateRepeatEndDate(LocalDate endDate, LocalDate repeatEndDate) {
+        if (repeatEndDate.isBefore(endDate)) {
+            throw new CalendarException.InvalidRepeatEndDateException();
+        }
     }
 
 }

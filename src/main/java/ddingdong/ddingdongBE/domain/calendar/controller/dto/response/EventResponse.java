@@ -20,6 +20,9 @@ public record EventResponse(
         @Schema(description = "종료일자", example = "2026-11-01")
         LocalDate endDate,
 
+        @Schema(description = "반복 종료일자", example = "2026-12-31")
+        LocalDate repeatEndDate,
+
         @Schema(description = "반복 형식", example = "NONE")
         RepeatType repeatType,
 
@@ -35,6 +38,7 @@ public record EventResponse(
                         query.title(),
                         query.startDate(),
                         query.endDate(),
+                        query.repeatEndDate(),
                         query.repeatType(),
                         query.categoryName(),
                         query.color()

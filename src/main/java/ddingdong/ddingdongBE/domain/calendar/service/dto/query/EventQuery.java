@@ -9,6 +9,7 @@ public record EventQuery(
         String title,
         LocalDate startDate,
         LocalDate endDate,
+        LocalDate repeatEndDate,
         RepeatType repeatType,
         String categoryName,
         String color
@@ -20,6 +21,7 @@ public record EventQuery(
                 event.getTitle(),
                 event.getStartDate(),
                 event.getEndDate(),
+                event.getRepeatEndDate(),
                 event.getRepeatType(),
                 event.getCategory().getName(),
                 event.getCategory().getColor()

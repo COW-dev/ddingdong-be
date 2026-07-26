@@ -1,8 +1,10 @@
 package ddingdong.ddingdongBE.domain.calendar.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertAll;
 
+import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.common.fixture.CategoryFixture;
 import ddingdong.ddingdongBE.common.fixture.EventFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
@@ -58,6 +60,17 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
         assertThat(testCategory.getColor()).isEqualTo(createCategoryCommand.color());
     }
 
+    @DisplayName("어드민: 동일한 이름의 카테고리는 생성할 수 없다")
+    @Test
+    void cannotCreateCategoryWithDuplicatedName() {
+        // given
+        facadeAdminCalendarService.createCategory(createCategoryCommand);
+
+        // when // then
+        assertThatThrownBy(() -> facadeAdminCalendarService.createCategory(createCategoryCommand))
+                .isInstanceOf(CalendarException.DuplicatedCategoryNameException.class);
+    }
+
     @DisplayName("어드민: 이벤트 생성")
     @Test
     void createEvent() {
@@ -67,9 +80,9 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 "testEvent",
                 LocalDate.of(2026, 7, 1),
                 LocalDate.of(2026, 7, 2),
+                LocalDate.of(2026, 7, 2),
                 RepeatType.NONE,
-                category.getName(),
-                "#FFFFFF"
+                category.getName()
         );
 
         // when
@@ -83,9 +96,9 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 () -> assertThat(testEvent.getTitle()).isEqualTo(command.title()),
                 () -> assertThat(testEvent.getStartDate()).isEqualTo(command.startDate()),
                 () -> assertThat(testEvent.getEndDate()).isEqualTo(command.endDate()),
+                () -> assertThat(testEvent.getRepeatEndDate()).isEqualTo(command.repeatEndDate()),
                 () -> assertThat(testEvent.getRepeatType()).isEqualTo(command.repeatType()),
-                () -> assertThat(testEvent.getCategory().getId()).isEqualTo(category.getId()),
-                () -> assertThat(testEvent.getCategory().getColor()).isEqualTo(command.color())
+                () -> assertThat(testEvent.getCategory().getId()).isEqualTo(category.getId())
         );
     }
 
@@ -119,7 +132,8 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
         Event weeklyEvent = eventRepository.save(Event.builder()
                 .title("weeklyEvent")
                 .startDate(LocalDate.of(2026, 7, 1))
-                .endDate(LocalDate.of(2026, 7, 31))
+                .endDate(LocalDate.of(2026, 7, 1))
+                .repeatEndDate(LocalDate.of(2026, 7, 31))
                 .repeatType(RepeatType.WEEKLY)
                 .category(category)
                 .build());
@@ -186,9 +200,9 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 "updatedTitle",
                 LocalDate.of(2026, 7, 5),
                 LocalDate.of(2026, 7, 6),
+                LocalDate.of(2026, 7, 31),
                 RepeatType.WEEKLY,
-                newCategory.getName(),
-                "#123456"
+                newCategory.getName()
         );
 
         // when
@@ -200,6 +214,7 @@ class FacadeAdminCalendarServiceTest extends TestContainerSupport {
                 () -> assertThat(updatedEvent.getTitle()).isEqualTo(updateCommand.title()),
                 () -> assertThat(updatedEvent.getStartDate()).isEqualTo(updateCommand.startDate()),
                 () -> assertThat(updatedEvent.getEndDate()).isEqualTo(updateCommand.endDate()),
+                () -> assertThat(updatedEvent.getRepeatEndDate()).isEqualTo(updateCommand.repeatEndDate()),
                 () -> assertThat(updatedEvent.getRepeatType()).isEqualTo(updateCommand.repeatType()),
                 () -> assertThat(updatedEvent.getCategory().getId()).isEqualTo(newCategory.getId())
         );

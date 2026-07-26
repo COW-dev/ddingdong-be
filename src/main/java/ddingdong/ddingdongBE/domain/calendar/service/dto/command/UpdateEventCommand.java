@@ -7,9 +7,9 @@ public record UpdateEventCommand(
         String title,
         LocalDate startDate,
         LocalDate endDate,
+        LocalDate repeatEndDate,
         RepeatType repeatType,
-        String categoryName,
-        String color
+        String categoryName
 ) {
 
 }

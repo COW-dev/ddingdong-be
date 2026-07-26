@@ -10,9 +10,9 @@ public record CreateEventCommand(
         String title,
         LocalDate startDate,
         LocalDate endDate,
+        LocalDate repeatEndDate,
         RepeatType repeatType,
-        String categoryName,
-        String color
+        String categoryName
 ) {
 
     public Event toEntity(Category category) {
@@ -20,6 +20,7 @@ public record CreateEventCommand(
                 .title(title)
                 .startDate(startDate)
                 .endDate(endDate)
+                .repeatEndDate(repeatEndDate)
                 .repeatType(repeatType)
                 .category(category)
                 .build();

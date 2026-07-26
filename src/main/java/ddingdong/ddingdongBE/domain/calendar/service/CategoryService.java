@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.calendar.service;
 
+import ddingdong.ddingdongBE.common.exception.CalendarException;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.calendar.entity.Category;
 import ddingdong.ddingdongBE.domain.calendar.repository.CategoryRepository;
@@ -16,6 +17,9 @@ public class CategoryService {
 
     @Transactional
     public Long save(Category category) {
+        if (categoryRepository.existsByName(category.getName())) {
+            throw new CalendarException.DuplicatedCategoryNameException();
+        }
         Category savedCategory = categoryRepository.save(category);
         return savedCategory.getId();
     }
