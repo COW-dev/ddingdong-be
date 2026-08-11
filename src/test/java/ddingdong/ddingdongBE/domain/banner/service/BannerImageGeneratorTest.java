@@ -9,11 +9,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 class BannerImageGeneratorTest {
 
@@ -21,6 +24,9 @@ class BannerImageGeneratorTest {
     private static final String SUBTITLE_TEXT = "6월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
 
     private BannerImageGenerator bannerImageGenerator;
+
+    @TempDir
+    Path fontDirectory;
 
     @BeforeAll
     static void enableHeadless() {
@@ -30,7 +36,7 @@ class BannerImageGeneratorTest {
 
     @BeforeEach
     void setUp() {
-        bannerImageGenerator = new BannerImageGenerator();
+        bannerImageGenerator = new BannerImageGenerator(fontDirectory.toString());
         bannerImageGenerator.init();
     }
 
@@ -48,6 +54,63 @@ class BannerImageGeneratorTest {
         Font mediumFont = extractFont("mediumBaseFont");
 
         assertThat(mediumFont.canDisplayUpTo(SUBTITLE_TEXT)).isEqualTo(-1);
+    }
+
+    @DisplayName("폰트는 지정된 경로에 풀리며, OS 정리 대상인 JDK 임시 폰트파일을 만들지 않는다")
+    @Test
+    void fontsAreExtractedIntoGivenDirectoryWithoutJdkTempFiles() throws Exception {
+        // given - Font.createFont(int, InputStream) 이 만드는 임시파일("+~JF*.tmp") 목록을 미리 확보한다
+        Path systemTempDirectory = Path.of(System.getProperty("java.io.tmpdir"));
+        long tempFontFilesBefore = countJdkTempFontFiles(systemTempDirectory);
+
+        // when
+        Path anotherFontDirectory = Files.createDirectory(fontDirectory.resolve("reloaded"));
+        new BannerImageGenerator(anotherFontDirectory.toString()).init();
+
+        // then
+        assertThat(Files.exists(anotherFontDirectory.resolve("Pretendard-Bold.otf"))).isTrue();
+        assertThat(Files.exists(anotherFontDirectory.resolve("Pretendard-Medium.otf"))).isTrue();
+        assertThat(countJdkTempFontFiles(systemTempDirectory)).isEqualTo(tempFontFilesBefore);
+    }
+
+    private long countJdkTempFontFiles(Path directory) throws Exception {
+        try (var files = Files.list(directory)) {
+            return files.filter(file -> file.getFileName().toString().startsWith("+~JF")).count();
+        }
+    }
+
+    @DisplayName("제목 폰트가 런타임에 해제되어도 제목의 한글이 네모로 깨지지 않는다")
+    @Test
+    void reloadsTitleFontWhenItIsReleasedAtRuntime() throws Exception {
+        // given - 한글 글리프가 없는 fallback 폰트로 치환해 폰트가 해제된 상황을 만든다
+        overrideFont("boldBaseFont", new Font(Font.DIALOG, Font.PLAIN, 1));
+
+        // when
+        byte[] result = bannerImageGenerator.generateWebBannerImage("테스트동아리", createTestLogo(), "학술", 2);
+
+        // then
+        assertThat(extractFont("boldBaseFont").canDisplayUpTo(TITLE_TEXT)).isEqualTo(-1);
+        assertKoreanTextRendered(readImage(result), 360, 70, 450, 55);
+    }
+
+    @DisplayName("부제목 폰트가 런타임에 해제되어도 부제목의 한글이 네모로 깨지지 않는다")
+    @Test
+    void reloadsSubtitleFontWhenItIsReleasedAtRuntime() throws Exception {
+        // given
+        overrideFont("mediumBaseFont", new Font(Font.DIALOG, Font.PLAIN, 1));
+
+        // when
+        byte[] result = bannerImageGenerator.generateWebBannerImage("테스트동아리", createTestLogo(), "학술", 2);
+
+        // then
+        assertThat(extractFont("mediumBaseFont").canDisplayUpTo(SUBTITLE_TEXT)).isEqualTo(-1);
+        assertThat(result.length).isGreaterThan(0);
+    }
+
+    private void overrideFont(String fieldName, Font font) throws Exception {
+        Field field = BannerImageGenerator.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(bannerImageGenerator, font);
     }
 
     private Font extractFont(String fieldName) throws Exception {

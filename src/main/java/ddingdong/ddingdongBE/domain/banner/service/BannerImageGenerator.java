@@ -13,9 +13,14 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,8 +42,20 @@ public class BannerImageGenerator {
     private static final String BOLD_FONT_PATH = "fonts/Pretendard-Bold.otf";
     private static final String MEDIUM_FONT_PATH = "fonts/Pretendard-Medium.otf";
 
-    private Font boldBaseFont;
-    private Font mediumBaseFont;
+    // 배너는 매월 1일에만 생성되므로, 기동 시 로드한 폰트가 수 주간 유휴 상태로 남는다.
+    // 그 사이 외부 요인으로 폰트가 해제되면 렌더링 직전에 재로드해야 하므로 volatile 로 둔다.
+    private volatile Font boldBaseFont;
+    private volatile Font mediumBaseFont;
+
+    private final Path fontDirectory;
+
+    // JDK가 관리하는 임시 디렉토리(/tmp)가 아니라 애플리케이션이 소유한 경로에 폰트를 풀어둔다.
+    // 배포마다 새로 만들어지는 앱 디렉토리이므로 OS의 임시파일 정리 대상이 되지 않는다.
+    public BannerImageGenerator(@Value("${banner.font-directory:}") String fontDirectory) {
+        this.fontDirectory = fontDirectory.isBlank()
+                ? Paths.get(System.getProperty("user.dir"), "fonts")
+                : Paths.get(fontDirectory);
+    }
 
     @PostConstruct
     void init() {
@@ -140,40 +157,40 @@ public class BannerImageGenerator {
         int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
         // Use the Pretendard-Bold font face without applying Java synthetic bold style.
-        Font mainFont = createStyledFont(boldBaseFont, 36f);
+        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
+        Font mainFont = titleFont(36f, mainText);
         graphics.setFont(mainFont);
         graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
-        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
         int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, textX, mainY);
 
         // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px
-        Font subFont = createStyledFont(mediumBaseFont, 16f);
+        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+        Font subFont = bodyFont(16f, subText);
         graphics.setFont(subFont);
         graphics.setColor(Color.decode("#6B7280"));
         FontMetrics subMetrics = graphics.getFontMetrics();
-        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
         int subY = textStartY + 40 + 4 + subMetrics.getAscent();
         graphics.drawString(subText, textX, subY);
     }
 
     private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
-        Font mainFont = createStyledFont(boldBaseFont, 18f);
+        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
+        Font mainFont = titleFont(18f, mainText);
         graphics.setFont(mainFont);
         graphics.setColor(new Color(33, 33, 33));
         FontMetrics mainMetrics = graphics.getFontMetrics();
-        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
         int mainX = (MOBILE_WIDTH - mainMetrics.stringWidth(mainText)) / 2;
         int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, mainX, mainY);
 
         // Mobile/Sub: Pretendard Medium 12px, centered
-        Font subFont = createStyledFont(mediumBaseFont, 12f);
+        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+        Font subFont = bodyFont(12f, subText);
         graphics.setFont(subFont);
         graphics.setColor(new Color(100, 100, 100));
         FontMetrics subMetrics = graphics.getFontMetrics();
-        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
         int subX = (MOBILE_WIDTH - subMetrics.stringWidth(subText)) / 2;
         graphics.drawString(subText, subX, mainY + 20);
     }
@@ -186,12 +203,18 @@ public class BannerImageGenerator {
         return baseFont.deriveFont(size);
     }
 
+    // Font.createFont(int, InputStream) 은 폰트를 java.io.tmpdir 의 임시파일로 복사한 뒤
+    // 글리프를 그 파일에서 지연 로딩한다. 운영(EB/Amazon Linux)에서는 임시파일 정리 데몬이
+    // 장기간 미접근 상태인 이 파일을 삭제하고, 그 뒤 렌더링하면 JDK가 폰트를 조용히 해제한 채
+    // 이름으로 재조회해 한글 글리프가 없는 fallback 폰트로 그린다(제목 tofu).
+    // 따라서 앱이 소유한 경로에 폰트를 풀어두고 File 오버로드로 로드한다.
     private Font loadFont(String path) {
         try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
             if (fontStream == null) {
                 throw new BannerImageGenerationException();
             }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, fontStream);
+            Path extractedFont = extractFont(fontStream, path);
+            Font font = Font.createFont(Font.TRUETYPE_FONT, extractedFont.toFile());
             GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
             return font;
         } catch (BannerImageGenerationException e) {
@@ -200,6 +223,44 @@ public class BannerImageGenerator {
             log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
             throw new BannerImageGenerationException();
         }
+    }
+
+    private Path extractFont(InputStream fontStream, String path) throws IOException {
+        Files.createDirectories(fontDirectory);
+        Path extractedFont = fontDirectory.resolve(Paths.get(path).getFileName().toString());
+        Files.copy(fontStream, extractedFont, StandardCopyOption.REPLACE_EXISTING);
+        return extractedFont;
+    }
+
+    // 폰트가 해제되면 예외 없이 fallback 폰트로 그려져 배너가 조용히 깨진다.
+    // 그리기 직전에 실제로 해당 문구를 표현할 수 있는지 확인하고, 불가능하면 재로드한다.
+    private Font usableFont(Font baseFont, String path, String text) {
+        if (canDisplayFully(baseFont, text)) {
+            return baseFont;
+        }
+        log.error("배너 폰트가 런타임에 해제되어 재로드합니다 ({})", path);
+
+        Font reloadedFont = loadFont(path);
+        if (!canDisplayFully(reloadedFont, text)) {
+            log.warn("재로드 후에도 폰트가 표현할 수 없는 문자가 있습니다 ({}): {}", path, text);
+        }
+        return reloadedFont;
+    }
+
+    private boolean canDisplayFully(Font font, String text) {
+        return font != null && font.canDisplayUpTo(text) < 0;
+    }
+
+    private Font titleFont(float size, String text) {
+        Font reloaded = usableFont(boldBaseFont, BOLD_FONT_PATH, text);
+        this.boldBaseFont = reloaded;
+        return createStyledFont(reloaded, size);
+    }
+
+    private Font bodyFont(float size, String text) {
+        Font reloaded = usableFont(mediumBaseFont, MEDIUM_FONT_PATH, text);
+        this.mediumBaseFont = reloaded;
+        return createStyledFont(reloaded, size);
     }
 
     private byte[] toPngBytes(BufferedImage image) {
