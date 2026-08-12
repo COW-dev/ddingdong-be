@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.BannerException.BannerImageGenerat
 import ddingdong.ddingdongBE.domain.banner.entity.ClubCategoryColor;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Graphics2D;
@@ -13,11 +14,9 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.PostConstruct;
@@ -49,8 +48,10 @@ public class BannerImageGenerator {
     // 그 사이 외부 요인으로 폰트가 해제되면 렌더링 직전에 재로드하므로 폰트 경로별로 보관한다.
     private final Map<String, Font> loadedFonts = new ConcurrentHashMap<>();
 
-    // 재로드는 폰트 파일을 다시 쓰는 작업이라, 같은 폰트에 대해 동시에 일어나면
-    // 한쪽이 읽는 중인 파일을 다른 쪽이 교체할 수 있다. 폰트 단위로 직렬화한다.
+    // 추출해둔 폰트 파일의 위치. 재로드 시 이 파일을 그대로 다시 읽어 backing file 을 교체하지 않는다.
+    private final Map<String, Path> extractedFontFiles = new ConcurrentHashMap<>();
+
+    // 재로드가 같은 폰트에 대해 동시에 일어나지 않도록 폰트 단위로 직렬화한다.
     private final Map<String, Object> fontLoadLocks = new ConcurrentHashMap<>();
 
     private final Path fontDirectory;
@@ -214,16 +215,16 @@ public class BannerImageGenerator {
     // 장기간 미접근 상태인 이 파일을 삭제하고, 그 뒤 렌더링하면 JDK가 폰트를 조용히 해제한 채
     // 이름으로 재조회해 한글 글리프가 없는 fallback 폰트로 그린다(제목 tofu).
     // 따라서 앱이 소유한 경로에 폰트를 풀어두고 File 오버로드로 로드한다.
+    // 클래스패스의 폰트를 새 파일로 추출한 뒤 로드한다. 최초 로드와, 추출본이 못 쓰게 된 경우에만 쓴다.
     private Font loadFont(String path) {
-        // 파일을 쓰는 동안 다른 스레드가 같은 파일을 읽거나 교체하지 못하도록 폰트 단위로 잠근다.
         synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
             try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
                 if (fontStream == null) {
                     throw new BannerImageGenerationException();
                 }
                 Path extractedFont = extractFont(fontStream, path);
-                Font font = Font.createFont(Font.TRUETYPE_FONT, extractedFont.toFile());
-                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+                Font font = createFontFrom(extractedFont);
+                extractedFontFiles.put(path, extractedFont);
                 return font;
             } catch (BannerImageGenerationException e) {
                 throw e;
@@ -234,20 +235,41 @@ public class BannerImageGenerator {
         }
     }
 
-    // 사용 중인 폰트 파일을 직접 덮어쓰면 읽는 쪽이 깨진 파일을 보게 되므로,
-    // 임시 파일에 먼저 쓰고 같은 디렉토리 안에서 원자적으로 옮긴다.
+    // 이미 추출해둔 파일이 온전하면 그 파일에서 다시 만든다. 렌더링 중인 다른 스레드가 같은 파일을
+    // backing file 로 쓰고 있을 수 있으므로 교체하지 않는다.
+    // 파일이 사라졌거나 손상된 경우에만 새 경로에 추출하고, 기존 파일은 그대로 둔다.
+    private Font reloadFont(String path) {
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            Path extractedFont = extractedFontFiles.get(path);
+            if (extractedFont != null) {
+                try {
+                    return createFontFrom(extractedFont);
+                } catch (Exception e) {
+                    log.warn("추출해둔 폰트 파일을 읽을 수 없어 새로 추출합니다 ({}): {}", extractedFont, e.getMessage());
+                }
+            }
+            return loadFont(path);
+        }
+    }
+
+    private Font createFontFrom(Path fontFile) throws IOException, FontFormatException {
+        Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile.toFile());
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+        return font;
+    }
+
+    // 이미 쓰이고 있을 수 있는 파일을 덮어쓰지 않도록, 비어 있는 경로를 찾아 추출한다.
     private Path extractFont(InputStream fontStream, String path) throws IOException {
         Files.createDirectories(fontDirectory);
         String fontFileName = Paths.get(path).getFileName().toString();
-        Path extractedFont = fontDirectory.resolve(fontFileName);
-        Path temporaryFont = fontDirectory.resolve(fontFileName + ".tmp");
 
-        Files.copy(fontStream, temporaryFont, StandardCopyOption.REPLACE_EXISTING);
-        try {
-            Files.move(temporaryFont, extractedFont, StandardCopyOption.ATOMIC_MOVE);
-        } catch (AtomicMoveNotSupportedException e) {
-            Files.move(temporaryFont, extractedFont, StandardCopyOption.REPLACE_EXISTING);
+        Path extractedFont = fontDirectory.resolve(fontFileName);
+        int sequence = 1;
+        while (Files.exists(extractedFont)) {
+            extractedFont = fontDirectory.resolve(sequence++ + "-" + fontFileName);
         }
+
+        Files.copy(fontStream, extractedFont);
         return extractedFont;
     }
 
@@ -267,7 +289,7 @@ public class BannerImageGenerator {
             }
             log.error("배너 폰트가 런타임에 해제되어 재로드합니다 ({})", path);
 
-            Font reloadedFont = loadFont(path);
+            Font reloadedFont = reloadFont(path);
             if (!canDisplayFully(reloadedFont, text)) {
                 log.warn("재로드 후에도 폰트가 표현할 수 없는 문자가 있습니다 ({}): {}", path, text);
             }

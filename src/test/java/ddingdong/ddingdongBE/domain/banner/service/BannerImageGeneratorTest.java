@@ -9,8 +9,10 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 import java.util.Map;
 import javax.imageio.ImageIO;
 import org.junit.jupiter.api.BeforeAll;
@@ -110,6 +112,57 @@ class BannerImageGeneratorTest {
         assertThat(loadedFont(MEDIUM_FONT_PATH)).isNotInstanceOf(UndisplayableFont.class);
         assertThat(loadedFont(MEDIUM_FONT_PATH).canDisplayUpTo(SUBTITLE_TEXT)).isEqualTo(-1);
         assertThat(result.length).isGreaterThan(0);
+    }
+
+    @DisplayName("폰트를 재로드해도 이미 추출해둔 폰트 파일은 교체되지 않는다")
+    @Test
+    void keepsExtractedFontFileIntactOnReload() throws Exception {
+        // given - 렌더링 중인 다른 스레드가 이 파일을 backing file 로 쓰고 있을 수 있다
+        Path extractedFont = extractedFontFile(BOLD_FONT_PATH);
+        FileTime modifiedTimeBefore = Files.getLastModifiedTime(extractedFont);
+        long fontFilesBefore = countFontFiles();
+        overrideLoadedFont(BOLD_FONT_PATH, new UndisplayableFont());
+
+        // when
+        bannerImageGenerator.generateWebBannerImage("테스트동아리", createTestLogo(), "학술", 2);
+
+        // then
+        assertThat(extractedFontFile(BOLD_FONT_PATH)).isEqualTo(extractedFont);
+        assertThat(Files.getLastModifiedTime(extractedFont)).isEqualTo(modifiedTimeBefore);
+        assertThat(countFontFiles()).isEqualTo(fontFilesBefore);
+    }
+
+    @DisplayName("추출해둔 폰트 파일이 손상되면 덮어쓰지 않고 새 파일로 추출해 한글을 정상 렌더링한다")
+    @Test
+    void extractsNewFontFileWithoutOverwritingCorruptedOne() throws Exception {
+        // given
+        Path corruptedFont = extractedFontFile(BOLD_FONT_PATH);
+        byte[] corruptedContent = "not a font".getBytes(StandardCharsets.UTF_8);
+        Files.write(corruptedFont, corruptedContent);
+        long fontFilesBefore = countFontFiles();
+        overrideLoadedFont(BOLD_FONT_PATH, new UndisplayableFont());
+
+        // when
+        byte[] result = bannerImageGenerator.generateWebBannerImage("테스트동아리", createTestLogo(), "학술", 2);
+
+        // then
+        assertThat(Files.readAllBytes(corruptedFont)).isEqualTo(corruptedContent);
+        assertThat(extractedFontFile(BOLD_FONT_PATH)).isNotEqualTo(corruptedFont);
+        assertThat(countFontFiles()).isEqualTo(fontFilesBefore + 1);
+        assertKoreanTextRendered(readImage(result), 360, 70, 450, 55);
+    }
+
+    private long countFontFiles() throws Exception {
+        try (var files = Files.list(fontDirectory)) {
+            return files.filter(Files::isRegularFile).count();
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Path extractedFontFile(String fontPath) throws Exception {
+        Field field = BannerImageGenerator.class.getDeclaredField("extractedFontFiles");
+        field.setAccessible(true);
+        return ((Map<String, Path>) field.get(bannerImageGenerator)).get(fontPath);
     }
 
     // 논리 폰트(Dialog)는 실행 환경에 한글 폰트가 있으면 한글을 표현할 수 있어
