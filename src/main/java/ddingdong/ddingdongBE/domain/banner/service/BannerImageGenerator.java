@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.BannerException.BannerImageGenerat
 import ddingdong.ddingdongBE.domain.banner.entity.ClubCategoryColor;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.FontMetrics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Graphics2D;
@@ -13,9 +14,15 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -37,13 +44,30 @@ public class BannerImageGenerator {
     private static final String BOLD_FONT_PATH = "fonts/Pretendard-Bold.otf";
     private static final String MEDIUM_FONT_PATH = "fonts/Pretendard-Medium.otf";
 
-    private Font boldBaseFont;
-    private Font mediumBaseFont;
+    // 배너는 매월 1일에만 생성되므로, 기동 시 로드한 폰트가 수 주간 유휴 상태로 남는다.
+    // 그 사이 외부 요인으로 폰트가 해제되면 렌더링 직전에 재로드하므로 폰트 경로별로 보관한다.
+    private final Map<String, Font> loadedFonts = new ConcurrentHashMap<>();
+
+    // 추출해둔 폰트 파일의 위치. 재로드 시 이 파일을 그대로 다시 읽어 backing file 을 교체하지 않는다.
+    private final Map<String, Path> extractedFontFiles = new ConcurrentHashMap<>();
+
+    // 재로드가 같은 폰트에 대해 동시에 일어나지 않도록 폰트 단위로 직렬화한다.
+    private final Map<String, Object> fontLoadLocks = new ConcurrentHashMap<>();
+
+    private final Path fontDirectory;
+
+    // JDK가 관리하는 임시 디렉토리(/tmp)가 아니라 애플리케이션이 소유한 경로에 폰트를 풀어둔다.
+    // 배포마다 새로 만들어지는 앱 디렉토리이므로 OS의 임시파일 정리 대상이 되지 않는다.
+    public BannerImageGenerator(@Value("${banner.font-directory:}") String fontDirectory) {
+        this.fontDirectory = fontDirectory.isBlank()
+                ? Paths.get(System.getProperty("user.dir"), "fonts")
+                : Paths.get(fontDirectory);
+    }
 
     @PostConstruct
     void init() {
-        this.boldBaseFont = loadFont(BOLD_FONT_PATH);
-        this.mediumBaseFont = loadFont(MEDIUM_FONT_PATH);
+        loadedFonts.put(BOLD_FONT_PATH, loadFont(BOLD_FONT_PATH));
+        loadedFonts.put(MEDIUM_FONT_PATH, loadFont(MEDIUM_FONT_PATH));
     }
 
     public byte[] generateWebBannerImage(String clubName, BufferedImage clubLogo, String category, int month) {
@@ -140,40 +164,40 @@ public class BannerImageGenerator {
         int textStartY = (WEB_HEIGHT - textBlockHeight) / 2;
 
         // Use the Pretendard-Bold font face without applying Java synthetic bold style.
-        Font mainFont = createStyledFont(boldBaseFont, 36f);
+        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
+        Font mainFont = titleFont(36f, mainText);
         graphics.setFont(mainFont);
         graphics.setColor(Color.decode("#1F2937"));
         FontMetrics mainMetrics = graphics.getFontMetrics();
-        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
         int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, textX, mainY);
 
         // PC/Body/Medium2: Pretendard Medium 16px, line-height 24px
-        Font subFont = createStyledFont(mediumBaseFont, 16f);
+        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+        Font subFont = bodyFont(16f, subText);
         graphics.setFont(subFont);
         graphics.setColor(Color.decode("#6B7280"));
         FontMetrics subMetrics = graphics.getFontMetrics();
-        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
         int subY = textStartY + 40 + 4 + subMetrics.getAscent();
         graphics.drawString(subText, textX, subY);
     }
 
     private void drawMobileTexts(Graphics2D graphics, String clubName, int month, int textStartY) {
-        Font mainFont = createStyledFont(boldBaseFont, 18f);
+        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
+        Font mainFont = titleFont(18f, mainText);
         graphics.setFont(mainFont);
         graphics.setColor(new Color(33, 33, 33));
         FontMetrics mainMetrics = graphics.getFontMetrics();
-        String mainText = "이달의 피드 : " + clubName + " 축하드립니다!";
         int mainX = (MOBILE_WIDTH - mainMetrics.stringWidth(mainText)) / 2;
         int mainY = textStartY + mainMetrics.getAscent();
         graphics.drawString(mainText, mainX, mainY);
 
         // Mobile/Sub: Pretendard Medium 12px, centered
-        Font subFont = createStyledFont(mediumBaseFont, 12f);
+        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
+        Font subFont = bodyFont(12f, subText);
         graphics.setFont(subFont);
         graphics.setColor(new Color(100, 100, 100));
         FontMetrics subMetrics = graphics.getFontMetrics();
-        String subText = month + "월의 피드는 '동아리 피드'에서 확인하실 수 있습니다.";
         int subX = (MOBILE_WIDTH - subMetrics.stringWidth(subText)) / 2;
         graphics.drawString(subText, subX, mainY + 20);
     }
@@ -186,20 +210,104 @@ public class BannerImageGenerator {
         return baseFont.deriveFont(size);
     }
 
+    // Font.createFont(int, InputStream) 은 폰트를 java.io.tmpdir 의 임시파일로 복사한 뒤
+    // 글리프를 그 파일에서 지연 로딩한다. 운영(EB/Amazon Linux)에서는 임시파일 정리 데몬이
+    // 장기간 미접근 상태인 이 파일을 삭제하고, 그 뒤 렌더링하면 JDK가 폰트를 조용히 해제한 채
+    // 이름으로 재조회해 한글 글리프가 없는 fallback 폰트로 그린다(제목 tofu).
+    // 따라서 앱이 소유한 경로에 폰트를 풀어두고 File 오버로드로 로드한다.
+    // 클래스패스의 폰트를 새 파일로 추출한 뒤 로드한다. 최초 로드와, 추출본이 못 쓰게 된 경우에만 쓴다.
     private Font loadFont(String path) {
-        try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (fontStream == null) {
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
+                if (fontStream == null) {
+                    throw new BannerImageGenerationException();
+                }
+                Path extractedFont = extractFont(fontStream, path);
+                Font font = createFontFrom(extractedFont);
+                extractedFontFiles.put(path, extractedFont);
+                return font;
+            } catch (BannerImageGenerationException e) {
+                throw e;
+            } catch (Exception e) {
+                log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
                 throw new BannerImageGenerationException();
             }
-            Font font = Font.createFont(Font.TRUETYPE_FONT, fontStream);
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-            return font;
-        } catch (BannerImageGenerationException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
-            throw new BannerImageGenerationException();
         }
+    }
+
+    // 이미 추출해둔 파일이 온전하면 그 파일에서 다시 만든다. 렌더링 중인 다른 스레드가 같은 파일을
+    // backing file 로 쓰고 있을 수 있으므로 교체하지 않는다.
+    // 파일이 사라졌거나 손상된 경우에만 새 경로에 추출하고, 기존 파일은 그대로 둔다.
+    private Font reloadFont(String path) {
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            Path extractedFont = extractedFontFiles.get(path);
+            if (extractedFont != null) {
+                try {
+                    return createFontFrom(extractedFont);
+                } catch (Exception e) {
+                    log.warn("추출해둔 폰트 파일을 읽을 수 없어 새로 추출합니다 ({}): {}", extractedFont, e.getMessage());
+                }
+            }
+            return loadFont(path);
+        }
+    }
+
+    private Font createFontFrom(Path fontFile) throws IOException, FontFormatException {
+        Font font = Font.createFont(Font.TRUETYPE_FONT, fontFile.toFile());
+        GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+        return font;
+    }
+
+    // 이미 쓰이고 있을 수 있는 파일을 덮어쓰지 않도록, 비어 있는 경로를 찾아 추출한다.
+    private Path extractFont(InputStream fontStream, String path) throws IOException {
+        Files.createDirectories(fontDirectory);
+        String fontFileName = Paths.get(path).getFileName().toString();
+
+        Path extractedFont = fontDirectory.resolve(fontFileName);
+        int sequence = 1;
+        while (Files.exists(extractedFont)) {
+            extractedFont = fontDirectory.resolve(sequence++ + "-" + fontFileName);
+        }
+
+        Files.copy(fontStream, extractedFont);
+        return extractedFont;
+    }
+
+    // 폰트가 해제되면 예외 없이 fallback 폰트로 그려져 배너가 조용히 깨진다.
+    // 그리기 직전에 실제로 해당 문구를 표현할 수 있는지 확인하고, 불가능하면 재로드한다.
+    private Font usableFont(String path, String text) {
+        Font cachedFont = loadedFonts.get(path);
+        if (canDisplayFully(cachedFont, text)) {
+            return cachedFont;
+        }
+
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            // 잠금을 기다리는 동안 다른 스레드가 이미 재로드했을 수 있다.
+            Font currentFont = loadedFonts.get(path);
+            if (canDisplayFully(currentFont, text)) {
+                return currentFont;
+            }
+            log.error("배너 폰트가 런타임에 해제되어 재로드합니다 ({})", path);
+
+            Font reloadedFont = reloadFont(path);
+            if (!canDisplayFully(reloadedFont, text)) {
+                log.warn("재로드 후에도 폰트가 표현할 수 없는 문자가 있습니다 ({}): {}", path, text);
+            }
+            loadedFonts.put(path, reloadedFont);
+            return reloadedFont;
+        }
+    }
+
+    private boolean canDisplayFully(Font font, String text) {
+        return font != null && font.canDisplayUpTo(text) < 0;
+    }
+
+    private Font titleFont(float size, String text) {
+        return createStyledFont(usableFont(BOLD_FONT_PATH, text), size);
+    }
+
+    private Font bodyFont(float size, String text) {
+        return createStyledFont(usableFont(MEDIUM_FONT_PATH, text), size);
     }
 
     private byte[] toPngBytes(BufferedImage image) {
