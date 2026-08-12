@@ -13,10 +13,13 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import jakarta.annotation.PostConstruct;
 import javax.imageio.ImageIO;
 import lombok.extern.slf4j.Slf4j;
@@ -43,9 +46,12 @@ public class BannerImageGenerator {
     private static final String MEDIUM_FONT_PATH = "fonts/Pretendard-Medium.otf";
 
     // 배너는 매월 1일에만 생성되므로, 기동 시 로드한 폰트가 수 주간 유휴 상태로 남는다.
-    // 그 사이 외부 요인으로 폰트가 해제되면 렌더링 직전에 재로드해야 하므로 volatile 로 둔다.
-    private volatile Font boldBaseFont;
-    private volatile Font mediumBaseFont;
+    // 그 사이 외부 요인으로 폰트가 해제되면 렌더링 직전에 재로드하므로 폰트 경로별로 보관한다.
+    private final Map<String, Font> loadedFonts = new ConcurrentHashMap<>();
+
+    // 재로드는 폰트 파일을 다시 쓰는 작업이라, 같은 폰트에 대해 동시에 일어나면
+    // 한쪽이 읽는 중인 파일을 다른 쪽이 교체할 수 있다. 폰트 단위로 직렬화한다.
+    private final Map<String, Object> fontLoadLocks = new ConcurrentHashMap<>();
 
     private final Path fontDirectory;
 
@@ -59,8 +65,8 @@ public class BannerImageGenerator {
 
     @PostConstruct
     void init() {
-        this.boldBaseFont = loadFont(BOLD_FONT_PATH);
-        this.mediumBaseFont = loadFont(MEDIUM_FONT_PATH);
+        loadedFonts.put(BOLD_FONT_PATH, loadFont(BOLD_FONT_PATH));
+        loadedFonts.put(MEDIUM_FONT_PATH, loadFont(MEDIUM_FONT_PATH));
     }
 
     public byte[] generateWebBannerImage(String clubName, BufferedImage clubLogo, String category, int month) {
@@ -209,42 +215,65 @@ public class BannerImageGenerator {
     // 이름으로 재조회해 한글 글리프가 없는 fallback 폰트로 그린다(제목 tofu).
     // 따라서 앱이 소유한 경로에 폰트를 풀어두고 File 오버로드로 로드한다.
     private Font loadFont(String path) {
-        try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
-            if (fontStream == null) {
+        // 파일을 쓰는 동안 다른 스레드가 같은 파일을 읽거나 교체하지 못하도록 폰트 단위로 잠근다.
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            try (InputStream fontStream = getClass().getClassLoader().getResourceAsStream(path)) {
+                if (fontStream == null) {
+                    throw new BannerImageGenerationException();
+                }
+                Path extractedFont = extractFont(fontStream, path);
+                Font font = Font.createFont(Font.TRUETYPE_FONT, extractedFont.toFile());
+                GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
+                return font;
+            } catch (BannerImageGenerationException e) {
+                throw e;
+            } catch (Exception e) {
+                log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
                 throw new BannerImageGenerationException();
             }
-            Path extractedFont = extractFont(fontStream, path);
-            Font font = Font.createFont(Font.TRUETYPE_FONT, extractedFont.toFile());
-            GraphicsEnvironment.getLocalGraphicsEnvironment().registerFont(font);
-            return font;
-        } catch (BannerImageGenerationException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("커스텀 폰트 로드 실패 ({}): {}", path, e.getMessage());
-            throw new BannerImageGenerationException();
         }
     }
 
+    // 사용 중인 폰트 파일을 직접 덮어쓰면 읽는 쪽이 깨진 파일을 보게 되므로,
+    // 임시 파일에 먼저 쓰고 같은 디렉토리 안에서 원자적으로 옮긴다.
     private Path extractFont(InputStream fontStream, String path) throws IOException {
         Files.createDirectories(fontDirectory);
-        Path extractedFont = fontDirectory.resolve(Paths.get(path).getFileName().toString());
-        Files.copy(fontStream, extractedFont, StandardCopyOption.REPLACE_EXISTING);
+        String fontFileName = Paths.get(path).getFileName().toString();
+        Path extractedFont = fontDirectory.resolve(fontFileName);
+        Path temporaryFont = fontDirectory.resolve(fontFileName + ".tmp");
+
+        Files.copy(fontStream, temporaryFont, StandardCopyOption.REPLACE_EXISTING);
+        try {
+            Files.move(temporaryFont, extractedFont, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException e) {
+            Files.move(temporaryFont, extractedFont, StandardCopyOption.REPLACE_EXISTING);
+        }
         return extractedFont;
     }
 
     // 폰트가 해제되면 예외 없이 fallback 폰트로 그려져 배너가 조용히 깨진다.
     // 그리기 직전에 실제로 해당 문구를 표현할 수 있는지 확인하고, 불가능하면 재로드한다.
-    private Font usableFont(Font baseFont, String path, String text) {
-        if (canDisplayFully(baseFont, text)) {
-            return baseFont;
+    private Font usableFont(String path, String text) {
+        Font cachedFont = loadedFonts.get(path);
+        if (canDisplayFully(cachedFont, text)) {
+            return cachedFont;
         }
-        log.error("배너 폰트가 런타임에 해제되어 재로드합니다 ({})", path);
 
-        Font reloadedFont = loadFont(path);
-        if (!canDisplayFully(reloadedFont, text)) {
-            log.warn("재로드 후에도 폰트가 표현할 수 없는 문자가 있습니다 ({}): {}", path, text);
+        synchronized (fontLoadLocks.computeIfAbsent(path, key -> new Object())) {
+            // 잠금을 기다리는 동안 다른 스레드가 이미 재로드했을 수 있다.
+            Font currentFont = loadedFonts.get(path);
+            if (canDisplayFully(currentFont, text)) {
+                return currentFont;
+            }
+            log.error("배너 폰트가 런타임에 해제되어 재로드합니다 ({})", path);
+
+            Font reloadedFont = loadFont(path);
+            if (!canDisplayFully(reloadedFont, text)) {
+                log.warn("재로드 후에도 폰트가 표현할 수 없는 문자가 있습니다 ({}): {}", path, text);
+            }
+            loadedFonts.put(path, reloadedFont);
+            return reloadedFont;
         }
-        return reloadedFont;
     }
 
     private boolean canDisplayFully(Font font, String text) {
@@ -252,15 +281,11 @@ public class BannerImageGenerator {
     }
 
     private Font titleFont(float size, String text) {
-        Font reloaded = usableFont(boldBaseFont, BOLD_FONT_PATH, text);
-        this.boldBaseFont = reloaded;
-        return createStyledFont(reloaded, size);
+        return createStyledFont(usableFont(BOLD_FONT_PATH, text), size);
     }
 
     private Font bodyFont(float size, String text) {
-        Font reloaded = usableFont(mediumBaseFont, MEDIUM_FONT_PATH, text);
-        this.mediumBaseFont = reloaded;
-        return createStyledFont(reloaded, size);
+        return createStyledFont(usableFont(MEDIUM_FONT_PATH, text), size);
     }
 
     private byte[] toPngBytes(BufferedImage image) {
