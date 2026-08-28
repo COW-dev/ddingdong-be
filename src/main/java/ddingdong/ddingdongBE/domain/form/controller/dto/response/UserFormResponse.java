@@ -58,7 +58,7 @@ public record UserFormResponse(
         }
     }
 
-    public static UserFormResponse from(UserFormQuery userFormQuery) {
+    public static UserFormResponse from(UserFormQuery userFormQuery, int applicationCount) {
         List<UserFormFieldListResponse> responses = userFormQuery.formFields().stream()
                 .map(UserFormFieldListResponse::from)
                 .toList();
@@ -66,7 +66,7 @@ public record UserFormResponse(
                 .clubName(userFormQuery.clubName())
                 .title(userFormQuery.title())
                 .description(userFormQuery.description())
-                .applicationCount(userFormQuery.applicationCount())
+                .applicationCount(applicationCount)
                 .startDate(userFormQuery.startDate())
                 .endDate(userFormQuery.endDate())
                 .formFields(responses)
