@@ -13,13 +13,12 @@ public record UserFormQuery(
         String clubName,
         String title,
         String description,
-        int applicationCount,
         LocalDate startDate,
         LocalDate endDate,
         List<UserFormFieldListQuery> formFields
 ) {
 
-    public static UserFormQuery from(Club club, Form form, int applicationCount, List<FormField> formFields) {
+    public static UserFormQuery from(Club club, Form form, List<FormField> formFields) {
         List<UserFormFieldListQuery> formFieldListQueries = formFields.stream()
                 .map(UserFormFieldListQuery::from)
                 .toList();
@@ -28,7 +27,6 @@ public record UserFormQuery(
                 .clubName(club.getName())
                 .title(form.getTitle())
                 .description(form.getDescription())
-                .applicationCount(applicationCount)
                 .startDate(form.getStartDate())
                 .endDate(form.getEndDate())
                 .formFields(formFieldListQueries)
