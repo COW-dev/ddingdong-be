@@ -24,9 +24,9 @@ public class UserFormController implements UserFormApi {
     }
 
     @Override
-    @Cacheable(value = "formsCache", key = "'form_' + #root.args[0] + '_' + #root.args[1]")
     public UserFormResponse getForm(Long formId, String section) {
         UserFormQuery query = facadeUserFormService.getUserForm(formId, section);
-        return UserFormResponse.from(query);
+        int applicationCount = facadeUserFormService.getApplicationCount(formId);
+        return UserFormResponse.from(query, applicationCount);
     }
 }

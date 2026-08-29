@@ -8,4 +8,6 @@ public interface FacadeUserFormService {
     FormSectionQuery getFormSection(Long formId);
 
     UserFormQuery getUserForm(Long formId, String section);
+
+    int getApplicationCount(Long formId);
 }
