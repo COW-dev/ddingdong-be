@@ -49,3 +49,6 @@ CLAUDE.local.md
 ### Local Docs ###
 docs/local/
 .claude/plans/
+
+# 런타임에 클래스패스 폰트를 풀어두는 경로 (BannerImageGenerator)
+/fonts/

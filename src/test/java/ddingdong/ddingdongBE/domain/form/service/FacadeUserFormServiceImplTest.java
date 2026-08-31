@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.form.service;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 
+import ddingdong.ddingdongBE.common.fixture.FormApplicationFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
 import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
@@ -12,6 +13,7 @@ import ddingdong.ddingdongBE.domain.form.repository.FormFieldRepository;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.FormSectionQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.UserFormQuery;
+import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.user.entity.Role;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
@@ -41,6 +43,9 @@ class FacadeUserFormServiceImplTest extends TestContainerSupport {
 
   @Autowired
   private FormFieldRepository formFieldRepository;
+
+  @Autowired
+  private FormApplicationRepository formApplicationRepository;
 
   private User savedUser;
   private Club savedClub;
@@ -102,6 +107,26 @@ class FacadeUserFormServiceImplTest extends TestContainerSupport {
 
     // then
     assertThat(userFormQuery.formFields().get(0).id()).isEqualTo(savedFormField1.getId());
+  }
+
+  @DisplayName("폼지를 이미 조회한 뒤 지원서가 접수되어도 지원자 수는 즉시 반영된다.")
+  @Test
+  void getApplicationCountIsNotStale() {
+    // given
+    createFormField("질문1", 1, savedSections.get(0), savedForm);
+    String selectedSection = savedSections.get(0);
+
+    facadeUserFormService.getUserForm(savedForm.getId(), selectedSection);
+    int countBeforeApplication = facadeUserFormService.getApplicationCount(savedForm.getId());
+
+    // when
+    formApplicationRepository.save(FormApplicationFixture.create(savedForm));
+    facadeUserFormService.getUserForm(savedForm.getId(), selectedSection);
+    int countAfterApplication = facadeUserFormService.getApplicationCount(savedForm.getId());
+
+    // then
+    assertThat(countBeforeApplication).isZero();
+    assertThat(countAfterApplication).isEqualTo(1);
   }
 
   private FormField createFormField(String question, int order, String section, Form form) {
