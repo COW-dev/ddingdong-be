@@ -15,7 +15,7 @@ public interface FacadeClubActivityReportService {
 
     List<CentralActivityReportListQuery> getMyActivityReports(User user, LocalDateTime now);
 
-    List<ActivityReportTermInfoQuery> getActivityReportTermInfos();
+    List<ActivityReportTermInfoQuery> getActivityReportTermInfos(LocalDateTime now);
 
     int getCurrentTerm(LocalDateTime now);
 

@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.controller.dto.response;
 
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermStatus;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportTermInfoQuery;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDate;
@@ -18,7 +19,10 @@ public record ActivityReportTermInfoResponse(
     LocalDate startDate,
 
     @Schema(description = "마감 일자", example = "2024-08-04")
-    LocalDate endDate
+    LocalDate endDate,
+
+    @Schema(description = "회차 진행 상태 (UPCOMING: 진행 전, ONGOING: 진행 중, CLOSED: 진행 종료)", example = "ONGOING")
+    ActivityReportTermStatus status
 ) {
 
     public static ActivityReportTermInfoResponse from(ActivityReportTermInfoQuery query) {
@@ -26,6 +30,7 @@ public record ActivityReportTermInfoResponse(
             .term(query.term())
             .startDate(query.startDate())
             .endDate(query.endDate())
+            .status(query.status())
             .build();
     }
 }

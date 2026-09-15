@@ -15,6 +15,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +56,11 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     }
 
     @Override
-    public List<ActivityReportTermInfoQuery> getActivityReportTermInfos() {
+    public List<ActivityReportTermInfoQuery> getActivityReportTermInfos(LocalDateTime now) {
+        LocalDate today = now.toLocalDate();
         List<ActivityReportTermInfo> termInfos = activityReportTermInfoService.getActivityReportTermInfos();
         return termInfos.stream()
-                .map(ActivityReportTermInfoQuery::from)
+                .map(termInfo -> ActivityReportTermInfoQuery.from(termInfo, today))
                 .toList();
     }
 
