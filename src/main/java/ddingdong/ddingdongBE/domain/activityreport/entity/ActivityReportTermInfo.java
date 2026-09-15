@@ -44,4 +44,14 @@ public class ActivityReportTermInfo {
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
+    public ActivityReportTermStatus getStatus(LocalDate today) {
+        if (today.isBefore(startDate)) {
+            return ActivityReportTermStatus.UPCOMING;
+        }
+        if (today.isAfter(endDate)) {
+            return ActivityReportTermStatus.CLOSED;
+        }
+        return ActivityReportTermStatus.ONGOING;
+    }
 }

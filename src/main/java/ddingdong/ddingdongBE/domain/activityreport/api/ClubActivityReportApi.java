@@ -90,8 +90,8 @@ public interface ClubActivityReportApi {
             @RequestParam(value = "term") int term
     );
 
-    @Operation(summary = "활동 보고서 회차별 기간 조회 API")
-    @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 조회 성공",
+    @Operation(summary = "활동 보고서 회차별 기간 및 진행 상태 조회 API")
+    @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 및 진행 상태 조회 성공",
             content = @Content(schema = @Schema(implementation = ActivityReportTermInfoResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")

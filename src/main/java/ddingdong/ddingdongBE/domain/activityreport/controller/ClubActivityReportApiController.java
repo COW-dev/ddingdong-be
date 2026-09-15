@@ -91,7 +91,8 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
 
     @Override
     public List<ActivityReportTermInfoResponse> getActivityTermInfos() {
-        List<ActivityReportTermInfoQuery> queries = facadeClubActivityReportService.getActivityReportTermInfos();
+        LocalDateTime now = LocalDateTime.now();
+        List<ActivityReportTermInfoQuery> queries = facadeClubActivityReportService.getActivityReportTermInfos(now);
         return queries.stream()
                 .map(ActivityReportTermInfoResponse::from)
                 .toList();
