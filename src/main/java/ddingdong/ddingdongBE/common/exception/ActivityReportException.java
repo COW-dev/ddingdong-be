@@ -26,6 +26,15 @@ public class ActivityReportException extends CustomException {
         }
     }
 
+    public static final class SubmittedTermDeleteException extends ActivityReportException {
+
+        private static final String MESSAGE = "제출된 활동보고서가 있어 회차를 삭제할 수 없습니다.";
+
+        public SubmittedTermDeleteException() {
+            super(MESSAGE, BAD_REQUEST.value());
+        }
+    }
+
     public static final class TermPeriodExceedsYearException extends ActivityReportException {
 
         private static final String MESSAGE = "회차 기간은 해를 넘길 수 없습니다.";

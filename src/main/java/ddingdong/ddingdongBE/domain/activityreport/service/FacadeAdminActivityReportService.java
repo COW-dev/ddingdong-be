@@ -14,5 +14,7 @@ public interface FacadeAdminActivityReportService {
 
     void createActivityTermInfo(CreateActivityTermInfoCommand command);
 
+    void deleteActivityTermInfo(LocalDateTime now, int term);
+
     void deleteActivityReport(Long clubId, LocalDateTime now, int term);
 }

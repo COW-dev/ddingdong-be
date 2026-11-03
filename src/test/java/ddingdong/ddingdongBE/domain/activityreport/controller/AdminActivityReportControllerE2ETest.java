@@ -25,6 +25,7 @@ import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDate;
+import java.time.Year;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -144,6 +145,69 @@ class AdminActivityReportControllerE2ETest extends NonTxTestContainerSupport {
                 .then()
                 .statusCode(400)
                 .body("message", equalTo("회차 시작일은 기존 회차 마감일 이후여야 합니다."));
+
+        assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+
+    @DisplayName("제출된 활동보고서가 없는 올해 회차는 어드민이 삭제할 수 있다")
+    @Test
+    void deleteTermWithoutSubmittedReports() {
+        // given
+        LocalDate startOfThisYear = Year.now().atDay(1);
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(0, startOfThisYear, startOfThisYear.plusDays(13)));
+
+        // when
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 0)
+                .when()
+                .delete(CREATE_TERM_PATH)
+                .then()
+                .statusCode(204);
+
+        // then
+        assertThat(activityReportTermInfoRepository.count()).isZero();
+    }
+
+    @DisplayName("제출된 활동보고서가 하나라도 있는 회차는 삭제할 수 없다")
+    @Test
+    void cannotDeleteTermWithSubmittedReports() {
+        // given
+        LocalDate startOfThisYear = Year.now().atDay(1);
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(0, startOfThisYear, startOfThisYear.plusDays(13)));
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+        activityReportRepository.save(ActivityReportFixture.create(club, 0));
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 0)
+                .when()
+                .delete(CREATE_TERM_PATH)
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("제출된 활동보고서가 있어 회차를 삭제할 수 없습니다."));
+
+        assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+
+    @DisplayName("올해 존재하지 않는 회차는 삭제할 수 없다")
+    @Test
+    void cannotDeleteNonExistentTerm() {
+        // given
+        activityReportTermInfoRepository.save(ActivityReportTermInfoFixture.create(
+                1, LocalDate.of(2020, 3, 2), LocalDate.of(2020, 3, 15)));
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 1)
+                .when()
+                .delete(CREATE_TERM_PATH)
+                .then()
+                .statusCode(404);
 
         assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
     }

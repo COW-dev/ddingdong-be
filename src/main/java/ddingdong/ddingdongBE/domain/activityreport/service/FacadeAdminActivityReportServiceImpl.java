@@ -1,6 +1,8 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
+import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
@@ -12,6 +14,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +55,19 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
     @Override
     public void createActivityTermInfo(CreateActivityTermInfoCommand command) {
         activityReportTermInfoService.create(command.startDate(), command.totalTermCount());
+    }
+
+    @Transactional
+    @Override
+    public void deleteActivityTermInfo(LocalDateTime now, int term) {
+        int currentYear = now.getYear();
+        // 회차 행을 먼저 잠가 같은 회차에 대한 보고서 제출(공유 락)과 순서대로 처리되게 한다.
+        List<ActivityReportTermInfo> termInfos =
+                activityReportTermInfoService.getAllByYearAndTermWithLock(Year.of(currentYear), term);
+        if (!activityReportService.getActivityReports(currentYear, term).isEmpty()) {
+            throw new ActivityReportException.SubmittedTermDeleteException();
+        }
+        activityReportTermInfoService.deleteAll(termInfos);
     }
 
     @Transactional
