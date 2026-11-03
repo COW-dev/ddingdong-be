@@ -17,6 +17,15 @@ public class ActivityReportException extends CustomException {
         }
     }
 
+    public static final class NotSubmissionPeriodException extends ActivityReportException {
+
+        private static final String MESSAGE = "활동보고서 제출 기간이 아닙니다.";
+
+        public NotSubmissionPeriodException() {
+            super(MESSAGE, BAD_REQUEST.value());
+        }
+    }
+
     public static final class TermPeriodExceedsYearException extends ActivityReportException {
 
         private static final String MESSAGE = "회차 기간은 해를 넘길 수 없습니다.";

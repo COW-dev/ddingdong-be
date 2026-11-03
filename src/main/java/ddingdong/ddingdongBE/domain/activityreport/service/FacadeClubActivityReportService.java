@@ -19,7 +19,7 @@ public interface FacadeClubActivityReportService {
 
     int getCurrentTerm(LocalDateTime now);
 
-    void create(User user, List<CreateActivityReportCommand> commands);
+    void create(User user, LocalDateTime now, List<CreateActivityReportCommand> commands);
 
     void update(User user, LocalDateTime now, int term, List<UpdateActivityReportCommand> commands);
 
