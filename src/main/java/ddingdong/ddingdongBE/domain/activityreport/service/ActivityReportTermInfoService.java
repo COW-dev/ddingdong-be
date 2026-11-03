@@ -13,4 +13,6 @@ public interface ActivityReportTermInfoService {
     void create(LocalDate startDate, int totalTermCount);
 
     int getCurrentTerm(LocalDateTime now);
+
+    void validateSubmissionPeriod(int term, LocalDate today);
 }

@@ -62,10 +62,11 @@ public class ClubActivityReportApiController implements ClubActivityReportApi {
             CreateActivityReportRequests requests
     ) {
         User user = principalDetails.getUser();
+        LocalDateTime now = LocalDateTime.now();
         List<CreateActivityReportCommand> commands = requests.activityReportRequests().stream()
                 .map(CreateActivityReportRequest::toCommand)
                 .toList();
-        facadeClubActivityReportService.create(user, commands);
+        facadeClubActivityReportService.create(user, now, commands);
     }
 
     @Override

@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermStatus;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -32,7 +33,9 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     @Override
     public void create(LocalDate startDate, int totalTermCount) {
         Year year = Year.from(startDate);
-        List<ActivityReportTermInfo> termInfosOfYear = getActivityReportTermInfos(year);
+        // 그해 회차를 쓰기 락으로 조회해 동시 생성 요청이 같은 회차 번호를 매기지 않도록 순서대로 처리한다.
+        List<ActivityReportTermInfo> termInfosOfYear = activityReportTermInfoRepository
+                .findWithWriteLockByStartDateBetween(year.atDay(1), year.atMonth(12).atEndOfMonth());
 
         LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
 
@@ -94,6 +97,16 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
                 .map(ActivityReportTermInfo::getTerm)
                 .findFirst()
                 .orElse(NON_ACTIVITY_REPORT_TERM);
+    }
+
+    @Override
+    public void validateSubmissionPeriod(int term, LocalDate today) {
+        boolean isOngoingTerm = getActivityReportTermInfos(Year.from(today)).stream()
+                .filter(termInfo -> termInfo.getTerm() == term)
+                .anyMatch(termInfo -> termInfo.getStatus(today) == ActivityReportTermStatus.ONGOING);
+        if (!isOngoingTerm) {
+            throw new ActivityReportException.NotSubmissionPeriodException();
+        }
     }
 
     private boolean isBelongingTerm(LocalDate startDate, LocalDate endDate, LocalDateTime now) {
