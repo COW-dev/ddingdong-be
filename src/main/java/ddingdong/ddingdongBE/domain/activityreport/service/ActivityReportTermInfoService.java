@@ -15,4 +15,8 @@ public interface ActivityReportTermInfoService {
     int getCurrentTerm(LocalDateTime now);
 
     void validateSubmissionPeriod(int term, LocalDate today);
+
+    List<ActivityReportTermInfo> getAllByYearAndTermWithLock(Year year, int term);
+
+    void deleteAll(List<ActivityReportTermInfo> termInfos);
 }

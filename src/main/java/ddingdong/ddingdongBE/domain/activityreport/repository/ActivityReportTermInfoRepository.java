@@ -19,4 +19,10 @@ public interface ActivityReportTermInfoRepository extends JpaRepository<Activity
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<ActivityReportTermInfo> findWithWriteLockByStartDateBetween(LocalDate from, LocalDate to);
 
+    @Lock(LockModeType.PESSIMISTIC_READ)
+    List<ActivityReportTermInfo> findWithShareLockByTermAndStartDateBetween(int term, LocalDate from, LocalDate to);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<ActivityReportTermInfo> findWithWriteLockByTermAndStartDateBetween(int term, LocalDate from, LocalDate to);
+
 }

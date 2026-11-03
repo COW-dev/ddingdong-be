@@ -53,6 +53,16 @@ public interface AdminActivityReportApi {
     @PostMapping("/term")
     void createActivityTermInfo(@Valid @RequestBody CreateActivityTermInfoRequest request);
 
+    @Operation(summary = "어드민 - 활동 보고서 회차 삭제",
+            description = "잘못 생성된 올해 회차를 삭제합니다. 해당 회차에 제출된 활동보고서가 있으면 삭제할 수 없습니다.")
+    @ApiResponse(responseCode = "204", description = "활동 보고서 회차 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "해당 회차에 제출된 활동보고서가 있는 경우")
+    @ApiResponse(responseCode = "404", description = "올해 해당 회차가 없는 경우")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/term")
+    void deleteActivityTermInfo(@RequestParam("term") int term);
+
     @Operation(summary = "어드민 - 동아리 활동보고서 삭제",
             description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "동아리 활동보고서 삭제 성공")
