@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.ActivityReportException;
+import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermStatus;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
@@ -95,6 +96,17 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
                 .map(ActivityReportTermInfo::getTerm)
                 .findFirst()
                 .orElse(NON_ACTIVITY_REPORT_TERM);
+    }
+
+    @Transactional
+    @Override
+    public void delete(Year year, int term) {
+        ActivityReportTermInfo termInfo = getActivityReportTermInfos(year).stream()
+                .filter(activityReportTermInfo -> activityReportTermInfo.getTerm() == term)
+                .findFirst()
+                .orElseThrow(() -> new ResourceNotFound(
+                        "해당 활동보고서 회차(year: " + year + ", term: " + term + ")를 찾을 수 없습니다."));
+        activityReportTermInfoRepository.delete(termInfo);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
+import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
@@ -12,6 +13,7 @@ import ddingdong.ddingdongBE.domain.filemetadata.service.FileMetaDataService;
 import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -52,6 +54,16 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
     @Override
     public void createActivityTermInfo(CreateActivityTermInfoCommand command) {
         activityReportTermInfoService.create(command.startDate(), command.totalTermCount());
+    }
+
+    @Transactional
+    @Override
+    public void deleteActivityTermInfo(LocalDateTime now, int term) {
+        int currentYear = now.getYear();
+        if (!activityReportService.getActivityReports(currentYear, term).isEmpty()) {
+            throw new ActivityReportException.SubmittedTermDeleteException();
+        }
+        activityReportTermInfoService.delete(Year.of(currentYear), term);
     }
 
     @Transactional
