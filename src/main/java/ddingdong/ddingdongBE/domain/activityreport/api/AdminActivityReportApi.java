@@ -68,6 +68,7 @@ public interface AdminActivityReportApi {
     @Operation(summary = "어드민 - 동아리 활동보고서 수정",
             description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 수정합니다. 마감이 지난 보고서 수정에 사용합니다.")
     @ApiResponse(responseCode = "204", description = "동아리 활동보고서 수정 성공")
+    @ApiResponse(responseCode = "400", description = "수정 요청한 보고서 수가 제출된 보고서 수보다 많은 경우")
     @ApiResponse(responseCode = "404", description = "동아리 또는 해당 회차의 활동보고서가 없는 경우")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @SecurityRequirement(name = "AccessToken")

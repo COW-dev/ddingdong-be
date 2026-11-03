@@ -83,8 +83,11 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
         Club club = clubService.getById(clubId);
         int currentYear = now.getYear();
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
+        if (commands.size() > activityReports.size()) {
+            throw new ActivityReportException.ExceedingUpdateCountException();
+        }
 
-        IntStream.range(0, Math.min(commands.size(), activityReports.size()))
+        IntStream.range(0, commands.size())
                 .forEach(index -> {
                     ActivityReport activityReport = activityReports.get(index);
                     UpdateActivityReportCommand command = commands.get(index);
