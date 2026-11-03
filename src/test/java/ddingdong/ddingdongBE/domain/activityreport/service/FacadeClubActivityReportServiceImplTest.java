@@ -9,6 +9,7 @@ import ddingdong.ddingdongBE.common.fixture.ActivityReportTermInfoFixture;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermStatus;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
@@ -220,6 +221,9 @@ class FacadeClubActivityReportServiceImplTest extends TestContainerSupport {
 
         // when
         facadeClubActivityReportService.update(clubUser, now, ongoingTerm, List.of(updateReportCommand()));
+        assertThat(activityReportRepository.findAll())
+                .extracting(ActivityReport::getContent, ActivityReport::getPlace)
+                .containsExactly(tuple("수정된 내용입니다", "S1350"));
         facadeClubActivityReportService.delete(clubUser, now, ongoingTerm);
 
         // then
