@@ -71,4 +71,21 @@ class FacadeClubActivityReportServiceImplTest extends TestContainerSupport {
                         tuple(3, ActivityReportTermStatus.UPCOMING)
                 );
     }
+
+    @DisplayName("회차 목록은 지난 해 회차를 제외하고 올해 회차만 회차 번호 순으로 조회된다")
+    @Test
+    void getOnlyThisYearTermsOrderedByTerm() {
+        // given
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(13, LocalDate.of(2025, 11, 24), LocalDate.of(2025, 12, 7)));
+        LocalDateTime now = LocalDateTime.of(2026, 3, 20, 12, 0);
+
+        // when
+        List<ActivityReportTermInfoQuery> termInfos = facadeClubActivityReportService.getActivityReportTermInfos(now);
+
+        // then
+        assertThat(termInfos)
+                .extracting(ActivityReportTermInfoQuery::term)
+                .containsExactly(1, 2, 3);
+    }
 }
