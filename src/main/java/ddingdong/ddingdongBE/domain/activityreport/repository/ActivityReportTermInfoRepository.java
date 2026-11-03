@@ -16,6 +16,9 @@ public interface ActivityReportTermInfoRepository extends JpaRepository<Activity
 
     boolean existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate endDate, LocalDate startDate);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<ActivityReportTermInfo> findWithWriteLockByStartDateBetween(LocalDate from, LocalDate to);
+
     @Lock(LockModeType.PESSIMISTIC_READ)
     List<ActivityReportTermInfo> findWithShareLockByTermAndStartDateBetween(int term, LocalDate from, LocalDate to);
 

@@ -34,7 +34,9 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     @Override
     public void create(LocalDate startDate, int totalTermCount) {
         Year year = Year.from(startDate);
-        List<ActivityReportTermInfo> termInfosOfYear = getActivityReportTermInfos(year);
+        // 그해 회차를 쓰기 락으로 조회해 동시 생성 요청이 같은 회차 번호를 매기지 않도록 순서대로 처리한다.
+        List<ActivityReportTermInfo> termInfosOfYear = activityReportTermInfoRepository
+                .findWithWriteLockByStartDateBetween(year.atDay(1), year.atMonth(12).atEndOfMonth());
 
         LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
 
