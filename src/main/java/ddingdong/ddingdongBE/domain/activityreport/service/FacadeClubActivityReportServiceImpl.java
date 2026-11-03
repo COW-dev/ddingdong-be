@@ -74,8 +74,15 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     @Override
     public void create(
             User user,
+            LocalDateTime now,
             List<CreateActivityReportCommand> commands
     ) {
+        LocalDate today = now.toLocalDate();
+        commands.stream()
+                .map(CreateActivityReportCommand::term)
+                .distinct()
+                .forEach(term -> activityReportTermInfoService.validateSubmissionPeriod(term, today));
+
         Club club = clubService.getByUserId(user.getId());
         commands.forEach(command -> {
             ActivityReport activityReport = command.toEntity(club);
@@ -93,6 +100,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
             int term,
             List<UpdateActivityReportCommand> commands
     ) {
+        activityReportTermInfoService.validateSubmissionPeriod(term, now.toLocalDate());
         Club club = clubService.getByUserId(user.getId());
         int currentYear = now.getYear();
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
@@ -114,6 +122,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     @Transactional
     @Override
     public void delete(User user, LocalDateTime now, int term) {
+        activityReportTermInfoService.validateSubmissionPeriod(term, now.toLocalDate());
         Club club = clubService.getByUserId(user.getId());
         int currentYear = now.getYear();
         List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);

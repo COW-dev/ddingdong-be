@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermStatus;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -94,6 +95,16 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
                 .map(ActivityReportTermInfo::getTerm)
                 .findFirst()
                 .orElse(NON_ACTIVITY_REPORT_TERM);
+    }
+
+    @Override
+    public void validateSubmissionPeriod(int term, LocalDate today) {
+        boolean isOngoingTerm = getActivityReportTermInfos(Year.from(today)).stream()
+                .filter(termInfo -> termInfo.getTerm() == term)
+                .anyMatch(termInfo -> termInfo.getStatus(today) == ActivityReportTermStatus.ONGOING);
+        if (!isOngoingTerm) {
+            throw new ActivityReportException.NotSubmissionPeriodException();
+        }
     }
 
     private boolean isBelongingTerm(LocalDate startDate, LocalDate endDate, LocalDateTime now) {
