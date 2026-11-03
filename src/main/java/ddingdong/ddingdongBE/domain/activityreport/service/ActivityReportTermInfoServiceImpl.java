@@ -34,8 +34,11 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
         List<ActivityReportTermInfo> termInfosOfYear = activityReportTermInfoRepository.findAllByStartDateBetween(
                 year.atDay(1), year.atMonth(12).atEndOfMonth());
 
+        LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
+
         validateStartDateAfterLastTerm(startDate, termInfosOfYear);
-        validateWithinYear(startDate, totalTermCount, year);
+        validateNotOverlappingAnyTerm(startDate, lastTermEndDate);
+        validateWithinYear(lastTermEndDate, year);
 
         int firstTerm = getLastTerm(termInfosOfYear) + 1;
         activityReportTermInfoRepository.saveAll(
@@ -61,8 +64,15 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
         }
     }
 
-    private void validateWithinYear(LocalDate startDate, int totalTermCount, Year year) {
-        LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
+    private void validateNotOverlappingAnyTerm(LocalDate startDate, LocalDate lastTermEndDate) {
+        boolean overlapsExistingTerm = activityReportTermInfoRepository
+                .existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(lastTermEndDate, startDate);
+        if (overlapsExistingTerm) {
+            throw new ActivityReportException.OverlapTermPeriodException();
+        }
+    }
+
+    private void validateWithinYear(LocalDate lastTermEndDate, Year year) {
         if (!Year.from(lastTermEndDate).equals(year)) {
             throw new ActivityReportException.TermPeriodExceedsYearException();
         }

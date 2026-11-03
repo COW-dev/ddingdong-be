@@ -108,6 +108,19 @@ class ActivityReportTermInfoServiceImplTest extends TestContainerSupport {
                 .isInstanceOf(ActivityReportException.OverlapTermPeriodException.class);
     }
 
+    @DisplayName("지난 해에 시작해 올해까지 이어지는 회차와 기간이 겹치면 회차를 생성할 수 없다")
+    @Test
+    void cannotCreateTermsOverlappingTermFromPreviousYear() {
+        // given
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(14, LocalDate.of(2026, 12, 28), LocalDate.of(2027, 1, 10)));
+
+        // when & then
+        assertThatThrownBy(() -> activityReportTermInfoService.create(LocalDate.of(2027, 1, 4), 1))
+                .isInstanceOf(ActivityReportException.OverlapTermPeriodException.class);
+        assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+
     @DisplayName("마지막 회차 마감일이 해를 넘기면 회차를 생성할 수 없다")
     @Test
     void cannotCreateTermsExceedingYear() {

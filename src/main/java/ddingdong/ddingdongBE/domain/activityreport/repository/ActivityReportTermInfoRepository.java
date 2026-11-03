@@ -12,4 +12,6 @@ public interface ActivityReportTermInfoRepository extends JpaRepository<Activity
 
     List<ActivityReportTermInfo> findAllByStartDateBetween(LocalDate from, LocalDate to);
 
+    boolean existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate endDate, LocalDate startDate);
+
 }

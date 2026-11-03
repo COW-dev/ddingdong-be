@@ -46,7 +46,7 @@ public interface AdminActivityReportApi {
     @Operation(summary = "어드민 - 활동 보고서 회차별 기간 설정 API",
             description = "시작일부터 2주 단위로 회차를 생성합니다. 회차 번호는 시작일이 속한 해의 마지막 회차 다음 번호부터 매깁니다.")
     @ApiResponse(responseCode = "201", description = "활동 보고서 회차 생성 성공")
-    @ApiResponse(responseCode = "400", description = "시작일이 기존 회차 마감일 이전이거나, 회차 기간이 해를 넘기는 경우")
+    @ApiResponse(responseCode = "400", description = "시작일이 없거나 회차 수가 1 미만인 경우, 시작일이 기존 회차 마감일 이전이거나 같은 경우, 기존 회차와 기간이 겹치는 경우, 회차 기간이 해를 넘기는 경우")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/term")
