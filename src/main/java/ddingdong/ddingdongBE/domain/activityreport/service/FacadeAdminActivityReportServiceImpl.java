@@ -4,6 +4,7 @@ import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.AdminActivityReportListQuery;
@@ -18,6 +19,7 @@ import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,6 +70,28 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
             throw new ActivityReportException.SubmittedTermDeleteException();
         }
         activityReportTermInfoService.deleteAll(termInfos);
+    }
+
+    @Transactional
+    @Override
+    public void updateActivityReport(
+            Long clubId,
+            LocalDateTime now,
+            int term,
+            List<UpdateActivityReportCommand> commands
+    ) {
+        Club club = clubService.getById(clubId);
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
+
+        IntStream.range(0, Math.min(commands.size(), activityReports.size()))
+                .forEach(index -> {
+                    ActivityReport activityReport = activityReports.get(index);
+                    UpdateActivityReportCommand command = commands.get(index);
+                    activityReportService.update(activityReport, command.toEntity());
+                    fileMetaDataService.update(command.imageId(), DomainType.ACTIVITY_REPORT_IMAGE,
+                            activityReport.getId());
+                });
     }
 
     @Transactional

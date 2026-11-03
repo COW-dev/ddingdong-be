@@ -2,9 +2,12 @@ package ddingdong.ddingdongBE.domain.activityreport.controller;
 
 import ddingdong.ddingdongBE.domain.activityreport.api.AdminActivityReportApi;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityTermInfoRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AdminActivityReportListResponse;
 import ddingdong.ddingdongBE.domain.activityreport.service.FacadeAdminActivityReportService;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.AdminActivityReportListQuery;
 import java.time.LocalDateTime;
@@ -45,6 +48,15 @@ public class AdminActivityReportApiController implements AdminActivityReportApi 
     public void deleteActivityTermInfo(int term) {
         LocalDateTime now = LocalDateTime.now();
         facadeAdminActivityReportService.deleteActivityTermInfo(now, term);
+    }
+
+    @Override
+    public void updateActivityReport(Long clubId, int term, UpdateActivityReportRequests requests) {
+        LocalDateTime now = LocalDateTime.now();
+        List<UpdateActivityReportCommand> commands = requests.activityReportRequests().stream()
+                .map(UpdateActivityReportRequest::toCommand)
+                .toList();
+        facadeAdminActivityReportService.updateActivityReport(clubId, now, term, commands);
     }
 
     @Override
