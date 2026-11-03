@@ -23,16 +23,16 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     private final ActivityReportTermInfoRepository activityReportTermInfoRepository;
 
     @Override
-    public List<ActivityReportTermInfo> getActivityReportTermInfos() {
-        return activityReportTermInfoRepository.findAll();
+    public List<ActivityReportTermInfo> getActivityReportTermInfos(Year year) {
+        return activityReportTermInfoRepository.findAllByStartDateBetweenOrderByTermAsc(
+                year.atDay(1), year.atMonth(12).atEndOfMonth());
     }
 
     @Transactional
     @Override
     public void create(LocalDate startDate, int totalTermCount) {
         Year year = Year.from(startDate);
-        List<ActivityReportTermInfo> termInfosOfYear = activityReportTermInfoRepository.findAllByStartDateBetween(
-                year.atDay(1), year.atMonth(12).atEndOfMonth());
+        List<ActivityReportTermInfo> termInfosOfYear = getActivityReportTermInfos(year);
 
         LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
 

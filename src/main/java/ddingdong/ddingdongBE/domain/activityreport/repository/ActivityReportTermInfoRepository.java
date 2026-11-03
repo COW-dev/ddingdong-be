@@ -10,7 +10,7 @@ public interface ActivityReportTermInfoRepository extends JpaRepository<Activity
 
     Optional<ActivityReportTermInfo> findFirstByOrderByStartDateAsc();
 
-    List<ActivityReportTermInfo> findAllByStartDateBetween(LocalDate from, LocalDate to);
+    List<ActivityReportTermInfo> findAllByStartDateBetweenOrderByTermAsc(LocalDate from, LocalDate to);
 
     boolean existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(LocalDate endDate, LocalDate startDate);
 
