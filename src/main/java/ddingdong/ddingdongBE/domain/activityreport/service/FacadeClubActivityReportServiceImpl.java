@@ -17,6 +17,7 @@ import ddingdong.ddingdongBE.file.service.S3FileService;
 import ddingdong.ddingdongBE.file.service.dto.query.UploadedFileUrlAndNameQuery;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -58,7 +59,7 @@ public class FacadeClubActivityReportServiceImpl implements FacadeClubActivityRe
     @Override
     public List<ActivityReportTermInfoQuery> getActivityReportTermInfos(LocalDateTime now) {
         LocalDate today = now.toLocalDate();
-        List<ActivityReportTermInfo> termInfos = activityReportTermInfoService.getActivityReportTermInfos();
+        List<ActivityReportTermInfo> termInfos = activityReportTermInfoService.getActivityReportTermInfos(Year.from(today));
         return termInfos.stream()
                 .map(termInfo -> ActivityReportTermInfoQuery.from(termInfo, today))
                 .toList();
