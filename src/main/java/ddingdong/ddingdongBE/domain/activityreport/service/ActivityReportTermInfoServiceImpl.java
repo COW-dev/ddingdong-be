@@ -1,11 +1,12 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
+import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.Year;
 import java.util.List;
-import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfoService {
 
     private static final int NON_ACTIVITY_REPORT_TERM = 0;
+    private static final long TERM_PERIOD_DAYS = 14L;
 
     private final ActivityReportTermInfoRepository activityReportTermInfoRepository;
 
@@ -28,19 +30,59 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
     @Transactional
     @Override
     public void create(LocalDate startDate, int totalTermCount) {
+        Year year = Year.from(startDate);
+        List<ActivityReportTermInfo> termInfosOfYear = activityReportTermInfoRepository.findAllByStartDateBetween(
+                year.atDay(1), year.atMonth(12).atEndOfMonth());
+
+        LocalDate lastTermEndDate = startDate.plusDays(totalTermCount * TERM_PERIOD_DAYS - 1);
+
+        validateStartDateAfterLastTerm(startDate, termInfosOfYear);
+        validateNotOverlappingAnyTerm(startDate, lastTermEndDate);
+        validateWithinYear(lastTermEndDate, year);
+
+        int firstTerm = getLastTerm(termInfosOfYear) + 1;
         activityReportTermInfoRepository.saveAll(
                 IntStream.range(0, totalTermCount)
-                        .mapToObj(i -> {
-                            LocalDate termStartDate = startDate.plusDays(i * 14L);
-                            LocalDate termEndDate = termStartDate.plusDays(13L);
+                        .mapToObj(index -> {
+                            LocalDate termStartDate = startDate.plusDays(index * TERM_PERIOD_DAYS);
+                            LocalDate termEndDate = termStartDate.plusDays(TERM_PERIOD_DAYS - 1);
                             return ActivityReportTermInfo.builder()
-                                    .term(i + 1)
+                                    .term(firstTerm + index)
                                     .startDate(termStartDate)
                                     .endDate(termEndDate)
                                     .build();
                         })
-                        .collect(Collectors.toList())
+                        .toList()
         );
+    }
+
+    private void validateStartDateAfterLastTerm(LocalDate startDate, List<ActivityReportTermInfo> termInfosOfYear) {
+        boolean overlapsExistingTerm = termInfosOfYear.stream()
+                .anyMatch(termInfo -> !startDate.isAfter(termInfo.getEndDate()));
+        if (overlapsExistingTerm) {
+            throw new ActivityReportException.OverlapTermPeriodException();
+        }
+    }
+
+    private void validateNotOverlappingAnyTerm(LocalDate startDate, LocalDate lastTermEndDate) {
+        boolean overlapsExistingTerm = activityReportTermInfoRepository
+                .existsByStartDateLessThanEqualAndEndDateGreaterThanEqual(lastTermEndDate, startDate);
+        if (overlapsExistingTerm) {
+            throw new ActivityReportException.OverlapTermPeriodException();
+        }
+    }
+
+    private void validateWithinYear(LocalDate lastTermEndDate, Year year) {
+        if (!Year.from(lastTermEndDate).equals(year)) {
+            throw new ActivityReportException.TermPeriodExceedsYearException();
+        }
+    }
+
+    private int getLastTerm(List<ActivityReportTermInfo> termInfosOfYear) {
+        return termInfosOfYear.stream()
+                .mapToInt(ActivityReportTermInfo::getTerm)
+                .max()
+                .orElse(NON_ACTIVITY_REPORT_TERM);
     }
 
     @Override
