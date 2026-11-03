@@ -16,5 +16,7 @@ public interface ActivityReportTermInfoService {
 
     void validateSubmissionPeriod(int term, LocalDate today);
 
-    void delete(Year year, int term);
+    List<ActivityReportTermInfo> getAllByYearAndTermWithLock(Year year, int term);
+
+    void deleteAll(List<ActivityReportTermInfo> termInfos);
 }

@@ -100,19 +100,27 @@ public class ActivityReportTermInfoServiceImpl implements ActivityReportTermInfo
 
     @Transactional
     @Override
-    public void delete(Year year, int term) {
-        ActivityReportTermInfo termInfo = getActivityReportTermInfos(year).stream()
-                .filter(activityReportTermInfo -> activityReportTermInfo.getTerm() == term)
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFound(
-                        "해당 활동보고서 회차(year: " + year + ", term: " + term + ")를 찾을 수 없습니다."));
-        activityReportTermInfoRepository.delete(termInfo);
+    public List<ActivityReportTermInfo> getAllByYearAndTermWithLock(Year year, int term) {
+        List<ActivityReportTermInfo> termInfos = activityReportTermInfoRepository
+                .findWithWriteLockByTermAndStartDateBetween(term, year.atDay(1), year.atMonth(12).atEndOfMonth());
+        if (termInfos.isEmpty()) {
+            throw new ResourceNotFound("해당 활동보고서 회차(year: " + year + ", term: " + term + ")를 찾을 수 없습니다.");
+        }
+        return termInfos;
+    }
+
+    @Transactional
+    @Override
+    public void deleteAll(List<ActivityReportTermInfo> termInfos) {
+        activityReportTermInfoRepository.deleteAll(termInfos);
     }
 
     @Override
     public void validateSubmissionPeriod(int term, LocalDate today) {
-        boolean isOngoingTerm = getActivityReportTermInfos(Year.from(today)).stream()
-                .filter(termInfo -> termInfo.getTerm() == term)
+        Year year = Year.from(today);
+        boolean isOngoingTerm = activityReportTermInfoRepository
+                .findWithShareLockByTermAndStartDateBetween(term, year.atDay(1), year.atMonth(12).atEndOfMonth())
+                .stream()
                 .anyMatch(termInfo -> termInfo.getStatus(today) == ActivityReportTermStatus.ONGOING);
         if (!isOngoingTerm) {
             throw new ActivityReportException.NotSubmissionPeriodException();

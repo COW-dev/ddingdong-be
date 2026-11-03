@@ -2,6 +2,7 @@ package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.common.exception.ActivityReportException;
 import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReportTermInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportInfo;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
@@ -60,10 +61,13 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
     @Override
     public void deleteActivityTermInfo(LocalDateTime now, int term) {
         int currentYear = now.getYear();
+        // 회차 행을 먼저 잠가 같은 회차에 대한 보고서 제출(공유 락)과 순서대로 처리되게 한다.
+        List<ActivityReportTermInfo> termInfos =
+                activityReportTermInfoService.getAllByYearAndTermWithLock(Year.of(currentYear), term);
         if (!activityReportService.getActivityReports(currentYear, term).isEmpty()) {
             throw new ActivityReportException.SubmittedTermDeleteException();
         }
-        activityReportTermInfoService.delete(Year.of(currentYear), term);
+        activityReportTermInfoService.deleteAll(termInfos);
     }
 
     @Transactional
