@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.api;
 
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.CreateActivityTermInfoRequest;
+import ddingdong.ddingdongBE.domain.activityreport.controller.dto.request.UpdateActivityReportRequests;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.ActivityReportResponse;
 import ddingdong.ddingdongBE.domain.activityreport.controller.dto.response.AdminActivityReportListResponse;
 import io.swagger.v3.oas.annotations.Operation;
@@ -14,6 +15,7 @@ import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -62,6 +64,20 @@ public interface AdminActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/term")
     void deleteActivityTermInfo(@RequestParam("term") int term);
+
+    @Operation(summary = "어드민 - 동아리 활동보고서 수정",
+            description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 수정합니다. 마감이 지난 보고서 수정에 사용합니다.")
+    @ApiResponse(responseCode = "204", description = "동아리 활동보고서 수정 성공")
+    @ApiResponse(responseCode = "400", description = "수정 요청한 보고서 수가 제출된 보고서 수보다 많은 경우")
+    @ApiResponse(responseCode = "404", description = "동아리 또는 해당 회차의 활동보고서가 없는 경우")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @PatchMapping("/clubs/{clubId}")
+    void updateActivityReport(
+            @PathVariable("clubId") Long clubId,
+            @RequestParam("term") int term,
+            @RequestBody UpdateActivityReportRequests requests
+    );
 
     @Operation(summary = "어드민 - 동아리 활동보고서 삭제",
             description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 삭제합니다.")
