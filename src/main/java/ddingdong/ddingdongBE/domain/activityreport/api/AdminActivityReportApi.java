@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -51,4 +52,16 @@ public interface AdminActivityReportApi {
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/term")
     void createActivityTermInfo(@Valid @RequestBody CreateActivityTermInfoRequest request);
+
+    @Operation(summary = "어드민 - 동아리 활동보고서 삭제",
+            description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 삭제합니다.")
+    @ApiResponse(responseCode = "204", description = "동아리 활동보고서 삭제 성공")
+    @ApiResponse(responseCode = "404", description = "동아리 또는 해당 회차의 활동보고서가 없는 경우")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/clubs/{clubId}")
+    void deleteActivityReport(
+            @PathVariable("clubId") Long clubId,
+            @RequestParam("term") int term
+    );
 }

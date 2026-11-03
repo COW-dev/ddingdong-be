@@ -6,10 +6,20 @@ import static org.hamcrest.Matchers.equalTo;
 
 import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
 import ddingdong.ddingdongBE.auth.controller.dto.response.SignInResponse;
+import ddingdong.ddingdongBE.common.fixture.ActivityReportFixture;
 import ddingdong.ddingdongBE.common.fixture.ActivityReportTermInfoFixture;
+import ddingdong.ddingdongBE.common.fixture.ClubFixture;
+import ddingdong.ddingdongBE.common.fixture.FileMetaDataFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
+import ddingdong.ddingdongBE.domain.activityreport.entity.ActivityReport;
+import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportRepository;
 import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
+import ddingdong.ddingdongBE.domain.club.entity.Club;
+import ddingdong.ddingdongBE.domain.club.repository.ClubRepository;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.DomainType;
+import ddingdong.ddingdongBE.domain.filemetadata.entity.FileStatus;
+import ddingdong.ddingdongBE.domain.filemetadata.repository.FileMetaDataRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import io.restassured.RestAssured;
@@ -17,6 +27,7 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -37,6 +48,12 @@ class AdminActivityReportControllerE2ETest extends NonTxTestContainerSupport {
     private UserRepository userRepository;
     @Autowired
     private ActivityReportTermInfoRepository activityReportTermInfoRepository;
+    @Autowired
+    private ActivityReportRepository activityReportRepository;
+    @Autowired
+    private ClubRepository clubRepository;
+    @Autowired
+    private FileMetaDataRepository fileMetaDataRepository;
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -129,5 +146,47 @@ class AdminActivityReportControllerE2ETest extends NonTxTestContainerSupport {
                 .body("message", equalTo("회차 시작일은 기존 회차 마감일 이후여야 합니다."));
 
         assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+
+    @DisplayName("어드민은 0회차처럼 잘못 제출된 동아리 활동보고서를 삭제할 수 있고, 연결된 이미지도 삭제 처리된다")
+    @Test
+    void deleteClubActivityReport() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+        ActivityReport activityReport = activityReportRepository.save(ActivityReportFixture.create(club, 0));
+        UUID imageId = UUID.randomUUID();
+        fileMetaDataRepository.save(
+                FileMetaDataFixture.create(imageId, activityReport.getId(), DomainType.ACTIVITY_REPORT_IMAGE));
+
+        // when
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 0)
+                .when()
+                .delete("/server/admin/activity-reports/clubs/{clubId}", club.getId())
+                .then()
+                .statusCode(204);
+
+        // then
+        assertThat(activityReportRepository.count()).isZero();
+        assertThat(fileMetaDataRepository.findById(imageId))
+                .hasValueSatisfying(fileMetaData -> assertThat(fileMetaData.getFileStatus())
+                        .isEqualTo(FileStatus.DELETED));
+    }
+
+    @DisplayName("해당 회차에 동아리 활동보고서가 없으면 삭제할 수 없다")
+    @Test
+    void cannotDeleteNonExistentClubActivityReport() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+
+        // when & then
+        given()
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 1)
+                .when()
+                .delete("/server/admin/activity-reports/clubs/{clubId}", club.getId())
+                .then()
+                .statusCode(404);
     }
 }
