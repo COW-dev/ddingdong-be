@@ -1,0 +1,133 @@
+package ddingdong.ddingdongBE.domain.activityreport.controller;
+
+import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+
+import ddingdong.ddingdongBE.auth.controller.dto.request.SignInRequest;
+import ddingdong.ddingdongBE.auth.controller.dto.response.SignInResponse;
+import ddingdong.ddingdongBE.common.fixture.ActivityReportTermInfoFixture;
+import ddingdong.ddingdongBE.common.fixture.UserFixture;
+import ddingdong.ddingdongBE.common.support.NonTxTestContainerSupport;
+import ddingdong.ddingdongBE.domain.activityreport.repository.ActivityReportTermInfoRepository;
+import ddingdong.ddingdongBE.domain.user.entity.User;
+import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+class AdminActivityReportControllerE2ETest extends NonTxTestContainerSupport {
+
+    private static final String CREATE_TERM_PATH = "/server/admin/activity-reports/term";
+
+    @LocalServerPort
+    private int port;
+
+    @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private ActivityReportTermInfoRepository activityReportTermInfoRepository;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    private String adminToken;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+        User admin = userRepository.save(UserFixture.createAdminUser(passwordEncoder.encode("1234")));
+        adminToken = getAuthToken(admin.getAuthId(), "1234");
+    }
+
+    private String getAuthToken(String authId, String password) {
+        return given()
+                .contentType(ContentType.JSON)
+                .body(new SignInRequest(authId, password))
+                .when()
+                .post("/server/auth/sign-in")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(SignInResponse.class)
+                .getToken();
+    }
+
+    private Map<String, Object> createTermRequest(String startDate, int totalTermCount) {
+        Map<String, Object> request = new HashMap<>();
+        request.put("startDate", startDate);
+        request.put("totalTermCount", totalTermCount);
+        return request;
+    }
+
+    @DisplayName("어드민이 시작일과 회차 수를 입력하면 회차가 생성된다")
+    @Test
+    void createTerms() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .body(createTermRequest("2027-03-02", 7))
+                .when()
+                .post(CREATE_TERM_PATH)
+                .then()
+                .statusCode(201);
+
+        assertThat(activityReportTermInfoRepository.count()).isEqualTo(7);
+    }
+
+    @DisplayName("회차 수가 1보다 작으면 회차를 생성할 수 없다")
+    @Test
+    void cannotCreateTermsWithZeroCount() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .body(createTermRequest("2027-03-02", 0))
+                .when()
+                .post(CREATE_TERM_PATH)
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("totalTermCount는 1 이상이어야 합니다."));
+    }
+
+    @DisplayName("시작일이 없으면 회차를 생성할 수 없다")
+    @Test
+    void cannotCreateTermsWithoutStartDate() {
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .body(createTermRequest(null, 7))
+                .when()
+                .post(CREATE_TERM_PATH)
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("startDate는 null이 될 수 없습니다."));
+    }
+
+    @DisplayName("기존 회차와 기간이 겹치면 회차를 생성할 수 없다")
+    @Test
+    void cannotCreateTermsOverlappingExistingTerm() {
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(1, LocalDate.of(2027, 3, 2), LocalDate.of(2027, 3, 15)));
+
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .body(createTermRequest("2027-03-02", 7))
+                .when()
+                .post(CREATE_TERM_PATH)
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("회차 시작일은 기존 회차 마감일 이후여야 합니다."));
+
+        assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+}

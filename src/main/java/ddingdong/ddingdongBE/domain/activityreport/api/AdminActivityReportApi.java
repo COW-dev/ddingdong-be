@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,10 +43,12 @@ public interface AdminActivityReportApi {
             @RequestParam("term") int term
     );
 
-    @Operation(summary = "어드민 - 활동 보고서 회차별 기간 설정 API")
+    @Operation(summary = "어드민 - 활동 보고서 회차별 기간 설정 API",
+            description = "시작일부터 2주 단위로 회차를 생성합니다. 회차 번호는 시작일이 속한 해의 마지막 회차 다음 번호부터 매깁니다.")
     @ApiResponse(responseCode = "201", description = "활동 보고서 회차 생성 성공")
+    @ApiResponse(responseCode = "400", description = "시작일이 기존 회차 마감일 이전이거나, 회차 기간이 해를 넘기는 경우")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/term")
-    void createActivityTermInfo(@RequestBody CreateActivityTermInfoRequest request);
+    void createActivityTermInfo(@Valid @RequestBody CreateActivityTermInfoRequest request);
 }
