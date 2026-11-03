@@ -35,6 +35,15 @@ public class ActivityReportException extends CustomException {
         }
     }
 
+    public static final class ExceedingUpdateCountException extends ActivityReportException {
+
+        private static final String MESSAGE = "수정할 활동보고서 수가 제출된 활동보고서 수보다 많습니다.";
+
+        public ExceedingUpdateCountException() {
+            super(MESSAGE, BAD_REQUEST.value());
+        }
+    }
+
     public static final class TermPeriodExceedsYearException extends ActivityReportException {
 
         private static final String MESSAGE = "회차 기간은 해를 넘길 수 없습니다.";

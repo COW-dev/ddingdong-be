@@ -27,6 +27,7 @@ import io.restassured.http.ContentType;
 import java.time.LocalDate;
 import java.time.Year;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -210,6 +211,87 @@ class AdminActivityReportControllerE2ETest extends NonTxTestContainerSupport {
                 .statusCode(404);
 
         assertThat(activityReportTermInfoRepository.count()).isEqualTo(1);
+    }
+
+    @DisplayName("어드민은 마감이 지난 회차의 동아리 활동보고서도 수정할 수 있다")
+    @Test
+    void updateClubActivityReportAfterTermClosed() {
+        // given
+        LocalDate startOfThisYear = Year.now().atDay(1);
+        activityReportTermInfoRepository.save(
+                ActivityReportTermInfoFixture.create(1, startOfThisYear, startOfThisYear.plusDays(13)));
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+        ActivityReport activityReport = activityReportRepository.save(ActivityReportFixture.create(club, 1));
+
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("content", "총동연이 수정한 내용입니다");
+        updateRequest.put("place", "S1350");
+        updateRequest.put("startDate", "2026-03-20 10:00");
+        updateRequest.put("endDate", "2026-03-20 12:00");
+        updateRequest.put("participants", List.of());
+
+        // when
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 1)
+                .body(Map.of("activityReportRequests", List.of(updateRequest)))
+                .when()
+                .patch("/server/admin/activity-reports/clubs/{clubId}", club.getId())
+                .then()
+                .statusCode(204);
+
+        // then
+        assertThat(activityReportRepository.findById(activityReport.getId()))
+                .hasValueSatisfying(updatedReport -> assertThat(updatedReport.getContent())
+                        .isEqualTo("총동연이 수정한 내용입니다"));
+    }
+
+    @DisplayName("해당 회차에 동아리 활동보고서가 없으면 어드민도 수정할 수 없다")
+    @Test
+    void cannotUpdateNonExistentClubActivityReport() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 1)
+                .body(Map.of("activityReportRequests", List.of()))
+                .when()
+                .patch("/server/admin/activity-reports/clubs/{clubId}", club.getId())
+                .then()
+                .statusCode(404);
+    }
+
+    @DisplayName("수정 요청한 보고서 수가 제출된 보고서 수보다 많으면 아무것도 수정되지 않는다")
+    @Test
+    void cannotUpdateMoreReportsThanSubmitted() {
+        // given
+        Club club = clubRepository.save(ClubFixture.createClub(userRepository.save(UserFixture.createClubUser())));
+        ActivityReport activityReport = activityReportRepository.save(ActivityReportFixture.create(club, 1));
+        Map<String, Object> updateRequest = new HashMap<>();
+        updateRequest.put("content", "총동연이 수정한 내용입니다");
+        updateRequest.put("startDate", "2026-03-20 10:00");
+        updateRequest.put("endDate", "2026-03-20 12:00");
+        updateRequest.put("participants", List.of());
+
+        // when & then
+        given()
+                .contentType(ContentType.JSON)
+                .header("Authorization", "Bearer " + adminToken)
+                .queryParam("term", 1)
+                .body(Map.of("activityReportRequests", List.of(updateRequest, updateRequest)))
+                .when()
+                .patch("/server/admin/activity-reports/clubs/{clubId}", club.getId())
+                .then()
+                .statusCode(400)
+                .body("message", equalTo("수정할 활동보고서 수가 제출된 활동보고서 수보다 많습니다."));
+
+        assertThat(activityReportRepository.findById(activityReport.getId()))
+                .hasValueSatisfying(unchangedReport -> assertThat(unchangedReport.getContent())
+                        .isEqualTo("세션을 진행하였습니다"));
     }
 
     @DisplayName("어드민은 0회차처럼 잘못 제출된 동아리 활동보고서를 삭제할 수 있고, 연결된 이미지도 삭제 처리된다")

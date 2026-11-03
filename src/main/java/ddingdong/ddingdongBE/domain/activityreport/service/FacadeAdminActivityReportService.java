@@ -1,6 +1,7 @@
 package ddingdong.ddingdongBE.domain.activityreport.service;
 
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
+import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.UpdateActivityReportCommand;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.ActivityReportQuery;
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.query.AdminActivityReportListQuery;
 import java.time.LocalDateTime;
@@ -15,6 +16,8 @@ public interface FacadeAdminActivityReportService {
     void createActivityTermInfo(CreateActivityTermInfoCommand command);
 
     void deleteActivityTermInfo(LocalDateTime now, int term);
+
+    void updateActivityReport(Long clubId, LocalDateTime now, int term, List<UpdateActivityReportCommand> commands);
 
     void deleteActivityReport(Long clubId, LocalDateTime now, int term);
 }
