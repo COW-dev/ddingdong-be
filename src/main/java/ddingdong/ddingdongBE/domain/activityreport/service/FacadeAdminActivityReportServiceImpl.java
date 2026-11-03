@@ -54,6 +54,17 @@ public class FacadeAdminActivityReportServiceImpl implements FacadeAdminActivity
         activityReportTermInfoService.create(command.startDate(), command.totalTermCount());
     }
 
+    @Transactional
+    @Override
+    public void deleteActivityReport(Long clubId, LocalDateTime now, int term) {
+        Club club = clubService.getById(clubId);
+        int currentYear = now.getYear();
+        List<ActivityReport> activityReports = activityReportService.getActivityReportOrThrow(club, currentYear, term);
+        activityReportService.deleteAll(activityReports);
+        activityReports.forEach(activityReport -> fileMetaDataService.updateStatusToDelete(
+                DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId()));
+    }
+
     private ActivityReportQuery parseToQuery(ActivityReport activityReport) {
         UploadedFileUrlAndNameQuery image = fileMetaDataService
                 .getCoupledAllByDomainTypeAndEntityId(DomainType.ACTIVITY_REPORT_IMAGE, activityReport.getId())
