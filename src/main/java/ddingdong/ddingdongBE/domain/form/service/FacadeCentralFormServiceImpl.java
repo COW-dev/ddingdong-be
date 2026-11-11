@@ -174,7 +174,8 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
     @Transactional
     public void registerApplicantAsMember(Long userId, Long formId) {
         Club club = clubService.getByUserId(userId);
-        List<ClubMember> originClubMembers = club.getClubMembers();
+        List<ClubMember> originClubMembers = List.copyOf(club.getClubMembers());
+        club.removeAll(originClubMembers);
         clubMemberService.deleteAll(originClubMembers);
 
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(

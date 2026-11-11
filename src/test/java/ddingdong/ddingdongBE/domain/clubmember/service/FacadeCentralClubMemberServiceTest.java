@@ -6,6 +6,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import ddingdong.ddingdongBE.common.exception.PersistenceException.ResourceNotFound;
 import ddingdong.ddingdongBE.common.fixture.ClubFixture;
 import ddingdong.ddingdongBE.common.fixture.ClubMemberFixture;
+import ddingdong.ddingdongBE.common.fixture.FormFixture;
 import ddingdong.ddingdongBE.common.fixture.UserFixture;
 import ddingdong.ddingdongBE.common.support.TestContainerSupport;
 import ddingdong.ddingdongBE.domain.club.entity.Club;
@@ -17,6 +18,10 @@ import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
+import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
+import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
+import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
 import ddingdong.ddingdongBE.domain.user.entity.User;
 import ddingdong.ddingdongBE.domain.user.repository.UserRepository;
 import java.io.ByteArrayInputStream;
@@ -52,6 +57,12 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
     private ClubMemberService clubMemberService;
     @Autowired
     private ClubService clubService;
+    @Autowired
+    private FormRepository formRepository;
+    @Autowired
+    private FormApplicationRepository formApplicationRepository;
+    @Autowired
+    private FacadeCentralFormService facadeCentralFormService;
 
     @DisplayName("엑셀 파일을 통해 동아리원 명단을 수정한다.")
     @Test
@@ -125,6 +136,52 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
         assertThat(remainingMembers)
                 .extracting(ClubMember::getName)
                 .containsExactlyInAnyOrder("수정된멤버1", "수정된멤버2");
+    }
+
+    @DisplayName("지원자 연동 후 엑셀로 명단을 업데이트하면 엑셀에 적힌 인원만 동아리원으로 남는다.")
+    @Test
+    void updateMemberListAfterRegisterApplicant() throws IOException {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club existingClub = ClubFixture.createClub(savedUser);
+        existingClub.addClubMember(ClubMemberFixture.createClubMember(existingClub));
+        Club savedClub = clubRepository.save(existingClub);
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        formApplicationRepository.save(FormFixture.createFormApplicationFinalPass(savedForm));
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+
+        ByteArrayOutputStream excelOutputStream = new ByteArrayOutputStream();
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Members");
+            sheet.createRow(0).createCell(0).setCellValue("식별자(수정X)");
+            Row memberRow = sheet.createRow(1);
+            memberRow.createCell(1).setCellValue("엑셀멤버");
+            memberRow.createCell(2).setCellValue("60201234");
+            memberRow.createCell(3).setCellValue("010-9999-8888");
+            memberRow.createCell(4).setCellValue("MEMBER");
+            memberRow.createCell(5).setCellValue("경영학과");
+            workbook.write(excelOutputStream);
+        }
+        MultipartFile clubMemberListFile = new MockMultipartFile(
+                "file",
+                "club_members.xlsx",
+                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                excelOutputStream.toByteArray()
+        );
+        UpdateClubMemberListCommand command = UpdateClubMemberListCommand.builder()
+                .userId(savedUser.getId())
+                .clubMemberListFile(clubMemberListFile)
+                .build();
+
+        // when
+        facadeCentralClubMemberService.updateMemberList(command);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactly("엑셀멤버");
     }
 
     @DisplayName("동아리원 정보를 수정한다.")

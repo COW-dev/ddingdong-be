@@ -110,6 +110,7 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         User savedUser = userRepository.save(user);
         Club club = ClubFixture.createClub(savedUser);
         ClubMember origin = ClubMemberFixture.createClubMember(club);
+        club.addClubMember(origin);
         Club savedClub = clubRepository.save(club);
 
         Form form = FormFixture.createForm(savedClub);
@@ -121,16 +122,33 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
 
         // then
-        Club found = clubRepository.findById(savedClub.getId()).orElse(null);
-        Optional<ClubMember> registerClubMember = found.getClubMembers().stream()
-                .filter(clubMember -> Objects.equals(formApplication.getName(),
-                        clubMember.getName()))
-                .findFirst();
-        Optional<ClubMember> originClubMember = found.getClubMembers().stream()
-                .filter(clubMember -> Objects.equals(origin.getName(), clubMember.getName()))
-                .findFirst();
-        assertThat(registerClubMember).isNotEmpty();
-        assertThat(originClubMember).isEmpty();
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactly(formApplication.getName());
+    }
+
+    @DisplayName("지원자를 동아리원 명단에 여러 번 연동해도 명단이 누적되지 않고 마지막 연동 결과만 남는다.")
+    @Test
+    void registerFormApplicationRepeatedly() {
+        // given
+        User user = UserFixture.createClubUser();
+        User savedUser = userRepository.save(user);
+        Club club = ClubFixture.createClub(savedUser);
+        Club savedClub = clubRepository.save(club);
+
+        Form form = FormFixture.createForm(savedClub);
+        Form savedForm = formRepository.save(form);
+        FormApplication formApplication = FormFixture.createFormApplicationFinalPass(savedForm);
+        formApplicationRepository.save(formApplication);
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers).hasSize(1);
     }
 
     @DisplayName("폼 이메일 전송 기록(FormEmailSendHistory) ID로 이메일 전송 현황 카운트를 조회할 수 있다")
