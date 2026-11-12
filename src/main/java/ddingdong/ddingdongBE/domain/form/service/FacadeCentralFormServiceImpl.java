@@ -52,11 +52,13 @@ import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -187,11 +189,11 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         Set<String> registeredStudentNumbers = club.getClubMembers().stream()
                 .map(ClubMember::getStudentNumber)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toCollection(HashSet::new));
+                .collect(Collectors.toSet());
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(
                 formId);
-        List<ClubMember> newClubMembers = finalPassedFormApplications.stream()
-                .filter(formApplication -> isNotRegistered(registeredStudentNumbers, formApplication))
+        List<ClubMember> newClubMembers = distinctByStudentNumber(finalPassedFormApplications).stream()
+                .filter(formApplication -> !registeredStudentNumbers.contains(formApplication.getStudentNumber()))
                 .map(ClubMember::createFromFormApplication)
                 .toList();
         club.addClubMembers(newClubMembers);
@@ -444,8 +446,14 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
                 .toList();
     }
 
-    private boolean isNotRegistered(Set<String> registeredStudentNumbers, FormApplication formApplication) {
-        String studentNumber = formApplication.getStudentNumber();
-        return studentNumber == null || registeredStudentNumbers.add(studentNumber);
+    private Collection<FormApplication> distinctByStudentNumber(List<FormApplication> formApplications) {
+        return formApplications.stream()
+                .collect(Collectors.toMap(
+                        FormApplication::getStudentNumber,
+                        Function.identity(),
+                        (firstApplication, duplicatedApplication) -> firstApplication,
+                        LinkedHashMap::new
+                ))
+                .values();
     }
 }

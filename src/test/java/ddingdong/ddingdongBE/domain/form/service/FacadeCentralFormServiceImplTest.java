@@ -153,6 +153,29 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
                 .containsExactly(formApplication.getStudentNumber());
     }
 
+    @DisplayName("같은 학번의 최종 합격 지원서가 여러 개여도 동아리원으로는 한 번만 등록된다.")
+    @Test
+    void registerFormApplicationWithDuplicatedStudentNumber() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
+        formApplicationRepository.save(FormFixture.createFormApplicationFinalPass(savedForm));
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getStudentNumber)
+                .containsExactly(formApplication.getStudentNumber());
+    }
+
     @DisplayName("교체 방식으로 연동하면 기존 동아리원은 모두 삭제되고 최종 합격자만 남는다.")
     @Test
     void registerFormApplicationReplace() {
