@@ -19,6 +19,7 @@ import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.CreateClubMem
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberCommand;
 import ddingdong.ddingdongBE.domain.clubmember.service.dto.command.UpdateClubMemberListCommand;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.formapplication.repository.FormApplicationRepository;
@@ -149,7 +150,8 @@ class FacadeCentralClubMemberServiceTest extends TestContainerSupport {
 
         Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
         formApplicationRepository.save(FormFixture.createFormApplicationFinalPass(savedForm));
-        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.REPLACE);
 
         ByteArrayOutputStream excelOutputStream = new ByteArrayOutputStream();
         try (Workbook workbook = new XSSFWorkbook()) {

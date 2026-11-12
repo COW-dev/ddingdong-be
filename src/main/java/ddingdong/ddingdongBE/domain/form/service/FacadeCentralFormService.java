@@ -1,5 +1,6 @@
 package ddingdong.ddingdongBE.domain.form.service;
 
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailSendApplicationResultCommand;
@@ -32,7 +33,7 @@ public interface FacadeCentralFormService {
 
     MultipleFieldStatisticsQuery getMultipleFieldStatistics(Long fieldId);
 
-    void registerApplicantAsMember(Long userId, Long formId);
+    void registerApplicantAsMember(Long userId, Long formId, MemberRegisterMode mode);
 
     SingleFieldStatisticsQuery getTextFieldStatistics(Long fieldId);
 

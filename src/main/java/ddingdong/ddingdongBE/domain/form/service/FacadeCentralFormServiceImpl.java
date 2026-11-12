@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
 import ddingdong.ddingdongBE.domain.form.entity.FormField;
 import ddingdong.ddingdongBE.domain.form.entity.FormResultSendingEmailInfo;
 import ddingdong.ddingdongBE.domain.form.entity.Forms;
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.CreateFormCommand.CreateFormFieldCommand;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
@@ -51,8 +52,11 @@ import ddingdong.ddingdongBE.email.entity.EmailSendHistory;
 import ddingdong.ddingdongBE.email.entity.EmailSendStatus;
 import ddingdong.ddingdongBE.email.service.EmailSendHistoryService;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -172,19 +176,26 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
 
     @Override
     @Transactional
-    public void registerApplicantAsMember(Long userId, Long formId) {
+    public void registerApplicantAsMember(Long userId, Long formId, MemberRegisterMode mode) {
         Club club = clubService.getByUserId(userId);
-        List<ClubMember> originClubMembers = List.copyOf(club.getClubMembers());
-        club.removeAll(originClubMembers);
-        clubMemberService.deleteAll(originClubMembers);
+        if (mode.isReplace()) {
+            List<ClubMember> originClubMembers = List.copyOf(club.getClubMembers());
+            club.removeAll(originClubMembers);
+            clubMemberService.deleteAll(originClubMembers);
+        }
 
+        Set<String> registeredStudentNumbers = club.getClubMembers().stream()
+                .map(ClubMember::getStudentNumber)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toCollection(HashSet::new));
         List<FormApplication> finalPassedFormApplications = formApplicationService.getAllFinalPassedByFormId(
                 formId);
-        List<ClubMember> finalPassedClubMembers = finalPassedFormApplications.stream()
+        List<ClubMember> newClubMembers = finalPassedFormApplications.stream()
+                .filter(formApplication -> isNotRegistered(registeredStudentNumbers, formApplication))
                 .map(ClubMember::createFromFormApplication)
                 .toList();
-        club.addClubMembers(finalPassedClubMembers);
-        clubMemberService.saveAll(finalPassedClubMembers);
+        club.addClubMembers(newClubMembers);
+        clubMemberService.saveAll(newClubMembers);
     }
 
     @Override
@@ -431,5 +442,10 @@ public class FacadeCentralFormServiceImpl implements FacadeCentralFormService {
         return createFormFieldCommands.stream()
                 .map(formFieldCommand -> formFieldCommand.toEntity(savedForm))
                 .toList();
+    }
+
+    private boolean isNotRegistered(Set<String> registeredStudentNumbers, FormApplication formApplication) {
+        String studentNumber = formApplication.getStudentNumber();
+        return studentNumber == null || registeredStudentNumbers.add(studentNumber);
     }
 }
