@@ -15,7 +15,9 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -117,14 +119,18 @@ public interface CentralFormApi {
     @GetMapping("/my/forms/statistics/text")
     SingleFieldStatisticsResponse getTextFieldStatistics(@RequestParam Long fieldId);
 
-    @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API")
+    @Operation(summary = "동아리 최종 합격 지원자 동아리원 명단 등록API",
+            description = "mode=APPEND(기본값): 기존 동아리원을 유지하고 합격자를 추가합니다. 이미 같은 학번의 동아리원이 있으면 추가하지 않습니다.\n"
+                    + "mode=REPLACE: 기존 동아리원을 모두 삭제하고 최종 합격자로 명단을 교체합니다.")
     @ApiResponse(responseCode = "201", description = "최종 합격 지원자 동아리원 명단 등록 성공")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/my/forms/{formId}/members/register-applicants")
     void registerMembers(
             @AuthenticationPrincipal PrincipalDetails principalDetails,
-            @PathVariable("formId") Long formId
+            @PathVariable("formId") Long formId,
+            @Parameter(description = "등록 방식 (APPEND: 기존 명단에 추가, REPLACE: 기존 명단 교체)")
+            @RequestParam(name = "mode", defaultValue = "APPEND") MemberRegisterMode mode
     );
 
     @Operation(summary = "동아리 지원 결과 이메일 전송 API")

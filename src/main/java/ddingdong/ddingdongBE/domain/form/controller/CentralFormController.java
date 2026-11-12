@@ -16,6 +16,7 @@ import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.FormStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.MultipleFieldStatisticsResponse;
 import ddingdong.ddingdongBE.domain.form.controller.dto.response.SingleFieldStatisticsResponse;
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import ddingdong.ddingdongBE.domain.form.service.FacadeCentralFormService;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendCountQuery;
 import ddingdong.ddingdongBE.domain.form.service.dto.query.EmailSendStatusOverviewQuery;
@@ -100,9 +101,9 @@ public class CentralFormController implements CentralFormApi {
     }
 
     @Override
-    public void registerMembers(PrincipalDetails principalDetails, Long formId) {
+    public void registerMembers(PrincipalDetails principalDetails, Long formId, MemberRegisterMode mode) {
         Long userId = principalDetails.getUser().getId();
-        facadeCentralFormService.registerApplicantAsMember(userId, formId);
+        facadeCentralFormService.registerApplicantAsMember(userId, formId, mode);
     }
 
     @Override
