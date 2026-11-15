@@ -18,6 +18,7 @@ import ddingdong.ddingdongBE.domain.clubmember.entity.ClubMember;
 import ddingdong.ddingdongBE.domain.clubmember.repository.ClubMemberRepository;
 import ddingdong.ddingdongBE.domain.form.entity.Form;
 import ddingdong.ddingdongBE.domain.form.entity.FormEmailSendHistory;
+import ddingdong.ddingdongBE.domain.form.entity.MemberRegisterMode;
 import ddingdong.ddingdongBE.domain.form.repository.FormEmailSendHistoryRepository;
 import ddingdong.ddingdongBE.domain.form.repository.FormRepository;
 import ddingdong.ddingdongBE.domain.form.service.dto.command.EmailResendApplicationResultCommand;
@@ -91,7 +92,8 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         formApplicationRepository.save(formApplication);
 
         // when
-        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
 
         // then
         Club found = clubRepository.findById(savedClub.getId()).orElse(null);
@@ -102,35 +104,124 @@ class FacadeCentralFormServiceImplTest extends TestContainerSupport {
         assertThat(registerClubMember).isNotEmpty();
     }
 
-    @DisplayName("지원자를 동아리원 명단에 등록할 때, 기존 인원은 모두 삭제된다.")
+    @DisplayName("추가 방식으로 연동하면 기존 동아리원은 유지되고 최종 합격자가 추가된다.")
     @Test
-    void registerFormApplicationDelete() {
+    void registerFormApplicationAppend() {
         // given
-        User user = UserFixture.createClubUser();
-        User savedUser = userRepository.save(user);
+        User savedUser = userRepository.save(UserFixture.createClubUser());
         Club club = ClubFixture.createClub(savedUser);
-        ClubMember origin = ClubMemberFixture.createClubMember(club);
+        ClubMember originMember = ClubMemberFixture.createClubMember(club);
+        club.addClubMember(originMember);
         Club savedClub = clubRepository.save(club);
 
-        Form form = FormFixture.createForm(savedClub);
-        Form savedForm = formRepository.save(form);
-        FormApplication formApplication = FormFixture.createFormApplicationFinalPass(savedForm);
-        formApplicationRepository.save(formApplication);
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
 
         // when
-        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId());
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
 
         // then
-        Club found = clubRepository.findById(savedClub.getId()).orElse(null);
-        Optional<ClubMember> registerClubMember = found.getClubMembers().stream()
-                .filter(clubMember -> Objects.equals(formApplication.getName(),
-                        clubMember.getName()))
-                .findFirst();
-        Optional<ClubMember> originClubMember = found.getClubMembers().stream()
-                .filter(clubMember -> Objects.equals(origin.getName(), clubMember.getName()))
-                .findFirst();
-        assertThat(registerClubMember).isNotEmpty();
-        assertThat(originClubMember).isEmpty();
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactlyInAnyOrder(originMember.getName(), formApplication.getName());
+    }
+
+    @DisplayName("추가 방식으로 여러 번 연동해도 이미 같은 학번의 동아리원이 있으면 중복으로 추가되지 않는다.")
+    @Test
+    void registerFormApplicationAppendRepeatedly() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getStudentNumber)
+                .containsExactly(formApplication.getStudentNumber());
+    }
+
+    @DisplayName("같은 학번의 최종 합격 지원서가 여러 개여도 동아리원으로는 한 번만 등록된다.")
+    @Test
+    void registerFormApplicationWithDuplicatedStudentNumber() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
+        formApplicationRepository.save(FormFixture.createFormApplicationFinalPass(savedForm));
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.APPEND);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getStudentNumber)
+                .containsExactly(formApplication.getStudentNumber());
+    }
+
+    @DisplayName("교체 방식으로 연동하면 기존 동아리원은 모두 삭제되고 최종 합격자만 남는다.")
+    @Test
+    void registerFormApplicationReplace() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club club = ClubFixture.createClub(savedUser);
+        club.addClubMember(ClubMemberFixture.createClubMember(club));
+        Club savedClub = clubRepository.save(club);
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.REPLACE);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactly(formApplication.getName());
+    }
+
+    @DisplayName("교체 방식으로 여러 번 연동해도 명단이 누적되지 않고 마지막 연동 결과만 남는다.")
+    @Test
+    void registerFormApplicationReplaceRepeatedly() {
+        // given
+        User savedUser = userRepository.save(UserFixture.createClubUser());
+        Club savedClub = clubRepository.save(ClubFixture.createClub(savedUser));
+
+        Form savedForm = formRepository.save(FormFixture.createForm(savedClub));
+        FormApplication formApplication = formApplicationRepository.save(
+                FormFixture.createFormApplicationFinalPass(savedForm));
+
+        // when
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.REPLACE);
+        facadeCentralFormService.registerApplicantAsMember(savedUser.getId(), savedForm.getId(),
+                MemberRegisterMode.REPLACE);
+
+        // then
+        List<ClubMember> remainingMembers = clubMemberRepository.findByClubId(savedClub.getId());
+        assertThat(remainingMembers)
+                .extracting(ClubMember::getName)
+                .containsExactly(formApplication.getName());
     }
 
     @DisplayName("폼 이메일 전송 기록(FormEmailSendHistory) ID로 이메일 전송 현황 카운트를 조회할 수 있다")
