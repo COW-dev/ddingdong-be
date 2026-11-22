@@ -61,6 +61,7 @@ public interface ClubActivityReportApi {
 
     @Operation(summary = "활동보고서 등록")
     @ApiResponse(responseCode = "201", description = "활동보고서 등록 성공")
+    @ApiResponse(responseCode = "400", description = "올해 해당 회차가 없거나, 오늘이 회차 기간(시작일~마감일)이 아닌 경우")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping(value = "/my/activity-reports")
@@ -71,6 +72,7 @@ public interface ClubActivityReportApi {
 
     @Operation(summary = "활동보고서 수정")
     @ApiResponse(responseCode = "200", description = "활동보고서 수정 성공")
+    @ApiResponse(responseCode = "400", description = "올해 해당 회차가 없거나, 오늘이 회차 기간(시작일~마감일)이 아닌 경우")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @PatchMapping(value = "/my/activity-reports")
@@ -82,6 +84,7 @@ public interface ClubActivityReportApi {
 
     @Operation(summary = "활동보고서 삭제")
     @ApiResponse(responseCode = "200", description = "활동보고서 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "올해 해당 회차가 없거나, 오늘이 회차 기간(시작일~마감일)이 아닌 경우")
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")
     @DeleteMapping("/my/activity-reports")
@@ -90,8 +93,8 @@ public interface ClubActivityReportApi {
             @RequestParam(value = "term") int term
     );
 
-    @Operation(summary = "활동 보고서 회차별 기간 조회 API")
-    @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 조회 성공",
+    @Operation(summary = "활동 보고서 회차별 기간 및 진행 상태 조회 API")
+    @ApiResponse(responseCode = "200", description = "활동 보고서 회차별 기간 및 진행 상태 조회 성공",
             content = @Content(schema = @Schema(implementation = ActivityReportTermInfoResponse.class)))
     @ResponseStatus(HttpStatus.OK)
     @SecurityRequirement(name = "AccessToken")

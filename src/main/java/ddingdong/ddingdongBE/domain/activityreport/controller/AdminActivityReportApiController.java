@@ -40,4 +40,16 @@ public class AdminActivityReportApiController implements AdminActivityReportApi 
     public void createActivityTermInfo(CreateActivityTermInfoRequest request) {
         facadeAdminActivityReportService.createActivityTermInfo(request.toCommand());
     }
+
+    @Override
+    public void deleteActivityTermInfo(int term) {
+        LocalDateTime now = LocalDateTime.now();
+        facadeAdminActivityReportService.deleteActivityTermInfo(now, term);
+    }
+
+    @Override
+    public void deleteActivityReport(Long clubId, int term) {
+        LocalDateTime now = LocalDateTime.now();
+        facadeAdminActivityReportService.deleteActivityReport(clubId, now, term);
+    }
 }

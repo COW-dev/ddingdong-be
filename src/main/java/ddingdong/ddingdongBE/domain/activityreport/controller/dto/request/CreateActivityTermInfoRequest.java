@@ -2,8 +2,9 @@ package ddingdong.ddingdongBE.domain.activityreport.controller.dto.request;
 
 import ddingdong.ddingdongBE.domain.activityreport.service.dto.command.CreateActivityTermInfoCommand;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
-import jakarta.validation.constraints.Pattern;
 import org.springframework.format.annotation.DateTimeFormat;
 
 @Schema(
@@ -13,10 +14,11 @@ import org.springframework.format.annotation.DateTimeFormat;
 public record CreateActivityTermInfoRequest(
     @Schema(description = "활동 보고서 시작 일자", example = "2024-07-22")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "날짜는 yyyy-MM-dd 형식이어야 합니다.")
+    @NotNull(message = "startDate는 null이 될 수 없습니다.")
     LocalDate startDate,
 
     @Schema(description = "설정할 총 회차 수", example = "10 (=총 10회 설정)")
+    @Min(value = 1, message = "totalTermCount는 1 이상이어야 합니다.")
     int totalTermCount
 ) {
 

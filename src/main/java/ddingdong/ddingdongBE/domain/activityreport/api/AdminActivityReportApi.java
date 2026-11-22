@@ -9,8 +9,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -42,10 +44,34 @@ public interface AdminActivityReportApi {
             @RequestParam("term") int term
     );
 
-    @Operation(summary = "어드민 - 활동 보고서 회차별 기간 설정 API")
+    @Operation(summary = "어드민 - 활동 보고서 회차별 기간 설정 API",
+            description = "시작일부터 2주 단위로 회차를 생성합니다. 회차 번호는 시작일이 속한 해의 마지막 회차 다음 번호부터 매깁니다.")
     @ApiResponse(responseCode = "201", description = "활동 보고서 회차 생성 성공")
+    @ApiResponse(responseCode = "400", description = "시작일이 없거나 회차 수가 1 미만인 경우, 시작일이 기존 회차 마감일 이전이거나 같은 경우, 기존 회차와 기간이 겹치는 경우, 회차 기간이 해를 넘기는 경우")
     @ResponseStatus(HttpStatus.CREATED)
     @SecurityRequirement(name = "AccessToken")
     @PostMapping("/term")
-    void createActivityTermInfo(@RequestBody CreateActivityTermInfoRequest request);
+    void createActivityTermInfo(@Valid @RequestBody CreateActivityTermInfoRequest request);
+
+    @Operation(summary = "어드민 - 활동 보고서 회차 삭제",
+            description = "잘못 생성된 올해 회차를 삭제합니다. 해당 회차에 제출된 활동보고서가 있으면 삭제할 수 없습니다.")
+    @ApiResponse(responseCode = "204", description = "활동 보고서 회차 삭제 성공")
+    @ApiResponse(responseCode = "400", description = "해당 회차에 제출된 활동보고서가 있는 경우")
+    @ApiResponse(responseCode = "404", description = "올해 해당 회차가 없는 경우")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/term")
+    void deleteActivityTermInfo(@RequestParam("term") int term);
+
+    @Operation(summary = "어드민 - 동아리 활동보고서 삭제",
+            description = "올해 해당 회차에 동아리가 제출한 활동보고서를 기간과 관계없이 삭제합니다.")
+    @ApiResponse(responseCode = "204", description = "동아리 활동보고서 삭제 성공")
+    @ApiResponse(responseCode = "404", description = "동아리 또는 해당 회차의 활동보고서가 없는 경우")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @SecurityRequirement(name = "AccessToken")
+    @DeleteMapping("/clubs/{clubId}")
+    void deleteActivityReport(
+            @PathVariable("clubId") Long clubId,
+            @RequestParam("term") int term
+    );
 }
